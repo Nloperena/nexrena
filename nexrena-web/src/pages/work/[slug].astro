@@ -41,11 +41,39 @@ const { project } = Astro.props;
       </div>
       
       <!-- Right 40% Abstract Panel -->
-      <div class="hidden lg:flex absolute right-0 top-0 w-[40%] h-full bg-[var(--slate-900)] border-l border-[var(--slate-800)] items-center justify-center overflow-hidden opacity-50">
-        {project.id === 'forzabuilt' && <div class="text-[500px] font-display font-light text-[var(--gold)] opacity-20">F</div>}
-        {project.id === 'rugged-red' && <div class="w-full h-full border-t-[40px] border-b-[40px] border-[var(--gold)] transform rotate-45 scale-150 opacity-20"></div>}
-        {project.id === 'vito-fryfilter' && <div class="w-96 h-96 border-4 border-dotted border-[var(--gold)] rounded-full opacity-20"></div>}
-        {project.id === 'furniture-packages-usa' && <div class="grid grid-cols-3 gap-8 p-12 w-full h-full opacity-20"><div class="bg-[var(--gold)]"></div><div class="bg-[var(--gold)]"></div><div class="bg-[var(--gold)]"></div></div>}
+      <div class="hidden lg:flex absolute right-0 top-0 w-[40%] h-full bg-[var(--slate-900)] border-l border-[var(--slate-800)] items-center justify-center overflow-hidden">
+        {project.video ? (
+          project.video.includes('vimeo') ? (
+            <iframe 
+              src={project.video} 
+              class="absolute inset-0 w-full h-full opacity-40 grayscale contrast-125 pointer-events-none"
+              allow="autoplay; fullscreen; picture-in-picture" 
+            ></iframe>
+          ) : (
+            <video 
+              autoplay 
+              muted 
+              loop 
+              playsinline 
+              class="absolute inset-0 w-full h-full object-cover opacity-40 grayscale contrast-125"
+            >
+              <source src={project.video} type="video/mp4" />
+            </video>
+          )
+        ) : project.thumbnail ? (
+          <img 
+            src={project.thumbnail} 
+            alt="" 
+            class="absolute inset-0 w-full h-full object-cover opacity-20 grayscale contrast-125"
+          />
+        ) : null}
+        
+        <div class="relative z-10 opacity-30">
+          {project.id === 'forzabuilt' && <div class="text-[500px] font-display font-light text-[var(--gold)]">F</div>}
+          {project.id === 'rugged-red' && <div class="w-full h-full border-t-[40px] border-b-[40px] border-[var(--gold)] transform rotate-45 scale-150"></div>}
+          {project.id === 'vito-fryfilter' && <div class="w-96 h-96 border-4 border-dotted border-[var(--gold)] rounded-full"></div>}
+          {project.id === 'furniture-packages-usa' && <div class="grid grid-cols-3 gap-8 p-12 w-full h-full"><div class="bg-[var(--gold)]"></div><div class="bg-[var(--gold)]"></div><div class="bg-[var(--gold)]"></div></div>}
+        </div>
       </div>
     </section>
 

@@ -24,6 +24,8 @@ export interface Project {
   approach?: string;
   background?: string;
   results?: string;
+  thumbnail?: string;
+  video?: string;
 }
 
 export const projects: Project[] = [
@@ -60,7 +62,9 @@ export const projects: Project[] = [
     },
     background: 'Forzabuilt is a B2B industrial adhesives manufacturer serving the Florida and Southeast construction market.',
     approach: 'We rebuilt the site on Next.js with a headless CMS, implementing structured data for product categories, a gated technical specification library for qualified buyers, and a full technical SEO foundation from day one.',
-    results: 'Within 90 days of launch, organic inbound lead volume increased by 140%. The site now consistently scores 96+ on Lighthouse across all pages. The sales team reports that inbound leads arrive more informed.'
+    results: 'Within 90 days of launch, organic inbound lead volume increased by 140%. The site now consistently scores 96+ on Lighthouse across all pages. The sales team reports that inbound leads arrive more informed.',
+    thumbnail: 'https://forzabuilt.com/images/homepage-heroes/eagle-hero.webp',
+    video: 'https://forzabuilt.com/videos/backgrounds/WebOptimized/WebM/Eagle%20Header%20Video_Optimized.webm'
   },
   {
     id: 'rugged-red',
@@ -95,7 +99,9 @@ export const projects: Project[] = [
     },
     background: 'Rugged Red is a premium outdoor equipment brand known for its high-performance gear designed for extreme conditions.',
     approach: 'We replatformed the entire storefront to a headless commerce architecture using React and AWS. This decoupled the frontend from the backend, allowing for sub-second page transitions and a custom, streamlined checkout flow.',
-    results: 'The transition to headless architecture resulted in a 31% increase in checkout completion. Bounce rates dropped by 47% as mobile users experienced a significantly faster and more intuitive shopping journey.'
+    results: 'The transition to headless architecture resulted in a 31% increase in checkout completion. Bounce rates dropped by 47% as mobile users experienced a significantly faster and more intuitive shopping journey.',
+    thumbnail: 'https://ruggedred.com/images/RRMascot+Type-smaller.png',
+    video: 'https://videos.ctfassets.net/hdznx4p7ef81/1OG5dyWb0f3mWf05Dwjh0k/fbafd351797af80200e19a2cb6ef6e2c/housekeeping-products-hero-video.mp4?q=70&fm=mp4&w=1280'
   },
   {
     id: 'vito-fryfilter',
@@ -130,7 +136,8 @@ export const projects: Project[] = [
     },
     background: 'VITO Fryfilter produces a patented frying oil filtration system sold to commercial kitchens globally.',
     approach: 'We restructured the Shopify architecture to support market-specific landing pages, implemented hreflang correctly across all international variants, and rebuilt the product pages around the commercial kitchen buyer persona.',
-    results: 'International revenue increased 85% year-over-year within the first two quarters post-launch. Conversion rate across all markets lifted 38%, with the largest gains in EU markets.'
+    results: 'International revenue increased 85% year-over-year within the first two quarters post-launch. Conversion rate across all markets lifted 38%, with the largest gains in EU markets.',
+    thumbnail: 'https://www.nicoloperena.com/VITOShop.webp'
   },
   {
     id: 'furniture-packages-usa',
@@ -165,6 +172,8 @@ export const projects: Project[] = [
     },
     background: 'Furniture Packages USA provides turnkey furniture procurement for property investors, real estate developers, and vacation rental managers throughout Florida.',
     approach: 'We rebuilt the site on WordPress with a custom procurement workflow, restructuring navigation around buyer type rather than product category.',
-    results: 'Organic search traffic grew 210% over six months. Inbound quote requests nearly doubled. Average session duration increased by over three minutes.'
+    results: 'Organic search traffic grew 210% over six months. Inbound quote requests nearly doubled. Average session duration increased by over three minutes.',
+    thumbnail: 'https://i.vimeocdn.com/video/1668125069-e25f25a76ac262e8bb3370b86a084508932eb338b956c8766051c022cb39b003-d?mw=2300&mh=1294',
+    video: 'https://player.vimeo.com/video/825630813?h=1e14851030&muted=1;&background=1'
   }
 ];

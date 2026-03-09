@@ -15,14 +15,12 @@ import Button from '../components/ui/Button.astro';
         <div class="lg:col-span-5 relative reveal">
           <div class="aspect-[4/5] bg-[var(--slate-800)] border border-[var(--slate-700)] overflow-hidden relative group">
             <div class="absolute inset-0 bg-[var(--obsidian)]/50 group-hover:bg-transparent transition-colors duration-500 z-10 pointer-events-none"></div>
-            <!-- Video / Image Placeholder -->
-            <div class="w-full h-full flex flex-col items-center justify-center text-center p-8 text-[var(--slate-400)]">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1" class="mb-4">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
-              </svg>
-              <span class="font-mono text-[11px] uppercase tracking-widest text-[var(--gold)]">Media Placeholder</span>
-              <span class="font-body text-[13px] mt-2">Replace with video or picture from NicoLoeprena.com</span>
-            </div>
+            <!-- Video / Image -->
+            <img 
+              src="https://www.nicoloperena.com/professional-photo.webp" 
+              alt="Nico Loeprena" 
+              class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+            />
             
             <!-- Corner Accents -->
             <div class="absolute top-0 left-0 w-8 h-[1px] bg-[var(--gold)] z-20"></div>
