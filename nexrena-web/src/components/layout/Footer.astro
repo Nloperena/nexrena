@@ -1,0 +1,64 @@
+---
+---
+<footer class="bg-[var(--obsidian)] border-t border-[var(--gold)] relative overflow-hidden mt-20">
+  <div class="max-w-[1320px] mx-auto px-[5vw] py-20">
+    <!-- ROW 1 -->
+    <div class="flex flex-col md:flex-row justify-between items-start gap-12 mb-24">
+      <div class="easter-egg-wordmark">
+        <a href="/" class="font-display text-[64px] md:text-[80px] italic text-[var(--warm-white)] flex">
+          {['N','e','x','r','e','n','a'].map((letter) => (
+            <span class="inline-block transition-transform duration-300 hover:rotate-[15deg] hover:-translate-y-2 hover:text-[var(--gold)]">
+              {letter}
+            </span>
+          ))}
+        </a>
+      </div>
+      
+      <div class="flex gap-16 md:gap-32">
+        <div class="flex flex-col gap-4">
+          <h4 class="font-mono text-[11px] text-[var(--gold-dim)] tracking-widest uppercase mb-2">Pages</h4>
+          <a href="/work" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Work</a>
+          <a href="/services" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Services</a>
+          <a href="/about" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">About</a>
+          <a href="/contact" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Contact</a>
+        </div>
+        <div class="flex flex-col gap-4">
+          <h4 class="font-mono text-[11px] text-[var(--gold-dim)] tracking-widest uppercase mb-2">Social</h4>
+          <a href="#" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">LinkedIn</a>
+          <a href="#" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Twitter</a>
+          <a href="#" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Awwwards</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2 -->
+    <div class="flex flex-col md:flex-row justify-between items-center gap-6 pt-8 border-t border-[var(--slate-800)] text-[12px] text-[var(--slate-400)]">
+      <p>&copy; {new Date().getFullYear()} Nexrena LLC. All rights reserved.</p>
+      <a href="mailto:hello@nexrena.com" class="font-mono text-[var(--gold)] hover:text-[var(--gold-light)] transition-colors">hello@nexrena.com</a>
+      <div class="flex items-center gap-2">
+        <span>Kissimmee, FL</span>
+        <span class="w-1 h-1 rounded-full bg-[var(--gold)]"></span>
+        <span id="local-time" class="font-mono"></span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function updateTime() {
+    const timeEl = document.getElementById('local-time');
+    if (!timeEl) return;
+    
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/New_York',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+    
+    timeEl.textContent = formatter.format(new Date());
+  }
+  
+  updateTime();
+  setInterval(updateTime, 60000);
+</script>

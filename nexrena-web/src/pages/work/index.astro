@@ -1,0 +1,75 @@
+---
+import Layout from '../../components/layout/Layout.astro';
+import { projects } from '../../data/projects';
+import Eyebrow from '../../components/ui/Eyebrow.astro';
+---
+
+<Layout title="Work | Nexrena">
+  <main class="pt-32 pb-48">
+    <div class="section-container">
+      <Eyebrow class="mb-8">OUR WORK //</Eyebrow>
+      <h1 class="text-h1 font-display text-[var(--warm-white)] mb-16">Selected Projects</h1>
+      
+      <!-- Table Header -->
+      <div class="hidden md:grid grid-cols-12 gap-4 border-b border-[var(--slate-700)] pb-4 mb-4 font-mono text-[10px] text-[var(--gold-dim)] uppercase tracking-widest">
+        <div class="col-span-1">No.</div>
+        <div class="col-span-5">Client</div>
+        <div class="col-span-3">Category</div>
+        <div class="col-span-2">Year</div>
+        <div class="col-span-1 text-right">Link</div>
+      </div>
+
+      <!-- Table Rows -->
+      <div class="flex flex-col relative" id="work-list">
+        {projects.map((project, i) => (
+          <a href={`/work/${project.id}`} class="work-row group grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-start md:items-center py-8 border-b border-[var(--slate-700)] transition-colors hover:bg-[var(--slate-800)] md:-mx-4 md:px-4 cursor-none" data-index={i}>
+            <div class="md:col-span-1 font-display text-[24px] text-[var(--slate-400)] font-light hidden md:block">0{i + 1}</div>
+            <div class="md:col-span-5 font-display text-[32px] md:text-[28px] text-[var(--warm-white)] group-hover:text-[var(--gold)] transition-colors leading-none mb-2 md:mb-0">{project.name}</div>
+            <div class="md:col-span-3 font-body text-[14px] text-[var(--slate-400)]">{project.category}</div>
+            <div class="md:col-span-2 font-mono text-[11px] text-[var(--slate-400)]">{project.year}</div>
+            <div class="md:col-span-1 md:text-right font-mono text-[11px] text-[var(--gold)] group-hover:translate-x-2 transition-transform mt-4 md:mt-0">View &rarr;</div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </main>
+
+  <!-- Hover Preview Floating Div -->
+  <div id="hover-preview" class="fixed right-[60px] top-1/2 -translate-y-1/2 w-[320px] h-[240px] rounded bg-[var(--obsidian)] border border-[var(--slate-700)] pointer-events-none opacity-0 transition-opacity duration-200 z-50 overflow-hidden hidden md:flex items-center justify-center">
+    <!-- Content injected via JS -->
+  </div>
+
+  <script>
+    const setupHoverPreview = () => {
+      const rows = document.querySelectorAll('.work-row');
+      const preview = document.getElementById('hover-preview');
+      if (!preview) return;
+
+      const abstracts = [
+        '<div class="text-[180px] font-display font-light text-[var(--gold)] opacity-30">F</div>',
+        '<div class="w-full h-full border-t-[20px] border-b-[20px] border-[var(--gold)] transform rotate-45 scale-150"></div>',
+        '<div class="w-32 h-32 border-2 border-dotted border-[var(--gold)] rounded-full"></div>',
+        '<div class="grid grid-cols-3 gap-2 p-4 w-full h-full opacity-50"><div class="w-full h-full bg-[var(--cream)]"></div><div class="w-full h-full bg-[var(--cream)]"></div><div class="w-full h-full bg-[var(--cream)]"></div></div>'
+      ];
+
+      rows.forEach((row, i) => {
+        row.addEventListener('mouseenter', () => {
+          preview.style.opacity = '1';
+          preview.innerHTML = abstracts[i] || '';
+        });
+        row.addEventListener('mouseleave', () => {
+          preview.style.opacity = '0';
+        });
+        row.addEventListener('mousemove', (e) => {
+          const mouseEvent = e as MouseEvent;
+          // Subtle parallax offset from cursor
+          const y = mouseEvent.clientY;
+          preview.style.top = `${y}px`;
+        });
+      });
+    };
+
+    setupHoverPreview();
+    document.addEventListener('astro:page-load', setupHoverPreview);
+  </script>
+</Layout>

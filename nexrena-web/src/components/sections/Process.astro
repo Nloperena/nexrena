@@ -1,0 +1,69 @@
+---
+import Eyebrow from '../ui/Eyebrow.astro';
+---
+
+<section id="process" class="bg-[var(--cream)] relative diagonal-cut" style="color: var(--obsidian);">
+  <div class="section-container relative z-10">
+    
+    <!-- Header -->
+    <div class="mb-24 reveal">
+      <Eyebrow class="mb-6">HOW WE WORK //</Eyebrow>
+      <h2 class="text-[36px] md:text-[64px] font-display text-[var(--obsidian)] whitespace-pre-line leading-tight">
+        {"Structured. Transparent.\nDelivered."}
+      </h2>
+    </div>
+
+    <!-- Steps Layout -->
+    <div class="flex flex-col md:flex-row gap-12 md:gap-0">
+      
+      {[
+        {
+          num: '01',
+          title: 'Discovery',
+          body: 'We audit your existing digital presence, research your competitors, and map the exact gaps between where you are and where buyers expect you to be.'
+        },
+        {
+          num: '02',
+          title: 'Strategy',
+          body: "Every engagement starts with a clear roadmap. We define what we're building, why, and exactly what success looks like before a single pixel moves."
+        },
+        {
+          num: '03',
+          title: 'Execution',
+          body: 'We build fast and iterate in the open. You see progress weekly. No black boxes, no surprises.'
+        },
+        {
+          num: '04',
+          title: 'Delivery',
+          body: "Launch is not the end — it's the beginning. We measure, optimize, and compound from day one."
+        }
+      ].map((step, i) => (
+        <div class="process-step flex-1 relative reveal" style={`--i: ${i};`}>
+          <!-- Desktop Divider Line -->
+          <div class="hidden md:block absolute top-10 left-0 w-full h-[1px] bg-[var(--gold)] opacity-30"></div>
+          <div class="hidden md:block absolute top-10 left-0 w-full h-[1px] bg-[var(--gold)] scale-x-0 origin-left step-line transition-transform duration-1000 delay-[calc(var(--i)*200ms)] ease-out"></div>
+          
+          <div class="relative z-10 pr-8 md:pr-12">
+            <div class="font-display text-[72px] font-light text-[var(--gold-dim)] leading-none mb-6">
+              {step.num}
+            </div>
+            <h3 class="font-body text-[18px] font-medium text-[var(--obsidian)] mb-4">
+              &mdash; {step.title}
+            </h3>
+            <p class="font-body text-[15px] text-[var(--slate-800)] leading-relaxed">
+              {step.body}
+            </p>
+          </div>
+        </div>
+      ))}
+      
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Trigger line growth when parent is visible */
+  .is-visible .step-line {
+    transform: scaleX(1);
+  }
+</style>

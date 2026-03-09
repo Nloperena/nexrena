@@ -1,0 +1,68 @@
+---
+import Eyebrow from '../ui/Eyebrow.astro';
+import Button from '../ui/Button.astro';
+---
+
+<section id="cta" class="bg-[var(--cream)] relative diagonal-cut" style="color: var(--obsidian);">
+  <div class="section-container relative z-10">
+    <div class="grid grid-cols-1 md:grid-cols-10 gap-16 md:gap-8 items-center">
+      
+      <!-- LEFT COLUMN -->
+      <div class="md:col-span-6 flex flex-col items-start reveal">
+        <Eyebrow class="mb-6">START A PROJECT //</Eyebrow>
+        
+        <h2 class="font-display text-[48px] md:text-[64px] text-[var(--obsidian)] leading-[1.1] mb-8 whitespace-pre-line">
+          {"Your next stage\nof growth\nstarts here."}
+        </h2>
+        
+        <p class="font-body text-[17px] text-[#4A5568] max-w-md mb-12">
+          Tell us about your business. We'll tell you exactly what we'd build and why.
+        </p>
+        
+        <div class="flex flex-wrap items-center gap-6">
+          <Button href="/contact" variant="primary">Start a Project &rarr;</Button>
+          <a href="mailto:hello@nexrena.com" class="font-mono text-[13px] text-[var(--gold)] tracking-widest uppercase hover:text-[var(--gold-dim)] transition-colors flex items-center gap-2">
+            hello@nexrena.com <span class="text-[16px]">&rarr;</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="md:col-span-4 md:ml-auto w-full max-w-md reveal" style="--i: 2;">
+        <div class="bg-[var(--obsidian)] text-[var(--slate-200)] p-8 md:p-10 flex flex-col border-t-2 border-[var(--gold)] grain relative overflow-hidden shadow-2xl">
+          
+          <h4 class="font-mono text-[10px] text-[var(--gold)] tracking-widest uppercase mb-8">TYPICAL ENGAGEMENT</h4>
+          
+          <div class="flex flex-col gap-6 mb-12">
+            {[
+              { label: 'Discovery Call', value: 'Free · 30 min' },
+              { label: 'Strategy Proposal', value: '5 business days' },
+              { label: 'Project Kickoff', value: 'Within 2 weeks' },
+              { label: 'First Deliverable', value: 'Week 3' }
+            ].map((item, i) => (
+              <div class="flex justify-between items-center border-b border-[var(--slate-800)] pb-4 reveal" style={`--i: ${i + 3};`}>
+                <span class="font-body text-[14px] text-[var(--slate-200)]">{item.label}</span>
+                <span class="font-mono text-[11px] text-[var(--slate-400)]">{item.value}</span>
+              </div>
+            ))}
+          </div>
+
+          <div class="mt-auto pt-6 flex flex-col reveal" style="--i: 7;">
+            <span class="font-display text-[72px] text-[var(--gold)] leading-none font-light">100%</span>
+            <span class="font-body text-[13px] text-[var(--slate-400)] mt-2">Client satisfaction rate</span>
+          </div>
+
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<style>
+  .section-transition-top {
+    clip-path: polygon(0 0, 100% 5%, 100% 100%, 0 100%);
+    margin-top: -5%;
+    padding-top: calc(5% + 6rem);
+  }
+</style>

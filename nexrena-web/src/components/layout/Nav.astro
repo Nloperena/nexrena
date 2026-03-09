@@ -1,0 +1,104 @@
+---
+import Button from '../ui/Button.astro';
+---
+
+<header id="main-nav" class="fixed top-0 left-0 right-0 h-[64px] z-[100] transition-all duration-300">
+  <div class="max-w-[1320px] mx-auto px-[5vw] h-full flex items-center justify-between">
+    
+    <!-- LEFT: Logo -->
+    <a href="/" class="text-[22px] font-display">
+      <span class="text-[var(--warm-white)]">Nex</span><span class="text-[var(--gold)]">rena</span>
+    </a>
+
+    <!-- CENTER: Desktop Links -->
+    <nav class="hidden md:flex items-center gap-8">
+      {['Work', 'Services', 'About', 'Contact'].map((item) => (
+        <a href={`/${item.toLowerCase() === 'home' ? '' : item.toLowerCase()}`} 
+           class="group relative font-body text-[13px] tracking-[0.15em] uppercase text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">
+          {item}
+          <span class="absolute -bottom-1 left-0 w-full h-[1px] bg-[var(--gold)] scale-x-0 origin-left transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-x-100"></span>
+        </a>
+      ))}
+    </nav>
+
+    <!-- RIGHT: CTA & Mobile Hamburger -->
+    <div class="flex items-center gap-4">
+      <Button href="/contact" variant="outline" class="hidden md:inline-flex h-[40px] px-6 text-[11px]">
+        Start a Project &rarr;
+      </Button>
+      <button id="mobile-menu-btn" class="md:hidden text-[var(--gold)] p-2">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 12h18M3 6h18M3 18h18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu Overlay -->
+  <div id="mobile-menu" class="fixed inset-0 bg-[var(--obsidian)] z-50 transform translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] grain">
+    <div class="absolute top-[20px] right-[5vw]">
+      <button id="mobile-close-btn" class="text-[var(--gold)] p-2">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <nav class="flex flex-col items-center justify-center h-full gap-8">
+      {['Work', 'Services', 'About', 'Contact'].map((item, i) => (
+        <a href={`/${item.toLowerCase() === 'home' ? '' : item.toLowerCase()}`} 
+           class="mobile-link font-display text-[48px] text-[var(--warm-white)] opacity-0 translate-y-8 transition-all duration-500 delay-[calc(var(--i)*100ms)]">
+          {item}
+        </a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<script>
+  const setupNav = () => {
+    // Nav background transition on scroll
+    const nav = document.getElementById('main-nav');
+    
+    const handleScroll = () => {
+      if (window.scrollY > 80) {
+        nav?.style.setProperty('background-color', 'rgba(12, 15, 18, 0.95)');
+        nav?.style.setProperty('backdrop-filter', 'blur(12px)');
+      } else {
+        nav?.style.removeProperty('background-color');
+        nav?.style.removeProperty('backdrop-filter');
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Init
+
+    // Mobile Menu Logic
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const closeBtn = document.getElementById('mobile-close-btn');
+    const menu = document.getElementById('mobile-menu');
+    const links = document.querySelectorAll('.mobile-link');
+
+    function openMenu() {
+      menu?.classList.remove('translate-x-full');
+      links.forEach((link, i) => {
+        (link as HTMLElement).style.setProperty('--i', i.toString());
+        setTimeout(() => {
+          link.classList.remove('opacity-0', 'translate-y-8');
+        }, 50);
+      });
+    }
+
+    function closeMenu() {
+      menu?.classList.add('translate-x-full');
+      links.forEach((link) => {
+        link.classList.add('opacity-0', 'translate-y-8');
+      });
+    }
+
+    menuBtn?.addEventListener('click', openMenu);
+    closeBtn?.addEventListener('click', closeMenu);
+  };
+
+  setupNav();
+  document.addEventListener('astro:page-load', setupNav);
+</script>

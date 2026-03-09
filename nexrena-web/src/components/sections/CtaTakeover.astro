@@ -1,0 +1,229 @@
+---
+/*
+  CtaTakeover — Layer 6
+  The only section where Antique Gold dominates as the background.
+  Nexrena wordmark inverted (Obsidian on Gold).
+  CTA button reveals via clip-path wipe on scroll entry.
+  Final editorial statement before the footer.
+*/
+import Wordmark from '../ui/Wordmark.astro';
+---
+
+<section class="cta-takeover layer-6" id="contact" aria-label="Start a Project">
+  <div class="cta-takeover__inner">
+    <!-- Section label -->
+    <span class="cta-takeover__section-label type-label">05&nbsp;/&nbsp;Let's Work</span>
+
+    <!-- Large wordmark inversion -->
+    <div class="cta-takeover__wordmark-wrap" aria-hidden="true">
+      <Wordmark size="xl" inverted />
+    </div>
+
+    <!-- Main statement -->
+    <div class="cta-takeover__text">
+      <h2 class="type-hero cta-takeover__headline">
+        Your next stage<br />of growth<br />starts here.
+      </h2>
+    </div>
+
+    <!-- CTA cluster -->
+    <div class="cta-takeover__actions">
+      <a
+        href="mailto:hello@nexrena.com"
+        class="cta-takeover__btn type-label scroll-clip-reveal"
+        aria-label="Start a project with Nexrena"
+      >
+        Start the conversation
+        <span class="cta-takeover__arrow" aria-hidden="true">→</span>
+      </a>
+      <span class="cta-takeover__or type-label">or</span>
+      <a
+        href="mailto:hello@nexrena.com"
+        class="cta-takeover__email type-label"
+      >
+        hello@nexrena.com
+      </a>
+    </div>
+
+    <!-- Bottom strip -->
+    <footer class="cta-takeover__footer">
+      <span class="type-label cta-takeover__footer-copy">
+        © {new Date().getFullYear()} Nexrena LLC. All rights reserved.
+      </span>
+      <span class="type-label cta-takeover__footer-location">
+        Florida, United States
+      </span>
+    </footer>
+  </div>
+
+  <!-- Large decorative number -->
+  <div class="cta-takeover__bg-mark" aria-hidden="true">Nr</div>
+</section>
+
+<style>
+  .cta-takeover {
+    background-color: var(--color-gold);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: stretch;
+  }
+
+  .cta-takeover__inner {
+    width: 100%;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto auto;
+    padding: var(--space-12) var(--section-pad-x);
+    gap: var(--space-12);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Section label */
+  .cta-takeover__section-label {
+    color: var(--color-obsidian);
+    opacity: 0.5;
+    animation: fade-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 25%;
+  }
+
+  /* Wordmark row */
+  .cta-takeover__wordmark-wrap {
+    animation: fade-in linear both;
+    animation-timeline: view();
+    animation-range: entry 5% entry 30%;
+  }
+
+  /* Main headline */
+  .cta-takeover__text {
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .cta-takeover__headline {
+    color: var(--color-obsidian);
+    font-size: clamp(4.5rem, 11vw, 12rem);
+    line-height: 0.92;
+    animation: headline-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+
+  @keyframes headline-in {
+    from { transform: translateY(3rem); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+
+  /* Actions row */
+  .cta-takeover__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    flex-wrap: wrap;
+  }
+
+  /* Primary button — clip-path wipe reveal */
+  .cta-takeover__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-4);
+    background-color: var(--color-obsidian);
+    color: var(--color-warm-white);
+    padding: 1rem 2rem;
+    clip-path: inset(0 100% 0 0);
+    animation: cta-wipe linear both;
+    animation-timeline: view();
+    animation-range: entry 20% entry 55%;
+    transition: background-color 0.2s, gap 0.2s;
+  }
+
+  @keyframes cta-wipe {
+    from { clip-path: inset(0 100% 0 0); }
+    to   { clip-path: inset(0 0% 0 0); }
+  }
+
+  .cta-takeover__btn:hover {
+    background-color: var(--color-slate);
+    gap: var(--space-6);
+  }
+
+  .cta-takeover__arrow {
+    display: inline-block;
+    transition: transform 0.2s;
+  }
+
+  .cta-takeover__btn:hover .cta-takeover__arrow {
+    transform: translateX(0.25rem);
+  }
+
+  /* "or" separator */
+  .cta-takeover__or {
+    color: var(--color-obsidian);
+    opacity: 0.4;
+  }
+
+  /* Email link */
+  .cta-takeover__email {
+    color: var(--color-obsidian);
+    border-bottom: 1px solid rgba(12, 15, 18, 0.3);
+    padding-bottom: 0.1rem;
+    transition: border-color 0.2s;
+    animation: fade-in linear both;
+    animation-timeline: view();
+    animation-range: entry 25% entry 60%;
+  }
+
+  .cta-takeover__email:hover {
+    border-color: var(--color-obsidian);
+  }
+
+  /* Footer strip */
+  .cta-takeover__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--space-8);
+    border-top: 1px solid rgba(12, 15, 18, 0.15);
+  }
+
+  .cta-takeover__footer-copy,
+  .cta-takeover__footer-location {
+    color: var(--color-obsidian);
+    opacity: 0.45;
+  }
+
+  /* Decorative background monogram */
+  .cta-takeover__bg-mark {
+    position: absolute;
+    right: -3rem;
+    bottom: -6rem;
+    font-family: var(--font-display);
+    font-size: clamp(20rem, 45vw, 55rem);
+    font-weight: 200;
+    color: rgba(12, 15, 18, 0.07);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(1rem); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta-takeover__headline,
+    .cta-takeover__btn,
+    .cta-takeover__email,
+    .cta-takeover__section-label,
+    .cta-takeover__wordmark-wrap {
+      animation: none;
+      opacity: 1;
+      clip-path: none;
+      transform: none;
+    }
+  }
+</style>

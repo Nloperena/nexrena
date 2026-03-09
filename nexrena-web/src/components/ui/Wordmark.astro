@@ -1,0 +1,50 @@
+---
+interface Props {
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  inverted?: boolean;
+  class?: string;
+}
+const { size = 'md', inverted = false, class: className = '' } = Astro.props;
+
+const sizes = {
+  sm: '1.5rem',
+  md: '2rem',
+  lg: '3rem',
+  xl: '5rem',
+};
+---
+
+<span
+  class:list={['wordmark', `wordmark--${size}`, { 'wordmark--inverted': inverted }, className]}
+  style={`--wm-size: ${sizes[size]};`}
+>
+  <span class="wordmark__nex">Nex</span><span class="wordmark__rena">rena</span>
+</span>
+
+<style>
+  .wordmark {
+    font-family: var(--font-display);
+    font-size: var(--wm-size);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    display: inline-block;
+    line-height: 1;
+  }
+
+  .wordmark__nex {
+    color: inherit;
+  }
+
+  .wordmark__rena {
+    color: var(--color-gold);
+  }
+
+  .wordmark--inverted .wordmark__nex {
+    color: var(--color-obsidian);
+  }
+
+  .wordmark--inverted .wordmark__rena {
+    color: var(--color-obsidian);
+    opacity: 0.6;
+  }
+</style>

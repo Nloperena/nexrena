@@ -1,0 +1,174 @@
+---
+/*
+  ManifestoStrip — Layer 2
+  Cream background slides over the Hero.
+  Brand philosophy stated in large editorial type.
+  Each word of the tagline lights up as you scroll through.
+*/
+
+const sentence1 = "We build the digital engine.";
+const sentence2 = "You run the company.";
+
+const words1 = sentence1.split(' ');
+const words2 = sentence2.split(' ');
+const allWords = [...words1, ...words2];
+const totalWords = allWords.length;
+---
+
+<section
+  class="manifesto layer-2 scroll-travel-4x"
+  id="philosophy"
+  aria-label="Philosophy"
+>
+  <div class="manifesto__pin sticky-pin">
+    <!-- Section label -->
+    <span class="manifesto__label label-vertical" aria-hidden="true">01&nbsp;/&nbsp;Philosophy</span>
+
+    <div class="manifesto__content">
+      <!-- Em-dash decorative rule -->
+      <div class="manifesto__rule" aria-hidden="true">
+        <span class="manifesto__dash">—</span>
+      </div>
+
+      <div class="manifesto__text-block" role="text" aria-label={`${sentence1} ${sentence2}`}>
+        <p class="manifesto__sentence" aria-hidden="true">
+          {allWords.map((word, i) => (
+            <span
+              class="manifesto__word"
+              style={`--word-index: ${i}; --total-words: ${totalWords};`}
+            >
+              {word}{' '}
+            </span>
+          ))}
+        </p>
+      </div>
+
+      <!-- Sub-statement -->
+      <div class="manifesto__sub">
+        <span class="gold-rule"></span>
+        <p class="type-label manifesto__context">
+          Digital growth agency &nbsp;·&nbsp; Web &nbsp;·&nbsp; SEO &nbsp;·&nbsp; Paid Search
+        </p>
+      </div>
+    </div>
+
+    <!-- Large decorative numeral -->
+    <div class="manifesto__numeral" aria-hidden="true">01</div>
+  </div>
+</section>
+
+<style>
+  .manifesto {
+    background-color: var(--color-cream);
+  }
+
+  .manifesto__pin {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: stretch;
+  }
+
+  /* Side label */
+  .manifesto__label {
+    padding: var(--space-8) var(--space-6);
+    align-self: center;
+  }
+
+  /* Main content area */
+  .manifesto__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--space-24) var(--section-pad-x) var(--space-24) var(--space-8);
+    position: relative;
+    z-index: 1;
+  }
+
+  .manifesto__rule {
+    margin-bottom: var(--space-12);
+  }
+
+  .manifesto__dash {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 200;
+    color: var(--color-gold-dim);
+    line-height: 1;
+  }
+
+  /* The large text block */
+  .manifesto__text-block {
+    overflow: hidden;
+  }
+
+  .manifesto__sentence {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 7.5vw, 8rem);
+    font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--color-obsidian);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2em;
+    column-gap: 0.35em;
+  }
+
+  /* Word-by-word reveal via scroll-driven animation */
+  .manifesto__word {
+    display: inline-block;
+    opacity: 0.1;
+    transition: opacity 0.01s;
+
+    /*
+      Each word's animation range is offset by its position in the sequence.
+      We use a JS-enhanced approach via IntersectionObserver (see scroll.js)
+      for stagger, but provide a CSS fallback using view() ranges.
+    */
+    animation: manifesto-word-reveal linear both;
+    animation-timeline: view(block);
+    animation-range:
+      calc(entry 20% + (var(--word-index) / var(--total-words)) * 40%)
+      calc(entry 20% + ((var(--word-index) + 1) / var(--total-words)) * 40% + 10%);
+  }
+
+  @keyframes manifesto-word-reveal {
+    from { opacity: 0.1; }
+    to   { opacity: 1; }
+  }
+
+  /* Sub-statement */
+  .manifesto__sub {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-12);
+  }
+
+  .manifesto__context {
+    color: var(--color-obsidian);
+    opacity: 0.5;
+  }
+
+  /* Decorative background numeral */
+  .manifesto__numeral {
+    position: absolute;
+    bottom: -2rem;
+    right: var(--section-pad-x);
+    font-family: var(--font-display);
+    font-size: clamp(12rem, 25vw, 28rem);
+    font-weight: 200;
+    color: rgba(12, 15, 18, 0.06);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .manifesto__word {
+      animation: none;
+      opacity: 1;
+    }
+  }
+</style>

@@ -1,0 +1,69 @@
+---
+import Layout from '../components/layout/Layout.astro';
+import Eyebrow from '../components/ui/Eyebrow.astro';
+import Badge from '../components/ui/Badge.astro';
+import Button from '../components/ui/Button.astro';
+---
+
+<Layout title="About | Nexrena">
+  <main class="pt-32 pb-48">
+    <div class="section-container">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 relative z-10 items-center">
+        
+        <!-- LEFT: Image / Video Placeholder -->
+        <div class="lg:col-span-5 relative reveal">
+          <div class="aspect-[4/5] bg-[var(--slate-800)] border border-[var(--slate-700)] overflow-hidden relative group">
+            <div class="absolute inset-0 bg-[var(--obsidian)]/50 group-hover:bg-transparent transition-colors duration-500 z-10 pointer-events-none"></div>
+            <!-- Video / Image Placeholder -->
+            <div class="w-full h-full flex flex-col items-center justify-center text-center p-8 text-[var(--slate-400)]">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1" class="mb-4">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+              </svg>
+              <span class="font-mono text-[11px] uppercase tracking-widest text-[var(--gold)]">Media Placeholder</span>
+              <span class="font-body text-[13px] mt-2">Replace with video or picture from NicoLoeprena.com</span>
+            </div>
+            
+            <!-- Corner Accents -->
+            <div class="absolute top-0 left-0 w-8 h-[1px] bg-[var(--gold)] z-20"></div>
+            <div class="absolute top-0 left-0 w-[1px] h-8 bg-[var(--gold)] z-20"></div>
+            <div class="absolute bottom-0 right-0 w-8 h-[1px] bg-[var(--gold)] z-20"></div>
+            <div class="absolute bottom-0 right-0 w-[1px] h-8 bg-[var(--gold)] z-20"></div>
+          </div>
+          
+          <!-- Name label -->
+          <div class="absolute -right-8 bottom-16 bg-[var(--gold)] text-[var(--obsidian)] px-6 py-3 font-mono text-[11px] uppercase tracking-widest hidden md:block">
+            Established &mdash; 2025
+          </div>
+        </div>
+
+        <!-- RIGHT: Bio & Vision -->
+        <div class="lg:col-span-7 flex flex-col items-start reveal" style="--i: 2;">
+          <Eyebrow class="mb-8">THE VISION //</Eyebrow>
+          
+          <h1 class="text-h1 font-display mb-10 text-[var(--warm-white)] leading-tight">
+            Built for companies that are serious about growth.
+          </h1>
+          
+          <div class="font-body text-[17px] leading-loose text-[var(--slate-300)] flex flex-col gap-6 mb-12">
+            <p>
+              Nexrena was founded after years of watching B2B companies burn capital on fragmented agencies, unreadable codebases, and marketing strategies that lacked technical foundation.
+            </p>
+            <p>
+              We aren't a traditional agency. We are an infrastructure partner. We believe that a website shouldn't just be a digital brochure—it should be an engineered system designed to capture leads, accelerate sales cycles, and compound in value over time.
+            </p>
+            <p>
+              Whether it's migrating a legacy platform to a lightning-fast headless architecture, or building SEO strategies that dominate search verticals, we operate with one singular metric: measurable business growth.
+            </p>
+          </div>
+          
+          <div class="flex flex-wrap gap-4 pt-8 border-t border-[var(--slate-800)] w-full">
+            <Button href="/contact" variant="primary">Work with us &rarr;</Button>
+            <Button href="/work" variant="outline">View projects</Button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</Layout>

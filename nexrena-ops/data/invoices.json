@@ -1,0 +1,41 @@
+[
+  {
+    "id": "i1",
+    "number": "NX-001",
+    "clientName": "Warren Daughtridge",
+    "contactId": "c1",
+    "projectId": "p1",
+    "status": "paid",
+    "lineItems": [
+      {
+        "id": "li1",
+        "description": "Astro landing page — TwoAzaleaGroup.com",
+        "quantity": 1,
+        "rate": 400
+      }
+    ],
+    "issueDate": "2025-12-01",
+    "dueDate": "2025-12-12",
+    "paidDate": "2025-12-12",
+    "createdAt": "2025-12-01T10:00:00Z"
+  },
+  {
+    "id": "i2",
+    "number": "NX-002",
+    "clientName": "Warren Daughtridge",
+    "contactId": "c1",
+    "status": "sent",
+    "lineItems": [
+      {
+        "id": "li2",
+        "description": "Monthly website hosting — March 2026",
+        "quantity": 1,
+        "rate": 20
+      }
+    ],
+    "issueDate": "2026-03-01",
+    "dueDate": "2026-03-12",
+    "notes": "Recurring monthly hosting — due the 12th of each month.",
+    "createdAt": "2026-03-01T08:00:00Z"
+  }
+]

@@ -1,0 +1,70 @@
+---
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'outline' | 'ghost';
+  class?: string;
+  type?: 'button' | 'submit';
+}
+
+const { href, variant = 'primary', class: className = '', type = 'button' } = Astro.props;
+
+const baseClass = "magnetic-btn inline-flex items-center justify-center font-mono uppercase tracking-widest text-[11px] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]";
+const variants = {
+  primary: "bg-[var(--gold)] text-[var(--obsidian)] h-[52px] px-8 hover:bg-[var(--gold-light)]",
+  outline: "border border-[var(--gold)] text-[var(--gold)] h-[52px] px-8 hover:bg-[var(--gold)] hover:text-[var(--obsidian)]",
+  ghost: "text-[var(--gold)] hover:text-[var(--gold-light)]"
+};
+
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag href={href} class={`${baseClass} ${variants[variant]} ${className}`} type={href ? undefined : type}>
+  <span class="magnetic-content pointer-events-none flex items-center gap-2">
+    <slot />
+  </span>
+</Tag>
+
+<script>
+  function initMagneticButtons() {
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    if (isMobile) return;
+
+    const buttons = document.querySelectorAll('.magnetic-btn');
+    
+    buttons.forEach((btn) => {
+      btn.addEventListener('mousemove', (e) => {
+        const mouseEvent = e as MouseEvent;
+        const rect = btn.getBoundingClientRect();
+        const h = rect.width / 2;
+        const v = rect.height / 2;
+        const x = mouseEvent.clientX - rect.left - h;
+        const y = mouseEvent.clientY - rect.top - v;
+        
+        const content = btn.querySelector('.magnetic-content') as HTMLElement;
+        
+        (btn as HTMLElement).style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+        if (content) {
+          content.style.transform = `translate(${x * 0.1}px, ${y * 0.1}px)`;
+        }
+      });
+      
+      btn.addEventListener('mouseleave', () => {
+        (btn as HTMLElement).style.transform = 'translate(0px, 0px)';
+        const content = btn.querySelector('.magnetic-content') as HTMLElement;
+        if (content) {
+          content.style.transform = 'translate(0px, 0px)';
+        }
+      });
+    });
+  }
+
+  // Run on load and after Astro view transitions
+  document.addEventListener('astro:page-load', initMagneticButtons);
+  initMagneticButtons();
+</script>
+
+<style>
+  .magnetic-btn {
+    will-change: transform;
+  }
+</style>

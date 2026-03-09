@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexrena — Brand Identity</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --slate-950: #0C0F12;
+    --slate-900: #141820;
+    --slate-800: #1E2530;
+    --slate-700: #2C3444;
+    --slate-600: #3D4A5C;
+    --slate-400: #7A8A9E;
+    --slate-300: #A8B5C4;
+    --slate-200: #D4DCE6;
+    --slate-100: #EDF0F4;
+    --slate-50:  #F6F8FA;
+    --gold:      #C9A96E;
+    --gold-light:#E8D5B0;
+    --gold-dim:  #9B7D4E;
+    --cream:     #F5F0E8;
+    --warm-white:#FDFCFA;
+    --ink:       #1A1E26;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--warm-white);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── PAGE LAYOUT ── */
+  .page { max-width: 1100px; margin: 0 auto; padding: 80px 48px; }
+
+  /* ── COVER ── */
+  .cover {
+    background: var(--slate-950);
+    padding: 120px 80px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 0;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -120px; right: -120px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(201,169,110,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  }
+  .cover-inner { max-width: 1100px; margin: 0 auto; padding: 0 48px; }
+  .cover-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+  .cover-wordmark {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(72px, 10vw, 120px);
+    letter-spacing: -0.02em;
+    color: var(--warm-white);
+    line-height: 0.9;
+    margin-bottom: 16px;
+  }
+  .cover-wordmark span { color: var(--gold); }
+  .cover-descriptor {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--slate-400);
+    margin-bottom: 80px;
+  }
+  .cover-meta {
+    display: flex;
+    gap: 64px;
+    border-top: 1px solid var(--slate-700);
+    padding-top: 40px;
+  }
+  .cover-meta-item { }
+  .cover-meta-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--slate-600);
+    margin-bottom: 6px;
+  }
+  .cover-meta-value {
+    font-size: 13px;
+    color: var(--slate-300);
+    font-weight: 300;
+  }
+
+  /* ── SECTION ── */
+  .section {
+    padding: 80px 0;
+    border-bottom: 1px solid var(--slate-200);
+  }
+  .section:last-child { border-bottom: none; }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 42px;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin-bottom: 48px;
+    line-height: 1.1;
+  }
+
+  /* ── LOGO VARIATIONS ── */
+  .logo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-bottom: 48px;
+  }
+  .logo-cell {
+    padding: 64px 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    position: relative;
+    min-height: 200px;
+  }
+  .logo-cell-label {
+    position: absolute;
+    bottom: 20px;
+    right: 24px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.4;
+  }
+  .logo-cell.dark { background: var(--slate-950); }
+  .logo-cell.mid  { background: var(--slate-800); }
+  .logo-cell.light{ background: var(--slate-50); border: 1px solid var(--slate-200); }
+  .logo-cell.cream-bg { background: var(--cream); }
+
+  /* Wordmark styles */
+  .wordmark {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+  .wordmark.xl { font-size: 56px; }
+  .wordmark.lg { font-size: 40px; }
+  .wordmark.md { font-size: 28px; }
+  .wordmark.sm { font-size: 18px; }
+
+  .wordmark.on-dark { color: var(--warm-white); }
+  .wordmark.on-dark span { color: var(--gold); }
+  .wordmark.on-light { color: var(--ink); }
+  .wordmark.on-light span { color: var(--gold-dim); }
+
+  .wordmark-sub {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    font-size: 9px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    margin-top: 10px;
+  }
+  .wordmark-sub.on-dark { color: var(--slate-400); }
+  .wordmark-sub.on-light { color: var(--slate-500, #6B7A8D); }
+
+  /* Monogram */
+  .monogram {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 64px;
+    line-height: 1;
+  }
+  .monogram.on-dark { color: var(--warm-white); }
+  .monogram.on-dark span { color: var(--gold); }
+  .monogram.on-light { color: var(--ink); }
+  .monogram.on-light span { color: var(--gold-dim); }
+
+  /* Lockup with rule */
+  .lockup {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .lockup-rule {
+    width: 1px;
+    height: 48px;
+    background: var(--gold-dim);
+    opacity: 0.5;
+  }
+  .lockup-right { }
+  .lockup-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 24px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .lockup-tagline {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ── COLOR PALETTE ── */
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+  .color-swatch {
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .swatch-block {
+    height: 100px;
+    width: 100%;
+  }
+  .swatch-info {
+    padding: 14px 0 0;
+  }
+  .swatch-name {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .swatch-hex {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--slate-400);
+  }
+  .swatch-role {
+    font-size: 11px;
+    color: var(--slate-400);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  .type-specimen { margin-bottom: 56px; }
+  .type-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--slate-200);
+  }
+  .type-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+  }
+  .type-use {
+    font-size: 11px;
+    color: var(--slate-400);
+  }
+
+  .specimen-display {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 64px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .specimen-display-italic {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 48px;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--slate-600);
+  }
+  .specimen-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 1.2;
+    color: var(--ink);
+  }
+  .specimen-body {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--slate-600);
+    max-width: 560px;
+  }
+  .specimen-label {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--slate-400);
+  }
+  .specimen-mono {
+    font-family: 'DM Mono', monospace;
+    font-weight: 300;
+    font-size: 13px;
+    color: var(--slate-500, #6B7A8D);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── BRAND VOICE ── */
+  .voice-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-bottom: 48px;
+  }
+  .voice-card {
+    padding: 40px;
+    background: var(--slate-50);
+  }
+  .voice-card.dark { background: var(--slate-900); }
+  .voice-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    margin-bottom: 20px;
+    color: var(--ink);
+  }
+  .voice-card.dark .voice-card-title { color: var(--warm-white); }
+  .voice-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--slate-600);
+  }
+  .voice-card.dark .voice-item { color: var(--slate-300); }
+  .voice-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+    margin-top: 7px;
+  }
+
+  /* ── USAGE EXAMPLES ── */
+  .usage-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px;
+    margin-bottom: 48px;
+  }
+  .usage-card {
+    padding: 40px 32px;
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .usage-card.biz-card-dark {
+    background: var(--slate-950);
+  }
+  .usage-card.letterhead {
+    background: var(--warm-white);
+    border: 1px solid var(--slate-200);
+  }
+  .usage-card.email-sig {
+    background: var(--cream);
+  }
+  .usage-card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--slate-400);
+    margin-bottom: 32px;
+  }
+  .biz-name-dark {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--warm-white);
+    margin-bottom: 4px;
+  }
+  .biz-name-dark span { color: var(--gold); }
+  .biz-descriptor {
+    font-size: 9px;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--slate-500, #6B7A8D);
+    margin-bottom: 40px;
+  }
+  .biz-person {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--warm-white);
+    margin-bottom: 2px;
+  }
+  .biz-role {
+    font-size: 11px;
+    color: var(--slate-400);
+    margin-bottom: 12px;
+  }
+  .biz-contact {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--gold-dim);
+    letter-spacing: 0.05em;
+    line-height: 1.8;
+  }
+  .lh-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--gold-light);
+    margin-bottom: 24px;
+  }
+  .lh-address {
+    font-size: 10px;
+    color: var(--slate-400);
+    line-height: 1.7;
+    text-align: right;
+    font-family: 'DM Mono', monospace;
+  }
+  .lh-body {
+    font-size: 12px;
+    color: var(--slate-600);
+    line-height: 1.7;
+  }
+  .sig-name-block {
+    margin-bottom: 24px;
+  }
+  .sig-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .sig-title {
+    font-size: 11px;
+    color: var(--slate-400);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .sig-agency {
+    font-size: 14px;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .sig-agency span { color: var(--gold-dim); }
+  .sig-url {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--gold-dim);
+    text-decoration: none;
+  }
+
+  /* ── DO / DON'T ── */
+  .rules-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+  }
+  .rules-col-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid;
+  }
+  .rules-col-title.do { color: var(--gold-dim); border-color: var(--gold-light); }
+  .rules-col-title.dont { color: var(--slate-400); border-color: var(--slate-200); }
+  .rule-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--slate-600);
+  }
+  .rule-icon { flex-shrink: 0; font-size: 14px; }
+
+  /* ── TAGLINES ── */
+  .tagline-list { }
+  .tagline-item {
+    padding: 28px 0;
+    border-bottom: 1px solid var(--slate-200);
+    display: flex;
+    align-items: baseline;
+    gap: 32px;
+  }
+  .tagline-item:last-child { border-bottom: none; }
+  .tagline-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--ink);
+    flex: 1;
+  }
+  .tagline-context {
+    font-size: 12px;
+    color: var(--slate-400);
+    white-space: nowrap;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── FOOTER ── */
+  .brand-footer {
+    background: var(--slate-950);
+    padding: 64px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .brand-footer-left {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    font-weight: 300;
+    color: var(--warm-white);
+  }
+  .brand-footer-left span { color: var(--gold); }
+  .brand-footer-right {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--slate-600);
+    letter-spacing: 0.15em;
+    text-align: right;
+    line-height: 2;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-inner">
+    <div class="cover-label">Brand Identity System — v1.0</div>
+    <div class="cover-wordmark">Nex<span>rena</span></div>
+    <div class="cover-descriptor">Digital Growth Agency</div>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Primary Domain</div>
+        <div class="cover-meta-value">nexrena.com</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Category</div>
+        <div class="cover-meta-value">Web Design & SEO</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Market</div>
+        <div class="cover-meta-value">Mid-Size Companies</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Brand Direction</div>
+        <div class="cover-meta-value">Premium Muted</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="page">
+
+  <!-- LOGO VARIATIONS -->
+  <div class="section">
+    <div class="section-label">01 — Wordmark & Logo</div>
+    <div class="section-title">Logo Variations</div>
+
+    <div class="logo-grid">
+      <!-- Primary dark -->
+      <div class="logo-cell dark">
+        <div class="wordmark xl on-dark">Nex<span>rena</span></div>
+        <div class="wordmark-sub on-dark">Digital Growth Agency</div>
+        <div class="logo-cell-label" style="color:var(--slate-600);">Primary — Dark</div>
+      </div>
+      <!-- Primary light -->
+      <div class="logo-cell light">
+        <div class="wordmark xl on-light">Nex<span>rena</span></div>
+        <div class="wordmark-sub on-light">Digital Growth Agency</div>
+        <div class="logo-cell-label" style="color:var(--slate-300);">Primary — Light</div>
+      </div>
+      <!-- Lockup dark -->
+      <div class="logo-cell mid">
+        <div class="lockup">
+          <div class="monogram on-dark">N<span>r</span></div>
+          <div class="lockup-rule"></div>
+          <div class="lockup-right">
+            <div class="lockup-name" style="color:var(--warm-white); letter-spacing:0.1em;">NEXRENA</div>
+            <div class="lockup-tagline" style="color:var(--slate-400);">Digital Growth Agency</div>
+          </div>
+        </div>
+        <div class="logo-cell-label" style="color:var(--slate-600);">Monogram Lockup</div>
+      </div>
+      <!-- Cream -->
+      <div class="logo-cell cream-bg">
+        <div class="wordmark lg on-light">Nex<span>rena</span></div>
+        <div class="wordmark-sub on-light" style="margin-top:8px; color:#9B8060;">nexrena.com</div>
+        <div class="logo-cell-label" style="color:var(--slate-400);">Cream / Warm Background</div>
+      </div>
+    </div>
+
+    <!-- Size scale -->
+    <div style="padding: 40px; background: var(--slate-50); border: 1px solid var(--slate-200);">
+      <div style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold-dim); margin-bottom:32px;">Size Scale</div>
+      <div style="display:flex; flex-direction:column; gap:24px;">
+        <div style="display:flex; align-items:center; gap:32px;">
+          <div class="wordmark xl on-light">Nex<span>rena</span></div>
+          <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--slate-400);">XL — Hero / Cover</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:32px;">
+          <div class="wordmark lg on-light">Nex<span>rena</span></div>
+          <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--slate-400);">LG — Nav / Header</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:32px;">
+          <div class="wordmark md on-light">Nex<span>rena</span></div>
+          <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--slate-400);">MD — Proposal / Doc Header</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:32px;">
+          <div class="wordmark sm on-light">Nex<span>rena</span></div>
+          <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--slate-400);">SM — Footer / Stamp</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COLOR PALETTE -->
+  <div class="section">
+    <div class="section-label">02 — Color</div>
+    <div class="section-title">Brand Palette</div>
+
+    <div class="color-grid">
+      <div class="color-swatch">
+        <div class="swatch-block" style="background:#0C0F12;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Obsidian</div>
+          <div class="swatch-hex">#0C0F12</div>
+          <div class="swatch-role">Primary dark background</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch-block" style="background:#1E2530;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Slate</div>
+          <div class="swatch-hex">#1E2530</div>
+          <div class="swatch-role">Cards, sections</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch-block" style="background:#C9A96E; border:1px solid #e8d5b0;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Antique Gold</div>
+          <div class="swatch-hex">#C9A96E</div>
+          <div class="swatch-role">Primary accent — CTAs, highlights</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch-block" style="background:#F5F0E8; border:1px solid #e8d5b0;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Cream</div>
+          <div class="swatch-hex">#F5F0E8</div>
+          <div class="swatch-role">Warm neutral, alt backgrounds</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch-block" style="background:#FDFCFA; border:1px solid var(--slate-200);"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Warm White</div>
+          <div class="swatch-hex">#FDFCFA</div>
+          <div class="swatch-role">Page background</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Color usage bar -->
+    <div style="margin-top:32px;">
+      <div style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--slate-400); margin-bottom:16px;">Usage Ratio</div>
+      <div style="display:flex; height:40px; border-radius:2px; overflow:hidden; gap:2px;">
+        <div style="flex:5; background:#0C0F12; display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:10px; color:var(--slate-600);">50% Obsidian</div>
+        <div style="flex:2; background:#FDFCFA; border:1px solid var(--slate-200); display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:10px; color:var(--slate-400);">20% White</div>
+        <div style="flex:2; background:#F5F0E8; display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:10px; color:#9B8060;">20% Cream</div>
+        <div style="flex:1; background:#C9A96E; display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:10px; color:#fff;">10%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TYPOGRAPHY -->
+  <div class="section">
+    <div class="section-label">03 — Typography</div>
+    <div class="section-title">Type System</div>
+
+    <div class="type-specimen">
+      <div class="type-meta">
+        <span class="type-name">Cormorant Garamond</span>
+        <span class="type-use">Display, headings, wordmark — the soul of the brand</span>
+      </div>
+      <div class="specimen-display">Precision.<br>Growth. Results.</div>
+      <div class="specimen-display-italic" style="margin-top:16px;">The agency built to scale.</div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-meta">
+        <span class="type-name">DM Sans Light</span>
+        <span class="type-use">Body copy, UI text, descriptions</span>
+      </div>
+      <div class="specimen-body">Nexrena partners with mid-size companies to build digital infrastructure that performs — websites that convert, search strategies that compound, and reporting that makes decisions clear.</div>
+      <div class="specimen-label" style="margin-top:20px;">SECTION LABEL — DM SANS 500 · UPPERCASE · TRACKED</div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-meta">
+        <span class="type-name">DM Mono</span>
+        <span class="type-use">Labels, metadata, technical text, monogram contexts</span>
+      </div>
+      <div class="specimen-mono">01 — Strategy &nbsp;&nbsp; nexrena.com &nbsp;&nbsp; #C9A96E &nbsp;&nbsp; v1.0.0</div>
+    </div>
+  </div>
+
+  <!-- TAGLINES -->
+  <div class="section">
+    <div class="section-label">04 — Voice & Messaging</div>
+    <div class="section-title">Taglines & Positioning</div>
+
+    <div class="tagline-list">
+      <div class="tagline-item">
+        <div class="tagline-text">Built to perform. Designed to last.</div>
+        <div class="tagline-context">Primary tagline</div>
+      </div>
+      <div class="tagline-item">
+        <div class="tagline-text">Growth infrastructure for companies that mean business.</div>
+        <div class="tagline-context">Website hero</div>
+      </div>
+      <div class="tagline-item">
+        <div class="tagline-text">We build the digital engine. You run the company.</div>
+        <div class="tagline-context">Differentiator line</div>
+      </div>
+      <div class="tagline-item">
+        <div class="tagline-text">Clarity in strategy. Precision in execution.</div>
+        <div class="tagline-context">Proposals / decks</div>
+      </div>
+      <div class="tagline-item">
+        <div class="tagline-text">Your next stage of growth starts here.</div>
+        <div class="tagline-context">CTA / email footer</div>
+      </div>
+    </div>
+
+    <div style="margin-top:48px;">
+      <div class="voice-grid">
+        <div class="voice-card dark">
+          <div class="voice-card-title" style="color:var(--gold-light);">Nexrena sounds like</div>
+          <div class="voice-item"><div class="voice-dot"></div><div>Confident, not arrogant — we've done this before</div></div>
+          <div class="voice-item"><div class="voice-dot"></div><div>Precise — we measure everything, say only what matters</div></div>
+          <div class="voice-item"><div class="voice-dot"></div><div>Calm under pressure — no hype, no buzzwords</div></div>
+          <div class="voice-item"><div class="voice-dot"></div><div>Strategic — always thinking about outcomes, not outputs</div></div>
+          <div class="voice-item"><div class="voice-dot"></div><div>Premium but approachable — a trusted boardroom voice</div></div>
+        </div>
+        <div class="voice-card">
+          <div class="voice-card-title">Nexrena never sounds like</div>
+          <div class="voice-item"><div class="voice-dot" style="background:var(--slate-400);"></div><div>Overly casual or salesy — no "crushing it" language</div></div>
+          <div class="voice-item"><div class="voice-dot" style="background:var(--slate-400);"></div><div>Jargon-heavy — no "synergy" or "full-stack growth hacks"</div></div>
+          <div class="voice-item"><div class="voice-dot" style="background:var(--slate-400);"></div><div>Desperate — no discounts, no begging, no urgency tactics</div></div>
+          <div class="voice-item"><div class="voice-dot" style="background:var(--slate-400);"></div><div>Personal — never "I", always "we" and "Nexrena"</div></div>
+          <div class="voice-item"><div class="voice-dot" style="background:var(--slate-400);"></div><div>Vague — every claim is backed by a specific result</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USAGE IN CONTEXT -->
+  <div class="section">
+    <div class="section-label">05 — Applications</div>
+    <div class="section-title">Brand in Use</div>
+
+    <div class="usage-row">
+      <!-- Business Card -->
+      <div class="usage-card biz-card-dark">
+        <div class="usage-card-label">Business Card</div>
+        <div>
+          <div class="biz-name-dark">Nex<span>rena</span></div>
+          <div class="biz-descriptor">Digital Growth Agency</div>
+          <div class="biz-person">[Account Lead Name]</div>
+          <div class="biz-role">Senior Strategist</div>
+          <div class="biz-contact">
+            hello@nexrena.com<br>
+            nexrena.com
+          </div>
+        </div>
+      </div>
+
+      <!-- Letterhead -->
+      <div class="usage-card letterhead" style="padding:32px;">
+        <div class="usage-card-label">Letterhead</div>
+        <div class="lh-top">
+          <div class="wordmark md on-light">Nex<span>rena</span></div>
+          <div class="lh-address">nexrena.com<br>hello@nexrena.com</div>
+        </div>
+        <div class="lh-body">
+          Dear [Client Name],<br><br>
+          Following our discovery call, we've outlined a 90-day digital growth strategy tailored to your objectives...
+        </div>
+      </div>
+
+      <!-- Email Signature -->
+      <div class="usage-card email-sig">
+        <div class="usage-card-label">Email Signature</div>
+        <div>
+          <div class="sig-name-block">
+            <div class="sig-name">[Your Name]</div>
+            <div class="sig-title">Director of Strategy</div>
+          </div>
+          <div style="width:40px; height:1px; background:var(--gold-light); margin-bottom:16px;"></div>
+          <div class="sig-agency">Nex<span>rena</span></div>
+          <div style="font-size:10px; color:var(--slate-400); font-family:'DM Sans',sans-serif; margin-bottom:4px;">Digital Growth Agency</div>
+          <a class="sig-url">nexrena.com</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DO / DON'T -->
+  <div class="section">
+    <div class="section-label">06 — Brand Rules</div>
+    <div class="section-title">Do's & Don'ts</div>
+    <div class="rules-grid">
+      <div>
+        <div class="rules-col-title do">Always</div>
+        <div class="rule-item"><span class="rule-icon">✦</span><div>Write the name as <strong>Nexrena</strong> — capital N only, one word</div></div>
+        <div class="rule-item"><span class="rule-icon">✦</span><div>Use Cormorant Garamond for all headlines and the wordmark</div></div>
+        <div class="rule-item"><span class="rule-icon">✦</span><div>Lead with results and specifics in all client communications</div></div>
+        <div class="rule-item"><span class="rule-icon">✦</span><div>Maintain the dark/gold premium palette across all materials</div></div>
+        <div class="rule-item"><span class="rule-icon">✦</span><div>Use "we" and "Nexrena" — never a founder's name publicly</div></div>
+        <div class="rule-item"><span class="rule-icon">✦</span><div>Keep generous white space — the brand breathes</div></div>
+      </div>
+      <div>
+        <div class="rules-col-title dont">Never</div>
+        <div class="rule-item"><span class="rule-icon" style="color:var(--slate-400);">—</span><div>Don't write NEXRENA, nexrena, or Nex Rena</div></div>
+        <div class="rule-item"><span class="rule-icon" style="color:var(--slate-400);">—</span><div>Don't use bright or saturated colors outside the palette</div></div>
+        <div class="rule-item"><span class="rule-icon" style="color:var(--slate-400);">—</span><div>Don't associate the agency with any individual founder publicly</div></div>
+        <div class="rule-item"><span class="rule-icon" style="color:var(--slate-400);">—</span><div>Don't use stock photos of smiling people in suits</div></div>
+        <div class="rule-item"><span class="rule-icon" style="color:var(--slate-400);">—</span><div>Don't place the logo on busy or low-contrast backgrounds</div></div>
+        <div class="rule-item"><span class="rule-icon" style="color:var(--slate-400);">—</span><div>Don't use playful or rounded fonts — they break the tone</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BRAND FOOTER -->
+<div class="brand-footer">
+  <div class="brand-footer-left">Nex<span>rena</span></div>
+  <div class="brand-footer-right">
+    Brand Identity System v1.0<br>
+    nexrena.com<br>
+    Digital Growth Agency
+  </div>
+</div>
+
+</body>
+</html>

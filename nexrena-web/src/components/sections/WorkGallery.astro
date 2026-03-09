@@ -1,0 +1,339 @@
+---
+/*
+  WorkGallery — Layer 4
+  Split-screen sticky layout:
+  - Left panel: `position: sticky` project counter + client name (35% width)
+  - Right panel: scrolls through project details for each case study
+  Metrics use the MetricCounter React island (client:visible).
+*/
+import MetricCounter from '../ui/MetricCounter';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  projects: CollectionEntry<'work'>[];
+}
+const { projects } = Astro.props;
+
+const sorted = [...projects].sort((a, b) => a.data.order - b.data.order);
+---
+
+<section class="work-gallery layer-4" id="work" aria-label="Selected Work">
+  <div class="work-gallery__intro">
+    <span class="type-label text-gold">03&nbsp;/&nbsp;Work</span>
+    <h2 class="type-section-title work-gallery__heading">
+      Selected<br /><em>projects.</em>
+    </h2>
+  </div>
+
+  <div class="work-gallery__body">
+    <!-- Left sticky panel -->
+    <aside class="work-gallery__left" aria-hidden="true">
+      <div class="work-gallery__left-inner sticky-pin" style="top: 0;">
+        <div class="work-gallery__counters">
+          {sorted.map((project, i) => (
+            <div
+              class="work-gallery__counter-item"
+              data-index={i}
+              id={`counter-${project.slug}`}
+            >
+              <span class="type-numeral work-gallery__num">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span class="type-label work-gallery__vertical">
+                {project.data.vertical}
+              </span>
+              <h3 class="work-gallery__client-name type-card-heading">
+                {project.data.client}
+              </h3>
+            </div>
+          ))}
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right scrollable panel -->
+    <div class="work-gallery__right">
+      {sorted.map((project, i) => (
+        <article
+          class="work-gallery__project"
+          data-project={project.slug}
+          aria-label={`${project.data.client} — ${project.data.title}`}
+        >
+          <!-- Visual placeholder (replace with actual project images) -->
+          <div class="work-gallery__visual">
+            <div class="work-gallery__visual-inner" aria-hidden="true">
+              <span class="work-gallery__visual-label type-label">
+                {project.data.client}
+              </span>
+            </div>
+          </div>
+
+          <!-- Project details -->
+          <div class="work-gallery__details">
+            <div class="work-gallery__meta">
+              <span class="type-label text-gold">{project.data.year}</span>
+              <div class="work-gallery__services">
+                {project.data.services.map(s => (
+                  <span class="work-gallery__tag type-label">{s}</span>
+                ))}
+              </div>
+            </div>
+
+            <h3 class="work-gallery__project-title type-section-title">
+              {project.data.title}
+            </h3>
+
+            <!-- Metrics grid -->
+            {project.data.metrics.length > 0 && (
+              <div class="work-gallery__metrics" aria-label="Project metrics">
+                {project.data.metrics.map(m => (
+                  <MetricCounter
+                    client:visible
+                    value={m.value}
+                    label={m.label}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  /*
+    IntersectionObserver syncs the left sticky panel counter
+    with whichever project is currently visible on the right.
+    The abrupt crossfade is intentional — editorial, not animated.
+  */
+  const projects = document.querySelectorAll('.work-gallery__project');
+  const counterItems = document.querySelectorAll('.work-gallery__counter-item');
+
+  function activateCounter(slug: string) {
+    counterItems.forEach(item => {
+      const isActive = (item as HTMLElement).dataset.index !== undefined &&
+        projects[Number((item as HTMLElement).dataset.index)]?.getAttribute('data-project') === slug;
+      item.classList.toggle('is-active', isActive);
+    });
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const slug = (entry.target as HTMLElement).dataset.project ?? '';
+          activateCounter(slug);
+        }
+      });
+    },
+    { threshold: 0.5 }
+  );
+
+  projects.forEach(p => observer.observe(p));
+
+  // Activate first project on load
+  if (projects.length > 0) {
+    activateCounter((projects[0] as HTMLElement).dataset.project ?? '');
+  }
+</script>
+
+<style>
+  .work-gallery {
+    background-color: var(--color-obsidian);
+    border-top: 1px solid rgba(201, 169, 110, 0.15);
+  }
+
+  /* Intro header */
+  .work-gallery__intro {
+    padding: var(--space-24) var(--section-pad-x) var(--space-12);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .work-gallery__heading {
+    color: var(--color-warm-white);
+  }
+
+  .work-gallery__heading em {
+    font-style: italic;
+    color: var(--color-text-light);
+  }
+
+  /* Split body */
+  .work-gallery__body {
+    display: grid;
+    grid-template-columns: 35% 65%;
+    align-items: start;
+  }
+
+  /* Left sticky panel */
+  .work-gallery__left {
+    position: relative;
+    height: 100%;
+  }
+
+  .work-gallery__left-inner {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-left: var(--section-pad-x);
+    padding-right: var(--space-8);
+  }
+
+  .work-gallery__counters {
+    position: relative;
+    width: 100%;
+  }
+
+  .work-gallery__counter-item {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0s; /* abrupt cut — intentional */
+  }
+
+  .work-gallery__counter-item.is-active {
+    opacity: 1;
+    pointer-events: auto;
+    position: relative;
+    transform: none;
+  }
+
+  .work-gallery__num {
+    display: block;
+    color: rgba(201, 169, 110, 0.12);
+    line-height: 1;
+    margin-bottom: -1rem;
+  }
+
+  .work-gallery__vertical {
+    color: var(--color-gold);
+    display: block;
+    margin-bottom: var(--space-3);
+  }
+
+  .work-gallery__client-name {
+    color: var(--color-warm-white);
+    max-width: 10ch;
+  }
+
+  /* Right scrollable panel */
+  .work-gallery__right {
+    border-left: 1px solid rgba(201, 169, 110, 0.1);
+  }
+
+  .work-gallery__project {
+    padding: var(--space-24) var(--section-pad-x);
+    border-bottom: 1px solid rgba(201, 169, 110, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+    animation: fade-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 30%;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(2rem); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Visual placeholder */
+  .work-gallery__visual {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: var(--color-slate);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .work-gallery__visual-inner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--color-slate), var(--color-obsidian));
+  }
+
+  .work-gallery__visual-label {
+    color: var(--color-text-muted);
+  }
+
+  /* Meta row */
+  .work-gallery__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+  }
+
+  .work-gallery__services {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  .work-gallery__tag {
+    color: var(--color-text-muted);
+    border: 1px solid rgba(253, 252, 250, 0.1);
+    padding: 0.25rem 0.75rem;
+  }
+
+  /* Project title */
+  .work-gallery__project-title {
+    color: var(--color-warm-white);
+    font-size: clamp(2.5rem, 5vw, 5rem);
+  }
+
+  /* Metrics grid */
+  .work-gallery__metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: var(--space-8);
+    padding-top: var(--space-8);
+    border-top: 1px solid rgba(201, 169, 110, 0.15);
+  }
+
+  /* MetricCounter global styles (React component) */
+  :global(.metric-counter) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  :global(.metric-counter__value) {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 300;
+    color: var(--color-gold);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  :global(.metric-counter__label) {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  @media (max-width: 768px) {
+    .work-gallery__body {
+      grid-template-columns: 1fr;
+    }
+
+    .work-gallery__left {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,121 @@
+---
+import Eyebrow from '../ui/Eyebrow.astro';
+import { projects } from '../../data/projects';
+---
+
+<section id="work" class="bg-[var(--slate-900)] relative diagonal-cut">
+  <div class="section-container relative z-10">
+    
+    <!-- Header -->
+    <div class="mb-16 reveal">
+      <Eyebrow class="mb-6">SELECTED WORK //</Eyebrow>
+      <h2 class="text-h2 font-display text-[var(--warm-white)]">
+        Projects built to perform.
+      </h2>
+    </div>
+
+    <!-- Bento Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-10 gap-6">
+      
+      {projects.map((project, i) => {
+        // Grid classes logic based on spec
+        let gridClass = "";
+        let heightClass = "";
+        if (i === 0) { gridClass = "md:col-span-6"; heightClass = "md:h-[480px] h-[400px]"; }
+        else if (i === 1) { gridClass = "md:col-span-4"; heightClass = "md:h-[480px] h-[400px]"; }
+        else if (i === 2 || i === 3) { gridClass = "md:col-span-5"; heightClass = "md:h-[360px] h-[400px]"; }
+        
+        return (
+          <a href={`/work/${project.id}`} class={`work-card group relative bg-[var(--slate-800)] p-8 md:p-12 flex flex-col justify-between overflow-hidden transition-all duration-500 hover:scale-[1.01] reveal ${gridClass} ${heightClass}`} style={`--i: ${i};`}>
+            
+            <!-- Shimmer effect -->
+            <div class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[var(--slate-700)]/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite] z-20 pointer-events-none"></div>
+            
+            <!-- Inner border overlay -->
+            <div class="absolute inset-0 border border-transparent transition-colors duration-300 group-hover:border-[var(--gold)]/30 pointer-events-none z-20"></div>
+
+            <!-- Decorative CSS Abstract Background (Visible) -->
+            <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+              {i === 0 && (
+                <>
+                  <div class="absolute right-0 bottom-0 text-[280px] font-display font-light leading-none text-[var(--gold-dim)] opacity-15 translate-x-12 translate-y-12">F</div>
+                  <div class="absolute inset-0 opacity-10" style="background: repeating-linear-gradient(45deg, transparent, transparent 10px, var(--gold) 10px, var(--gold) 11px);"></div>
+                </>
+              )}
+              {i === 1 && (
+                <div class="absolute inset-0 opacity-10" style="background: repeating-linear-gradient(0deg, transparent, transparent 20px, var(--warm-white) 20px, var(--warm-white) 21px); border-top: 4px solid var(--gold); border-bottom: 4px solid var(--gold);"></div>
+              )}
+              {i === 2 && (
+                <div class="absolute -right-24 -bottom-24 w-[500px] h-[500px] opacity-15">
+                  <svg width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="var(--gold)" stroke-width="0.5" stroke-dasharray="2 2"/>
+                    <circle cx="50" cy="50" r="30" fill="none" stroke="var(--gold)" stroke-width="0.5"/>
+                    <circle cx="50" cy="50" r="20" fill="none" stroke="var(--gold)" stroke-width="0.5" stroke-dasharray="1 3"/>
+                    <circle cx="90" cy="50" r="2" fill="var(--gold)"/>
+                    <circle cx="50" cy="90" r="2" fill="var(--gold)"/>
+                    <circle cx="10" cy="50" r="2" fill="var(--gold)"/>
+                    <circle cx="50" cy="10" r="2" fill="var(--gold)"/>
+                  </svg>
+                </div>
+              )}
+              {i === 3 && (
+                <div class="absolute right-4 bottom-4 w-2/3 h-2/3 opacity-15 grid grid-cols-4 grid-rows-3 gap-2 p-4">
+                  {Array(12).fill(0).map((_, j) => (
+                    <div class={`bg-[var(--cream)] w-full h-full ${j%3===0 ? 'opacity-40' : 'opacity-100'} ${j%5===0 ? 'col-span-2' : ''}`}></div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <!-- Top Meta -->
+            <div class="flex justify-between items-center relative z-10 w-full">
+              <span class="font-mono text-[10px] text-[var(--gold-dim)] uppercase tracking-widest">
+                0{i + 1} &nbsp;&nbsp; {project.category}
+              </span>
+              <span class="font-mono text-[10px] text-[var(--slate-400)]">{project.year}</span>
+            </div>
+
+            <!-- Middle Content -->
+            <div class="relative z-10 my-auto">
+              <h3 class="font-display text-[32px] md:text-[48px] text-[var(--warm-white)] mb-4 leading-none">
+                {project.name}
+              </h3>
+              <p class="font-body text-[15px] text-[var(--slate-400)] max-w-sm">
+                {project.tagline}
+              </p>
+            </div>
+
+            <!-- Bottom Row -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10 w-full">
+              <div class="flex flex-wrap gap-2">
+                {project.stack.slice(0, 3).map(tech => (
+                  <span class="font-mono text-[10px] text-[var(--slate-400)] bg-[var(--obsidian)]/50 px-2 py-1 uppercase">
+                    [{tech}]
+                  </span>
+                ))}
+              </div>
+              <span class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest flex items-center gap-2 whitespace-nowrap">
+                View project 
+                <span class="transform transition-transform duration-300 group-hover:translate-x-2">&rarr;</span>
+              </span>
+            </div>
+
+          </a>
+        );
+      })}
+      
+    </div>
+    
+    <div class="mt-16 text-center reveal" style="--i: 4;">
+      <a href="/work" class="inline-block font-mono text-[11px] text-[var(--warm-white)] uppercase tracking-widest border border-[var(--slate-700)] px-8 py-4 hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors">
+        View All Projects
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  @keyframes shimmer {
+    100% { transform: translateX(100%); }
+  }
+</style>

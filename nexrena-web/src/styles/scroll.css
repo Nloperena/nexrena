@@ -1,0 +1,159 @@
+/* ─── Scroll Architecture ───────────────────────────────────────────────────── */
+/*
+  The "Sediment Scroll" system:
+  Each section layers over the previous with increasing z-index.
+  Sections use `position: sticky` inside tall scroll containers.
+  CSS Scroll-Driven Animations power all scroll-triggered effects.
+*/
+
+/* ─── Sticky Viewport Section ───────────────────────────────────────────────── */
+.scroll-track {
+  position: relative;
+}
+
+.sticky-pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Tall containers give scroll travel to pinned sections */
+.scroll-travel-2x  { height: 200vh; }
+.scroll-travel-3x  { height: 300vh; }
+.scroll-travel-4x  { height: 400vh; }
+.scroll-travel-5x  { height: 500vh; }
+
+/* ─── Z-index Sediment Layers ───────────────────────────────────────────────── */
+.layer-1 { position: relative; z-index: var(--z-section-1); }
+.layer-2 { position: relative; z-index: var(--z-section-2); }
+.layer-3 { position: relative; z-index: var(--z-section-3); }
+.layer-4 { position: relative; z-index: var(--z-section-4); }
+.layer-5 { position: relative; z-index: var(--z-section-5); }
+.layer-6 { position: relative; z-index: var(--z-section-6); }
+
+/* ─── Scroll-Driven Fade In ──────────────────────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(1.5rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.scroll-fade-in {
+  animation: fade-in linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 35%;
+}
+
+/* ─── Scroll-Driven Scale Up ─────────────────────────────────────────────────── */
+@keyframes scale-up {
+  from { transform: scale(0.7); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.scroll-scale-up {
+  animation: scale-up linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 40%;
+}
+
+/* ─── Scroll-Driven Slide Up ─────────────────────────────────────────────────── */
+@keyframes slide-up {
+  from { transform: translateY(4rem); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.scroll-slide-up {
+  animation: slide-up linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 30%;
+}
+
+/* ─── Clip-Path Reveal (left to right) ──────────────────────────────────────── */
+@keyframes clip-reveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0); }
+}
+
+.scroll-clip-reveal {
+  animation: clip-reveal linear both;
+  animation-timeline: view();
+  animation-range: entry 10% entry 50%;
+}
+
+/* ─── Word-by-Word Manifesto Reveal ─────────────────────────────────────────── */
+/*
+  Words receive --word-index CSS variable set inline.
+  Each staggered via animation-delay calculated from scroll position.
+*/
+.manifesto-word {
+  display: inline-block;
+  opacity: 0;
+  animation: manifesto-word-in linear both;
+  animation-timeline: view(block);
+}
+
+@keyframes manifesto-word-in {
+  from { opacity: 0.08; color: var(--color-obsidian); }
+  to   { opacity: 1;    color: var(--color-obsidian); }
+}
+
+/* ─── Gold Underline Grow ────────────────────────────────────────────────────── */
+@keyframes underline-grow {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+.gold-underline-track {
+  position: relative;
+}
+
+.gold-underline-track::after {
+  content: '';
+  position: absolute;
+  bottom: -0.25rem;
+  left: 0;
+  height: 1px;
+  background-color: var(--color-gold);
+  width: 0%;
+  transition: width 0.6s ease;
+}
+
+.gold-underline-track.is-active::after {
+  width: 100%;
+}
+
+/* ─── Card Slide Over (Sediment entry) ──────────────────────────────────────── */
+@keyframes card-settle {
+  from { transform: translateY(6rem); }
+  to   { transform: translateY(0); }
+}
+
+.card-settle {
+  animation: card-settle 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 25%;
+}
+
+/* ─── Scroll-Driven Counter Number Change ────────────────────────────────────── */
+@keyframes numeral-swap {
+  0%, 49%  { opacity: 1; transform: translateY(0); }
+  50%      { opacity: 0; transform: translateY(-1rem); }
+  51%      { opacity: 0; transform: translateY(1rem); }
+  100%     { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Reduced Motion ─────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-fade-in,
+  .scroll-scale-up,
+  .scroll-slide-up,
+  .scroll-clip-reveal,
+  .card-settle,
+  .manifesto-word {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+  }
+}

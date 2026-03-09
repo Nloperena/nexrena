@@ -1,0 +1,7 @@
+---
+interface Props {
+  class?: string;
+}
+const { class: className = '' } = Astro.props;
+---
+<div class={`h-[1px] bg-[var(--gold)] animate-line-grow ${className}`}></div>

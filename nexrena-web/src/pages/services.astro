@@ -1,0 +1,48 @@
+---
+import Layout from '../components/layout/Layout.astro';
+import ServicesSection from '../components/sections/Services.astro';
+import Process from '../components/sections/Process.astro';
+import CTA from '../components/sections/CTA.astro';
+import Eyebrow from '../components/ui/Eyebrow.astro';
+import Button from '../components/ui/Button.astro';
+---
+
+<Layout title="Services | Nexrena">
+  <main class="pt-16">
+    <ServicesSection />
+    
+    <!-- Narrative Section -->
+    <section class="bg-[var(--cream)] py-32 text-[var(--obsidian)]">
+      <div class="section-container">
+        <div class="max-w-4xl">
+          <Eyebrow class="mb-8">THE APPROACH //</Eyebrow>
+          <h2 class="text-h2 font-display mb-12">Growth is an engineered system.</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-12 font-body text-[18px] leading-relaxed opacity-80">
+            <p>
+              We don't believe in digital vanity metrics. Every line of code we write and every keyword we target is measured against one goal: measurable business growth. Our approach combines high-performance engineering with conversion-first design.
+            </p>
+            <p>
+              Whether you're a mid-market manufacturer or a high-growth e-commerce brand, we build the infrastructure that allows your sales team to stop chasing leads and start closing them.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <Process />
+    
+    <!-- CTA Section -->
+    <section class="bg-[var(--obsidian)] py-32 border-t border-[var(--slate-800)]">
+      <div class="section-container text-center">
+        <h2 class="text-h2 font-display text-[var(--warm-white)] mb-8">Ready to build your growth engine?</h2>
+        <p class="text-[var(--slate-400)] mb-12 max-w-xl mx-auto">
+          Your next stage of growth starts here. Let's map your 90-day strategy.
+        </p>
+        <div class="flex flex-wrap justify-center gap-6">
+          <Button href="/contact" variant="primary">Start a project &rarr;</Button>
+          <Button href="/work" variant="outline">View case studies</Button>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>

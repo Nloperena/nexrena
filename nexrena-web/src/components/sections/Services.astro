@@ -1,0 +1,96 @@
+---
+import Eyebrow from '../ui/Eyebrow.astro';
+import { services } from '../../data/services';
+---
+
+<section id="services" class="bg-[var(--obsidian)] relative grain section-transition-top">
+  <div class="section-container relative z-10">
+    
+    <!-- Header -->
+    <div class="flex flex-col items-center text-center mb-24 reveal">
+      <Eyebrow class="mb-6">WHAT WE BUILD //</Eyebrow>
+      <h2 class="text-h2 font-display text-[var(--warm-white)] mb-8">
+        Three ways we grow your business.
+      </h2>
+      <div class="w-20 h-[1px] bg-[var(--gold)]"></div>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[var(--slate-700)]">
+      
+      {services.map((service, i) => (
+        <div class="service-card group bg-transparent py-[48px] px-[32px] flex flex-col h-full transition-all duration-300 relative reveal" style={`--i: ${i + 1};`}>
+          <!-- Dynamic Top Border -->
+          <div class="absolute top-0 left-0 right-0 h-[3px] bg-[var(--gold)] transition-all duration-300 group-hover:h-[6px]"></div>
+          
+          <div class="flex justify-between items-start mb-12 mt-4">
+            <span class="font-mono text-[11px] text-[var(--gold)]">{service.number}</span>
+            <div class="service-icon text-[var(--gold)]">
+              {i === 0 && (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="icon-path">
+                  <rect x="2" y="4" width="20" height="16" rx="2" />
+                  <path d="M2 8h20" />
+                </svg>
+              )}
+              {i === 1 && (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="icon-path">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
+              )}
+              {i === 2 && (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="icon-path">
+                  <path d="M6 3h12l4 6-10 12L2 9l4-6z" />
+                </svg>
+              )}
+            </div>
+          </div>
+
+          <h3 class="text-h3 font-display text-[var(--warm-white)] whitespace-pre-line mb-6">
+            {service.title}
+          </h3>
+          
+          <p class="font-body text-[16px] text-[var(--slate-400)] leading-relaxed mb-12 flex-grow">
+            {service.body}
+          </p>
+
+          <div class="flex flex-wrap gap-2 mb-12">
+            {service.tags.map(tag => (
+              <span class="font-mono text-[10px] text-[var(--gold-dim)] bg-[var(--slate-800)] px-2 py-1 uppercase tracking-wider">
+                [{tag}]
+              </span>
+            ))}
+          </div>
+
+          <a href={`/services#${service.id}`} class="mt-auto font-mono text-[11px] text-[var(--warm-white)] uppercase tracking-widest flex items-center gap-2 group/link">
+            Explore service
+            <span class="text-[var(--gold)] transform transition-transform group-hover/link:translate-x-1">&rarr;</span>
+          </a>
+        </div>
+      ))}
+      
+    </div>
+  </div>
+</section>
+
+<style>
+  .section-transition-top {
+    clip-path: polygon(0 5%, 100% 0, 100% 100%, 0 100%);
+    margin-top: -5%;
+    padding-top: calc(5% + 6rem);
+  }
+
+  /* SVG Draw Animation on Hover */
+  .icon-path {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 0.6s ease-in-out;
+  }
+  .service-card:hover .icon-path {
+    animation: draw 1s forwards;
+  }
+
+  @keyframes draw {
+    0% { stroke-dashoffset: 100; }
+    100% { stroke-dashoffset: 0; }
+  }
+</style>

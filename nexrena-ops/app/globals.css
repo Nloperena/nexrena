@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-sans);
+  background: #111418;
+}
+
+.font-serif { font-family: var(--font-serif); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: #0C0F12; }
+::-webkit-scrollbar-thumb { background: #2C3444; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #C9A96E; }
+
+/* Gold rule */
+.gold-rule { border-color: #C9A96E; }
+
+/* Table */
+.nx-table { width: 100%; border-collapse: collapse; }
+.nx-table th {
+  text-align: left;
+  font-size: 11px;
+  color: #7A8A9E;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 10px 16px;
+  border-bottom: 1px solid #1E2530;
+  background: #0C0F12;
+}
+.nx-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #1E2530;
+  font-size: 13px;
+  color: #D4DCE6;
+}
+.nx-table tr:hover td { background: #1E2530/30; }
+.nx-table tr:last-child td { border-bottom: none; }

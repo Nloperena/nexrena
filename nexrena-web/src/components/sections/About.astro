@@ -1,0 +1,74 @@
+---
+import Eyebrow from '../ui/Eyebrow.astro';
+import Badge from '../ui/Badge.astro';
+---
+
+<section id="about" class="bg-[var(--cream)] relative diagonal-cut" style="color: var(--obsidian);">
+  <div class="section-container">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-8 relative z-10">
+      
+      <!-- LEFT COLUMN -->
+      <div class="md:col-span-7 flex flex-col items-start reveal">
+        <Eyebrow class="mb-8">ABOUT NEXRENA //</Eyebrow>
+        
+        <h2 class="text-h2 font-display mb-8 text-[var(--obsidian)]">
+          We build the digital engine.<br />
+          You run the business.
+        </h2>
+        
+        <p class="font-body text-[17px] leading-loose text-[#4A5568] max-w-xl mb-12">
+          Nexrena partners with mid-size companies to build digital infrastructure that performs — 
+          websites that convert, search strategies that compound, and reporting that makes 
+          decisions clear. We build growth infrastructure for companies that mean business.
+        </p>
+        
+        <div class="flex flex-wrap gap-3">
+          <Badge class="border-[var(--gold)] text-[var(--obsidian)]">04 Projects</Badge>
+          <Badge class="border-[var(--gold)] text-[var(--obsidian)]">3 Verticals</Badge>
+          <Badge class="border-[var(--gold)] text-[var(--obsidian)]">100% Retention</Badge>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="md:col-span-5 relative mt-16 md:mt-0 reveal" style="--i: 2;">
+        <!-- Large Background Number -->
+        <div class="absolute -top-16 -right-12 md:-right-32 font-display text-[200px] font-light leading-none text-[var(--gold-dim)] opacity-20 select-none pointer-events-none">
+          04
+        </div>
+        
+        <div class="relative z-10 flex flex-col gap-6 pt-12">
+          {['Industrial & Manufacturing', 'E-Commerce & Retail', 'Professional Services'].map((item, i) => (
+            <div class="flex items-center gap-4 pb-6 border-b border-[var(--slate-200)] last:border-0 reveal" style={`--i: ${i + 3};`}>
+              <div class="w-1.5 h-1.5 rounded-full bg-[var(--gold)]"></div>
+              <span class="font-body text-[16px] text-[var(--obsidian)]">{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- BOTTOM ROW: Testimonial -->
+      <div class="md:col-span-12 mt-16 pt-16 border-t border-[var(--slate-200)] relative reveal" style="--i: 5;">
+        <div class="absolute top-12 left-0 text-[80px] font-display text-[var(--gold)] opacity-30 leading-none">"</div>
+        <div class="pl-16 md:pl-24 max-w-4xl">
+          <blockquote class="font-display italic text-[26px] md:text-[32px] text-[var(--obsidian)] leading-tight mb-6">
+            Literally the best single website contact in the history of the company.
+          </blockquote>
+          <cite class="flex items-center gap-4 font-mono text-[11px] uppercase tracking-widest text-[#4A5568] not-italic">
+            <div class="w-8 h-[1px] bg-[var(--gold)]"></div>
+            Forzabuilt Leadership Team
+          </cite>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Diagonal cut for section transition from dark to light */
+  .section-transition-top {
+    clip-path: polygon(0 0, 100% 5%, 100% 100%, 0 100%);
+    margin-top: -5%;
+    padding-top: calc(5% + 6rem);
+  }
+</style>

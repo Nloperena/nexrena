@@ -1,0 +1,127 @@
+---
+import Layout from '../../components/layout/Layout.astro';
+import { projects } from '../../data/projects';
+import Eyebrow from '../../components/ui/Eyebrow.astro';
+
+export function getStaticPaths() {
+  return projects.map(project => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+---
+
+<Layout title={`${project.name} | Nexrena`}>
+  <main>
+    
+    <!-- Hero Section -->
+    <section class="h-[70vh] min-h-[600px] bg-[var(--obsidian)] border-b border-[var(--slate-800)] flex items-center relative overflow-hidden grain">
+      <div class="section-container w-full relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div class="flex flex-col justify-center reveal">
+          <div class="flex flex-wrap items-center gap-4 mb-8">
+            <Eyebrow>{project.category}</Eyebrow>
+            <span class="w-1 h-1 rounded-full bg-[var(--slate-700)]"></span>
+            <span class="font-mono text-[11px] text-[var(--slate-400)]">{project.year}</span>
+          </div>
+          
+          <h1 class="font-display text-[64px] md:text-[96px] text-[var(--warm-white)] leading-none mb-6">
+            {project.name}
+          </h1>
+          
+          <div class="flex flex-wrap gap-2 mt-4">
+            {project.stack.map(tech => (
+              <span class="font-mono text-[10px] text-[var(--gold-dim)] bg-[var(--slate-800)] px-3 py-1.5 uppercase tracking-widest border border-[var(--slate-700)]">
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right 40% Abstract Panel -->
+      <div class="hidden lg:flex absolute right-0 top-0 w-[40%] h-full bg-[var(--slate-900)] border-l border-[var(--slate-800)] items-center justify-center overflow-hidden opacity-50">
+        {project.id === 'forzabuilt' && <div class="text-[500px] font-display font-light text-[var(--gold)] opacity-20">F</div>}
+        {project.id === 'rugged-red' && <div class="w-full h-full border-t-[40px] border-b-[40px] border-[var(--gold)] transform rotate-45 scale-150 opacity-20"></div>}
+        {project.id === 'vito-fryfilter' && <div class="w-96 h-96 border-4 border-dotted border-[var(--gold)] rounded-full opacity-20"></div>}
+        {project.id === 'furniture-packages-usa' && <div class="grid grid-cols-3 gap-8 p-12 w-full h-full opacity-20"><div class="bg-[var(--gold)]"></div><div class="bg-[var(--gold)]"></div><div class="bg-[var(--gold)]"></div></div>}
+      </div>
+    </section>
+
+    <!-- Content Sections -->
+    <section class="bg-[var(--obsidian)] py-32">
+      <div class="max-w-[800px] mx-auto px-[5vw]">
+        
+        {project.background && (
+          <div class="mb-24 reveal">
+            <h2 class="font-mono text-[12px] text-[var(--gold)] uppercase tracking-widest border-b border-[var(--slate-800)] pb-4 mb-8">Background</h2>
+            <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose">
+              {project.background}
+            </p>
+          </div>
+        )}
+
+        <div class="mb-24 reveal">
+          <h2 class="font-mono text-[12px] text-[var(--gold)] uppercase tracking-widest border-b border-[var(--slate-800)] pb-4 mb-8">01 &mdash; Challenge</h2>
+          <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose">
+            {project.challenge}
+          </p>
+        </div>
+
+        <div class="mb-24 reveal">
+          <h2 class="font-mono text-[12px] text-[var(--gold)] uppercase tracking-widest border-b border-[var(--slate-800)] pb-4 mb-8">02 &mdash; Solution</h2>
+          <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose mb-8">
+            {project.solution}
+          </p>
+          
+          {project.approach && (
+            <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose mb-8 italic opacity-80">
+              {project.approach}
+            </p>
+          )}
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-12">
+            {project.proofPoints.map(point => (
+              <div class="p-6 bg-[var(--slate-900)] border border-[var(--slate-800)]">
+                <span class="block font-display text-[32px] text-[var(--gold)] mb-2">{point.metric}</span>
+                <span class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest">{point.context}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="reveal">
+          <h2 class="font-mono text-[12px] text-[var(--gold)] uppercase tracking-widest border-b border-[var(--slate-800)] pb-4 mb-8">03 &mdash; Outcome</h2>
+          <blockquote class="font-display italic text-[32px] text-[var(--warm-white)] leading-tight mb-8">
+            "{project.testimonial || 'They transformed our entire digital presence in a matter of weeks.'}"
+          </blockquote>
+          {project.results && (
+            <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose">
+              {project.results}
+            </p>
+          )}
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Next Project -->
+    <section class="bg-[var(--cream)] py-32 text-center border-t border-[var(--slate-200)] reveal section-transition-top">
+      <Eyebrow class="mb-6">NEXT PROJECT</Eyebrow>
+      <a href="/work" class="font-display text-[64px] text-[var(--obsidian)] hover:text-[var(--gold)] transition-colors inline-block relative group">
+        Explore more work
+        <span class="absolute -bottom-2 left-0 w-full h-[2px] bg-[var(--gold)] scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100"></span>
+      </a>
+    </section>
+
+  </main>
+</Layout>
+
+<style>
+  .section-transition-top {
+    clip-path: polygon(0 5%, 100% 0, 100% 100%, 0 100%);
+    margin-top: -5%;
+    padding-top: calc(5% + 6rem);
+  }
+</style>
