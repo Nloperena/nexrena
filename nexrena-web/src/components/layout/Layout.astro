@@ -173,5 +173,9 @@ const imageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, site).t
       setupScrollReveal();
       document.addEventListener('astro:page-load', setupScrollReveal);
     </script>
+    <script>
+      import { inject } from '@vercel/analytics';
+      inject();
+    </script>
   </body>
 </html>
