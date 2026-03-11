@@ -1,0 +1,58 @@
+---
+import Layout from '../../components/layout/Layout.astro';
+import PageHero from '../../components/sections/PageHero.astro';
+import Button from '../../components/ui/Button.astro';
+import { faqItems } from '../../data/faq';
+import { heroImages } from '../../data/hero-images';
+import { faqPageSchema } from '../../lib/schema';
+
+const site = Astro.site?.toString() ?? 'https://nexrena.com';
+const faqUrl = `${site}/resources/faq`;
+const schema = faqPageSchema(faqItems.map((f) => ({ question: f.question, answer: f.answer })));
+---
+
+<Layout
+  title="FAQ | Nexrena"
+  description="Frequently asked questions about B2B website redesign, SEO, and full-service digital growth. Timelines, pricing, and how we work."
+  schema={schema}
+>
+  <main>
+    <PageHero
+      eyebrow="RESOURCES //"
+      title="Frequently asked questions."
+      subtitle="Answers about our process, timelines, and how we work with B2B companies."
+      image={heroImages.resources}
+    />
+
+    <section class="bg-[var(--obsidian)] py-12 md:py-24">
+      <div class="section-container max-w-3xl">
+        <div class="space-y-12 divide-y divide-[var(--slate-800)]">
+          {faqItems.map((item, i) => (
+            <div class="pt-12 first:pt-0 reveal" style={`--i: ${i + 1};`}>
+              <h2 class="font-display text-[24px] md:text-[28px] text-[var(--warm-white)] mb-4">
+                {item.question}
+              </h2>
+              <p class="font-body text-[16px] text-[var(--slate-400)] leading-relaxed">
+                {item.answer}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[var(--obsidian)] py-24 md:py-32 border-t border-[var(--slate-800)]">
+      <div class="section-container text-center">
+        <h2 class="font-display text-[40px] md:text-[56px] text-[var(--warm-white)] leading-[1.1] mb-8 reveal">
+          Still have questions?
+        </h2>
+        <p class="text-[var(--slate-400)] text-[17px] mb-12 max-w-xl mx-auto reveal" style="--i: 1;">
+          Tell us about your project. We'll map a plan that fits.
+        </p>
+        <Button href="/contact" variant="primary" class="reveal" style="--i: 2;">
+          Start a project &rarr;
+        </Button>
+      </div>
+    </section>
+  </main>
+</Layout>

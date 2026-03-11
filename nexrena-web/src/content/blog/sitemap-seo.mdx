@@ -1,0 +1,134 @@
+---
+title: "XML Sitemap: What to Include, What to Exclude, and How to Structure"
+description: "Sitemap best practices for SEO. URLs to include, index vs. sitemap, splitting large sitemaps, and common mistakes."
+publishedAt: 2024-11-25
+author: Nexrena
+---
+
+Sitemaps help search engines discover URLs. They don't guarantee indexing — Google still decides what to crawl and index — but for large sites, new pages, or sites with weak internal linking, they matter. Here's how to structure them correctly.
+
+## What Sitemaps Do (and Don't Do)
+
+- **Discovery** — Tell Google which URLs exist. Especially useful when pages aren't well linked.
+- **Priority signal** — lastmod (last modified) helps Google prioritize fresh content.
+- **No guarantee** — Inclusion in a sitemap does not mean indexing. Quality and crawl budget still apply.
+
+## What to Include
+
+### All Important Pages
+
+- **Services** — Every service page.
+- **Products** — Every product (or category if products are infinite).
+- **Blog** — Every post you want indexed.
+- **Industry/landing pages** — Key commercial pages.
+- **Contact, about** — Core site pages.
+
+### Canonical URLs Only
+
+One URL per page. No duplicates. No parameter variants. No www and non-www. Pick one canonical and use it consistently.
+
+### lastmod (Optional but Helpful)
+
+```xml
+<lastmod>2025-03-10</lastmod>
+```
+
+When the page was last updated. Google may use this to prioritize recrawling. Keep it accurate — stale lastmod can hurt.
+
+## What to Exclude
+
+### Noindex Pages
+
+Don't include pages you've told Google not to index. Sitemap + noindex sends mixed signals.
+
+### Duplicate Content
+
+Only the canonical URL. No:
+
+- Parameter variants (?sort=, ?filter=)
+- Session IDs
+- Print or PDF versions (unless they're the canonical)
+
+### Thank-You Pages
+
+No value for search. Exclude.
+
+### Pagination (Usually)
+
+- **Page 2, 3, 4** — Often exclude. Or include only if each has unique value.
+- **Infinite scroll** — Don't create URLs for every "load more." Sitemap isn't for that.
+
+### Staging or Dev
+
+Never. Only production URLs.
+
+## Sitemap Structure
+
+### Small Sites (Under 50 URLs)
+
+Single sitemap: `sitemap.xml`. Include all important pages.
+
+### Large Sites (50+ URLs)
+
+Split by section:
+
+- `sitemap-pages.xml` — Services, about, contact.
+- `sitemap-blog.xml` — Blog posts.
+- `sitemap-products.xml` — Products (if applicable).
+
+Create `sitemap-index.xml` that references each:
+
+```xml
+<sitemapindex>
+  <sitemap>
+    <loc>https://yoursite.com/sitemap-pages.xml</loc>
+    <lastmod>2025-03-10</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://yoursite.com/sitemap-blog.xml</loc>
+    <lastmod>2025-03-10</lastmod>
+  </sitemap>
+</sitemapindex>
+```
+
+### 50,000 URL Limit
+
+Per sitemap. If you exceed, split further (e.g., sitemap-blog-1.xml, sitemap-blog-2.xml).
+
+## Submitting Your Sitemap
+
+### Google Search Console
+
+1. **Sitemaps** section.
+2. Enter sitemap URL: `https://yoursite.com/sitemap-index.xml` (or sitemap.xml for small sites).
+3. Submit.
+
+Google will crawl and process. Check back for errors (invalid URLs, redirects, etc.).
+
+### robots.txt
+
+Add a line at the end:
+
+```
+Sitemap: https://yoursite.com/sitemap-index.xml
+```
+
+Backup discovery. Some crawlers use this. Google uses Search Console primarily, but robots.txt doesn't hurt.
+
+## Common Mistakes
+
+- **Including noindex pages** — Mixed signals. Exclude.
+- **Including redirects** — URLs that 301 elsewhere. Remove or fix.
+- **Wrong canonical** — Sitemap has www, site uses non-www (or vice versa). Match your canonical.
+- **Stale lastmod** — Every page shows today's date. Inaccurate. Update when content changes.
+- **Missing important pages** — Key commercial pages not in sitemap. Add them.
+
+## B2B Considerations
+
+- **Service + industry combos** — If you have /services/web-design/manufacturing, include them.
+- **Case studies** — Include. They're linkable, rankable assets.
+- **Resources/blog** — Include all posts you want indexed. lastmod helps for fresh content.
+
+---
+
+*We configure sitemaps for every project. [Start a project](/contact) and we'll set up your sitemap structure.*

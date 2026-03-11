@@ -1,0 +1,104 @@
+---
+import Layout from '../../components/layout/Layout.astro';
+import PageHero from '../../components/sections/PageHero.astro';
+import Eyebrow from '../../components/ui/Eyebrow.astro';
+import Button from '../../components/ui/Button.astro';
+import { services } from '../../data/services';
+import { heroImages } from '../../data/hero-images';
+import { itemListSchema } from '../../lib/schema';
+
+const site = 'https://nexrena.com';
+const serviceItems = services.map((s) => ({
+  name: s.title.replace(/\n/g, ' '),
+  url: `${site}/services/${s.id}`,
+}));
+---
+
+<Layout 
+  title="Services | Nexrena" 
+  description="Web design, SEO, and full-service digital growth for mid-size companies. Built to perform. Designed to last."
+  schema={itemListSchema(serviceItems, 'Nexrena Services')}
+>
+  <main>
+    <PageHero 
+      eyebrow="WHAT WE BUILD //" 
+      title="Three ways we grow your business."
+      subtitle="Web design. Search growth. Full-service partnerships. Each built for measurable results — not vanity metrics."
+      image={heroImages.services}
+    />
+
+    <!-- Service Cards -->
+    <section class="bg-[var(--obsidian)] py-12 md:py-0">
+      <div class="section-container">
+        <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[var(--slate-700)] -mt-12 md:-mt-0">
+          {services.map((service, i) => (
+            <a href={`/services/${service.id}`} class="service-card group block bg-transparent py-[48px] px-[32px] flex flex-col h-full transition-all duration-300 relative reveal hover:bg-[var(--slate-900)]" style={`--i: ${i + 1};`}>
+              <div class="absolute top-0 left-0 right-0 h-[3px] bg-[var(--gold)] transition-all duration-300 group-hover:h-[6px]"></div>
+              
+              <div class="flex justify-between items-start mb-12 mt-4">
+                <span class="font-mono text-[11px] text-[var(--gold)]">{service.number}</span>
+                <span class="text-[var(--gold)] transform transition-transform group-hover:translate-x-1">&rarr;</span>
+              </div>
+
+              <h2 class="text-h3 font-display text-[var(--warm-white)] whitespace-pre-line mb-6 group-hover:text-[var(--gold-light)] transition-colors">
+                {service.title}
+              </h2>
+              
+              <p class="font-body text-[16px] text-[var(--slate-400)] leading-relaxed mb-12 flex-grow">
+                {service.body}
+              </p>
+
+              <div class="flex flex-wrap gap-2 mb-4">
+                {service.tags.map(tag => (
+                  <span class="font-mono text-[10px] text-[var(--gold-dim)] bg-[var(--slate-800)] px-2 py-1 uppercase tracking-wider">
+                    [{tag}]
+                  </span>
+                ))}
+              </div>
+
+              <span class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest">
+                Explore service
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Approach -->
+    <section class="bg-[var(--cream)] py-24 md:py-32 text-[var(--obsidian)]">
+      <div class="section-container">
+        <div class="max-w-3xl">
+          <Eyebrow class="mb-8">THE APPROACH //</Eyebrow>
+          <h2 class="font-display text-[36px] md:text-[56px] leading-[1.15] font-light mb-12 reveal">
+            Growth is an engineered system.
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-12 font-body text-[17px] leading-relaxed text-[var(--slate-600)]">
+            <p class="reveal" style="--i: 1;">
+              We don't chase vanity metrics. Every line of code, every keyword, every design decision is measured against one goal: measurable business growth.
+            </p>
+            <p class="reveal" style="--i: 2;">
+              Whether you're a mid-market manufacturer or a high-growth e-commerce brand, we build the infrastructure that lets your sales team close leads instead of chase them.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="bg-[var(--obsidian)] py-24 md:py-32 border-t border-[var(--slate-800)]">
+      <div class="section-container text-center">
+        <h2 class="font-display text-[40px] md:text-[56px] text-[var(--warm-white)] leading-[1.1] mb-8 reveal">
+          Ready to build your growth engine?
+        </h2>
+        <p class="text-[var(--slate-400)] text-[17px] mb-12 max-w-xl mx-auto reveal" style="--i: 1;">
+          Your next stage of growth starts here. Let's map your 90-day strategy.
+        </p>
+        <div class="flex flex-wrap justify-center gap-6 reveal" style="--i: 2;">
+          <Button href="/contact" variant="primary">Start a project &rarr;</Button>
+          <Button href="/work" variant="outline">View case studies</Button>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>

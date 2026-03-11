@@ -1,0 +1,73 @@
+---
+import Eyebrow from '../ui/Eyebrow.astro';
+
+interface Props {
+  statement: string;
+  agitation: string;
+}
+
+const { statement, agitation } = Astro.props;
+---
+
+<section class="bg-[var(--cream)] text-[var(--obsidian)] relative z-20">
+  <div class="section-container">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 relative">
+      
+      <!-- Sticky Left Column -->
+      <div class="lg:col-span-5 relative">
+        <div class="lg:sticky lg:top-32 lg:pb-32 reveal">
+          <Eyebrow class="mb-8">THE PROBLEM //</Eyebrow>
+          <h2 class="font-display text-[40px] md:text-[56px] leading-[1.1] font-light text-[var(--obsidian)] mb-6">
+            {statement}
+          </h2>
+          <div class="w-16 h-[2px] bg-[var(--gold-dim)]"></div>
+        </div>
+      </div>
+
+      <!-- Scrolling Right Column -->
+      <div class="lg:col-span-7 pb-24 lg:pb-48 pt-0 lg:pt-32">
+        <p class="font-body text-[22px] md:text-[28px] leading-relaxed text-[var(--slate-600)] font-light reveal">
+          {agitation}
+        </p>
+        
+        <div class="mt-24 grid grid-cols-1 sm:grid-cols-2 gap-12 border-t border-[var(--slate-200)] pt-16 reveal" style="--i: 1;">
+          <div>
+            <h4 class="font-mono text-[11px] uppercase tracking-widest text-[var(--slate-400)] mb-4">The Status Quo</h4>
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3 font-body text-[15px] text-[var(--slate-600)]">
+                <span class="mt-1.5 w-1.5 h-1.5 bg-[var(--slate-300)] shrink-0 rounded-full"></span>
+                Siloed teams blaming each other
+              </li>
+              <li class="flex items-start gap-3 font-body text-[15px] text-[var(--slate-600)]">
+                <span class="mt-1.5 w-1.5 h-1.5 bg-[var(--slate-300)] shrink-0 rounded-full"></span>
+                Pretty designs that don't convert
+              </li>
+              <li class="flex items-start gap-3 font-body text-[15px] text-[var(--slate-600)]">
+                <span class="mt-1.5 w-1.5 h-1.5 bg-[var(--slate-300)] shrink-0 rounded-full"></span>
+                Traffic that never enters pipeline
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-mono text-[11px] uppercase tracking-widest text-[var(--gold-dim)] mb-4">The Nexrena Shift</h4>
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3 font-body text-[15px] text-[var(--obsidian)] font-medium">
+                <span class="mt-1.5 w-1.5 h-1.5 bg-[var(--gold)] shrink-0 rounded-full"></span>
+                Unified accountability
+              </li>
+              <li class="flex items-start gap-3 font-body text-[15px] text-[var(--obsidian)] font-medium">
+                <span class="mt-1.5 w-1.5 h-1.5 bg-[var(--gold)] shrink-0 rounded-full"></span>
+                Engineered for conversion
+              </li>
+              <li class="flex items-start gap-3 font-body text-[15px] text-[var(--obsidian)] font-medium">
+                <span class="mt-1.5 w-1.5 h-1.5 bg-[var(--gold)] shrink-0 rounded-full"></span>
+                High-intent acquisition
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

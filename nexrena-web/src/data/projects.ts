@@ -6,6 +6,7 @@ export interface Project {
   stack: string[];
   tagline: string;
   url: string;
+  metaDescription?: string;
   testimonial?: string;
   challenge: string;
   solution: string;
@@ -61,6 +62,7 @@ export const projects: Project[] = [
       description: 'Large "F" letterform + diagonal grid lines, gold/obsidian'
     },
     background: 'Forzabuilt is a B2B industrial adhesives manufacturer serving the Florida and Southeast construction market.',
+    metaDescription: 'Forzabuilt case study: B2B adhesives manufacturer. Headless rebuild, 3x faster loads, +42% inbound leads. Full catalog and technical SEO.',
     approach: 'We rebuilt the site on Next.js with a headless CMS, implementing structured data for product categories, a gated technical specification library for qualified buyers, and a full technical SEO foundation from day one.',
     results: 'Within 90 days of launch, organic inbound lead volume increased by 140%. The site now consistently scores 96+ on Lighthouse across all pages. The sales team reports that inbound leads arrive more informed.',
     thumbnail: 'https://forzabuilt.com/images/homepage-heroes/eagle-hero.webp',
@@ -98,6 +100,7 @@ export const projects: Project[] = [
       description: 'Horizontal lines with a red accent stripe'
     },
     background: 'Rugged Red is a premium outdoor equipment brand known for its high-performance gear designed for extreme conditions.',
+    metaDescription: 'Rugged Red case study: Headless commerce for outdoor brand. +31% checkout completion, -47% bounce rate. React, AWS, Stripe.',
     approach: 'We replatformed the entire storefront to a headless commerce architecture using React and AWS. This decoupled the frontend from the backend, allowing for sub-second page transitions and a custom, streamlined checkout flow.',
     results: 'The transition to headless architecture resulted in a 31% increase in checkout completion. Bounce rates dropped by 47% as mobile users experienced a significantly faster and more intuitive shopping journey.',
     thumbnail: 'https://ruggedred.com/images/RRMascot+Type-smaller.png',
@@ -135,6 +138,7 @@ export const projects: Project[] = [
       description: 'Circular grid with node dots, gold on slate'
     },
     background: 'VITO Fryfilter produces a patented frying oil filtration system sold to commercial kitchens globally.',
+    metaDescription: 'VITO Fryfilter case study: Global DTC expansion. +38% conversion, +85% international revenue. Shopify, React, commercial buyer intent.',
     approach: 'We restructured the Shopify architecture to support market-specific landing pages, implemented hreflang correctly across all international variants, and rebuilt the product pages around the commercial kitchen buyer persona.',
     results: 'International revenue increased 85% year-over-year within the first two quarters post-launch. Conversion rate across all markets lifted 38%, with the largest gains in EU markets.',
     thumbnail: 'https://www.nicoloperena.com/VITOShop.webp'
@@ -171,6 +175,7 @@ export const projects: Project[] = [
       description: 'Grid of rectangles (furniture silhouettes) in cream'
     },
     background: 'Furniture Packages USA provides turnkey furniture procurement for property investors, real estate developers, and vacation rental managers throughout Florida.',
+    metaDescription: 'Furniture Packages USA case study: B2B procurement portal. +210% organic traffic, +95% quote requests. Next.js, PostgreSQL, Stripe.',
     approach: 'We rebuilt the site on WordPress with a custom procurement workflow, restructuring navigation around buyer type rather than product category.',
     results: 'Organic search traffic grew 210% over six months. Inbound quote requests nearly doubled. Average session duration increased by over three minutes.',
     thumbnail: 'https://i.vimeocdn.com/video/1668125069-e25f25a76ac262e8bb3370b86a084508932eb338b956c8766051c022cb39b003-d?mw=2300&mh=1294',

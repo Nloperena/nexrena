@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Allow: /services
+Allow: /industries
+Allow: /work
+Sitemap: https://nexrena.com/sitemap-index.xml

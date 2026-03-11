@@ -1,0 +1,36 @@
+---
+title: "Page Speed Tools: What to Use and What to Ignore"
+description: "Lighthouse, PageSpeed Insights, WebPageTest — when to use each and how to interpret results."
+publishedAt: 2024-11-18
+author: Nexrena
+---
+
+Speed matters. So does measuring it correctly. Lab tools and real-user data tell different stories. Here's how to use them.
+
+## Lighthouse
+
+- **Lab test** — Simulated environment. Consistent, reproducible.
+- **Use for** — Development, before/after comparisons, regression testing.
+- **Limitation** — Doesn't reflect real user conditions. Network, device, location vary.
+
+## PageSpeed Insights
+
+- **Lab + field** — Core Web Vitals from Chrome UX Report (real users) when available.
+- **Use for** — Quick check, prioritization. Field data is gold when you have it.
+- **Limitation** — Field data requires traffic. New sites may not have it.
+
+## WebPageTest
+
+- **Deep dive** — Waterfall, filmstrip, multiple locations.
+- **Use for** — Debugging, specific bottlenecks. More granular than Lighthouse.
+- **Limitation** — Slower. More technical.
+
+## What to Prioritize
+
+- **LCP** — Largest content. Images, fonts, server. Fix first.
+- **INP** — Interactivity. JavaScript, main thread. Fix second.
+- **CLS** — Layout shift. Image dimensions, dynamic content. Fix third.
+
+---
+
+*We build for 90+ Lighthouse. [Plan your rebuild](/services/web-design).*

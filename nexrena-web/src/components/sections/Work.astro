@@ -1,32 +1,30 @@
 ---
 import Eyebrow from '../ui/Eyebrow.astro';
 import { projects } from '../../data/projects';
+import { heroImages } from '../../data/hero-images';
 ---
 
-<section id="work" class="bg-[var(--slate-900)] relative diagonal-cut">
-  <div class="section-container relative z-10">
-    
-    <!-- Header -->
-    <div class="mb-16 reveal">
+<section id="work" class="bg-[var(--slate-900)] relative">
+  <!-- Full-viewport intro moment (sticky feel) -->
+  <div class="section-full section-container relative z-10 flex flex-col justify-center scroll-scale-up">
+    <div class="reveal" style="--i: 0;">
       <Eyebrow class="mb-6">SELECTED WORK //</Eyebrow>
-      <h2 class="text-h2 font-display text-[var(--warm-white)]">
+      <h2 class="text-h2 font-display text-[var(--warm-white)] max-w-2xl">
         Projects built to perform.
       </h2>
+      <p class="mt-6 font-body text-[var(--slate-400)] text-lg max-w-xl">
+        Growth infrastructure for companies that mean business.
+      </p>
     </div>
+  </div>
 
-    <!-- Bento Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-10 gap-6">
-      
+  <div class="section-container relative z-10">
+    <!-- Horizontal scroll on desktop, grid on mobile -->
+    <div class="work-scroll-container">
       {projects.map((project, i) => {
-        // Grid classes logic based on spec
-        let gridClass = "";
-        let heightClass = "";
-        if (i === 0) { gridClass = "md:col-span-6"; heightClass = "md:h-[480px] h-[400px]"; }
-        else if (i === 1) { gridClass = "md:col-span-4"; heightClass = "md:h-[480px] h-[400px]"; }
-        else if (i === 2 || i === 3) { gridClass = "md:col-span-5"; heightClass = "md:h-[360px] h-[400px]"; }
-        
+        const isLarge = i < 2;
         return (
-          <a href={`/work/${project.id}`} class={`work-card group relative bg-[var(--slate-800)] p-8 md:p-12 flex flex-col justify-between overflow-hidden transition-all duration-500 hover:scale-[1.01] reveal ${gridClass} ${heightClass}`} style={`--i: ${i};`}>
+          <a href={`/work/${project.id}`} class={`work-card group relative bg-[var(--slate-800)] p-8 md:p-12 flex flex-col justify-between overflow-hidden transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-black/30 reveal ${isLarge ? "work-card--large" : "work-card--small"}`} style={`--i: ${i};`}>
             
             <!-- Shimmer effect -->
             <div class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[var(--slate-700)]/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite] z-20 pointer-events-none"></div>
@@ -34,37 +32,9 @@ import { projects } from '../../data/projects';
             <!-- Inner border overlay -->
             <div class="absolute inset-0 border border-transparent transition-colors duration-300 group-hover:border-[var(--gold)]/30 pointer-events-none z-20"></div>
 
-            <!-- Decorative CSS Abstract Background (Visible) -->
+            <!-- Hero object: singular focus per project field (factory, kitchen, house, cleaning) -->
             <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
-              {i === 0 && (
-                <>
-                  <div class="absolute right-0 bottom-0 text-[280px] font-display font-light leading-none text-[var(--gold-dim)] opacity-15 translate-x-12 translate-y-12">F</div>
-                  <div class="absolute inset-0 opacity-10" style="background: repeating-linear-gradient(45deg, transparent, transparent 10px, var(--gold) 10px, var(--gold) 11px);"></div>
-                </>
-              )}
-              {i === 1 && (
-                <div class="absolute inset-0 opacity-10" style="background: repeating-linear-gradient(0deg, transparent, transparent 20px, var(--warm-white) 20px, var(--warm-white) 21px); border-top: 4px solid var(--gold); border-bottom: 4px solid var(--gold);"></div>
-              )}
-              {i === 2 && (
-                <div class="absolute -right-24 -bottom-24 w-[500px] h-[500px] opacity-15">
-                  <svg width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="var(--gold)" stroke-width="0.5" stroke-dasharray="2 2"/>
-                    <circle cx="50" cy="50" r="30" fill="none" stroke="var(--gold)" stroke-width="0.5"/>
-                    <circle cx="50" cy="50" r="20" fill="none" stroke="var(--gold)" stroke-width="0.5" stroke-dasharray="1 3"/>
-                    <circle cx="90" cy="50" r="2" fill="var(--gold)"/>
-                    <circle cx="50" cy="90" r="2" fill="var(--gold)"/>
-                    <circle cx="10" cy="50" r="2" fill="var(--gold)"/>
-                    <circle cx="50" cy="10" r="2" fill="var(--gold)"/>
-                  </svg>
-                </div>
-              )}
-              {i === 3 && (
-                <div class="absolute right-4 bottom-4 w-2/3 h-2/3 opacity-15 grid grid-cols-4 grid-rows-3 gap-2 p-4">
-                  {Array(12).fill(0).map((_, j) => (
-                    <div class={`bg-[var(--cream)] w-full h-full ${j%3===0 ? 'opacity-40' : 'opacity-100'} ${j%5===0 ? 'col-span-2' : ''}`}></div>
-                  ))}
-                </div>
-              )}
+              <img src={heroImages[`project/${project.id}` as keyof typeof heroImages] ?? heroImages.work} alt="" class="absolute inset-0 w-full h-full object-cover object-center opacity-60" aria-hidden="true" loading="lazy" />
             </div>
 
             <!-- Top Meta -->
@@ -103,7 +73,6 @@ import { projects } from '../../data/projects';
           </a>
         );
       })}
-      
     </div>
     
     <div class="mt-16 text-center reveal" style="--i: 4;">
@@ -115,6 +84,43 @@ import { projects } from '../../data/projects';
 </section>
 
 <style>
+  .work-scroll-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    .work-scroll-container {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 1.5rem;
+      padding-bottom: 2rem;
+      margin: 0 -5vw;
+      padding-left: 5vw;
+      padding-right: 5vw;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .work-scroll-container::-webkit-scrollbar {
+      display: none;
+    }
+    .work-card {
+      flex-shrink: 0;
+      scroll-snap-align: start;
+    }
+    .work-card--large {
+      min-width: min(420px, 38vw);
+      height: 480px;
+    }
+    .work-card--small {
+      min-width: min(360px, 32vw);
+      height: 360px;
+    }
+  }
+  .work-card {
+    min-height: 400px;
+  }
   @keyframes shimmer {
     100% { transform: translateX(100%); }
   }

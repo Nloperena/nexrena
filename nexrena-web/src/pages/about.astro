@@ -1,24 +1,41 @@
 ---
 import Layout from '../components/layout/Layout.astro';
-import Eyebrow from '../components/ui/Eyebrow.astro';
-import Badge from '../components/ui/Badge.astro';
+import PageHero from '../components/sections/PageHero.astro';
 import Button from '../components/ui/Button.astro';
+import { heroImages } from '../data/hero-images';
+import { webPageSchema } from '../lib/schema';
+
+const site = 'https://nexrena.com';
+const schema = webPageSchema({
+  name: 'About | Nexrena',
+  description: 'Nexrena — digital growth agency. We build websites and SEO systems that capture leads and compound in value. Based in Orlando metro.',
+  url: `${site}/about`,
+});
 ---
 
-<Layout title="About | Nexrena">
-  <main class="pt-32 pb-48">
-    <div class="section-container">
-      
+<Layout 
+  title="About | Nexrena" 
+  description="Nexrena — digital growth agency. We build websites and SEO systems that capture leads and compound in value. Based in Orlando metro."
+  schema={schema}
+>
+  <main>
+    <PageHero 
+      eyebrow="ABOUT NEXRENA //" 
+      title="Built for companies that are serious about growth."
+      subtitle="We build the digital engine. You run the business."
+      image={heroImages.about}
+    />
+    <div class="section-container pt-16 pb-48">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 relative z-10 items-center">
         
-        <!-- LEFT: Image / Video Placeholder -->
+        <!-- LEFT: Image -->
         <div class="lg:col-span-5 relative reveal">
           <div class="aspect-[4/5] bg-[var(--slate-800)] border border-[var(--slate-700)] overflow-hidden relative group">
             <div class="absolute inset-0 bg-[var(--obsidian)]/50 group-hover:bg-transparent transition-colors duration-500 z-10 pointer-events-none"></div>
             <!-- Video / Image -->
             <img 
               src="https://www.nicoloperena.com/professional-photo.webp" 
-              alt="Nico Loeprena" 
+              alt="Nico Loeprena, founder of Nexrena — building growth infrastructure for B2B companies" 
               class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
             />
             
@@ -37,12 +54,6 @@ import Button from '../components/ui/Button.astro';
 
         <!-- RIGHT: Bio & Vision -->
         <div class="lg:col-span-7 flex flex-col items-start reveal" style="--i: 2;">
-          <Eyebrow class="mb-8">THE VISION //</Eyebrow>
-          
-          <h1 class="text-h1 font-display mb-10 text-[var(--warm-white)] leading-tight">
-            Built for companies that are serious about growth.
-          </h1>
-          
           <div class="font-body text-[17px] leading-loose text-[var(--slate-300)] flex flex-col gap-6 mb-12">
             <p>
               Nexrena was founded after years of watching B2B companies burn capital on fragmented agencies, unreadable codebases, and marketing strategies that lacked technical foundation.

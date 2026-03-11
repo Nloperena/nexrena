@@ -1,0 +1,43 @@
+---
+import Layout from '../../../components/layout/Layout.astro';
+import PageHero from '../../../components/sections/PageHero.astro';
+import { getCollection } from 'astro:content';
+import { heroImages } from '../../../data/hero-images';
+---
+
+<Layout 
+  title="Blog | Nexrena" 
+  description="B2B web design, SEO, and digital growth insights. Practical guides for manufacturers, ecommerce, and professional services."
+>
+  <main>
+    <PageHero 
+      eyebrow="BLOG //" 
+      title="Articles & guides"
+      subtitle="Practical advice on web design, SEO, and digital strategy for B2B growth."
+      image={heroImages.blog}
+    />
+
+    <section class="bg-[var(--obsidian)] py-12 md:py-24">
+      <div class="section-container">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {(await getCollection('blog'))
+            .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+            .map((post) => (
+            <a href={`/resources/blog/${post.slug}`} class="group block p-6 border border-[var(--slate-800)] hover:border-[var(--gold)] transition-colors reveal">
+              <span class="font-mono text-[10px] text-[var(--gold-dim)] uppercase tracking-widest">
+                {post.data.publishedAt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+              </span>
+              <h2 class="font-display text-[24px] text-[var(--warm-white)] mt-3 mb-3 group-hover:text-[var(--gold)] transition-colors line-clamp-2">
+                {post.data.title}
+              </h2>
+              <p class="font-body text-[14px] text-[var(--slate-400)] line-clamp-2">
+                {post.data.description}
+              </p>
+              <span class="inline-block mt-4 font-mono text-[11px] text-[var(--gold)] group-hover:translate-x-2 transition-transform">Read &rarr;</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>

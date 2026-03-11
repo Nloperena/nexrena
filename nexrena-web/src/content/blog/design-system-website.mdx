@@ -1,0 +1,129 @@
+---
+title: "Design Systems for B2B Websites: Consistency, Scale, and Maintenance"
+description: "Design systems that scale. Tokens, components, documentation, and why B2B sites benefit from them."
+publishedAt: 2025-08-25
+author: Nexrena
+---
+
+A design system is a set of reusable components, tokens, and rules. It keeps your site consistent, speeds up development, and makes maintenance predictable. For B2B sites that scale across services, industries, and content types, a design system pays off. Here's what it includes and why it matters.
+
+## Why B2B Sites Need Design Systems
+
+B2B sites often have:
+
+- **Multiple service pages** — Same structure, different content.
+- **Industry landing pages** — Same layout, different vertical.
+- **Blog and resources** — Consistent typography, cards, CTAs.
+- **Long-term maintenance** — Content updates, new pages, new sections.
+
+Without a system, every page becomes a one-off. Inconsistency creeps in. Updates take longer. A design system codifies decisions so you build faster and stay consistent.
+
+## Tokens: The Foundation
+
+Tokens are design decisions defined once and used everywhere.
+
+### Colors
+
+- **Primary** — Brand color. CTAs, links, accents.
+- **Secondary** — Supporting color. Less dominant.
+- **Neutrals** — Backgrounds, text, borders. Grays, off-whites.
+- **Semantic** — Success, error, warning. Forms, alerts.
+
+Define in CSS variables or a token file. Change once, update everywhere.
+
+### Typography
+
+- **Font families** — Display, body, mono. 2–3 max.
+- **Scale** — Sizes: 12px, 14px, 16px, 18px, 24px, 32px, 48px. Consistent rhythm.
+- **Weights** — Light, regular, medium, bold. Use sparingly.
+
+### Spacing
+
+- **Base unit** — 4px or 8px.
+- **Scale** — 4, 8, 12, 16, 24, 32, 48, 64. Consistent padding and margins.
+
+### Breakpoints
+
+- **Mobile, tablet, desktop** — Define once. Use everywhere. No random `max-width: 847px`.
+
+## Components: Reusable Building Blocks
+
+### Buttons
+
+- **Primary** — Main CTA. High contrast.
+- **Secondary** — Less emphasis. Outline or muted.
+- **States** — Default, hover, focus, disabled. Document and implement consistently.
+
+### Forms
+
+- **Inputs** — Text, email, select, textarea. Same height, border, focus state.
+- **Labels** — Placement, required indicator.
+- **Error states** — Validation messages. Consistent styling.
+
+### Cards
+
+- **Content blocks** — Case studies, blog previews, service teasers.
+- **Padding, border, shadow** — Consistent. No one-off tweaks.
+
+### Navigation
+
+- **Header** — Logo, nav links, CTA. Sticky behavior.
+- **Footer** — Columns, links, copyright.
+- **Breadcrumbs** — For deep pages. Same style everywhere.
+
+## Documentation
+
+A design system without documentation is just a component library. Document:
+
+### Usage
+
+- **When to use** — Primary button for main CTA. Secondary for less emphasis.
+- **Do's and don'ts** — Examples of correct and incorrect use.
+
+### Code
+
+- **Component code** — Developers can copy or import.
+- **Props** — What's configurable. Variants, sizes.
+
+### Examples
+
+- **Live examples** — See components in context.
+- **Edge cases** — Long text, empty states, errors.
+
+## Benefits for B2B
+
+### Consistency
+
+Same look and feel across services, industries, and content. Technical buyers notice. Inconsistency looks unprofessional.
+
+### Speed
+
+New pages use existing components. No reinventing the wheel. Faster delivery.
+
+### Maintenance
+
+Change a button style once. It updates everywhere. No hunting through pages.
+
+### Onboarding
+
+New developers or designers understand the system quickly. Documentation accelerates.
+
+## Implementation
+
+### Start Small
+
+- **Tokens first** — Colors, type, spacing.
+- **Core components** — Buttons, inputs, cards.
+- **Expand** — Add as you build.
+
+### Don't Over-Engineer
+
+Not every site needs a full design system. Small sites may get by with a simple style guide. Scale the system to the project.
+
+### Keep It Updated
+
+Design systems drift. New components get added without documentation. Old ones become obsolete. Schedule periodic audits. Update docs when you add or change components.
+
+---
+
+*We build design systems for every project. [Start a project](/contact) and we'll establish your design foundation.*

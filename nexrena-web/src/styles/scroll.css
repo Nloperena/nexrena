@@ -143,6 +143,26 @@
   100%     { opacity: 1; transform: translateY(0); }
 }
 
+/* ─── Label Vertical (side section labels) ────────────────────────────────────── */
+.label-vertical {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+}
+
+/* ─── Gold Rule (decorative line) ─────────────────────────────────────────────── */
+.gold-rule {
+  display: inline-block;
+  width: 2rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  flex-shrink: 0;
+}
+
 /* ─── Reduced Motion ─────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .scroll-fade-in,

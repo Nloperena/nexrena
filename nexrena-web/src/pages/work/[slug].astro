@@ -1,7 +1,12 @@
 ---
 import Layout from '../../components/layout/Layout.astro';
+import Breadcrumb from '../../components/seo/Breadcrumb.astro';
 import { projects } from '../../data/projects';
+import { services } from '../../data/services';
+import { industries } from '../../data/industries';
 import Eyebrow from '../../components/ui/Eyebrow.astro';
+import { heroImages } from '../../data/hero-images';
+import { articleSchema, breadcrumbSchema } from '../../lib/schema';
 
 export function getStaticPaths() {
   return projects.map(project => ({
@@ -11,13 +16,40 @@ export function getStaticPaths() {
 }
 
 const { project } = Astro.props;
+const site = 'https://nexrena.com';
+const projectUrl = `${site}/work/${project.id}`;
+const description = project.metaDescription || project.background || project.tagline;
+const schema = [
+  articleSchema({
+    headline: project.name,
+    description: description,
+    datePublished: project.year,
+    url: projectUrl,
+  }),
+  breadcrumbSchema([
+    { name: 'Work', url: `${site}/work` },
+    { name: project.name, url: projectUrl },
+  ]),
+];
 ---
 
-<Layout title={`${project.name} | Nexrena`}>
+<Layout 
+  title={`${project.name} | Nexrena`} 
+  description={description}
+  schema={schema}
+>
   <main>
+    <div class="section-container pt-8 pb-4">
+      <Breadcrumb items={[
+        { name: 'Work', url: `${site}/work` },
+        { name: project.name, url: projectUrl },
+      ]} />
+    </div>
     
     <!-- Hero Section -->
     <section class="h-[70vh] min-h-[600px] bg-[var(--obsidian)] border-b border-[var(--slate-800)] flex items-center relative overflow-hidden grain">
+      <!-- Hero background -->
+      <img src={heroImages.work} alt="" class="absolute inset-0 w-full h-full object-cover object-center opacity-30 pointer-events-none z-0" aria-hidden="true" loading="eager" />
       <div class="section-container w-full relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div class="flex flex-col justify-center reveal">
           <div class="flex flex-wrap items-center gap-4 mb-8">
@@ -40,40 +72,14 @@ const { project } = Astro.props;
         </div>
       </div>
       
-      <!-- Right 40% Abstract Panel -->
+      <!-- Right 40% Hero Object Panel -->
       <div class="hidden lg:flex absolute right-0 top-0 w-[40%] h-full bg-[var(--slate-900)] border-l border-[var(--slate-800)] items-center justify-center overflow-hidden">
-        {project.video ? (
-          project.video.includes('vimeo') ? (
-            <iframe 
-              src={project.video} 
-              class="absolute inset-0 w-full h-full opacity-40 grayscale contrast-125 pointer-events-none"
-              allow="autoplay; fullscreen; picture-in-picture" 
-            ></iframe>
-          ) : (
-            <video 
-              autoplay 
-              muted 
-              loop 
-              playsinline 
-              class="absolute inset-0 w-full h-full object-cover opacity-40 grayscale contrast-125"
-            >
-              <source src={project.video} type="video/mp4" />
-            </video>
-          )
-        ) : project.thumbnail ? (
-          <img 
-            src={project.thumbnail} 
-            alt="" 
-            class="absolute inset-0 w-full h-full object-cover opacity-20 grayscale contrast-125"
-          />
-        ) : null}
-        
-        <div class="relative z-10 opacity-30">
-          {project.id === 'forzabuilt' && <div class="text-[500px] font-display font-light text-[var(--gold)]">F</div>}
-          {project.id === 'rugged-red' && <div class="w-full h-full border-t-[40px] border-b-[40px] border-[var(--gold)] transform rotate-45 scale-150"></div>}
-          {project.id === 'vito-fryfilter' && <div class="w-96 h-96 border-4 border-dotted border-[var(--gold)] rounded-full"></div>}
-          {project.id === 'furniture-packages-usa' && <div class="grid grid-cols-3 gap-8 p-12 w-full h-full"><div class="bg-[var(--gold)]"></div><div class="bg-[var(--gold)]"></div><div class="bg-[var(--gold)]"></div></div>}
-        </div>
+        <img 
+          src={heroImages[`project/${project.id}` as keyof typeof heroImages] ?? heroImages.work} 
+          alt={`${project.name} — ${project.tagline}. Hero object representing ${project.category}.`}
+          class="absolute inset-0 w-full h-full object-cover object-center opacity-50"
+          loading="eager"
+        />
       </div>
     </section>
 
@@ -131,6 +137,33 @@ const { project } = Astro.props;
           )}
         </div>
 
+      </div>
+    </section>
+
+    <!-- Related: services and industries -->
+    <section class="bg-[var(--obsidian)] py-16 md:py-24 border-t border-[var(--slate-800)]">
+      <div class="section-container">
+        <h3 class="font-display text-[24px] text-[var(--warm-white)] mb-8">Explore our services and industries.</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div>
+            <div class="flex flex-wrap gap-4">
+              {services.map((s) => (
+                <a href={`/services/${s.id}`} class="font-body text-[14px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">
+                  {s.title.replace(/\n/g, ' ')}
+                </a>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div class="flex flex-wrap gap-4">
+              {industries.map((i) => (
+                <a href={`/industries/${i.id}`} class="font-body text-[14px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">
+                  {i.name}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 

@@ -1,0 +1,79 @@
+---
+import Eyebrow from '../ui/Eyebrow.astro';
+
+interface ProcessStep {
+  phase: string;
+  title: string;
+  desc: string;
+}
+
+interface Props {
+  process: ProcessStep[];
+}
+
+const { process } = Astro.props;
+---
+
+<section class="bg-[var(--cream)] py-32 text-[var(--obsidian)] relative diagonal-cut">
+  <div class="section-container">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 relative z-10">
+      
+      <div class="lg:col-span-5 reveal">
+        <div class="sticky top-32">
+          <Eyebrow class="mb-6">THE PROCESS //</Eyebrow>
+          <h2 class="font-display text-[48px] md:text-[64px] font-light leading-[1.1] text-[var(--obsidian)] mb-8">
+            How we get there.
+          </h2>
+          <p class="font-body text-[18px] text-[var(--slate-600)] leading-relaxed">
+            No black boxes. No endless planning phases. We operate in transparent, weekly sprints focused entirely on shipping value.
+          </p>
+        </div>
+      </div>
+
+      <div class="lg:col-span-7">
+        <div class="relative pl-8 md:pl-16 border-l border-[var(--slate-200)]">
+          <!-- Animated scroll line -->
+          <div class="absolute top-0 left-[-1px] w-[2px] h-full bg-[var(--gold)] origin-top scale-y-0 transition-transform duration-1000 scroll-fill-line"></div>
+
+          {process.map((step, i) => (
+            <div class="relative mb-24 last:mb-0 reveal" style={`--i: ${i};`}>
+              <!-- Dot indicator -->
+              <div class="absolute top-2 -left-[37px] md:-left-[69px] w-[11px] h-[11px] rounded-full bg-[var(--gold)] ring-4 ring-[var(--cream)]"></div>
+              
+              <div class="font-mono text-[11px] text-[var(--gold-dim)] uppercase tracking-widest mb-4">
+                Phase {step.phase}
+              </div>
+              <h3 class="font-display text-[32px] md:text-[40px] text-[var(--obsidian)] mb-4">
+                {step.title}
+              </h3>
+              <p class="font-body text-[16px] text-[var(--slate-600)] leading-relaxed max-w-lg">
+                {step.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  // Simple intersection observer to fill the line when in view
+  const setupTimeline = () => {
+    const lines = document.querySelectorAll('.scroll-fill-line');
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          (entry.target as HTMLElement).style.transform = 'scaleY(1)';
+        }
+      });
+    }, { threshold: 0.2 });
+
+    lines.forEach(line => observer.observe(line));
+  };
+
+  document.addEventListener('astro:page-load', setupTimeline);
+  setupTimeline();
+</script>

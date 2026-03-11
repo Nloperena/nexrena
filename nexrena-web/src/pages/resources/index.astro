@@ -1,0 +1,59 @@
+---
+import Layout from '../../components/layout/Layout.astro';
+import PageHero from '../../components/sections/PageHero.astro';
+import Button from '../../components/ui/Button.astro';
+import { heroImages } from '../../data/hero-images';
+---
+
+<Layout 
+  title="Resources | Nexrena" 
+  description="Guides, insights, and practical advice on web design, SEO, and digital growth for B2B companies."
+>
+  <main>
+    <PageHero 
+      eyebrow="RESOURCES //" 
+      title="Insights for growth."
+      subtitle="Guides, checklists, and practical advice on web design, SEO, and digital strategy for mid-market companies."
+      image={heroImages.resources}
+    />
+
+    <section class="bg-[var(--obsidian)] py-12 md:py-24">
+      <div class="section-container">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <a href="/resources/blog" class="group block p-8 border border-[var(--slate-800)] hover:border-[var(--gold)] transition-colors reveal">
+            <span class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest">Blog</span>
+            <h2 class="font-display text-[32px] text-[var(--warm-white)] mt-4 mb-4 group-hover:text-[var(--gold)] transition-colors">
+              Articles & guides
+            </h2>
+            <p class="font-body text-[15px] text-[var(--slate-400)]">
+              B2B website redesign checklists, SEO for manufacturers, and growth strategies that compound.
+            </p>
+            <span class="inline-block mt-6 font-mono text-[11px] text-[var(--gold)] group-hover:translate-x-2 transition-transform">Explore blog &rarr;</span>
+          </a>
+          <a href="/resources/faq" class="group block p-8 border border-[var(--slate-800)] hover:border-[var(--gold)] transition-colors reveal" style="--i: 1;">
+            <span class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest">FAQ</span>
+            <h2 class="font-display text-[32px] text-[var(--warm-white)] mt-4 mb-4 group-hover:text-[var(--gold)] transition-colors">
+              Frequently asked questions
+            </h2>
+            <p class="font-body text-[15px] text-[var(--slate-400)]">
+              Timelines, pricing, and how we work with B2B companies. Web design, SEO, and full-service growth.
+            </p>
+            <span class="inline-block mt-6 font-mono text-[11px] text-[var(--gold)] group-hover:translate-x-2 transition-transform">View FAQ &rarr;</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[var(--obsidian)] py-24 md:py-32 border-t border-[var(--slate-800)]">
+      <div class="section-container text-center">
+        <h2 class="font-display text-[40px] md:text-[56px] text-[var(--warm-white)] leading-[1.1] mb-8 reveal">
+          Need a custom strategy?
+        </h2>
+        <p class="text-[var(--slate-400)] text-[17px] mb-12 max-w-xl mx-auto reveal" style="--i: 1;">
+          Every business is different. Let's map your 90-day growth plan.
+        </p>
+        <Button href="/contact" variant="primary" class="reveal" style="--i: 2;">Start a project &rarr;</Button>
+      </div>
+    </section>
+  </main>
+</Layout>

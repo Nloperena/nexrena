@@ -1,0 +1,72 @@
+---
+title: "How to Fix Index Coverage Errors in Google Search Console (Step-by-Step)"
+description: "Index coverage errors block your pages from search. A practical guide to diagnosing and fixing the most common issues in Google Search Console."
+publishedAt: 2025-03-10
+author: Nexrena
+---
+
+Index coverage errors in Google Search Console mean pages that should rank aren't in the index. Crawl budget gets wasted. Traffic stays flat. Here's how to fix the most common issues, step by step.
+
+## 1. Identify the Error Type
+
+In Search Console, go to **Indexing > Pages** and review the status breakdown:
+
+- **Excluded by 'noindex' tag** — You or your CMS added noindex. Remove it.
+- **Crawled — currently not indexed** — Google crawled but chose not to index. Usually low quality, thin content, or duplicate.
+- **Discovered — currently not indexed** — Google found the URL but hasn't crawled it yet. Often a crawl budget or sitemap issue.
+- **Alternate page with proper canonical tag** — Canonical points elsewhere. This is normal for duplicates; verify the canonical target is correct.
+- **Soft 404** — Page returns 200 but content suggests "not found." Fix the page or return a real 404.
+
+Each error type has a different fix. Don't guess — check the report first.
+
+## 2. Fix "Excluded by noindex"
+
+Search your codebase and CMS for `noindex`, `X-Robots-Tag: noindex`, or meta robots. Common culprits:
+
+- Staging or dev environments accidentally live
+- Pagination pages (page 2, 3) with noindex
+- Filter or sort URLs with noindex
+- Plugin or theme adding noindex to entire sections
+
+Remove noindex from pages you want indexed. For pagination, use `rel="prev"` and `rel="next"` or canonical to the main page.
+
+## 3. Fix "Crawled — currently not indexed"
+
+Google crawled but didn't index. Usually one of:
+
+- **Thin content** — Add substance. Combine thin pages or expand them.
+- **Duplicate content** — Consolidate or add unique value. Use canonicals correctly.
+- **Low perceived quality** — Improve E-E-A-T: expertise, experience, authoritativeness, trust. Add clear structure, author info, dates.
+- **Crawl budget** — Too many low-value URLs. Remove or noindex parameter-heavy, filter, or session URLs. Prioritize important pages in your sitemap.
+
+## 4. Fix "Discovered — currently not indexed"
+
+Google found the URL but hasn't crawled it. Check:
+
+- **Sitemap** — Is the URL in your sitemap? Add it. Submit the sitemap.
+- **Internal links** — Are important pages linked from high-authority pages?
+- **Crawl budget** — Reduce low-value URLs so Google can reach priority pages.
+- **Request indexing** — Use the URL Inspection tool to request indexing for critical pages. Don't overuse; it's for important fixes.
+
+## 5. Fix "Soft 404"
+
+The page returns 200 but looks like a 404 (empty, "not found" message, redirect to homepage). Fix by:
+
+- Returning a real **404** status code for pages that don't exist
+- Adding real content for pages that should exist
+- Redirecting empty or obsolete pages to the right destination (301)
+
+## 6. Verify and Monitor
+
+After fixes:
+
+1. Use **URL Inspection** to request indexing for key pages
+2. Re-submit your sitemap
+3. Check **Indexing > Pages** weekly — errors should drop over 2–4 weeks
+4. Monitor **Performance** — indexed pages should start generating impressions
+
+Index coverage fixes take time. Google recrawls on its schedule. Be patient but persistent.
+
+---
+
+*Need a technical SEO audit? [Start a project](/contact) and we'll identify what's blocking your pages from the index.*

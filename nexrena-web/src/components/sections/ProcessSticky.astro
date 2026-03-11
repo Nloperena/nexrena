@@ -1,0 +1,88 @@
+---
+/*
+  ProcessSticky — Layer 4
+  Four process steps pin sequentially on scroll.
+  Each step reveals as you scroll through.
+*/
+import Eyebrow from '../ui/Eyebrow.astro';
+
+const steps = [
+  { num: '01', title: 'Discovery', body: 'We audit your existing digital presence, research your competitors, and map the exact gaps between where you are and where buyers expect you to be.' },
+  { num: '02', title: 'Strategy', body: "Every engagement starts with a clear roadmap. We define what we're building, why, and exactly what success looks like before a single pixel moves." },
+  { num: '03', title: 'Execution', body: 'We build fast and iterate in the open. You see progress weekly. No black boxes, no surprises.' },
+  { num: '04', title: 'Delivery', body: "Launch is not the end — it's the beginning. We measure, optimize, and compound from day one." },
+];
+---
+
+<section id="process" class="process-sticky layer-4 bg-[var(--cream)] relative" style="color: var(--obsidian);">
+  <div class="process-sticky__header section-container py-20 md:py-28">
+    <Eyebrow class="mb-6">HOW WE WORK //</Eyebrow>
+    <h2 class="text-h2 font-display text-[var(--obsidian)] whitespace-pre-line leading-tight">
+      {"Structured. Transparent.\nDelivered."}
+    </h2>
+    <p class="font-body text-[var(--slate-600)] text-lg mt-6 max-w-xl">
+      A proven process that delivers results. Scroll to explore each phase.
+    </p>
+  </div>
+
+  {steps.map((step, i) => (
+    <div class="process-step-track scroll-travel-2x" style={`--step-index: ${i}; --pin-offset: ${Math.min(i * 48, 144)}px;`}>
+      <div class="process-step-card sticky-pin" style={`top: ${Math.min(i * 48, 144)}px;`}>
+        <div class="section-container flex flex-col md:flex-row gap-16 md:gap-32 items-start md:items-center">
+          <div class="process-step__num font-display text-[clamp(96px,18vw,200px)] font-light text-[var(--gold)] leading-none opacity-25">
+            {step.num}
+          </div>
+          <div class="flex-1 process-step__content">
+            <div class="w-12 h-[2px] bg-[var(--gold)] mb-8"></div>
+            <h3 class="font-display text-[28px] md:text-[40px] font-medium text-[var(--obsidian)] mb-6 leading-tight">
+              {step.title}
+            </h3>
+            <p class="font-body text-[17px] md:text-[19px] text-[var(--slate-600)] leading-relaxed max-w-2xl">
+              {step.body}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  ))}
+</section>
+
+<style>
+  .process-step-track {
+    position: relative;
+  }
+
+  .process-step-card {
+    min-height: calc(100vh - 144px);
+    height: calc(100vh - var(--pin-offset, 0px));
+    background-color: var(--cream);
+    display: flex;
+    align-items: center;
+    border-top: 1px solid rgba(201, 169, 110, 0.12);
+    animation: process-step-in linear both;
+    animation-timeline: view(block);
+    animation-range: entry 0% entry 30%;
+  }
+
+  .process-step-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: var(--section-pad-x);
+    right: var(--section-pad-x);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+    opacity: 0.3;
+  }
+
+  @keyframes process-step-in {
+    from { opacity: 0.7; transform: translateY(3rem); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .process-step-card {
+      animation: none;
+    }
+  }
+</style>

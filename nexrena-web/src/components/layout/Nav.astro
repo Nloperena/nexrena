@@ -2,7 +2,7 @@
 import Button from '../ui/Button.astro';
 ---
 
-<header id="main-nav" class="fixed top-0 left-0 right-0 h-[64px] z-[100] transition-all duration-300">
+<header id="main-nav" class="fixed top-0 left-0 right-0 h-[64px] z-[100] transition-all duration-300" role="banner">
   <div class="max-w-[1320px] mx-auto px-[5vw] h-full flex items-center justify-between">
     
     <!-- LEFT: Logo -->
@@ -11,8 +11,8 @@ import Button from '../ui/Button.astro';
     </a>
 
     <!-- CENTER: Desktop Links -->
-    <nav class="hidden md:flex items-center gap-8">
-      {['Work', 'Services', 'About', 'Contact'].map((item) => (
+    <nav class="hidden md:flex items-center gap-8" aria-label="Main navigation">
+      {['Work', 'Services', 'Industries', 'Resources', 'About', 'Contact'].map((item) => (
         <a href={`/${item.toLowerCase() === 'home' ? '' : item.toLowerCase()}`} 
            class="group relative font-body text-[13px] tracking-[0.15em] uppercase text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">
           {item}
@@ -26,8 +26,8 @@ import Button from '../ui/Button.astro';
       <Button href="/contact" variant="outline" class="hidden md:inline-flex h-[40px] px-6 text-[11px]">
         Start a Project &rarr;
       </Button>
-      <button id="mobile-menu-btn" class="md:hidden text-[var(--gold)] p-2">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <button id="mobile-menu-btn" class="md:hidden text-[var(--gold)] p-2" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path d="M3 12h18M3 6h18M3 18h18"/>
         </svg>
       </button>
@@ -35,16 +35,16 @@ import Button from '../ui/Button.astro';
   </div>
 
   <!-- Mobile Menu Overlay -->
-  <div id="mobile-menu" class="fixed inset-0 bg-[var(--obsidian)] z-50 transform translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] grain">
+  <div id="mobile-menu" class="fixed inset-0 bg-[var(--obsidian)] z-50 transform translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] grain" role="dialog" aria-modal="true" aria-label="Navigation menu" inert>
     <div class="absolute top-[20px] right-[5vw]">
-      <button id="mobile-close-btn" class="text-[var(--gold)] p-2">
+      <button id="mobile-close-btn" class="text-[var(--gold)] p-2" aria-label="Close navigation menu">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M18 6L6 18M6 6l12 12"/>
         </svg>
       </button>
     </div>
     <nav class="flex flex-col items-center justify-center h-full gap-8">
-      {['Work', 'Services', 'About', 'Contact'].map((item, i) => (
+      {['Work', 'Services', 'Industries', 'Resources', 'About', 'Contact'].map((item, i) => (
         <a href={`/${item.toLowerCase() === 'home' ? '' : item.toLowerCase()}`} 
            class="mobile-link font-display text-[48px] text-[var(--warm-white)] opacity-0 translate-y-8 transition-all duration-500 delay-[calc(var(--i)*100ms)]">
           {item}
@@ -56,7 +56,6 @@ import Button from '../ui/Button.astro';
 
 <script>
   const setupNav = () => {
-    // Nav background transition on scroll
     const nav = document.getElementById('main-nav');
     
     const handleScroll = () => {
@@ -70,9 +69,8 @@ import Button from '../ui/Button.astro';
     };
     
     window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Init
+    handleScroll();
 
-    // Mobile Menu Logic
     const menuBtn = document.getElementById('mobile-menu-btn');
     const closeBtn = document.getElementById('mobile-close-btn');
     const menu = document.getElementById('mobile-menu');
@@ -80,23 +78,42 @@ import Button from '../ui/Button.astro';
 
     function openMenu() {
       menu?.classList.remove('translate-x-full');
+      menu?.removeAttribute('inert');
+      menuBtn?.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+      
       links.forEach((link, i) => {
         (link as HTMLElement).style.setProperty('--i', i.toString());
         setTimeout(() => {
           link.classList.remove('opacity-0', 'translate-y-8');
         }, 50);
       });
+      
+      setTimeout(() => (closeBtn as HTMLElement)?.focus(), 100);
     }
 
     function closeMenu() {
       menu?.classList.add('translate-x-full');
-      links.forEach((link) => {
-        link.classList.add('opacity-0', 'translate-y-8');
-      });
+      menu?.setAttribute('inert', '');
+      menuBtn?.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+      links.forEach((link) => link.classList.add('opacity-0', 'translate-y-8'));
+      menuBtn?.focus();
+    }
+
+    function handleKeyDown(e) {
+      if (e.key === 'Escape' && menu?.classList.contains('translate-x-full') === false) {
+        closeMenu();
+      }
     }
 
     menuBtn?.addEventListener('click', openMenu);
     closeBtn?.addEventListener('click', closeMenu);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   };
 
   setupNav();

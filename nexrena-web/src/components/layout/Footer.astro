@@ -1,6 +1,8 @@
 ---
+import { services } from '../../data/services';
+import { industries } from '../../data/industries';
 ---
-<footer class="bg-[var(--obsidian)] border-t border-[var(--gold)] relative overflow-hidden mt-20">
+<footer class="bg-[var(--obsidian)] border-t border-[var(--slate-800)] relative overflow-hidden mt-20" role="contentinfo">
   <div class="max-w-[1320px] mx-auto px-[5vw] py-20">
     <!-- ROW 1 -->
     <div class="flex flex-col md:flex-row justify-between items-start gap-12 mb-24">
@@ -19,8 +21,22 @@
           <h4 class="font-mono text-[11px] text-[var(--gold-dim)] tracking-widest uppercase mb-2">Pages</h4>
           <a href="/work" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Work</a>
           <a href="/services" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Services</a>
+          <a href="/industries" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Industries</a>
+          <a href="/resources" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Resources</a>
           <a href="/about" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">About</a>
           <a href="/contact" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Contact</a>
+        </div>
+        <div class="flex flex-col gap-4">
+          <h4 class="font-mono text-[11px] text-[var(--gold-dim)] tracking-widest uppercase mb-2">Services</h4>
+          {services.map((s) => (
+            <a href={`/services/${s.id}`} class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">{s.title.replace(/\n/g, ' ')}</a>
+          ))}
+        </div>
+        <div class="flex flex-col gap-4">
+          <h4 class="font-mono text-[11px] text-[var(--gold-dim)] tracking-widest uppercase mb-2">Industries</h4>
+          {industries.map((i) => (
+            <a href={`/industries/${i.id}`} class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">{i.name}</a>
+          ))}
         </div>
         <div class="flex flex-col gap-4">
           <h4 class="font-mono text-[11px] text-[var(--gold-dim)] tracking-widest uppercase mb-2">Social</h4>

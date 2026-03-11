@@ -1,0 +1,134 @@
+---
+title: "Robots.txt: What to Allow, Block, and Why"
+description: "Robots.txt best practices. Sitemap reference, crawl control, common mistakes, and what never to block."
+publishedAt: 2024-10-07
+author: Nexrena
+---
+
+Robots.txt tells crawlers what they can and can't access. Get it wrong and you block important pages — or waste crawl budget on pages that don't matter. Here's how to configure it correctly.
+
+## What Robots.txt Does
+
+- **Directs crawlers** — Tells them which paths to skip (Disallow) or allow (Allow).
+- **Does not block** — It's a request, not enforcement. Malicious bots may ignore it.
+- **Affects crawl budget** — Blocking low-value URLs frees Google to crawl important pages.
+
+## Basic Structure
+
+```
+User-agent: *
+Disallow: /admin/
+Disallow: /search/
+Allow: /
+
+Sitemap: https://yoursite.com/sitemap-index.xml
+```
+
+- **User-agent: *** — Applies to all crawlers. (Googlebot, Bingbot, etc.)
+- **Disallow** — Paths to skip.
+- **Allow** — Explicit permission. Usually unnecessary; default is allow.
+- **Sitemap** — Points to your sitemap. One line, at the end.
+
+## What to Block
+
+### Admin and Login
+
+- `/wp-admin/` — WordPress admin.
+- `/admin/` — Custom admin panels.
+- `/login/` — Login pages.
+
+No SEO value. Security risk if indexed. Block them.
+
+### Search Results
+
+- `/?s=` — WordPress search.
+- `/search/` — Site search.
+- `?q=` — Query parameters.
+
+Duplicate content. Infinite URLs. Wastes crawl budget.
+
+### Thank-You Pages
+
+- `/thank-you/`
+- `/confirmation/`
+
+No value for search. Block.
+
+### Staging or Dev (If Exposed)
+
+If staging is accidentally live, block it. Then fix the exposure. Blocking is a temporary measure.
+
+### Parameter-Heavy URLs
+
+- `?sort=`
+- `?filter=`
+- Session IDs
+
+If these create infinite low-value URLs, consider blocking. Test first — some sites need them for discovery.
+
+## What Never to Block
+
+### Important Pages
+
+- `/services/`
+- `/products/`
+- `/blog/`
+- `/resources/`
+
+Blocking these kills SEO. Double-check your Disallow rules.
+
+### CSS and JavaScript
+
+Google needs CSS and JS to render pages. Don't block:
+
+- `*.css`
+- `*.js`
+
+Blocking them can hurt indexing and Core Web Vitals.
+
+### Sitemap
+
+Don't block your sitemap. Crawlers need to find it.
+
+## Common Mistakes
+
+### Blocking Everything
+
+```
+Disallow: /
+```
+
+Only use for sites you truly don't want indexed (e.g., staging). Never on production.
+
+### Blocking Important Paths
+
+A typo or overly broad rule can block key pages. Test with [Google's robots.txt Tester](https://support.google.com/webmasters/answer/6062598) in Search Console.
+
+### No Sitemap Reference
+
+Add `Sitemap: https://yoursite.com/sitemap-index.xml` at the end. Helps discovery.
+
+### Conflicting Rules
+
+```
+Disallow: /blog/
+Allow: /blog/
+```
+
+Allow and Disallow for the same path. Google uses the most specific rule. Avoid confusion — keep it simple.
+
+## B2B Considerations
+
+- **Multi-location** — Don't block location pages. They can rank for local intent.
+- **Case studies** — Don't block. They're valuable for SEO and links.
+- **Resources** — Blog, guides, docs. Never block.
+
+## Testing
+
+1. **Search Console** — Robots.txt Tester. Check if important URLs are blocked.
+2. **Manual check** — Visit `https://yoursite.com/robots.txt`. Verify rules.
+3. **Crawl** — Use Screaming Frog or Sitebulb. Ensure important pages are crawlable.
+
+---
+
+*We configure robots.txt for every project. [Start a project](/contact) and we'll audit your crawl configuration.*

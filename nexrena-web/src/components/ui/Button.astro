@@ -10,9 +10,9 @@ const { href, variant = 'primary', class: className = '', type = 'button' } = As
 
 const baseClass = "magnetic-btn inline-flex items-center justify-center font-mono uppercase tracking-widest text-[11px] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]";
 const variants = {
-  primary: "bg-[var(--gold)] text-[var(--obsidian)] h-[52px] px-8 hover:bg-[var(--gold-light)]",
-  outline: "border border-[var(--gold)] text-[var(--gold)] h-[52px] px-8 hover:bg-[var(--gold)] hover:text-[var(--obsidian)]",
-  ghost: "text-[var(--gold)] hover:text-[var(--gold-light)]"
+  primary: "bg-[var(--gold)] text-[var(--obsidian)] h-[52px] px-8 hover:bg-[var(--gold-light)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)]",
+  outline: "border border-[var(--gold)] text-[var(--gold)] h-[52px] px-8 hover:bg-[var(--gold)] hover:text-[var(--obsidian)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)]",
+  ghost: "text-[var(--gold)] hover:text-[var(--gold-light)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] rounded-sm"
 };
 
 const Tag = href ? 'a' : 'button';

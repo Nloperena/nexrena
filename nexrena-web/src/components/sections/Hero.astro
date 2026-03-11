@@ -1,124 +1,153 @@
 ---
+/*
+  Hero — Premium app-style (Netflix-inspired)
+  Full-bleed cinematic background, bottom gradient overlay,
+  lower-third content, minimal UI.
+*/
 import Button from '../ui/Button.astro';
-import Eyebrow from '../ui/Eyebrow.astro';
 ---
 
-<section class="relative min-h-screen bg-[var(--obsidian)] grain flex flex-col justify-center overflow-hidden">
-  
-    <!-- Architectural Grid Background -->
-  <div class="absolute inset-0 pointer-events-none z-0 opacity-40 flex items-center justify-center overflow-hidden">
-    <video 
-      autoplay 
-      muted 
-      loop 
-      playsinline 
-      class="absolute inset-0 w-full h-full object-cover opacity-30 grayscale contrast-125"
-    >
-      <source src="https://www.nicoloperena.com/Still-motion_of_me.webm" type="video/webm" />
-    </video>
-    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" class="relative z-10">
-      <defs>
-        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="var(--color-slate-800)" stroke-width="0.5"/>
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#grid)" style="transform: perspective(500px) rotateX(60deg) scale(2); transform-origin: top;" />
-    </svg>
-    <div class="absolute inset-0 bg-gradient-to-r from-[var(--obsidian)] via-transparent to-[var(--obsidian)]"></div>
-    <div class="absolute inset-0 bg-gradient-to-t from-[var(--obsidian)] via-transparent to-[var(--obsidian)]"></div>
+<section class="hero-app relative min-h-screen flex flex-col justify-end overflow-hidden">
+  <!-- Full-bleed background -->
+  <div class="absolute inset-0 z-0">
+    <img
+      src="/images/hero-home.webp"
+      alt=""
+      class="absolute inset-0 w-full h-full object-cover object-center"
+      aria-hidden="true"
+      loading="eager"
+      fetchpriority="high"
+    />
+    <!-- Netflix-style bottom gradient overlay -->
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-[var(--obsidian)] via-[var(--obsidian)]/60 via-40% to-transparent"
+      aria-hidden="true"
+    ></div>
+    <!-- Subtle vignette -->
+    <div
+      class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_50%,transparent_0%,rgba(12,15,18,0.4)_100%)]"
+      aria-hidden="true"
+    ></div>
   </div>
 
-  <div class="section-container relative z-10 w-full">
-    <!-- Top Left Label -->
-    <div class="absolute top-8 left-[5vw]">
-      <Eyebrow>NEXRENA DIGITAL GROWTH AGENCY — EST. 2025 — ORLANDO, FL</Eyebrow>
-    </div>
-
-    <!-- Headline -->
-    <div class="max-w-[1000px] mb-8 relative">
-      <h1 class="font-display text-[var(--warm-white)] flex flex-col font-light text-[clamp(72px,10vw,140px)] leading-[0.9]">
-        <span class="hero-line block" style="clip-path: inset(0 0 100% 0);">Growth</span>
-        <span class="hero-line block relative pb-4" style="clip-path: inset(0 0 100% 0);">
-          infrastructure.
-          <span class="absolute bottom-0 left-0 w-32 md:w-48 h-[2px] bg-[var(--gold)]"></span>
-        </span>
-      </h1>
-    </div>
-
-    <!-- Subheadline -->
-    <p class="hero-sub text-[var(--slate-200)] text-[18px] max-w-[580px] font-body font-light mb-12 opacity-0 translate-y-4">
-      We build the digital engines for companies that mean business. Precision engineering meets strategic growth.
+  <!-- Content: lower-third layout -->
+  <div class="relative z-10 w-full max-w-[1320px] mx-auto px-5vw pb-[12vh] md:pb-[14vh] pt-32">
+    <!-- Eyebrow -->
+    <p class="hero-eyebrow font-mono text-[10px] text-[var(--gold)] tracking-[0.2em] uppercase mb-6 opacity-0">
+      Digital Growth Agency · Orlando, FL
     </p>
 
-    <!-- CTA Row -->
-    <div class="hero-cta flex flex-wrap items-center gap-6 opacity-0 translate-y-4">
-      <Button href="/contact" variant="primary">Start a Project &rarr;</Button>
-      <a href="/work" class="group flex items-center gap-2 font-mono text-[11px] text-[var(--gold)] tracking-widest uppercase hover:text-[var(--gold-light)] transition-colors">
+    <!-- Headline -->
+    <h1 class="hero-title font-display text-[var(--warm-white)] font-light leading-[0.95] tracking-tight opacity-0 max-w-4xl">
+      <span class="block text-[clamp(48px,8vw,96px)] md:text-[clamp(64px,10vw,120px)]">Growth</span>
+      <span class="block text-[clamp(48px,8vw,96px)] md:text-[clamp(64px,10vw,120px)] text-[var(--gold)]">infrastructure.</span>
+    </h1>
+
+    <!-- Tagline -->
+    <p class="hero-tagline text-[var(--slate-200)] text-base md:text-lg font-light max-w-md mt-6 mb-10 opacity-0">
+      We build the digital engine. You run the business.
+    </p>
+
+    <!-- CTA row -->
+    <div class="hero-cta flex flex-wrap items-center gap-4 opacity-0">
+      <Button href="/contact" variant="primary" class="!rounded-full !h-12 !px-8">
+        Start a Project
+      </Button>
+      <a
+        href="/work"
+        class="hero-cta-secondary group inline-flex items-center gap-2 font-mono text-[11px] text-[var(--slate-200)] tracking-widest uppercase py-3 px-6 rounded-full border border-[var(--slate-600)] hover:border-[var(--gold)] hover:text-[var(--gold)] transition-all duration-300"
+      >
         View Our Work
-        <span class="transform transition-transform group-hover:translate-x-1">&rarr;</span>
+        <span class="transition-transform group-hover:translate-x-1">→</span>
       </a>
     </div>
 
-    <!-- Bottom Right Stat Block -->
-    <div class="absolute bottom-24 right-[5vw] hidden md:flex flex-col border-l border-[var(--slate-700)] pl-4 gap-4">
-      <div class="flex flex-col">
-        <span class="font-mono text-[var(--gold)] text-[14px]">04</span>
-        <span class="font-mono text-[var(--slate-400)] text-[10px] uppercase tracking-widest">Projects Delivered</span>
+    <!-- Stats bar (subtle, app-style) -->
+    <div class="hero-stats flex items-center gap-8 mt-14 pt-8 border-t border-[var(--slate-800)]/60 opacity-0">
+      <div class="flex items-baseline gap-2">
+        <span class="font-display text-[28px] text-[var(--gold)] font-light">04</span>
+        <span class="font-mono text-[10px] text-[var(--slate-500)] uppercase tracking-wider">Projects</span>
       </div>
-      <div class="w-8 h-[1px] bg-[var(--slate-700)]"></div>
-      <div class="flex flex-col">
-        <span class="font-mono text-[var(--gold)] text-[14px]">3</span>
-        <span class="font-mono text-[var(--slate-400)] text-[10px] uppercase tracking-widest">Industry Verticals</span>
+      <div class="w-px h-6 bg-[var(--slate-700)]"></div>
+      <div class="flex items-baseline gap-2">
+        <span class="font-display text-[28px] text-[var(--gold)] font-light">3</span>
+        <span class="font-mono text-[10px] text-[var(--slate-500)] uppercase tracking-wider">Verticals</span>
       </div>
-      <div class="w-8 h-[1px] bg-[var(--slate-700)]"></div>
-      <div class="flex flex-col">
-        <span class="font-mono text-[var(--gold)] text-[14px]">100%</span>
-        <span class="font-mono text-[var(--slate-400)] text-[10px] uppercase tracking-widest">Client Retention</span>
+      <div class="w-px h-6 bg-[var(--slate-700)]"></div>
+      <div class="flex items-baseline gap-2">
+        <span class="font-display text-[28px] text-[var(--gold)] font-light">100%</span>
+        <span class="font-mono text-[10px] text-[var(--slate-500)] uppercase tracking-wider">Retention</span>
       </div>
     </div>
+  </div>
 
-    <!-- Scroll Indicator -->
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3">
-      <span class="font-mono text-[9px] text-[var(--gold-dim)] tracking-widest uppercase">Scroll</span>
-      <div class="w-[1px] h-12 bg-[var(--slate-800)] relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-1/2 bg-[var(--gold)] animate-scroll-indicator"></div>
-      </div>
+  <!-- Scroll hint -->
+  <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 opacity-60">
+    <span class="font-mono text-[9px] text-[var(--slate-400)] tracking-widest uppercase">Scroll</span>
+    <div class="w-px h-8 bg-[var(--slate-600)] rounded-full overflow-hidden">
+      <div class="w-full h-1/2 bg-[var(--gold)]/60 animate-scroll-pulse rounded-full"></div>
     </div>
   </div>
 </section>
 
 <style>
-  .hero-line {
-    animation: clipUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  .hero-app {
+    background-color: var(--obsidian);
   }
-  .hero-line:nth-child(1) { animation-delay: 0.1s; }
-  .hero-line:nth-child(2) { animation-delay: 0.22s; }
 
-  .hero-sub {
-    animation: fadeUpHero 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    animation-delay: 0.42s;
+  .hero-eyebrow {
+    animation: heroFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
   }
-  
+  .hero-title {
+    animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+  }
+  .hero-tagline {
+    animation: heroFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+  }
   .hero-cta {
-    animation: fadeUpHero 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    animation-delay: 0.62s;
+    animation: heroFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+  }
+  .hero-stats {
+    animation: heroFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.65s forwards;
   }
 
-  @keyframes clipUp {
-    0% { clip-path: inset(0 0 100% 0); transform: translateY(20px); }
-    100% { clip-path: inset(0 0 0% 0); transform: translateY(0); }
+  @keyframes heroFadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
-  @keyframes fadeUpHero {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
+  @keyframes scrollPulse {
+    0%, 100% {
+      transform: translateY(-100%);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translateY(100%);
+      opacity: 1;
+    }
+  }
+  .animate-scroll-pulse {
+    animation: scrollPulse 2s ease-in-out infinite;
   }
 
-  @keyframes scrollIndicator {
-    0% { transform: translateY(-100%); }
-    100% { transform: translateY(200%); }
-  }
-  .animate-scroll-indicator {
-    animation: scrollIndicator 1.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  @media (prefers-reduced-motion: reduce) {
+    .hero-eyebrow,
+    .hero-title,
+    .hero-tagline,
+    .hero-cta,
+    .hero-stats {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+    .animate-scroll-pulse {
+      animation: none;
+    }
   }
 </style>

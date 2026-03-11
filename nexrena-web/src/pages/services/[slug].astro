@@ -1,0 +1,130 @@
+---
+import Layout from '../../components/layout/Layout.astro';
+import Breadcrumb from '../../components/seo/Breadcrumb.astro';
+import ServiceHero from '../../components/sections/ServiceHero.astro';
+import StickyScroll from '../../components/sections/StickyScroll.astro';
+import FeatureGrid from '../../components/sections/FeatureGrid.astro';
+import ProcessTimeline from '../../components/sections/ProcessTimeline.astro';
+import Button from '../../components/ui/Button.astro';
+import { services } from '../../data/services';
+import { industries } from '../../data/industries';
+import { heroImages } from '../../data/hero-images';
+import { serviceSchema, breadcrumbSchema } from '../../lib/schema';
+
+export function getStaticPaths() {
+  return services.map((service, i) => ({
+    params: { slug: service.id },
+    props: { service },
+  }));
+}
+
+const { service } = Astro.props;
+const serviceTitle = service.title.replace(/\n/g, ' ');
+const serviceImage = heroImages[`services/${service.id}` as keyof typeof heroImages] ?? heroImages.services;
+const site = 'https://nexrena.com';
+const serviceUrl = `${site}/services/${service.id}`;
+const schema = [
+  serviceSchema(service),
+  breadcrumbSchema([
+    { name: 'Services', url: `${site}/services` },
+    { name: serviceTitle, url: serviceUrl },
+  ]),
+];
+---
+
+<Layout 
+  title={`${serviceTitle} | Nexrena`} 
+  description={service.metaDescription || `${service.body} ${service.intro}`}
+  schema={schema}
+>
+  <main>
+    <div class="section-container pt-8 pb-4">
+      <Breadcrumb items={[
+        { name: 'Services', url: `${site}/services` },
+        { name: serviceTitle, url: serviceUrl },
+      ]} />
+    </div>
+    <ServiceHero 
+      title={service.title}
+      subtitle={service.heroSubtitle || service.intro}
+      number={service.number}
+      tags={service.tags}
+      image={serviceImage}
+    />
+    
+    {service.problem && (
+      <StickyScroll 
+        statement={service.problem.statement}
+        agitation={service.problem.agitation}
+      />
+    )}
+
+    {service.features && (
+      <FeatureGrid 
+        features={service.features}
+        outcomes={service.outcomes}
+      />
+    )}
+
+    {service.process && (
+      <ProcessTimeline process={service.process} />
+    )}
+
+    <!-- Industry focus: internal links -->
+    <section class="bg-[var(--slate-900)] py-16 md:py-24 border-t border-[var(--slate-800)]">
+      <div class="section-container">
+        <h3 class="font-display text-[24px] text-[var(--warm-white)] mb-8">We serve these industries.</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {industries.map((industry) => (
+            <div class="flex flex-col gap-2">
+              <a href={`/industries/${industry.id}`} class="font-body text-[15px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors font-medium">
+                {industry.name}
+              </a>
+              <a href={`/services/${service.id}/${industry.id}`} class="font-mono text-[11px] text-[var(--slate-400)] hover:text-[var(--gold)] transition-colors">
+                {serviceTitle} for {industry.name} →
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ & Final CTA Section -->
+    <section class="bg-[var(--obsidian)] py-32 border-t border-[var(--slate-800)] relative z-20">
+      <div class="section-container">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-24">
+          
+          <!-- FAQs -->
+          <div class="reveal">
+            <h3 class="font-display text-[40px] text-[var(--warm-white)] mb-12">Common questions.</h3>
+            <div class="space-y-8">
+              {service.faq?.map((item) => (
+                <div class="border-b border-[var(--slate-800)] pb-8">
+                  <h4 class="font-body text-[18px] text-[var(--slate-200)] font-medium mb-4">{item.q}</h4>
+                  <p class="font-body text-[15px] text-[var(--slate-400)] leading-relaxed">{item.a}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <div class="bg-[var(--slate-900)] p-12 lg:p-16 border border-[var(--slate-800)] flex flex-col justify-center reveal" style="--i: 1;">
+            <h3 class="font-display text-[48px] text-[var(--warm-white)] leading-[1.1] mb-6">
+              Ready to start your {serviceTitle.toLowerCase()}?
+            </h3>
+            <p class="font-body text-[16px] text-[var(--slate-400)] mb-12">
+              {service.cta.helper} Let's build something that drives measurable growth.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-6">
+              <Button href="/contact" variant="primary">
+                {service.cta.label} &rarr;
+              </Button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+</Layout>

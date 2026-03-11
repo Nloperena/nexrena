@@ -27,4 +27,14 @@ const services = defineCollection({
   }),
 });
 
-export const collections = { work, services };
+const blog = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    publishedAt: z.coerce.date(),
+    author: z.string().default('Nexrena'),
+  }),
+});
+
+export const collections = { work, services, blog };

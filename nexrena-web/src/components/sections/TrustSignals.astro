@@ -1,0 +1,111 @@
+---
+/*
+  TrustSignals — Animated stats + client strip
+  Builds credibility through scroll-triggered number reveals and social proof.
+*/
+const stats = [
+  { value: 4, suffix: '', label: 'Projects Delivered' },
+  { value: 3, suffix: '', label: 'Industry Verticals' },
+  { value: 100, suffix: '%', label: 'Client Retention' },
+];
+
+const clients = ['Forzabuilt', 'Rugged Red', 'Vito Fryfilter', 'Furniture Packages USA'];
+---
+
+<section id="trust-signals" class="trust-signals bg-[var(--obsidian)] relative overflow-hidden">
+  <div class="section-container relative z-10 py-28 md:py-36">
+    <!-- Section label -->
+    <p class="font-mono text-[11px] text-[var(--gold)] tracking-widest uppercase mb-16 reveal">TRUST & TRACK RECORD</p>
+
+    <!-- Animated stats row with dividers -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-0 mb-28 md:mb-32">
+      {stats.map((stat, i) => (
+        <div class="trust-stat reveal md:border-r md:border-[var(--slate-800)] md:pr-16 md:last:border-r-0 md:last:pr-0" style={`--i: ${i};`}>
+          <div class="trust-stat__value font-display text-[clamp(72px,12vw,140px)] font-light text-[var(--gold)] leading-none mb-4" data-target={stat.value} data-suffix={stat.suffix}>
+            0
+          </div>
+          <p class="font-mono text-[11px] text-[var(--slate-400)] uppercase tracking-widest">{stat.label}</p>
+        </div>
+      ))}
+    </div>
+
+    <!-- Client strip -->
+    <div class="trust-clients overflow-hidden border-y border-[var(--slate-800)] py-10">
+      <div class="trust-clients__track flex items-center gap-20 md:gap-32 animate-trust-marquee">
+        {[...clients, ...clients].map((name) => (
+          <span class="trust-client-name font-display text-[clamp(28px,5vw,56px)] font-light text-[var(--slate-400)] whitespace-nowrap opacity-50 hover:opacity-100 hover:text-[var(--gold)] transition-all duration-300">
+            {name}
+          </span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .trust-stat__value {
+    font-variant-numeric: tabular-nums;
+  }
+
+  @keyframes trust-marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .animate-trust-marquee {
+    animation: trust-marquee 30s linear infinite;
+  }
+  .trust-clients:hover .animate-trust-marquee {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-trust-marquee {
+      animation: none;
+    }
+    .trust-clients__track {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+    }
+  }
+</style>
+
+<script>
+  function initTrustStats() {
+    const statValues = document.querySelectorAll('.trust-stat__value[data-target]');
+    if (statValues.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target as HTMLElement;
+          const target = parseInt(el.dataset.target ?? '0', 10);
+          const suffix = el.dataset.suffix ?? '';
+          if (el.dataset.animated === 'true') return;
+          el.dataset.animated = 'true';
+
+          let current = 0;
+          const duration = 1200;
+          const start = performance.now();
+          const pad = target < 10 ? '0' : '';
+
+          function animate(now: number) {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / duration, 1);
+            const easeOut = 1 - Math.pow(1 - progress, 3);
+            current = Math.round(easeOut * target);
+            el.textContent = pad + current + suffix;
+            if (progress < 1) requestAnimationFrame(animate);
+          }
+          requestAnimationFrame(animate);
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    statValues.forEach((el) => observer.observe(el));
+  }
+  initTrustStats();
+  document.addEventListener('astro:page-load', initTrustStats);
+</script>

@@ -1,0 +1,115 @@
+---
+import Layout from '../../components/layout/Layout.astro';
+import Breadcrumb from '../../components/seo/Breadcrumb.astro';
+import PageHero from '../../components/sections/PageHero.astro';
+import Button from '../../components/ui/Button.astro';
+import { industries } from '../../data/industries';
+import { services } from '../../data/services';
+import { heroImages } from '../../data/hero-images';
+import { webPageSchema, breadcrumbSchema } from '../../lib/schema';
+
+export function getStaticPaths() {
+  return industries.map((industry) => ({
+    params: { slug: industry.id },
+    props: { industry },
+  }));
+}
+
+const { industry } = Astro.props;
+const industryImage = heroImages[`industries/${industry.id}` as keyof typeof heroImages] ?? heroImages.industries;
+const site = 'https://nexrena.com';
+const industryUrl = `${site}/industries/${industry.id}`;
+const pageDescription = industry.metaDescription || `${industry.subhead} Digital growth for ${industry.name.toLowerCase()} companies.`;
+const schema = [
+  webPageSchema({ name: `${industry.name} | Nexrena`, description: pageDescription, url: industryUrl }),
+  breadcrumbSchema([
+    { name: 'Industries', url: `${site}/industries` },
+    { name: industry.name, url: industryUrl },
+  ]),
+];
+---
+
+<Layout 
+  title={`${industry.name} | Nexrena`} 
+  description={pageDescription}
+  schema={schema}
+>
+  <main>
+    <div class="section-container pt-8 pb-4">
+      <Breadcrumb items={[
+        { name: 'Industries', url: `${site}/industries` },
+        { name: industry.name, url: industryUrl },
+      ]} />
+    </div>
+    <PageHero 
+      eyebrow={`${industry.name.toUpperCase()} //`} 
+      title={industry.headline}
+      subtitle={industry.subhead}
+      image={industryImage}
+    />
+
+    <section class="bg-[var(--obsidian)] py-12 md:py-24">
+      <div class="section-container">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-24">
+          <div class="reveal">
+            <h2 class="font-display text-[28px] text-[var(--warm-white)] mb-8">Common challenges.</h2>
+            <ul class="space-y-6">
+              {industry.painPoints.map((point) => (
+                <li class="font-body text-[16px] text-[var(--slate-400)] flex gap-4">
+                  <span class="text-[var(--gold)] shrink-0">—</span>
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div class="reveal" style="--i: 1;">
+            <h2 class="font-display text-[28px] text-[var(--warm-white)] mb-8">How we help.</h2>
+            <ul class="space-y-6">
+              {industry.solutions.map((solution) => (
+                <li class="font-body text-[16px] text-[var(--slate-400)] flex gap-4">
+                  <span class="text-[var(--gold)] shrink-0">—</span>
+                  {solution}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services: internal links -->
+    <section class="bg-[var(--slate-900)] py-16 md:py-24 border-t border-[var(--slate-800)]">
+      <div class="section-container">
+        <h2 class="font-display text-[24px] text-[var(--warm-white)] mb-8">Explore our services for {industry.name}.</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {services.map((s) => (
+            <div class="flex flex-col gap-2">
+              <a href={`/services/${s.id}`} class="font-body text-[15px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors font-medium">
+                {s.title.replace(/\n/g, ' ')}
+              </a>
+              <a href={`/services/${s.id}/${industry.id}`} class="font-mono text-[11px] text-[var(--slate-400)] hover:text-[var(--gold)] transition-colors">
+                {s.title.replace(/\n/g, ' ')} for {industry.name} →
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[var(--cream)] py-24 md:py-32 text-[var(--obsidian)]">
+      <div class="section-container">
+        <div class="max-w-2xl">
+          <h2 class="font-display text-[40px] md:text-[56px] leading-[1.15] font-light mb-8 reveal">
+            Ready to grow?
+          </h2>
+          <p class="font-body text-[17px] text-[var(--slate-600)] mb-12 reveal" style="--i: 1;">
+            Let's map your 90-day strategy. We'll audit your current setup and outline a plan that fits your industry and goals.
+          </p>
+          <Button href="/contact" variant="primary" class="reveal" style="--i: 2;">
+            {industry.ctaLabel} &rarr;
+          </Button>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>

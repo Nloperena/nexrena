@@ -1,14 +1,33 @@
 ---
 import Layout from '../../components/layout/Layout.astro';
+import PageHero from '../../components/sections/PageHero.astro';
 import { projects } from '../../data/projects';
+import { services } from '../../data/services';
+import { industries } from '../../data/industries';
 import Eyebrow from '../../components/ui/Eyebrow.astro';
+import { heroImages } from '../../data/hero-images';
+import { itemListSchema } from '../../lib/schema';
+
+const site = 'https://nexrena.com';
+const projectItems = projects.map((p) => ({
+  name: p.name,
+  url: `${site}/work/${p.id}`,
+}));
 ---
 
-<Layout title="Work | Nexrena">
-  <main class="pt-32 pb-48">
-    <div class="section-container">
-      <Eyebrow class="mb-8">OUR WORK //</Eyebrow>
-      <h1 class="text-h1 font-display text-[var(--warm-white)] mb-16">Selected Projects</h1>
+<Layout 
+  title="Work | Nexrena" 
+  description="Selected case studies: B2B web design, ecommerce, and digital growth projects. See how we build sites that convert."
+  schema={itemListSchema(projectItems, 'Nexrena Case Studies')}
+>
+  <main>
+    <PageHero 
+      eyebrow="OUR WORK //" 
+      title="Selected Projects"
+      subtitle="Projects built to perform. Each one designed to capture leads, accelerate sales, and compound in value."
+      image={heroImages.work}
+    />
+    <div class="section-container pt-16 pb-48">
       
       <!-- Table Header -->
       <div class="hidden md:grid grid-cols-12 gap-4 border-b border-[var(--slate-700)] pb-4 mb-4 font-mono text-[10px] text-[var(--gold-dim)] uppercase tracking-widest">
@@ -32,6 +51,32 @@ import Eyebrow from '../../components/ui/Eyebrow.astro';
         ))}
       </div>
     </div>
+
+    <!-- Internal links: services and industries -->
+    <section class="section-container py-16 md:py-24 border-t border-[var(--slate-700)]">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div>
+          <h3 class="font-mono text-[11px] text-[var(--gold-dim)] uppercase tracking-widest mb-4">Services</h3>
+          <div class="flex flex-wrap gap-4">
+            {services.map((s) => (
+              <a href={`/services/${s.id}`} class="font-body text-[14px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">
+                {s.title.replace(/\n/g, ' ')}
+              </a>
+            ))}
+          </div>
+        </div>
+        <div>
+          <h3 class="font-mono text-[11px] text-[var(--gold-dim)] uppercase tracking-widest mb-4">Industries</h3>
+          <div class="flex flex-wrap gap-4">
+            {industries.map((i) => (
+              <a href={`/industries/${i.id}`} class="font-body text-[14px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">
+                {i.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- Hover Preview Floating Div -->

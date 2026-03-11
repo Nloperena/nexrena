@@ -1,23 +1,18 @@
 ---
+/* 8sleep-style trust badges — low-risk, clear value */
+const badges = [
+  'Free discovery call',
+  'Weekly delivery',
+  '100% retention',
+];
 ---
 
-<div class="w-full h-[48px] bg-[var(--gold)] overflow-hidden flex items-center hover-pause border-y border-[var(--gold-dim)]">
-  <div class="flex whitespace-nowrap animate-marquee w-max">
-    <!-- Duplicate content to create seamless infinite scroll -->
-    {Array(4).fill(0).map(() => (
-      <div class="flex items-center">
-        <span class="font-mono text-[11px] text-[var(--obsidian)] uppercase tracking-widest px-4">WEB DESIGN & DEVELOPMENT</span>
-        <span class="font-mono text-[11px] text-[var(--obsidian)]">&middot;</span>
-        <span class="font-mono text-[11px] text-[var(--obsidian)] uppercase tracking-widest px-4">SEO & GROWTH</span>
-        <span class="font-mono text-[11px] text-[var(--obsidian)]">&middot;</span>
-        <span class="font-mono text-[11px] text-[var(--obsidian)] uppercase tracking-widest px-4">B2B LEAD GENERATION</span>
-        <span class="font-mono text-[11px] text-[var(--obsidian)]">&middot;</span>
-        <span class="font-mono text-[11px] text-[var(--obsidian)] uppercase tracking-widest px-4">HEADLESS COMMERCE</span>
-        <span class="font-mono text-[11px] text-[var(--obsidian)]">&middot;</span>
-        <span class="font-mono text-[11px] text-[var(--obsidian)] uppercase tracking-widest px-4">CONVERSION OPTIMIZATION</span>
-        <span class="font-mono text-[11px] text-[var(--obsidian)]">&middot;</span>
-        <span class="font-mono text-[11px] text-[var(--obsidian)] uppercase tracking-widest px-4">DIGITAL STRATEGY</span>
-        <span class="font-mono text-[11px] text-[var(--obsidian)]">&middot;</span>
+<div class="trust-badges w-full py-5 md:py-6 bg-[var(--obsidian)] border-y border-[var(--slate-800)]">
+  <div class="section-container flex flex-wrap justify-center md:justify-between items-center gap-8 md:gap-12">
+    {badges.map((badge) => (
+      <div class="flex items-center gap-3">
+        <span class="w-1.5 h-1.5 rounded-full bg-[var(--gold)] shrink-0" aria-hidden="true"></span>
+        <span class="font-mono text-[11px] text-[var(--slate-200)] uppercase tracking-widest">{badge}</span>
       </div>
     ))}
   </div>

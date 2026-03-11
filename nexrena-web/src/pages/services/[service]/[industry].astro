@@ -1,0 +1,103 @@
+---
+import Layout from '@/components/layout/Layout.astro';
+import Breadcrumb from '@/components/seo/Breadcrumb.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import Button from '@/components/ui/Button.astro';
+import { services } from '@/data/services';
+import { industries } from '@/data/industries';
+import { heroImages } from '@/data/hero-images';
+import { webPageSchema, breadcrumbSchema } from '@/lib/schema';
+
+export function getStaticPaths() {
+  const paths: Array<{ params: { service: string; industry: string }; props: { service: typeof services[0]; industry: typeof industries[0] } }> = [];
+  for (const service of services) {
+    for (const industry of industries) {
+      paths.push({
+        params: { service: service.id, industry: industry.id },
+        props: { service, industry },
+      });
+    }
+  }
+  return paths;
+}
+
+const { service, industry } = Astro.props;
+const serviceTitle = service.title.replace(/\n/g, ' ');
+const site = 'https://nexrena.com';
+const pageUrl = `${site}/services/${service.id}/${industry.id}`;
+const pageTitle = `${serviceTitle} for ${industry.name}`;
+const pageDescription = `${serviceTitle} for ${industry.name.toLowerCase()}. ${industry.subhead}`;
+const schema = [
+  webPageSchema({ name: pageTitle, description: pageDescription, url: pageUrl }),
+  breadcrumbSchema([
+    { name: 'Services', url: `${site}/services` },
+    { name: serviceTitle, url: `${site}/services/${service.id}` },
+    { name: industry.name, url: pageUrl },
+  ]),
+];
+
+const industryImage = heroImages[`industries/${industry.id}` as keyof typeof heroImages] ?? heroImages.industries;
+---
+
+<Layout title={`${pageTitle} | Nexrena`} description={pageDescription} schema={schema}>
+  <main>
+    <div class="section-container pt-8 pb-4">
+      <Breadcrumb items={[
+        { name: 'Services', url: `${site}/services` },
+        { name: serviceTitle, url: `${site}/services/${service.id}` },
+        { name: industry.name, url: pageUrl },
+      ]} />
+    </div>
+    <PageHero
+      eyebrow={`${serviceTitle.toUpperCase()} // ${industry.name.toUpperCase()}`}
+      title={`${serviceTitle} for ${industry.name}.`}
+      subtitle={industry.subhead}
+      image={industryImage}
+    />
+
+    <section class="bg-[var(--obsidian)] py-12 md:py-24">
+      <div class="section-container">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-24">
+          <div class="reveal">
+            <h2 class="font-display text-[28px] text-[var(--warm-white)] mb-8">Common challenges.</h2>
+            <ul class="space-y-6">
+              {industry.painPoints.map((point) => (
+                <li class="font-body text-[16px] text-[var(--slate-400)] flex gap-4">
+                  <span class="text-[var(--gold)] shrink-0">—</span>
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div class="reveal" style="--i: 1;">
+            <h2 class="font-display text-[28px] text-[var(--warm-white)] mb-8">How we help.</h2>
+            <ul class="space-y-6">
+              {industry.solutions.map((solution) => (
+                <li class="font-body text-[16px] text-[var(--slate-400)] flex gap-4">
+                  <span class="text-[var(--gold)] shrink-0">—</span>
+                  {solution}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[var(--cream)] py-24 md:py-32 text-[var(--obsidian)]">
+      <div class="section-container">
+        <div class="max-w-2xl">
+          <h2 class="font-display text-[40px] md:text-[56px] leading-[1.15] font-light mb-8 reveal">
+            Ready to grow?
+          </h2>
+          <p class="font-body text-[17px] text-[var(--slate-600)] mb-12 reveal" style="--i: 1;">
+            Let's map your 90-day strategy for {industry.name.toLowerCase()}. We'll audit your current setup and outline a plan that fits your goals.
+          </p>
+          <Button href="/contact" variant="primary" class="reveal" style="--i: 2;">
+            {industry.ctaLabel} &rarr;
+          </Button>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>

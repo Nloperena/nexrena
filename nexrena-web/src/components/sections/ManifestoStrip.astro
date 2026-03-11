@@ -16,7 +16,7 @@ const totalWords = allWords.length;
 ---
 
 <section
-  class="manifesto layer-2 scroll-travel-4x"
+  class="manifesto layer-2 scroll-travel-2x"
   id="philosophy"
   aria-label="Philosophy"
 >
@@ -59,7 +59,7 @@ const totalWords = allWords.length;
 
 <style>
   .manifesto {
-    background-color: var(--color-cream);
+    background-color: var(--cream);
   }
 
   .manifesto__pin {
@@ -79,7 +79,7 @@ const totalWords = allWords.length;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: var(--space-24) var(--section-pad-x) var(--space-24) var(--space-8);
+    padding: clamp(var(--space-24), 10vw, 8rem) var(--section-pad-x) clamp(var(--space-24), 10vw, 8rem) var(--space-8);
     position: relative;
     z-index: 1;
   }
@@ -92,7 +92,7 @@ const totalWords = allWords.length;
     font-family: var(--font-display);
     font-size: 3rem;
     font-weight: 200;
-    color: var(--color-gold-dim);
+    color: var(--gold-dim);
     line-height: 1;
   }
 
@@ -107,34 +107,39 @@ const totalWords = allWords.length;
     font-weight: 300;
     line-height: 1.05;
     letter-spacing: -0.02em;
-    color: var(--color-obsidian);
+    color: var(--obsidian);
     display: flex;
     flex-wrap: wrap;
     gap: 0.2em;
     column-gap: 0.35em;
   }
 
-  /* Word-by-word reveal via scroll-driven animation */
+  /* Word-by-word reveal: words come up on scroll */
   .manifesto__word {
     display: inline-block;
-    opacity: 0.1;
-    transition: opacity 0.01s;
+    opacity: 0.15;
+    transform: translateY(1.2em);
 
     /*
-      Each word's animation range is offset by its position in the sequence.
-      We use a JS-enhanced approach via IntersectionObserver (see scroll.js)
-      for stagger, but provide a CSS fallback using view() ranges.
+      Each word animates as you scroll: comes up + fades in.
+      Tighter ranges = faster succession. 2x scroll (200vh) = less stuck.
     */
-    animation: manifesto-word-reveal linear both;
+    animation: manifesto-word-up linear both;
     animation-timeline: view(block);
     animation-range:
-      calc(entry 20% + (var(--word-index) / var(--total-words)) * 40%)
-      calc(entry 20% + ((var(--word-index) + 1) / var(--total-words)) * 40% + 10%);
+      calc(entry 5% + (var(--word-index) / var(--total-words)) * 70%)
+      calc(entry 10% + ((var(--word-index) + 1) / var(--total-words)) * 70% + 5%);
   }
 
-  @keyframes manifesto-word-reveal {
-    from { opacity: 0.1; }
-    to   { opacity: 1; }
+  @keyframes manifesto-word-up {
+    from {
+      opacity: 0.15;
+      transform: translateY(1.2em);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   /* Sub-statement */
@@ -146,7 +151,7 @@ const totalWords = allWords.length;
   }
 
   .manifesto__context {
-    color: var(--color-obsidian);
+    color: var(--obsidian);
     opacity: 0.5;
   }
 
@@ -169,6 +174,7 @@ const totalWords = allWords.length;
     .manifesto__word {
       animation: none;
       opacity: 1;
+      transform: none;
     }
   }
 </style>

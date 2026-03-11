@@ -1,17 +1,27 @@
 ---
 import '../../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import Nav from './Nav.astro';
 import Footer from './Footer.astro';
+import Schema from '../seo/Schema.astro';
 
 interface Props {
   title?: string;
   description?: string;
+  schema?: object | object[];
+  ogImage?: string;
 }
 
-const { 
-  title = 'Nexrena — Digital Growth Agency', 
-  description = 'Premium B2B digital agency — web design, SEO, full-service growth.' 
+const {
+  title = 'Nexrena — Digital Growth Agency',
+  description = 'Premium B2B digital agency — web design, SEO, full-service growth.',
+  schema,
+  ogImage = 'https://nexrena.com/og-default.png',
 } = Astro.props;
+
+const site = Astro.site?.toString() ?? 'https://nexrena.com';
+const canonical = new URL(Astro.url.pathname, site).toString();
+const imageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, site).toString();
 ---
 
 <!doctype html>
@@ -20,6 +30,16 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -27,13 +47,19 @@ const {
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet" />
     
     <title>{title}</title>
+    <ClientRouter />
+    {schema && <Schema data={schema} />}
+    <slot name="head" />
   </head>
   <body class="bg-[var(--obsidian)] text-[var(--slate-200)] font-body font-light antialiased selection:bg-[var(--gold)] selection:text-[var(--obsidian)]">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <div id="scroll-progress"></div>
     <div id="custom-cursor"></div>
     
     <Nav />
-    <slot />
+    <div id="main-content" tabindex="-1">
+      <slot />
+    </div>
     <Footer />
 
     <script>

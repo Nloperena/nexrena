@@ -1,99 +1,86 @@
 ---
 /*
-  ServiceStack — Layer 3
-  Three full-viewport service cards sequentially pin at increasing top offsets,
-  creating a visible "deck of cards" stacked edge.
-  Each card settles into view with a scale + translate entrance.
+  ServiceStack — Ultra-modern sticky scroll spectacle
+  Header: "Three ways we grow your business" — words come up on scroll.
+  Each service: massive editorial title, word-by-word reveal, sticky cards.
 */
+import { services as servicesData } from '../../data/services';
+import Eyebrow from '../ui/Eyebrow.astro';
 
-const services = [
-  {
-    number: '01',
-    title: 'Web Design\n& Development',
-    description:
-      'High-performance websites and web applications built on React, Next.js, and modern CMS platforms. From $5K to enterprise-scale builds.',
-    capabilities: ['React / Next.js', 'WordPress / Webflow', 'Headless CMS', 'E-Commerce', '90+ Lighthouse'],
-    bg: 'var(--color-obsidian)',
-    accent: 'var(--color-gold)',
-    textColor: 'var(--color-warm-white)',
-    pinOffset: '0px',
-    zIndex: 'var(--z-section-3)',
-  },
-  {
-    number: '02',
-    title: 'SEO &\nSearch Growth',
-    description:
-      'Technical SEO, content strategy, and organic growth systems that compound over time. Monthly retainers from $1,500.',
-    capabilities: ['Technical SEO Audits', 'On-Page Optimization', 'Link Acquisition', 'Core Web Vitals', 'Looker Studio Reporting'],
-    bg: 'var(--color-slate)',
-    accent: 'var(--color-gold)',
-    textColor: 'var(--color-warm-white)',
-    pinOffset: '72px',
-    zIndex: 'var(--z-section-3)',
-  },
-  {
-    number: '03',
-    title: 'Full-Service\nGrowth',
-    description:
-      'The complete digital engine: web, SEO, paid search, and analytics working as one integrated system.',
-    capabilities: ['Integrated Strategy', 'Google Ads / PPC', 'Analytics & Reporting', 'CRO', 'Ongoing Optimization'],
-    bg: '#111820',
-    accent: 'var(--color-gold)',
-    textColor: 'var(--color-warm-white)',
-    pinOffset: '144px',
-    zIndex: 'var(--z-section-3)',
-  },
-];
+const headerWords = "Three ways we grow your business.".split(' ');
+const headerWordCount = headerWords.length;
+
+const stackServices = servicesData.map((svc) => ({
+  ...svc,
+  titleWords: svc.title.replace(/\n/g, ' ').split(' ').filter(Boolean),
+}));
 ---
 
-<!--
-  The outer section establishes a tall scroll track.
-  Each card-track provides its own scroll travel and sticky pin.
--->
-<section class="service-stack layer-3" id="services" aria-label="Services">
-  <div class="service-stack__header">
-    <span class="type-label text-gold">02&nbsp;/&nbsp;Services</span>
-    <h2 class="type-section-title service-stack__heading">
-      What we build.
-    </h2>
+<section class="service-stack layer-3 bg-[var(--obsidian)]" id="services" aria-label="Services">
+  <!-- Header: word-by-word scroll reveal -->
+  <div class="service-stack__header-wrap scroll-travel-2x">
+    <div class="service-stack__header sticky-pin">
+      <div class="section-container flex flex-col justify-center min-h-screen py-24">
+        <Eyebrow class="mb-12">WHAT WE BUILD //</Eyebrow>
+        <div class="service-stack__headline" role="text" aria-label="Three ways we grow your business">
+          <p class="service-stack__headline-text">
+            {headerWords.map((word, i) => (
+              <span
+                class="service-stack__headline-word"
+                style={`--word-index: ${i}; --total-words: ${headerWordCount};`}
+              >
+                {word}{' '}
+              </span>
+            ))}
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 
-  {services.map((svc, i) => (
-    <div
-      class="service-card-track scroll-travel-2x"
-      style={`--card-bg: ${svc.bg}; --card-accent: ${svc.accent}; --card-text: ${svc.textColor}; --pin-offset: ${svc.pinOffset};`}
-    >
-      <div class="service-card sticky-pin" style={`top: ${svc.pinOffset};`}>
-        <!-- Card number -->
-        <span class="service-card__number type-label" aria-hidden="true">
-          {svc.number}
-        </span>
+  <!-- Service cards: each with editorial title reveal -->
+  {stackServices.map((svc, i) => (
+    <div class="service-card-track scroll-travel-2x">
+      <div class="service-card sticky-pin">
+        <div class="section-container flex flex-col justify-center min-h-screen py-24">
+          <div class="service-card__num font-display text-[clamp(80px,12vw,160px)] font-light text-[var(--gold)] leading-none opacity-[0.08] mb-[-0.15em]">
+            {svc.number}
+          </div>
 
-        <!-- Left: large title -->
-        <div class="service-card__left">
-          <h3 class="type-card-heading service-card__title">
-            {svc.title.split('\n').map((line, j) => (
-              <span class="service-card__title-line">{line}</span>
+          <!-- Editorial title: words come up on scroll -->
+          <h3 class="service-card__title" role="text" aria-label={svc.title.replace(/\n/g, ' ')}>
+            {svc.titleWords.map((word, j) => (
+              <span
+                class="service-card__title-word"
+                style={`--word-index: ${j}; --total-words: ${svc.titleWords.length};`}
+              >
+                {word}{' '}
+              </span>
             ))}
           </h3>
-        </div>
 
-        <!-- Right: description + capabilities -->
-        <div class="service-card__right">
-          <p class="service-card__desc type-body">{svc.description}</p>
-          <ul class="service-card__caps" aria-label="Capabilities">
-            {svc.capabilities.map(cap => (
-              <li class="service-card__cap type-label">{cap}</li>
+          <p class="service-card__body font-body text-[18px] md:text-[20px] text-[var(--slate-400)] leading-relaxed max-w-xl mt-10 mb-8">
+            {svc.body}
+          </p>
+
+          <ul class="flex flex-wrap gap-2 mb-10" aria-label="Technologies">
+            {svc.tags.map((tag) => (
+              <li>
+                <span class="font-mono text-[11px] text-[var(--slate-500)] border border-[var(--slate-700)] px-4 py-2 uppercase tracking-wider">
+                  {tag}
+                </span>
+              </li>
             ))}
           </ul>
-          <a href="#contact" class="service-card__cta type-label">
+
+          <a
+            href={`/services/${svc.id}`}
+            class="service-card__cta group/cta inline-flex items-center gap-3 font-mono text-[11px] text-[var(--gold)] uppercase tracking-[0.2em] hover:text-[var(--gold-light)] transition-colors"
+          >
             Explore this service
-            <span class="service-card__arrow" aria-hidden="true">→</span>
+            <span class="transition-transform group-hover/cta:translate-x-2" aria-hidden="true">→</span>
           </a>
         </div>
-
-        <!-- Decorative background numeral -->
-        <div class="service-card__bg-num" aria-hidden="true">{svc.number}</div>
       </div>
     </div>
   ))}
@@ -101,166 +88,99 @@ const services = [
 
 <style>
   .service-stack {
-    background-color: var(--color-obsidian);
+    background-color: var(--obsidian);
   }
 
-  /* Section header — visible above the card stack */
-  .service-stack__header {
-    padding: var(--space-24) var(--section-pad-x) var(--space-12);
+  /* Header headline: editorial, words come up */
+  .service-stack__headline-text {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 6vw, 5.5rem);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: var(--warm-white);
     display: flex;
-    flex-direction: column;
-    gap: var(--space-6);
+    flex-wrap: wrap;
+    gap: 0.05em 0.15em;
   }
 
-  .service-stack__heading {
-    color: var(--color-warm-white);
-    max-width: 14ch;
+  .service-stack__headline-word {
+    display: inline-block;
+    opacity: 0.12;
+    transform: translateY(1.5em);
+    animation: service-word-up linear both;
+    animation-timeline: view(block);
+    animation-range:
+      calc(entry 5% + (var(--word-index) / var(--total-words)) * 65%)
+      calc(entry 8% + ((var(--word-index) + 1) / var(--total-words)) * 65% + 6%);
   }
 
-  /* Each card gets its own scroll track */
+  /* Service card title: editorial, balanced scale */
+  .service-card__title {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 5vw, 4.5rem);
+    font-weight: 300;
+    line-height: 0.92;
+    letter-spacing: -0.025em;
+    color: var(--warm-white);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.05em 0.2em;
+    margin-top: -0.05em;
+  }
+
+  .service-card__title-word {
+    display: inline-block;
+    opacity: 0.12;
+    transform: translateY(1.2em);
+    animation: service-word-up linear both;
+    animation-timeline: view(block);
+    animation-range:
+      calc(entry 5% + (var(--word-index) / var(--total-words)) * 70%)
+      calc(entry 10% + ((var(--word-index) + 1) / var(--total-words)) * 70% + 8%);
+  }
+
+  @keyframes service-word-up {
+    from {
+      opacity: 0.12;
+      transform: translateY(1.2em);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .service-card-track {
     position: relative;
   }
 
-  /* The sticky card itself */
   .service-card {
     position: sticky;
-    height: calc(100vh - var(--pin-offset));
-    background-color: var(--card-bg);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    top: 0;
+    min-height: 100vh;
+    display: flex;
     align-items: center;
-    padding: var(--space-16) var(--section-pad-x);
+    background-color: var(--obsidian);
+    padding: 0;
     overflow: hidden;
-    /* Entry animation */
-    animation: card-in linear both;
-    animation-timeline: view(block);
-    animation-range: entry 0% entry 20%;
-  }
-
-  @keyframes card-in {
-    from { transform: translateY(5rem); }
-    to   { transform: translateY(0); }
-  }
-
-  /* Card number badge */
-  .service-card__number {
-    position: absolute;
-    top: var(--space-8);
-    left: var(--section-pad-x);
-    color: var(--card-accent);
-    opacity: 0.8;
-  }
-
-  /* Left column: large title */
-  .service-card__left {
-    padding-right: var(--space-16);
-  }
-
-  .service-card__title {
-    color: var(--card-text);
-    display: flex;
-    flex-direction: column;
-    gap: 0.05em;
-  }
-
-  .service-card__title-line {
-    display: block;
-  }
-
-  /* Right column: description + list + CTA */
-  .service-card__right {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-8);
-    border-left: 1px solid rgba(201, 169, 110, 0.2);
-    padding-left: var(--space-12);
-  }
-
-  .service-card__desc {
-    color: rgba(253, 252, 250, 0.65);
-    max-width: 38ch;
-  }
-
-  .service-card__caps {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-  }
-
-  .service-card__cap {
-    color: var(--card-text);
-    opacity: 0.5;
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-  }
-
-  .service-card__cap::before {
-    content: '';
-    display: inline-block;
-    width: 1.5rem;
-    height: 1px;
-    background-color: var(--card-accent);
-    opacity: 0.6;
-    flex-shrink: 0;
-  }
-
-  /* CTA link */
-  .service-card__cta {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-3);
-    color: var(--card-accent);
-    transition: gap 0.2s;
-    margin-top: var(--space-4);
-  }
-
-  .service-card__cta:hover {
-    gap: var(--space-6);
-  }
-
-  .service-card__arrow {
-    transition: transform 0.2s;
-  }
-
-  .service-card__cta:hover .service-card__arrow {
-    transform: translateX(0.25rem);
-  }
-
-  /* Decorative numeral */
-  .service-card__bg-num {
-    position: absolute;
-    right: -1rem;
-    bottom: -3rem;
-    font-family: var(--font-display);
-    font-size: clamp(14rem, 28vw, 32rem);
-    font-weight: 200;
-    color: rgba(201, 169, 110, 0.05);
-    line-height: 1;
-    pointer-events: none;
-    user-select: none;
   }
 
   @media (max-width: 768px) {
-    .service-card {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto auto;
-      padding-top: var(--space-24);
+    .service-stack__headline-text {
+      font-size: clamp(2rem, 8vw, 3rem);
     }
-
-    .service-card__right {
-      border-left: none;
-      border-top: 1px solid rgba(201, 169, 110, 0.2);
-      padding-left: 0;
-      padding-top: var(--space-8);
+    .service-card__title {
+      font-size: clamp(1.75rem, 8vw, 2.5rem);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .service-card {
+    .service-stack__headline-word,
+    .service-card__title-word {
       animation: none;
+      opacity: 1;
+      transform: none;
     }
   }
 </style>

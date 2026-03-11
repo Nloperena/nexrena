@@ -1,0 +1,64 @@
+---
+import Eyebrow from '../ui/Eyebrow.astro';
+
+interface Feature {
+  title: string;
+  desc: string;
+}
+
+interface Props {
+  features: Feature[];
+  outcomes: Array<{ metric: string; detail: string }>;
+}
+
+const { features, outcomes } = Astro.props;
+---
+
+<section class="bg-[var(--obsidian)] py-32 border-t border-[var(--slate-800)] relative z-20">
+  <div class="section-container">
+    
+    <div class="flex flex-col md:flex-row justify-between items-start mb-24 gap-12 reveal">
+      <div class="max-w-2xl">
+        <Eyebrow class="mb-6 text-[var(--gold-dim)]">CAPABILITIES //</Eyebrow>
+        <h2 class="font-display text-[48px] md:text-[64px] text-[var(--warm-white)] font-light leading-[1.1]">
+          Engineered for performance.
+        </h2>
+      </div>
+    </div>
+
+    <!-- Features Hover Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[var(--slate-800)] border-y border-[var(--slate-800)] mb-32">
+      {features.map((feat, i) => (
+        <div class="group relative px-8 py-16 transition-colors hover:bg-[var(--slate-900)] reveal" style={`--i: ${i};`}>
+          <!-- Hover top line -->
+          <div class="absolute top-0 left-0 right-0 h-[2px] bg-[var(--gold)] scale-x-0 origin-left transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-x-100"></div>
+          
+          <h3 class="font-display text-[32px] text-[var(--warm-white)] mb-6 group-hover:text-[var(--gold-light)] transition-colors">
+            {feat.title}
+          </h3>
+          <p class="font-body text-[16px] leading-relaxed text-[var(--slate-400)]">
+            {feat.desc}
+          </p>
+        </div>
+      ))}
+    </div>
+
+    <!-- Outcomes Large Cards -->
+    <div class="reveal">
+      <Eyebrow class="mb-12 text-[var(--gold-dim)] text-center">EXPECTED OUTCOMES</Eyebrow>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {outcomes.map((outcome, i) => (
+          <div class="bg-[var(--slate-900)] p-10 border border-[var(--slate-800)] reveal" style={`--i: ${i};`}>
+            <div class="font-display text-[56px] text-[var(--gold)] leading-none font-light mb-4">
+              {outcome.metric}
+            </div>
+            <div class="font-body text-[15px] text-[var(--slate-300)]">
+              {outcome.detail}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+  </div>
+</section>

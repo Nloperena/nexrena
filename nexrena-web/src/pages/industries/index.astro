@@ -1,0 +1,78 @@
+---
+import Layout from '../../components/layout/Layout.astro';
+import PageHero from '../../components/sections/PageHero.astro';
+import Eyebrow from '../../components/ui/Eyebrow.astro';
+import { industries } from '../../data/industries';
+import { heroImages } from '../../data/hero-images';
+import { itemListSchema } from '../../lib/schema';
+
+const site = 'https://nexrena.com';
+const industryItems = industries.map((i) => ({
+  name: i.name,
+  url: `${site}/industries/${i.id}`,
+}));
+---
+
+<Layout 
+  title="Industries | Nexrena" 
+  description="Digital growth for manufacturing, ecommerce, and professional services. We build websites and search strategies that convert technical buyers."
+  schema={itemListSchema(industryItems, 'Nexrena Industries')}
+>
+  <main>
+    <PageHero 
+      eyebrow="INDUSTRIES //" 
+      title="Built for your industry."
+      subtitle="We specialize in manufacturing, ecommerce, and professional services — industries where technical buyers research online before they ever talk to a rep."
+      image={heroImages.industries}
+    />
+
+    <section class="bg-[var(--obsidian)] py-12 md:py-24">
+      <div class="section-container">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 divide-y md:divide-y-0 md:divide-x divide-[var(--slate-800)]">
+          {industries.map((industry, i) => (
+            <a href={`/industries/${industry.id}`} class="group block py-8 md:py-0 md:px-8 first:pt-0 md:first:pt-0 md:first:pl-0 last:pb-0 md:last:pr-0 reveal" style={`--i: ${i + 1};`}>
+              <span class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest block mb-4">{industry.name}</span>
+              <h2 class="font-display text-[28px] text-[var(--warm-white)] mb-4 group-hover:text-[var(--gold)] transition-colors">
+                {industry.headline}
+              </h2>
+              <p class="font-body text-[15px] text-[var(--slate-400)] leading-relaxed mb-6">
+                {industry.subhead}
+              </p>
+              <span class="font-mono text-[11px] text-[var(--gold)] group-hover:translate-x-2 transition-transform inline-block">
+                {industry.ctaLabel} &rarr;
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[var(--cream)] py-24 md:py-32 text-[var(--obsidian)]">
+      <div class="section-container">
+        <div class="max-w-3xl">
+          <Eyebrow class="mb-8">THE APPROACH //</Eyebrow>
+          <h2 class="font-display text-[36px] md:text-[56px] leading-[1.15] font-light mb-12 reveal">
+            Same rigor, different context.
+          </h2>
+          <p class="font-body text-[17px] leading-relaxed text-[var(--slate-600)] reveal" style="--i: 1;">
+            Whether you're a manufacturer with complex catalogs, an ecommerce brand chasing organic traffic, or a professional services firm selling expertise — we apply the same operating system: technical foundations, content architecture, and conversion paths built for your buyers.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[var(--obsidian)] py-24 md:py-32 border-t border-[var(--slate-800)]">
+      <div class="section-container text-center">
+        <h2 class="font-display text-[40px] md:text-[56px] text-[var(--warm-white)] leading-[1.1] mb-8 reveal">
+          Not sure where to start?
+        </h2>
+        <p class="text-[var(--slate-400)] text-[17px] mb-12 max-w-xl mx-auto reveal" style="--i: 1;">
+          Tell us about your industry and goals. We'll map a 90-day plan.
+        </p>
+        <a href="/contact" class="inline-block font-mono text-[13px] text-[var(--gold)] border border-[var(--gold)] px-8 py-4 hover:bg-[var(--gold)] hover:text-[var(--obsidian)] transition-colors reveal" style="--i: 2;">
+          Start a project &rarr;
+        </a>
+      </div>
+    </section>
+  </main>
+</Layout>

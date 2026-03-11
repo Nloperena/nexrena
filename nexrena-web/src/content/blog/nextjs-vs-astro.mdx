@@ -1,0 +1,90 @@
+---
+title: "Next.js vs. Astro for B2B Websites: A Decision Framework"
+description: "When to use Next.js vs Astro for B2B sites. Static vs dynamic, performance trade-offs, and how we choose."
+publishedAt: 2025-06-02
+author: Nexrena
+---
+
+We build on both Next.js and Astro. The choice depends on what the site needs to do — static content and speed, or dynamic features and interactivity. Here's our decision framework and when we choose each.
+
+## The Short Answer
+
+- **Astro** — Static sites, content-heavy, performance-critical. Brochure, blog, docs. Zero JS by default.
+- **Next.js** — Dynamic sites, user-specific content, forms, dashboards. React ecosystem, server-side rendering.
+
+Many B2B sites are mostly static. For those, Astro often wins on speed and simplicity. When you need dynamic features, Next.js (or a hybrid) makes sense.
+
+## Astro: When to Use It
+
+### Best For
+
+- **Brochure and marketing sites** — Homepage, services, about, contact. Content doesn't change per user.
+- **Blogs and documentation** — MDX, Markdown. Great authoring experience.
+- **Content-heavy B2B** — Case studies, resources, industry pages. Mostly static.
+- **Performance-critical** — Core Web Vitals matter. Astro ships HTML. Minimal or zero JavaScript by default.
+
+### How It Works
+
+- **Static by default** — Builds HTML at build time. No server needed at runtime for most pages.
+- **Islands architecture** — Add React, Vue, or Svelte components only where needed. Rest is static.
+- **Fast** — No client-side framework overhead for static content. LCP and INP benefit.
+
+### Trade-offs
+
+- **Dynamic content** — Requires workarounds (client-side fetch, server endpoints) for user-specific data.
+- **Ecosystem** — Smaller than Next.js. Fewer plugins, fewer examples.
+- **Learning curve** — Different from React-first frameworks. But simpler for static sites.
+
+## Next.js: When to Use It
+
+### Best For
+
+- **Dynamic content** — User dashboards, personalized pages, real-time data.
+- **Forms and backend logic** — API routes, server actions. Form handling, webhooks.
+- **React ecosystem** — Component libraries, rich interactivity. If you need React, Next.js integrates it.
+- **App-like experiences** — Multi-step flows, auth, protected routes.
+
+### How It Works
+
+- **Server-side rendering (SSR)** — Renders on each request. Good for dynamic, personalized content.
+- **Static export** — Can also export static. But default is server-rendered.
+- **API routes** — Backend logic in the same codebase. Forms, integrations.
+
+### Trade-offs
+
+- **JavaScript** — More JS shipped. Can affect performance if not optimized.
+- **Complexity** — More moving parts. Server, client, hydration.
+- **Hosting** — May need Node.js or serverless. Static Astro can run on any host.
+
+## Hybrid Approaches
+
+### Astro + React
+
+- Astro for pages. React for interactive components (forms, calculators, filters).
+- Best of both: static speed + interactivity where needed.
+- We use this for many B2B sites: static content, React for contact forms or tools.
+
+### Next.js Static Export
+
+- Next.js can export static HTML. Good for marketing sites that don't need server logic.
+- Less common than Astro for pure static. But possible if you're already in the React ecosystem.
+
+## Decision Framework
+
+| Need | Choose |
+|------|--------|
+| Mostly static content, blog, docs | Astro |
+| Fast load, minimal JS | Astro |
+| User-specific content, dashboards | Next.js |
+| Complex forms, API logic | Next.js |
+| React components, rich interactivity | Next.js (or Astro + React) |
+| Migration from WordPress/other CMS | Either; depends on content model |
+
+## Migration Considerations
+
+- **From WordPress** — Both can consume headless WordPress. Astro for static export; Next.js for ISR or SSR.
+- **From another framework** — Evaluate content volume and dynamic needs. Static-heavy → Astro. Dynamic-heavy → Next.js.
+
+---
+
+*We choose the right tool for the job. [Start a project](/contact) and we'll recommend the best fit for your site.*

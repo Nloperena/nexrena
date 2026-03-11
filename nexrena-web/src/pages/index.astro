@@ -4,22 +4,25 @@ import Hero from '../components/sections/Hero.astro';
 import Marquee from '../components/sections/Marquee.astro';
 import ManifestoStrip from '../components/sections/ManifestoStrip.astro';
 import About from '../components/sections/About.astro';
-import Services from '../components/sections/Services.astro';
+import ServiceStack from '../components/sections/ServiceStack.astro';
+import TrustSignals from '../components/sections/TrustSignals.astro';
 import Work from '../components/sections/Work.astro';
-import Process from '../components/sections/Process.astro';
+import ProcessSticky from '../components/sections/ProcessSticky.astro';
 import Testimonials from '../components/sections/Testimonials.astro';
 import CTA from '../components/sections/CTA.astro';
+import { organizationSchema } from '../lib/schema';
 ---
 
-<Layout>
+<Layout schema={organizationSchema()}>
   <main>
     <Hero />
     <Marquee />
     <ManifestoStrip />
     <About />
-    <Services />
+    <ServiceStack />
+    <TrustSignals />
     <Work />
-    <Process />
+    <ProcessSticky />
     <Testimonials />
     <CTA />
   </main>

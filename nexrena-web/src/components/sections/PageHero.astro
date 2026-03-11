@@ -1,0 +1,42 @@
+---
+import Eyebrow from '../ui/Eyebrow.astro';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  subtitle?: string;
+  image?: string;
+  variant?: 'full' | 'short';
+}
+
+const { eyebrow, title, subtitle, image = '/images/hero-home.webp', variant = 'short' } = Astro.props;
+const isFull = variant === 'full';
+---
+
+<section class={`relative bg-[var(--obsidian)] overflow-hidden flex flex-col justify-center ${isFull ? 'min-h-[85vh] py-24 md:py-32' : 'py-24 md:py-32'} grain`}>
+  <!-- Background -->
+  <div class="absolute inset-0 pointer-events-none z-0">
+    <img 
+      src={image} 
+      alt="" 
+      class="absolute inset-0 w-full h-full object-cover object-center opacity-40" 
+      aria-hidden="true" 
+      loading="eager" 
+    />
+    <div class="absolute inset-0 opacity-[0.15]" style="background-image: radial-gradient(var(--gold) 0.5px, transparent 0.5px); background-size: 40px 40px;"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-[var(--obsidian)] via-transparent to-[var(--obsidian)]"></div>
+  </div>
+
+  <div class="section-container relative z-10">
+    <Eyebrow class="mb-8">{eyebrow}</Eyebrow>
+    <h1 class="font-display text-[48px] md:text-[72px] text-[var(--warm-white)] leading-[1.1] font-light max-w-3xl mb-8 reveal">
+      {title}
+    </h1>
+    {subtitle && (
+      <p class="font-body text-[18px] text-[var(--slate-300)] max-w-2xl reveal" style="--i: 1;">
+        {subtitle}
+      </p>
+    )}
+    <slot />
+  </div>
+</section>
