@@ -1,186 +1,123 @@
 ---
 /*
-  ServiceStack — Ultra-modern sticky scroll spectacle
-  Header: "Three ways we grow your business" — words come up on scroll.
-  Each service: massive editorial title, word-by-word reveal, sticky cards.
+  ServiceStack — GSAP Card Stacking Effect
+  Cards pin and stack cleanly on top of one another with a 3D scaling effect.
 */
 import { services as servicesData } from '../../data/services';
 import Eyebrow from '../ui/Eyebrow.astro';
-
-const headerWords = "Three ways we grow your business.".split(' ');
-const headerWordCount = headerWords.length;
-
-const stackServices = servicesData.map((svc) => ({
-  ...svc,
-  titleWords: svc.title.replace(/\n/g, ' ').split(' ').filter(Boolean),
-}));
 ---
 
-<section class="service-stack layer-3 bg-[var(--obsidian)]" id="services" aria-label="Services">
-  <!-- Header: word-by-word scroll reveal -->
-  <div class="service-stack__header-wrap scroll-travel-2x">
-    <div class="service-stack__header sticky-pin">
-      <div class="section-container flex flex-col justify-center min-h-screen py-24">
-        <Eyebrow class="mb-12">WHAT WE BUILD //</Eyebrow>
-        <div class="service-stack__headline" role="text" aria-label="Three ways we grow your business">
-          <p class="service-stack__headline-text">
-            {headerWords.map((word, i) => (
-              <span
-                class="service-stack__headline-word"
-                style={`--word-index: ${i}; --total-words: ${headerWordCount};`}
-              >
-                {word}{' '}
-              </span>
-            ))}
-          </p>
-        </div>
-      </div>
-    </div>
+<section id="services-stack-wrapper" class="bg-[var(--obsidian)] relative w-full pb-32">
+  
+  <!-- Intro Header -->
+  <div class="section-container py-32 md:py-48 flex flex-col justify-center min-h-[80vh]">
+    <Eyebrow class="mb-8">WHAT WE BUILD //</Eyebrow>
+    <h2 class="font-display text-[clamp(56px,10vw,140px)] leading-[0.9] text-[var(--warm-white)] tracking-tight max-w-5xl">
+      Three ways we <span class="italic text-[var(--gold)]">grow</span> your business.
+    </h2>
   </div>
 
-  <!-- Service cards: each with editorial title reveal -->
-  {stackServices.map((svc, i) => (
-    <div class="service-card-track scroll-travel-2x">
-      <div class="service-card sticky-pin">
-        <div class="section-container flex flex-col justify-center min-h-screen py-24">
-          <div class="service-card__num font-display text-[clamp(80px,12vw,160px)] font-light text-[var(--gold)] leading-none opacity-[0.08] mb-[-0.15em]">
-            {svc.number}
+  <!-- Stacking Cards Container -->
+  <div class="relative w-full px-[5vw] mx-auto max-w-[1320px] service-cards-container">
+    {servicesData.map((svc, i) => (
+      <div class="service-stack-card sticky top-[10vh] w-full min-h-[80vh] bg-[var(--slate-900)] rounded-3xl border border-[var(--slate-800)] p-8 md:p-16 flex flex-col justify-between overflow-hidden shadow-2xl origin-top mb-12" style={`z-index: ${i + 10};`}>
+        
+        <!-- Large background number -->
+        <div class="absolute -right-10 -bottom-20 font-display text-[30vh] text-[var(--gold)] opacity-5 pointer-events-none select-none">
+          {svc.number}
+        </div>
+
+        <div class="relative z-10 flex flex-col h-full justify-between gap-12">
+          <!-- Top Row -->
+          <div class="flex justify-between items-start">
+            <span class="font-mono text-[14px] text-[var(--gold)] py-2 px-4 border border-[var(--gold)]/30 rounded-full bg-[var(--obsidian)]/50 backdrop-blur-md">
+              {svc.number}
+            </span>
           </div>
 
-          <!-- Editorial title: words come up on scroll -->
-          <h3 class="service-card__title" role="text" aria-label={svc.title.replace(/\n/g, ' ')}>
-            {svc.titleWords.map((word, j) => (
-              <span
-                class="service-card__title-word"
-                style={`--word-index: ${j}; --total-words: ${svc.titleWords.length};`}
-              >
-                {word}{' '}
-              </span>
-            ))}
-          </h3>
+          <!-- Middle Content -->
+          <div class="max-w-4xl">
+            <h3 class="font-display text-[48px] md:text-[80px] lg:text-[100px] text-[var(--warm-white)] mb-8 leading-[0.95] tracking-tight whitespace-pre-line">
+              {svc.title}
+            </h3>
+            
+            <p class="font-body text-[18px] md:text-[24px] text-[var(--slate-400)] leading-relaxed max-w-2xl mb-12">
+              {svc.body}
+            </p>
 
-          <p class="service-card__body font-body text-[18px] md:text-[20px] text-[var(--slate-400)] leading-relaxed max-w-xl mt-10 mb-8">
-            {svc.body}
-          </p>
+            <ul class="flex flex-wrap gap-3 mb-12">
+              {svc.tags.map((tag) => (
+                <li>
+                  <span class="font-mono text-[11px] text-[var(--slate-300)] bg-[var(--obsidian)] px-4 py-2 uppercase tracking-wider rounded-md border border-[var(--slate-800)]">
+                    {tag}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          <ul class="flex flex-wrap gap-2 mb-10" aria-label="Technologies">
-            {svc.tags.map((tag) => (
-              <li>
-                <span class="font-mono text-[11px] text-[var(--slate-500)] border border-[var(--slate-700)] px-4 py-2 uppercase tracking-wider">
-                  {tag}
-                </span>
-              </li>
-            ))}
-          </ul>
-
-          <a
-            href={`/services/${svc.id}`}
-            class="service-card__cta group/cta inline-flex items-center gap-3 font-mono text-[11px] text-[var(--gold)] uppercase tracking-[0.2em] hover:text-[var(--gold-light)] transition-colors"
-          >
-            Explore this service
-            <span class="transition-transform group-hover/cta:translate-x-2" aria-hidden="true">→</span>
-          </a>
+          <!-- Bottom Row -->
+          <div>
+            <a href={`/services/${svc.id}`} class="group inline-flex items-center gap-4 font-mono text-[13px] text-[var(--gold)] uppercase tracking-[0.2em] hover:text-[var(--warm-white)] transition-colors">
+              <div class="w-12 h-12 rounded-full border border-[var(--gold)] group-hover:bg-[var(--gold)] flex items-center justify-center transition-all duration-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="group-hover:text-[var(--obsidian)]">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </div>
+              Explore this service
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-  ))}
+    ))}
+  </div>
 </section>
 
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  function initServiceStack() {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    const cards = gsap.utils.toArray('.service-stack-card') as HTMLElement[];
+    
+    // Create a smooth 3D stacking effect
+    cards.forEach((card, i) => {
+      // Don't scale the last card
+      if (i === cards.length - 1) return;
+
+      ScrollTrigger.create({
+        trigger: card,
+        start: "top 10%", // When card hits its sticky top position
+        endTrigger: ".service-cards-container",
+        end: "bottom bottom",
+        pin: false, // CSS sticky handles the pinning
+        scrub: true,
+        animation: gsap.to(card, {
+          scale: 0.9 - (cards.length - i) * 0.02, // Scale down slightly as user scrolls past
+          opacity: 0.3, // Darken as it gets pushed back
+          filter: "blur(2px)",
+          ease: "none"
+        })
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    import('gsap/ScrollTrigger').then(({ ScrollTrigger }) => {
+      ScrollTrigger.getAll().forEach(t => t.kill());
+      initServiceStack();
+    });
+  });
+</script>
+
 <style>
-  .service-stack {
-    background-color: var(--obsidian);
-  }
-
-  /* Header headline: editorial, words come up */
-  .service-stack__headline-text {
-    font-family: var(--font-display);
-    font-size: clamp(2.5rem, 6vw, 5.5rem);
-    font-weight: 300;
-    line-height: 0.95;
-    letter-spacing: -0.03em;
-    color: var(--warm-white);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.05em 0.15em;
-  }
-
-  .service-stack__headline-word {
-    display: inline-block;
-    opacity: 0.12;
-    transform: translateY(1.5em);
-    animation: service-word-up linear both;
-    animation-timeline: view(block);
-    animation-range:
-      calc(entry 5% + (var(--word-index) / var(--total-words)) * 65%)
-      calc(entry 8% + ((var(--word-index) + 1) / var(--total-words)) * 65% + 6%);
-  }
-
-  /* Service card title: editorial, balanced scale */
-  .service-card__title {
-    font-family: var(--font-display);
-    font-size: clamp(2.25rem, 5vw, 4.5rem);
-    font-weight: 300;
-    line-height: 0.92;
-    letter-spacing: -0.025em;
-    color: var(--warm-white);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.05em 0.2em;
-    margin-top: -0.05em;
-  }
-
-  .service-card__title-word {
-    display: inline-block;
-    opacity: 0.12;
-    transform: translateY(1.2em);
-    animation: service-word-up linear both;
-    animation-timeline: view(block);
-    animation-range:
-      calc(entry 5% + (var(--word-index) / var(--total-words)) * 70%)
-      calc(entry 10% + ((var(--word-index) + 1) / var(--total-words)) * 70% + 8%);
-  }
-
-  @keyframes service-word-up {
-    from {
-      opacity: 0.12;
-      transform: translateY(1.2em);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .service-card-track {
-    position: relative;
-  }
-
-  .service-card {
+  /* Fallback if JS fails - CSS sticky handles the actual stacking natively */
+  .service-stack-card {
     position: sticky;
-    top: 0;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    background-color: var(--obsidian);
-    padding: 0;
-    overflow: hidden;
-  }
-
-  @media (max-width: 768px) {
-    .service-stack__headline-text {
-      font-size: clamp(2rem, 8vw, 3rem);
-    }
-    .service-card__title {
-      font-size: clamp(1.75rem, 8vw, 2.5rem);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .service-stack__headline-word,
-    .service-card__title-word {
-      animation: none;
-      opacity: 1;
-      transform: none;
-    }
   }
 </style>

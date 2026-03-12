@@ -1,8 +1,7 @@
 ---
 /*
-  ProcessSticky — Layer 4
-  Four process steps pin sequentially on scroll.
-  Each step reveals as you scroll through.
+  Process — Horizontal Scroll via GSAP
+  Provides a cinematic, award-winning feel by converting vertical scroll into horizontal motion.
 */
 import Eyebrow from '../ui/Eyebrow.astro';
 
@@ -14,75 +13,116 @@ const steps = [
 ];
 ---
 
-<section id="process" class="process-sticky layer-4 bg-[var(--cream)] relative" style="color: var(--obsidian);">
-  <div class="process-sticky__header section-container py-20 md:py-28">
-    <Eyebrow class="mb-6">HOW WE WORK //</Eyebrow>
-    <h2 class="text-h2 font-display text-[var(--obsidian)] whitespace-pre-line leading-tight">
-      {"Structured. Transparent.\nDelivered."}
-    </h2>
-    <p class="font-body text-[var(--slate-600)] text-lg mt-6 max-w-xl">
-      A proven process that delivers results. Scroll to explore each phase.
-    </p>
-  </div>
+<section id="process-wrapper" class="bg-[var(--cream)] overflow-hidden relative hidden md:block" style="color: var(--obsidian);">
+  <div id="process-scroll-container" class="flex h-screen items-center w-max">
+    
+    <!-- Intro Panel -->
+    <div class="w-screen h-full flex flex-col justify-center px-[5vw] shrink-0">
+      <div class="max-w-3xl">
+        <Eyebrow class="mb-8">HOW WE WORK //</Eyebrow>
+        <h2 class="font-display text-[clamp(64px,8vw,120px)] leading-[0.9] tracking-tight text-[var(--obsidian)] mb-8">
+          Structured.<br/>
+          Transparent.<br/>
+          <span class="italic text-[var(--gold-dim)]">Delivered.</span>
+        </h2>
+        <p class="font-body text-[var(--slate-600)] text-xl max-w-xl">
+          A proven process that delivers results. Keep scrolling to explore each phase of our engagement.
+        </p>
+      </div>
+    </div>
 
-  {steps.map((step, i) => (
-    <div class="process-step-track scroll-travel-2x" style={`--step-index: ${i}; --pin-offset: ${Math.min(i * 48, 144)}px;`}>
-      <div class="process-step-card sticky-pin" style={`top: ${Math.min(i * 48, 144)}px;`}>
-        <div class="section-container flex flex-col md:flex-row gap-16 md:gap-32 items-start md:items-center">
-          <div class="process-step__num font-display text-[clamp(96px,18vw,200px)] font-light text-[var(--gold)] leading-none opacity-25">
+    <!-- Step Panels -->
+    {steps.map((step, i) => (
+      <div class="w-screen h-full flex flex-col justify-center px-[5vw] shrink-0 border-l border-[var(--gold)]/20 relative overflow-hidden group process-panel">
+        
+        <!-- Large background number -->
+        <div class="absolute -right-20 -bottom-10 font-display text-[40vh] leading-none text-[var(--gold)] opacity-5 pointer-events-none select-none transition-transform duration-1000 group-hover:scale-110">
+          {step.num}
+        </div>
+
+        <div class="max-w-4xl relative z-10 flex flex-col md:flex-row gap-12 md:gap-24 items-start md:items-center">
+          <div class="font-mono text-[24px] text-[var(--gold)] border border-[var(--gold)] rounded-full w-24 h-24 flex items-center justify-center shrink-0">
             {step.num}
           </div>
-          <div class="flex-1 process-step__content">
-            <div class="w-12 h-[2px] bg-[var(--gold)] mb-8"></div>
-            <h3 class="font-display text-[28px] md:text-[40px] font-medium text-[var(--obsidian)] mb-6 leading-tight">
+          <div>
+            <h3 class="font-display text-[48px] md:text-[80px] text-[var(--obsidian)] mb-8 leading-none tracking-tight">
               {step.title}
             </h3>
-            <p class="font-body text-[17px] md:text-[19px] text-[var(--slate-600)] leading-relaxed max-w-2xl">
+            <p class="font-body text-[20px] md:text-[24px] text-[var(--slate-600)] leading-relaxed max-w-2xl">
               {step.body}
             </p>
           </div>
         </div>
       </div>
-    </div>
-  ))}
+    ))}
+    
+    <!-- Outro Spacer to allow smooth exit -->
+    <div class="w-[20vw] h-full shrink-0"></div>
+
+  </div>
 </section>
 
-<style>
-  .process-step-track {
-    position: relative;
+<!-- Mobile Fallback (Vertical) -->
+<section class="bg-[var(--cream)] py-24 md:hidden" style="color: var(--obsidian);">
+  <div class="section-container">
+    <Eyebrow class="mb-6">HOW WE WORK //</Eyebrow>
+    <h2 class="font-display text-[48px] leading-[1] text-[var(--obsidian)] mb-16">
+      Structured.<br/>Transparent.<br/><span class="italic text-[var(--gold-dim)]">Delivered.</span>
+    </h2>
+    
+    <div class="flex flex-col gap-16">
+      {steps.map((step) => (
+        <div class="relative border-l-2 border-[var(--gold)]/30 pl-8 pb-8">
+          <div class="font-mono text-[14px] text-[var(--gold)] mb-4">{step.num}</div>
+          <h3 class="font-display text-[36px] text-[var(--obsidian)] mb-4 leading-none">{step.title}</h3>
+          <p class="font-body text-[16px] text-[var(--slate-600)] leading-relaxed">{step.body}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  function initHorizontalScroll() {
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Only run on desktop
+    if (window.innerWidth < 768) return;
+    
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    const wrapper = document.getElementById('process-wrapper');
+    const container = document.getElementById('process-scroll-container');
+
+    if (!wrapper || !container) return;
+
+    // Calculate how far to scroll left
+    const scrollWidth = container.scrollWidth - window.innerWidth;
+
+    gsap.to(container, {
+      x: -scrollWidth,
+      ease: "none",
+      scrollTrigger: {
+        trigger: wrapper,
+        pin: true,
+        scrub: 1, // Smooth scrubbing
+        end: () => "+=" + scrollWidth, // Pin duration equals scroll distance
+        invalidateOnRefresh: true,
+        anticipatePin: 1
+      }
+    });
   }
 
-  .process-step-card {
-    min-height: calc(100vh - 144px);
-    height: calc(100vh - var(--pin-offset, 0px));
-    background-color: var(--cream);
-    display: flex;
-    align-items: center;
-    border-top: 1px solid rgba(201, 169, 110, 0.12);
-    animation: process-step-in linear both;
-    animation-timeline: view(block);
-    animation-range: entry 0% entry 30%;
-  }
-
-  .process-step-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: var(--section-pad-x);
-    right: var(--section-pad-x);
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
-    opacity: 0.3;
-  }
-
-  @keyframes process-step-in {
-    from { opacity: 0.7; transform: translateY(3rem); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .process-step-card {
-      animation: none;
-    }
-  }
-</style>
+  // Ensure it runs after view transitions
+  document.addEventListener('astro:page-load', () => {
+    // Clear old scroll triggers on navigation
+    import('gsap/ScrollTrigger').then(({ ScrollTrigger }) => {
+      ScrollTrigger.getAll().forEach(t => t.kill());
+      initHorizontalScroll();
+    });
+  });
+</script>
