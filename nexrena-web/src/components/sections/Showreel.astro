@@ -6,37 +6,26 @@
 import Eyebrow from '../ui/Eyebrow.astro';
 ---
 
-<section class="showreel bg-[var(--obsidian)] relative py-20 md:py-32 border-t border-[var(--slate-800)]">
-  <div class="section-container relative z-10">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-8 reveal">
-      <div>
-        <Eyebrow class="mb-4">SHOWREEL //</Eyebrow>
-        <h2 class="text-h2 font-display text-[var(--warm-white)]">Digital Excellence in Motion.</h2>
-      </div>
-      <p class="font-body text-[var(--slate-400)] max-w-sm">
-        A glimpse into the digital engines we build for B2B and e-commerce leaders.
-      </p>
-    </div>
+<section class="showreel bg-[var(--obsidian)] relative w-full h-screen overflow-hidden group">
+  <!-- Poster Image / Video Element -->
+  <img src="/images/hero-work.webp" alt="Showreel Poster" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-60 transition-opacity duration-1000 scale-105 group-hover:scale-100 ease-[cubic-bezier(0.16,1,0.3,1)]" />
+  
+  <!-- Subtle Gradient Overlay -->
+  <div class="absolute inset-0 bg-gradient-to-b from-[var(--obsidian)]/80 via-transparent to-[var(--obsidian)]/80"></div>
 
-    <div class="relative w-full aspect-video md:aspect-[21/9] bg-[var(--slate-900)] overflow-hidden group reveal" style="--i: 1;">
-      <!-- Poster Image -->
-      <img src="/images/hero-work.webp" alt="Showreel Poster" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity duration-700" />
-      
-      <!-- Video Element (Placeholder for later) -->
-      <!-- <video src="/videos/showreel.mp4" autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover"></video> -->
-
-      <!-- Play Button Overlay -->
-      <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div class="w-20 h-20 md:w-24 md:h-24 rounded-full border border-[var(--gold)]/30 bg-[var(--obsidian)]/50 backdrop-blur-md flex items-center justify-center text-[var(--gold)] group-hover:scale-110 group-hover:bg-[var(--gold)] group-hover:text-[var(--obsidian)] transition-all duration-500 pointer-events-auto cursor-pointer">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M8 5v14l11-7z" />
-          </svg>
-        </div>
-      </div>
-      
-      <div class="absolute bottom-6 right-8 font-mono text-[11px] text-[var(--warm-white)] uppercase tracking-widest px-3 py-1 bg-[var(--obsidian)]/80 backdrop-blur-sm">
-        Coming Soon
-      </div>
+  <!-- Play Button Centered -->
+  <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
+    <div class="w-24 h-24 md:w-32 md:h-32 rounded-full border border-[var(--warm-white)]/30 backdrop-blur-md flex items-center justify-center text-[var(--warm-white)] group-hover:scale-110 group-hover:bg-[var(--warm-white)] group-hover:text-[var(--obsidian)] transition-all duration-700 pointer-events-auto cursor-pointer mb-6">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" class="ml-2">
+        <path d="M8 5v14l11-7z" />
+      </svg>
     </div>
+    <span class="font-mono text-[11px] text-[var(--warm-white)] uppercase tracking-[0.3em] opacity-80 group-hover:opacity-100 transition-opacity">
+      Watch Showreel
+    </span>
+  </div>
+  
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest px-4 py-2 bg-[var(--obsidian)]/80 backdrop-blur-sm border border-[var(--slate-800)] z-10">
+    Coming Soon
   </div>
 </section>

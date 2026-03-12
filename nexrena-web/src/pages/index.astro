@@ -1,10 +1,9 @@
 ---
 import Layout from '../components/layout/Layout.astro';
 import Hero from '../components/sections/Hero.astro';
-import Marquee from '../components/sections/Marquee.astro';
 import Showreel from '../components/sections/Showreel.astro';
-import Work from '../components/sections/Work.astro';
 import ClientsStrip from '../components/sections/ClientsStrip.astro';
+import Work from '../components/sections/Work.astro';
 import ServiceStack from '../components/sections/ServiceStack.astro';
 import ManifestoStrip from '../components/sections/ManifestoStrip.astro';
 import About from '../components/sections/About.astro';
@@ -18,7 +17,6 @@ import { organizationSchema } from '../lib/schema';
 <Layout schema={organizationSchema()}>
   <main>
     <Hero />
-    <Marquee />
     <Showreel />
     <Work />
     <ClientsStrip />
