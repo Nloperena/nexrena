@@ -32,9 +32,10 @@ const projectItems = projects.map((p) => ({
       <!-- Table Header -->
       <div class="hidden md:grid grid-cols-12 gap-4 border-b border-[var(--slate-700)] pb-4 mb-4 font-mono text-[10px] text-[var(--gold-dim)] uppercase tracking-widest">
         <div class="col-span-1">No.</div>
-        <div class="col-span-5">Client</div>
-        <div class="col-span-3">Category</div>
-        <div class="col-span-2">Year</div>
+        <div class="col-span-4">Client</div>
+        <div class="col-span-2">Category</div>
+        <div class="col-span-3">Impact</div>
+        <div class="col-span-1">Year</div>
         <div class="col-span-1 text-right">Link</div>
       </div>
 
@@ -43,9 +44,10 @@ const projectItems = projects.map((p) => ({
         {projects.map((project, i) => (
           <a href={`/work/${project.id}`} class="work-row group grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-start md:items-center py-8 border-b border-[var(--slate-700)] transition-colors hover:bg-[var(--slate-800)] md:-mx-4 md:px-4 cursor-none" data-index={i}>
             <div class="md:col-span-1 font-display text-[24px] text-[var(--slate-400)] font-light hidden md:block">0{i + 1}</div>
-            <div class="md:col-span-5 font-display text-[32px] md:text-[28px] text-[var(--warm-white)] group-hover:text-[var(--gold)] transition-colors leading-none mb-2 md:mb-0">{project.name}</div>
-            <div class="md:col-span-3 font-body text-[14px] text-[var(--slate-400)]">{project.category}</div>
-            <div class="md:col-span-2 font-mono text-[11px] text-[var(--slate-400)]">{project.year}</div>
+            <div class="md:col-span-4 font-display text-[32px] md:text-[28px] text-[var(--warm-white)] group-hover:text-[var(--gold)] transition-colors leading-none mb-2 md:mb-0">{project.name}</div>
+            <div class="md:col-span-2 font-body text-[14px] text-[var(--slate-400)]">{project.category}</div>
+            <div class="md:col-span-3 font-mono text-[11px] text-[var(--slate-300)] opacity-70 group-hover:opacity-100 transition-opacity bg-[var(--slate-900)] px-2 py-1 inline-block w-max border border-[var(--slate-700)]">{project.proofPoints?.[0]?.metric || 'View Results'}</div>
+            <div class="md:col-span-1 font-mono text-[11px] text-[var(--slate-400)]">{project.year}</div>
             <div class="md:col-span-1 md:text-right font-mono text-[11px] text-[var(--gold)] group-hover:translate-x-2 transition-transform mt-4 md:mt-0">View &rarr;</div>
           </a>
         ))}

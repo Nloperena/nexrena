@@ -89,7 +89,7 @@ const schema = [
         
         {project.background && (
           <div class="mb-24 reveal">
-            <h2 class="font-mono text-[12px] text-[var(--gold)] uppercase tracking-widest border-b border-[var(--slate-800)] pb-4 mb-8">Background</h2>
+            <h2 class="font-mono text-[12px] text-[var(--gold)] uppercase tracking-widest border-b border-[var(--slate-800)] pb-4 mb-8">Client Overview</h2>
             <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose">
               {project.background}
             </p>
@@ -104,32 +104,33 @@ const schema = [
         </div>
 
         <div class="mb-24 reveal">
-          <h2 class="font-mono text-[12px] text-[var(--gold)] uppercase tracking-widest border-b border-[var(--slate-800)] pb-4 mb-8">02 &mdash; Solution</h2>
+          <h2 class="font-mono text-[12px] text-[var(--gold)] uppercase tracking-widest border-b border-[var(--slate-800)] pb-4 mb-8">02 &mdash; Strategy</h2>
           <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose mb-8">
             {project.solution}
           </p>
           
           {project.approach && (
-            <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose mb-8 italic opacity-80">
+            <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose mb-8">
               {project.approach}
             </p>
           )}
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-12">
-            {project.proofPoints.map(point => (
-              <div class="p-6 bg-[var(--slate-900)] border border-[var(--slate-800)]">
-                <span class="block font-display text-[32px] text-[var(--gold)] mb-2">{point.metric}</span>
-                <span class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest">{point.context}</span>
-              </div>
-            ))}
-          </div>
         </div>
 
         <div class="reveal">
-          <h2 class="font-mono text-[12px] text-[var(--gold)] uppercase tracking-widest border-b border-[var(--slate-800)] pb-4 mb-8">03 &mdash; Outcome</h2>
-          <blockquote class="font-display italic text-[32px] text-[var(--warm-white)] leading-tight mb-8">
+          <h2 class="font-mono text-[12px] text-[var(--gold)] uppercase tracking-widest border-b border-[var(--slate-800)] pb-4 mb-8">03 &mdash; Results</h2>
+          <blockquote class="font-display italic text-[32px] md:text-[40px] text-[var(--warm-white)] leading-tight mb-12">
             "{project.testimonial || 'They transformed our entire digital presence in a matter of weeks.'}"
           </blockquote>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            {project.proofPoints.map((point, i) => (
+              <div class="p-8 bg-[var(--slate-900)] border border-[var(--slate-800)] reveal" style={`--i: ${i + 1};`}>
+                <span class="block font-display text-[40px] md:text-[48px] text-[var(--gold)] leading-none mb-4">{point.metric}</span>
+                <span class="font-body text-[14px] text-[var(--slate-400)] leading-relaxed">{point.context}</span>
+              </div>
+            ))}
+          </div>
+
           {project.results && (
             <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose">
               {project.results}

@@ -6,13 +6,13 @@ import Button from '../ui/Button.astro';
   <div class="max-w-[1320px] mx-auto px-[5vw] h-full flex items-center justify-between">
     
     <!-- LEFT: Logo -->
-    <a href="/" class="text-[22px] font-display">
-      <span class="text-[var(--warm-white)]">Nex</span><span class="text-[var(--gold)]">rena</span>
+    <a href="/" class="text-[22px] font-display relative z-[102]">
+      <span class="text-[var(--warm-white)] nav-logo-text transition-colors duration-300">Nex</span><span class="text-[var(--gold)]">rena</span>
     </a>
 
     <!-- CENTER: Desktop Links -->
-    <nav class="hidden md:flex items-center gap-8" aria-label="Main navigation">
-      {['Work', 'Services', 'Industries', 'Resources', 'About', 'Contact'].map((item) => (
+    <nav class="hidden lg:flex items-center gap-8" aria-label="Main navigation">
+      {['Work', 'Services', 'Industries', 'Resources', 'About'].map((item) => (
         <a href={`/${item.toLowerCase() === 'home' ? '' : item.toLowerCase()}`} 
            class="group relative font-body text-[13px] tracking-[0.15em] uppercase text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">
           {item}
@@ -21,97 +21,161 @@ import Button from '../ui/Button.astro';
       ))}
     </nav>
 
-    <!-- RIGHT: CTA & Mobile Hamburger -->
-    <div class="flex items-center gap-4">
-      <Button href="/contact" variant="outline" class="hidden md:inline-flex h-[40px] px-6 text-[11px]">
+    <!-- RIGHT: CTA & Menu Toggle -->
+    <div class="flex items-center gap-4 relative z-[102]">
+      <Button href="/contact" variant="outline" class="hidden md:inline-flex h-[40px] px-6 text-[11px] nav-cta transition-colors duration-300">
         Start a Project &rarr;
       </Button>
-      <button id="mobile-menu-btn" class="md:hidden text-[var(--gold)] p-2" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation menu">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M3 12h18M3 6h18M3 18h18"/>
-        </svg>
+      <button id="menu-toggle-btn" class="text-[var(--gold)] p-2 flex items-center gap-2 group" aria-expanded="false" aria-controls="overlay-menu" aria-label="Toggle navigation menu">
+        <span class="font-mono text-[11px] uppercase tracking-widest hidden md:block group-hover:text-[var(--warm-white)] transition-colors">Menu</span>
+        <div class="relative w-6 h-6 flex flex-col justify-center items-center gap-[5px]">
+          <span class="menu-line w-6 h-[2px] bg-current transform transition-all duration-300 origin-center"></span>
+          <span class="menu-line w-6 h-[2px] bg-current transform transition-all duration-300 origin-center"></span>
+        </div>
       </button>
     </div>
   </div>
 
-  <!-- Mobile Menu Overlay -->
-  <div id="mobile-menu" class="fixed inset-0 bg-[var(--obsidian)] z-50 transform translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] grain" role="dialog" aria-modal="true" aria-label="Navigation menu" inert>
-    <div class="absolute top-[20px] right-[5vw]">
-      <button id="mobile-close-btn" class="text-[var(--gold)] p-2" aria-label="Close navigation menu">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
-      </button>
+  <!-- Full Page Overlay Menu -->
+  <div id="overlay-menu" class="fixed inset-0 bg-[var(--obsidian)] z-[101] flex flex-col justify-center pointer-events-none opacity-0" role="dialog" aria-modal="true" aria-label="Navigation menu" inert>
+    
+    <!-- Optional Background Element -->
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,169,110,0.05)_0%,transparent_60%)] pointer-events-none"></div>
+
+    <div class="max-w-[1320px] mx-auto px-[5vw] w-full grid grid-cols-1 md:grid-cols-12 gap-12 relative z-10">
+      
+      <!-- Left: Navigation Links -->
+      <nav class="md:col-span-8 flex flex-col gap-4 md:gap-6">
+        {['Work', 'Services', 'Industries', 'Resources', 'About', 'Contact'].map((item, i) => (
+          <div class="overflow-hidden">
+            <a href={`/${item.toLowerCase() === 'home' ? '' : item.toLowerCase()}`} 
+               class="overlay-link block font-display text-[48px] md:text-[80px] lg:text-[110px] text-[var(--slate-400)] hover:text-[var(--warm-white)] hover:pl-8 transition-all duration-500 leading-none" data-index={i}>
+              {item}
+            </a>
+          </div>
+        ))}
+      </nav>
+
+      <!-- Right: Contact Info (Desktop Only) -->
+      <div class="hidden md:flex md:col-span-4 flex-col justify-end pb-8">
+        <div class="overlay-info opacity-0 translate-y-8">
+          <p class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest mb-4">Start a conversation</p>
+          <a href="mailto:hello@nexrena.com" class="font-body text-[20px] text-[var(--warm-white)] hover:text-[var(--gold)] transition-colors block mb-8">
+            hello@nexrena.com
+          </a>
+          
+          <p class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest mb-4">Location</p>
+          <p class="font-body text-[16px] text-[var(--slate-400)]">
+            Orlando Metro Area<br/>
+            Florida, USA
+          </p>
+        </div>
+      </div>
     </div>
-    <nav class="flex flex-col items-center justify-center h-full gap-8">
-      {['Work', 'Services', 'Industries', 'Resources', 'About', 'Contact'].map((item, i) => (
-        <a href={`/${item.toLowerCase() === 'home' ? '' : item.toLowerCase()}`} 
-           class="mobile-link font-display text-[48px] text-[var(--warm-white)] opacity-0 translate-y-8 transition-all duration-500 delay-[calc(var(--i)*100ms)]">
-          {item}
-        </a>
-      ))}
-    </nav>
   </div>
 </header>
 
 <script>
+  import gsap from 'gsap';
+
   const setupNav = () => {
     const nav = document.getElementById('main-nav');
+    const menuBtn = document.getElementById('menu-toggle-btn');
+    const menu = document.getElementById('overlay-menu');
+    const lines = document.querySelectorAll('.menu-line');
+    const links = document.querySelectorAll('.overlay-link');
+    const info = document.querySelector('.overlay-info');
     
+    let isOpen = false;
+    let tl = gsap.timeline({ paused: true });
+
+    // Build the GSAP timeline
+    if (menu) {
+      tl.to(menu, {
+        opacity: 1,
+        pointerEvents: 'auto',
+        duration: 0.4,
+        ease: 'power2.inOut'
+      })
+      .fromTo(links, 
+        { yPercent: 100 },
+        { yPercent: 0, duration: 0.8, stagger: 0.05, ease: 'expo.out' },
+        "-=0.2"
+      )
+      .to(info, {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: 'power2.out'
+      }, "-=0.6");
+    }
+
     const handleScroll = () => {
-      if (window.scrollY > 80) {
-        nav?.style.setProperty('background-color', 'rgba(12, 15, 18, 0.95)');
-        nav?.style.setProperty('backdrop-filter', 'blur(12px)');
-      } else {
-        nav?.style.removeProperty('background-color');
-        nav?.style.removeProperty('backdrop-filter');
+      if (!isOpen) {
+        if (window.scrollY > 80) {
+          nav?.style.setProperty('background-color', 'rgba(12, 15, 18, 0.95)');
+          nav?.style.setProperty('backdrop-filter', 'blur(12px)');
+        } else {
+          nav?.style.removeProperty('background-color');
+          nav?.style.removeProperty('backdrop-filter');
+        }
       }
     };
     
     window.addEventListener('scroll', handleScroll);
     handleScroll();
 
-    const menuBtn = document.getElementById('mobile-menu-btn');
-    const closeBtn = document.getElementById('mobile-close-btn');
-    const menu = document.getElementById('mobile-menu');
-    const links = document.querySelectorAll('.mobile-link');
-
-    function openMenu() {
-      menu?.classList.remove('translate-x-full');
-      menu?.removeAttribute('inert');
-      menuBtn?.setAttribute('aria-expanded', 'true');
-      document.body.style.overflow = 'hidden';
+    function toggleMenu() {
+      isOpen = !isOpen;
       
-      links.forEach((link, i) => {
-        (link as HTMLElement).style.setProperty('--i', i.toString());
-        setTimeout(() => {
-          link.classList.remove('opacity-0', 'translate-y-8');
-        }, 50);
-      });
-      
-      setTimeout(() => (closeBtn as HTMLElement)?.focus(), 100);
-    }
-
-    function closeMenu() {
-      menu?.classList.add('translate-x-full');
-      menu?.setAttribute('inert', '');
-      menuBtn?.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
-      links.forEach((link) => link.classList.add('opacity-0', 'translate-y-8'));
-      menuBtn?.focus();
-    }
-
-    function handleKeyDown(e) {
-      if (e.key === 'Escape' && menu?.classList.contains('translate-x-full') === false) {
-        closeMenu();
+      if (isOpen) {
+        menu?.removeAttribute('inert');
+        menuBtn?.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+        
+        // Animate hamburger to X
+        if (lines[0]) (lines[0] as HTMLElement).style.transform = 'translateY(3.5px) rotate(45deg)';
+        if (lines[1]) (lines[1] as HTMLElement).style.transform = 'translateY(-3.5px) rotate(-45deg)';
+        
+        nav?.style.setProperty('background-color', 'transparent');
+        nav?.style.setProperty('backdrop-filter', 'none');
+        
+        tl.play();
+      } else {
+        menu?.setAttribute('inert', '');
+        menuBtn?.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+        
+        // Animate X to hamburger
+        if (lines[0]) (lines[0] as HTMLElement).style.transform = 'none';
+        if (lines[1]) (lines[1] as HTMLElement).style.transform = 'none';
+        
+        handleScroll(); // Restore background if scrolled
+        
+        tl.reverse();
       }
     }
 
-    menuBtn?.addEventListener('click', openMenu);
-    closeBtn?.addEventListener('click', closeMenu);
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape' && isOpen) {
+        toggleMenu();
+        menuBtn?.focus();
+      }
+    }
+
+    menuBtn?.addEventListener('click', toggleMenu);
     document.addEventListener('keydown', handleKeyDown);
 
+    // Close menu when a link is clicked
+    links.forEach(link => {
+      link.addEventListener('click', () => {
+        if (isOpen) toggleMenu();
+      });
+    });
+
     return () => {
+      window.removeEventListener('scroll', handleScroll);
+      menuBtn?.removeEventListener('click', toggleMenu);
       document.removeEventListener('keydown', handleKeyDown);
     };
   };

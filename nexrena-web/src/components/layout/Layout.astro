@@ -5,6 +5,8 @@ import Nav from './Nav.astro';
 import Footer from './Footer.astro';
 import Schema from '../seo/Schema.astro';
 
+import Loader from '../ui/Loader.astro';
+
 interface Props {
   title?: string;
   description?: string;
@@ -52,6 +54,7 @@ const imageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, site).t
     <slot name="head" />
   </head>
   <body class="bg-[var(--obsidian)] text-[var(--slate-200)] font-body font-light antialiased selection:bg-[var(--gold)] selection:text-[var(--obsidian)]">
+    <Loader />
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <div id="scroll-progress"></div>
     <div id="custom-cursor"></div>

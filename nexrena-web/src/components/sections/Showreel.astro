@@ -1,0 +1,42 @@
+---
+/* 
+  Showreel Placeholder
+  30-60s compilation of project highlights
+*/
+import Eyebrow from '../ui/Eyebrow.astro';
+---
+
+<section class="showreel bg-[var(--obsidian)] relative py-20 md:py-32 border-t border-[var(--slate-800)]">
+  <div class="section-container relative z-10">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-8 reveal">
+      <div>
+        <Eyebrow class="mb-4">SHOWREEL //</Eyebrow>
+        <h2 class="text-h2 font-display text-[var(--warm-white)]">Digital Excellence in Motion.</h2>
+      </div>
+      <p class="font-body text-[var(--slate-400)] max-w-sm">
+        A glimpse into the digital engines we build for B2B and e-commerce leaders.
+      </p>
+    </div>
+
+    <div class="relative w-full aspect-video md:aspect-[21/9] bg-[var(--slate-900)] overflow-hidden group reveal" style="--i: 1;">
+      <!-- Poster Image -->
+      <img src="/images/hero-work.webp" alt="Showreel Poster" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity duration-700" />
+      
+      <!-- Video Element (Placeholder for later) -->
+      <!-- <video src="/videos/showreel.mp4" autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover"></video> -->
+
+      <!-- Play Button Overlay -->
+      <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div class="w-20 h-20 md:w-24 md:h-24 rounded-full border border-[var(--gold)]/30 bg-[var(--obsidian)]/50 backdrop-blur-md flex items-center justify-center text-[var(--gold)] group-hover:scale-110 group-hover:bg-[var(--gold)] group-hover:text-[var(--obsidian)] transition-all duration-500 pointer-events-auto cursor-pointer">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </div>
+      </div>
+      
+      <div class="absolute bottom-6 right-8 font-mono text-[11px] text-[var(--warm-white)] uppercase tracking-widest px-3 py-1 bg-[var(--obsidian)]/80 backdrop-blur-sm">
+        Coming Soon
+      </div>
+    </div>
+  </div>
+</section>
