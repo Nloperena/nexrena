@@ -1,68 +1,64 @@
 ---
-import Eyebrow from '../ui/Eyebrow.astro';
-import Button from '../ui/Button.astro';
+/*
+  CTA Takeover — Dramatic curtain effect
+  Creates a massive sticky footer experience that pulls up from the bottom.
+*/
 ---
 
-<section id="cta" class="bg-[var(--cream)] relative" style="color: var(--obsidian);">
-  <div class="section-container relative z-10">
-    <div class="grid grid-cols-1 md:grid-cols-10 gap-16 md:gap-8 items-center">
+<section id="cta-takeover" class="relative w-full bg-[var(--gold)] flex flex-col justify-between" style="min-height: 100vh; color: var(--obsidian);">
+  
+  <div class="relative w-full max-w-[1320px] mx-auto px-[5vw] pt-32 pb-16 flex-grow flex flex-col justify-center">
+    
+    <div class="reveal max-w-5xl">
+      <h2 class="font-display text-[clamp(64px,12vw,160px)] leading-[0.9] tracking-tight mb-12">
+        Let's build<br/>
+        <span class="italic text-[var(--obsidian)] opacity-80">something</span><br/>
+        extraordinary.
+      </h2>
       
-      <!-- LEFT COLUMN -->
-      <div class="md:col-span-6 flex flex-col items-start reveal">
-        <Eyebrow class="mb-6">START A PROJECT //</Eyebrow>
-        
-        <h2 class="font-display text-[48px] md:text-[64px] text-[var(--obsidian)] leading-[1.1] mb-8 whitespace-pre-line">
-          {"Your next stage\nof growth\nstarts here."}
-        </h2>
-        
-        <p class="font-body text-[17px] text-[var(--slate-600)] max-w-md mb-12">
-          Tell us about your business. We'll tell you exactly what we'd build and why.
-        </p>
-        
-        <div class="flex flex-wrap items-center gap-6">
-          <Button href="/contact" variant="primary">Start a Project &rarr;</Button>
-          <a href="mailto:hello@nexrena.com" class="font-mono text-[13px] text-[var(--gold)] tracking-widest uppercase hover:text-[var(--gold-dim)] transition-colors flex items-center gap-2">
-            hello@nexrena.com <span class="text-[16px]">&rarr;</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- RIGHT COLUMN -->
-      <div class="md:col-span-4 md:ml-auto w-full max-w-md reveal" style="--i: 2;">
-        <div class="bg-[var(--obsidian)] text-[var(--slate-200)] p-8 md:p-10 flex flex-col border-t-2 border-[var(--gold)] relative overflow-hidden shadow-2xl">
-          
-          <h4 class="font-mono text-[10px] text-[var(--gold)] tracking-widest uppercase mb-8">TYPICAL ENGAGEMENT</h4>
-          
-          <div class="flex flex-col gap-6 mb-12">
-            {[
-              { label: 'Discovery Call', value: 'Free · 30 min' },
-              { label: 'Strategy Proposal', value: '5 business days' },
-              { label: 'Project Kickoff', value: 'Within 2 weeks' },
-              { label: 'First Deliverable', value: 'Week 3' }
-            ].map((item, i) => (
-              <div class="flex justify-between items-center border-b border-[var(--slate-800)] pb-4 reveal" style={`--i: ${i + 3};`}>
-                <span class="font-body text-[14px] text-[var(--slate-200)]">{item.label}</span>
-                <span class="font-mono text-[11px] text-[var(--slate-400)]">{item.value}</span>
-              </div>
-            ))}
+      <div class="flex flex-col md:flex-row items-start md:items-center gap-12 mt-16">
+        <a href="/contact" class="group relative inline-flex items-center gap-6 font-display text-[32px] md:text-[48px] text-[var(--obsidian)] hover:opacity-70 transition-opacity">
+          Start a project
+          <div class="w-16 h-16 rounded-full border border-[var(--obsidian)] flex items-center justify-center group-hover:bg-[var(--obsidian)] group-hover:text-[var(--gold)] transition-colors duration-300">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
           </div>
+        </a>
 
-          <div class="mt-auto pt-6 flex flex-col reveal" style="--i: 7;">
-            <span class="font-display text-[72px] text-[var(--gold)] leading-none font-light">100%</span>
-            <span class="font-body text-[13px] text-[var(--slate-400)] mt-2">Client satisfaction rate</span>
-          </div>
+        <div class="w-px h-16 bg-[var(--obsidian)] opacity-20 hidden md:block"></div>
 
-        </div>
+        <a href="mailto:hello@nexrena.com" class="font-mono text-[14px] uppercase tracking-widest hover:opacity-70 transition-opacity">
+          hello@nexrena.com
+        </a>
       </div>
-      
+    </div>
+    
+  </div>
+
+  <!-- Massive Marquee at bottom -->
+  <div class="w-full overflow-hidden border-t border-[var(--obsidian)]/10 py-6 mt-auto">
+    <div class="flex items-center gap-16 animate-marquee-fast">
+      {[1,2,3,4,5,6].map(() => (
+        <span class="font-display italic text-[80px] leading-none opacity-20 whitespace-nowrap">Nexrena Digital Growth</span>
+      ))}
     </div>
   </div>
+
 </section>
 
 <style>
-  .section-transition-top {
-    clip-path: polygon(0 0, 100% 5%, 100% 100%, 0 100%);
-    margin-top: -5%;
-    padding-top: calc(5% + 6rem);
+  /* Optional: Make the section right above this have a z-index and shadow so the CTA looks like it's sliding underneath or pulling over */
+  #cta-takeover {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+  }
+
+  @keyframes marquee-fast {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .animate-marquee-fast {
+    animation: marquee-fast 20s linear infinite;
+    width: max-content;
   }
 </style>

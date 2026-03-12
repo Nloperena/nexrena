@@ -1,133 +1,125 @@
 ---
+/*
+  Testimonials — Scroll-driven massive typography
+  Replaces the generic slider with a pinned sequence.
+*/
+const testimonials = [
+  {
+    quote: "Literally the best single website contact in the history of the company.",
+    author: "Forzabuilt Leadership",
+    role: "Industrial Adhesives"
+  },
+  {
+    quote: "Nexrena didn't just build us a website — they built us a lead generation machine.",
+    author: "Vito Fryfilter",
+    role: "Global Industrial Brand"
+  },
+  {
+    quote: "A true partner that understands B2B complexities and delivers measurable ROI.",
+    author: "Furniture Packages USA",
+    role: "Real Estate Procurement"
+  }
+];
 ---
 
-<section class="bg-[var(--obsidian)] relative overflow-hidden">
-  <div class="section-container relative z-10">
+<section id="testimonials-scroll" class="relative w-full bg-[var(--obsidian)]" style="height: 400vh;">
+  <div class="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
     
-    <div class="relative max-w-4xl mx-auto flex flex-col items-center text-center reveal">
-      
-      <!-- Decorative Quote Mark -->
-      <div class="absolute -top-24 -left-8 md:-left-24 font-display text-[250px] text-[var(--gold)] opacity-20 leading-none select-none pointer-events-none">
-        &ldquo;
-      </div>
-      
-      <!-- Slider Container -->
-      <div id="testimonial-slider" class="relative w-full overflow-hidden">
-        <div class="slider-track flex transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">
-          
-          <!-- Slide 1 -->
-          <div class="slide min-w-full flex flex-col items-center">
-            <blockquote class="font-display italic text-[36px] md:text-[48px] text-[var(--warm-white)] leading-[1.3] mb-12">
-              "Literally the best single website contact in the history of the company."
-            </blockquote>
-            <div class="flex flex-col items-center">
-              <div class="w-10 h-[1px] bg-[var(--gold)] mb-6"></div>
-              <cite class="not-italic flex flex-col gap-2">
-                <span class="font-mono text-[11px] text-[var(--gold-dim)] tracking-widest uppercase">FORZABUILT LEADERSHIP TEAM</span>
-                <span class="font-body text-[13px] text-[var(--slate-400)]">Industrial Adhesives Manufacturer</span>
-              </cite>
-            </div>
-          </div>
+    <!-- Background element -->
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,169,110,0.03)_0%,transparent_70%)] pointer-events-none"></div>
 
-          <!-- Slide 2 -->
-          <div class="slide min-w-full flex flex-col items-center">
-            <blockquote class="font-display italic text-[36px] md:text-[48px] text-[var(--warm-white)] leading-[1.3] mb-12">
-              "Nexrena didn't just build us a website — they built us a lead generation machine."
-            </blockquote>
-            <div class="flex flex-col items-center">
-              <div class="w-10 h-[1px] bg-[var(--gold)] mb-6"></div>
-              <cite class="not-italic flex flex-col gap-2">
-                <span class="font-mono text-[11px] text-[var(--gold-dim)] tracking-widest uppercase">VITO FRYFILTER</span>
-                <span class="font-body text-[13px] text-[var(--slate-400)]">Global Industrial Brand</span>
-              </cite>
-            </div>
-          </div>
+    <div class="absolute top-24 left-[5vw]">
+      <span class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest">CLIENT VOICES //</span>
+    </div>
 
-          <!-- Slide 3 -->
-          <div class="slide min-w-full flex flex-col items-center">
-            <blockquote class="font-display italic text-[36px] md:text-[48px] text-[var(--warm-white)] leading-[1.3] mb-12">
-              "A true partner that understands B2B complexities and delivers measurable ROI."
-            </blockquote>
-            <div class="flex flex-col items-center">
-              <div class="w-10 h-[1px] bg-[var(--gold)] mb-6"></div>
-              <cite class="not-italic flex flex-col gap-2">
-                <span class="font-mono text-[11px] text-[var(--gold-dim)] tracking-widest uppercase">FURNITURE PACKAGES USA</span>
-                <span class="font-body text-[13px] text-[var(--slate-400)]">Real Estate Procurement</span>
-              </cite>
-            </div>
-          </div>
+    <!-- Massive Quote Mark -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-display text-[60vh] text-[var(--slate-800)] opacity-30 leading-none select-none pointer-events-none z-0">
+      "
+    </div>
 
+    <div class="relative z-10 w-full max-w-[1320px] mx-auto px-[5vw] h-full flex items-center justify-center">
+      {testimonials.map((test, i) => (
+        <div class={`testimonial-item absolute w-full max-w-5xl text-center px-4 ${i !== 0 ? 'opacity-0 translate-y-24' : ''}`}>
+          <h3 class="font-display italic text-[clamp(32px,6vw,80px)] leading-[1.1] text-[var(--warm-white)] tracking-tight mb-12">
+            {test.quote}
+          </h3>
+          <div class="flex flex-col items-center justify-center gap-2 transform translate-y-8 opacity-0 test-author">
+            <div class="w-px h-12 bg-[var(--gold)] mb-4"></div>
+            <span class="font-mono text-[12px] text-[var(--gold)] uppercase tracking-[0.2em]">{test.author}</span>
+            <span class="font-body text-[14px] text-[var(--slate-400)]">{test.role}</span>
+          </div>
         </div>
-      </div>
-
-      <!-- Navigation Dots -->
-      <div class="flex items-center gap-3 mt-16">
-        <button class="dot active w-2 h-2 rounded-full border border-[var(--slate-700)] transition-all duration-300" aria-label="Go to slide 1"></button>
-        <button class="dot w-2 h-2 rounded-full border border-[var(--slate-700)] transition-all duration-300" aria-label="Go to slide 2"></button>
-        <button class="dot w-2 h-2 rounded-full border border-[var(--slate-700)] transition-all duration-300" aria-label="Go to slide 3"></button>
-      </div>
-
+      ))}
     </div>
   </div>
 </section>
 
-<style>
-  .section-transition-top {
-    clip-path: polygon(0 5%, 100% 0, 100% 100%, 0 100%);
-    margin-top: -5%;
-    padding-top: calc(5% + 6rem);
-  }
-
-  .dot.active {
-    background-color: var(--gold);
-    border-color: var(--gold);
-  }
-</style>
-
 <script>
-  const setupSlider = () => {
-    const track = document.querySelector('.slider-track') as HTMLElement;
-    const dots = document.querySelectorAll('.dot');
-    if (!track || dots.length === 0) return;
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-    let currentSlide = 0;
-    const totalSlides = dots.length;
-    let autoPlayInterval: number;
+  function initTestimonials() {
+    gsap.registerPlugin(ScrollTrigger);
 
-    const goToSlide = (index: number) => {
-      currentSlide = index;
-      track.style.transform = `translateX(-${currentSlide * 100}%)`;
-      
-      dots.forEach((dot, i) => {
-        if (i === currentSlide) dot.classList.add('active');
-        else dot.classList.remove('active');
-      });
-    };
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
 
-    const nextSlide = () => {
-      goToSlide((currentSlide + 1) % totalSlides);
-    };
+    const wrapper = document.getElementById('testimonials-scroll');
+    if (!wrapper) return;
 
-    // Auto cycle every 6s
-    const startAutoPlay = () => {
-      autoPlayInterval = window.setInterval(nextSlide, 6000);
-    };
-
-    const stopAutoPlay = () => {
-      clearInterval(autoPlayInterval);
-    };
-
-    dots.forEach((dot, index) => {
-      dot.addEventListener('click', () => {
-        stopAutoPlay();
-        goToSlide(index);
-        startAutoPlay();
-      });
+    const items = gsap.utils.toArray('.testimonial-item') as HTMLElement[];
+    
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: wrapper,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1,
+      }
     });
 
-    startAutoPlay();
-  };
+    items.forEach((item, i) => {
+      const author = item.querySelector('.test-author');
 
-  setupSlider();
-  document.addEventListener('astro:page-load', setupSlider);
+      if (i !== 0) {
+        // Bring in
+        tl.to(item, {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: "power2.out"
+        });
+      }
+
+      // Show author
+      tl.to(author, {
+        y: 0,
+        opacity: 1,
+        duration: 0.5
+      });
+
+      // Hold
+      tl.to({}, { duration: 1.5 });
+
+      if (i !== items.length - 1) {
+        // Fade out
+        tl.to(item, {
+          y: -50,
+          opacity: 0,
+          filter: "blur(10px)",
+          duration: 1,
+          ease: "power2.in"
+        });
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    import('gsap/ScrollTrigger').then(({ ScrollTrigger }) => {
+      ScrollTrigger.getAll().forEach(t => {
+        if(t.vars.trigger === '#testimonials-scroll') t.kill();
+      });
+      initTestimonials();
+    });
+  });
 </script>
