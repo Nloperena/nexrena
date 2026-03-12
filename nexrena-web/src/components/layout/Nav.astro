@@ -39,17 +39,18 @@ import Button from '../ui/Button.astro';
   <!-- Full Page Overlay Menu -->
   <div id="overlay-menu" class="fixed inset-0 bg-[var(--obsidian)] z-[101] flex flex-col justify-center pointer-events-none opacity-0" role="dialog" aria-modal="true" aria-label="Navigation menu" inert>
     
-    <!-- Optional Background Element -->
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,169,110,0.05)_0%,transparent_60%)] pointer-events-none"></div>
+    <!-- Grain overlay for texture -->
+    <div class="absolute inset-0 bg-[url('/images/grain.png')] opacity-[0.03] mix-blend-overlay pointer-events-none"></div>
 
     <div class="max-w-[1320px] mx-auto px-[5vw] w-full grid grid-cols-1 md:grid-cols-12 gap-12 relative z-10">
       
       <!-- Left: Navigation Links -->
-      <nav class="md:col-span-8 flex flex-col gap-4 md:gap-6">
+      <nav class="md:col-span-8 flex flex-col gap-2 md:gap-4">
         {['Work', 'Services', 'Industries', 'Resources', 'About', 'Contact'].map((item, i) => (
           <div class="overflow-hidden">
             <a href={`/${item.toLowerCase() === 'home' ? '' : item.toLowerCase()}`} 
-               class="overlay-link block font-display text-[48px] md:text-[80px] lg:text-[110px] text-[var(--slate-400)] hover:text-[var(--warm-white)] hover:pl-8 transition-all duration-500 leading-none" data-index={i}>
+               class="overlay-link flex items-center gap-6 font-display text-[56px] md:text-[88px] lg:text-[120px] text-[var(--slate-400)] hover:text-[var(--warm-white)] hover:pl-8 transition-all duration-500 leading-none group/link" data-index={i}>
+              <span class="font-mono text-[14px] text-[var(--gold-dim)] opacity-0 group-hover/link:opacity-100 transition-opacity duration-300 hidden md:block">0{i + 1}</span>
               {item}
             </a>
           </div>
@@ -58,17 +59,22 @@ import Button from '../ui/Button.astro';
 
       <!-- Right: Contact Info (Desktop Only) -->
       <div class="hidden md:flex md:col-span-4 flex-col justify-end pb-8">
-        <div class="overlay-info opacity-0 translate-y-8">
+        <div class="overlay-info opacity-0 translate-y-8 pl-12 border-l border-[var(--slate-800)]">
           <p class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest mb-4">Start a conversation</p>
-          <a href="mailto:hello@nexrena.com" class="font-body text-[20px] text-[var(--warm-white)] hover:text-[var(--gold)] transition-colors block mb-8">
+          <a href="mailto:hello@nexrena.com" class="font-display italic text-[32px] text-[var(--warm-white)] hover:text-[var(--gold)] transition-colors block mb-12">
             hello@nexrena.com
           </a>
           
           <p class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest mb-4">Location</p>
-          <p class="font-body text-[16px] text-[var(--slate-400)]">
+          <p class="font-body text-[16px] text-[var(--slate-400)] leading-relaxed">
             Orlando Metro Area<br/>
             Florida, USA
           </p>
+          
+          <div class="mt-16 flex gap-6">
+            <a href="#" class="font-mono text-[11px] text-[var(--slate-400)] hover:text-[var(--warm-white)] uppercase tracking-widest">LinkedIn</a>
+            <a href="#" class="font-mono text-[11px] text-[var(--slate-400)] hover:text-[var(--warm-white)] uppercase tracking-widest">Twitter</a>
+          </div>
         </div>
       </div>
     </div>
@@ -94,20 +100,20 @@ import Button from '../ui/Button.astro';
       tl.to(menu, {
         opacity: 1,
         pointerEvents: 'auto',
-        duration: 0.4,
-        ease: 'power2.inOut'
+        duration: 0.6,
+        ease: 'power3.inOut'
       })
       .fromTo(links, 
-        { yPercent: 100 },
-        { yPercent: 0, duration: 0.8, stagger: 0.05, ease: 'expo.out' },
-        "-=0.2"
+        { yPercent: 120, skewY: 5 },
+        { yPercent: 0, skewY: 0, duration: 1, stagger: 0.08, ease: 'expo.out' },
+        "-=0.3"
       )
       .to(info, {
         opacity: 1,
         y: 0,
-        duration: 0.6,
-        ease: 'power2.out'
-      }, "-=0.6");
+        duration: 0.8,
+        ease: 'power3.out'
+      }, "-=0.8");
     }
 
     const handleScroll = () => {

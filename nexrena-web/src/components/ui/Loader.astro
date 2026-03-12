@@ -18,8 +18,9 @@
     // Check if user prefers reduced motion
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     
-    // Check if we've already shown the loader in this session
-    const hasSeenLoader = sessionStorage.getItem('nexrena-loader-seen');
+    // Check if we've already shown the loader in this session (temporarily disabled for testing)
+    // const hasSeenLoader = sessionStorage.getItem('nexrena-loader-seen');
+    const hasSeenLoader = false;
 
     if (prefersReducedMotion || hasSeenLoader) {
       loader.style.display = 'none';
@@ -35,20 +36,21 @@
     });
 
     tl.fromTo('.loader-text', 
-      { y: 100, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }
+      { y: 150, opacity: 0, skewY: 10, scale: 0.9 },
+      { y: 0, opacity: 1, skewY: 0, scale: 1, duration: 1.2, ease: "expo.out" }
     )
     .to('.loader-text', {
       opacity: 0,
-      duration: 0.5,
-      delay: 0.8,
+      scale: 1.1,
+      duration: 0.6,
+      delay: 1.0,
       ease: "power2.inOut"
     })
     .to(loader, {
       yPercent: -100,
-      duration: 0.8,
+      duration: 1.0,
       ease: "expo.inOut"
-    }, "-=0.2");
+    }, "-=0.3");
   }
 
   // Run on initial load
