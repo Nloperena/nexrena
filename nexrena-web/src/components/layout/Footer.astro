@@ -16,38 +16,39 @@ import { industries } from '../../data/industries';
         </a>
       </div>
       
-      <div class="flex gap-16 md:gap-32">
-        <div class="flex flex-col gap-4">
-          <h4 class="font-mono text-[11px] text-[var(--gold-dim)] tracking-widest uppercase mb-2">Pages</h4>
-          <a href="/work" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Work</a>
-          <a href="/services" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Services</a>
-          <a href="/industries" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Industries</a>
-          <a href="/resources" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Resources</a>
-          <a href="/about" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">About</a>
-          <a href="/contact" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Contact</a>
+      <!-- Right: Navigation Grids -->
+      <div class="flex flex-wrap gap-16 md:gap-32 w-full md:w-auto">
+        <div class="flex flex-col gap-6">
+          <h4 class="font-mono text-[11px] text-[var(--slate-500)] tracking-widest uppercase mb-2">Pages</h4>
+          <a href="/work" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Work</a>
+          <a href="/services" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Services</a>
+          <a href="/industries" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Industries</a>
+          <a href="/resources" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Resources</a>
+          <a href="/about" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">About</a>
+          <a href="/contact" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Contact</a>
         </div>
-        <div class="flex flex-col gap-4">
-          <h4 class="font-mono text-[11px] text-[var(--gold-dim)] tracking-widest uppercase mb-2">Services</h4>
+        <div class="flex flex-col gap-6">
+          <h4 class="font-mono text-[11px] text-[var(--slate-500)] tracking-widest uppercase mb-2">Services</h4>
           {services.map((s) => (
-            <a href={`/services/${s.id}`} class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">{s.title.replace(/\n/g, ' ')}</a>
+            <a href={`/services/${s.id}`} class="font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">{s.title.replace(/\n/g, ' ')}</a>
           ))}
         </div>
-        <div class="flex flex-col gap-4">
-          <h4 class="font-mono text-[11px] text-[var(--gold-dim)] tracking-widest uppercase mb-2">Industries</h4>
-          {industries.map((i) => (
-            <a href={`/industries/${i.id}`} class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">{i.name}</a>
-          ))}
-        </div>
-        <div class="flex flex-col gap-4">
-          <h4 class="font-mono text-[11px] text-[var(--gold-dim)] tracking-widest uppercase mb-2">Social</h4>
-          <a href="#" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">LinkedIn</a>
-          <a href="#" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Twitter</a>
-          <a href="#" class="font-body text-[14px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Awwwards</a>
+        <div class="flex flex-col gap-6">
+          <h4 class="font-mono text-[11px] text-[var(--slate-500)] tracking-widest uppercase mb-2">Social</h4>
+          <a href="#" class="font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">LinkedIn</a>
+          <a href="#" class="font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">Instagram</a>
         </div>
       </div>
     </div>
 
-    <!-- ROW 2 -->
+    <!-- ROW 2: Massive Brand Mark -->
+    <div class="w-full border-t border-[var(--slate-800)] pt-12 pb-24 overflow-hidden flex justify-center">
+      <div class="font-display text-[15vw] leading-none text-[var(--slate-800)]/50 tracking-tighter select-none cursor-default whitespace-nowrap">
+        Nexrena<span class="text-[var(--gold)]/20">®</span>
+      </div>
+    </div>
+
+    <!-- ROW 3: Legal & Local -->
     <div class="flex flex-col md:flex-row justify-between items-center gap-6 pt-8 border-t border-[var(--slate-800)] text-[12px] text-[var(--slate-400)]">
       <p>&copy; {new Date().getFullYear()} Nexrena LLC. All rights reserved.</p>
       <a href="mailto:hello@nexrena.com" class="font-mono text-[var(--gold)] hover:text-[var(--gold-light)] transition-colors">hello@nexrena.com</a>

@@ -18,6 +18,15 @@ const stats = [
     <!-- Background Layer (Animates to Cream) -->
     <div class="story-bg absolute inset-0 bg-[var(--obsidian)] z-0"></div>
 
+    <!-- Central Interactive Element (e.g. a rotating orb or "engine") -->
+    <div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
+      <div class="story-engine w-[40vw] h-[40vw] max-w-[600px] max-h-[600px] border border-[var(--gold)]/20 rounded-full flex items-center justify-center opacity-0 scale-50">
+        <div class="w-[70%] h-[70%] border border-[var(--gold)]/40 rounded-full flex items-center justify-center story-engine-inner">
+          <div class="w-[40%] h-[40%] bg-[var(--gold)]/10 rounded-full blur-xl"></div>
+        </div>
+      </div>
+    </div>
+
     <div class="relative z-10 w-full max-w-[1320px] mx-auto px-[5vw]">
       
       <!-- Scene 1: The Engine -->
@@ -87,12 +96,31 @@ const stats = [
       filter: "blur(10px)",
       duration: 1
     })
+
+    // Bring in the "Engine" graphic
+    .to('.story-engine', {
+      opacity: 1,
+      scale: 1,
+      rotate: 180,
+      duration: 1.5,
+      ease: "power2.out"
+    }, "-=0.5")
     
     // Transition Background to Cream
     .to('.story-bg', {
       backgroundColor: 'var(--cream)',
       duration: 1
-    }, "-=0.5")
+    }, "-=1")
+
+    // Shift engine style for light background
+    .to('.story-engine', {
+      borderColor: 'rgba(12, 15, 18, 0.1)',
+      duration: 1
+    }, "-=1")
+    .to('.story-engine-inner', {
+      borderColor: 'rgba(12, 15, 18, 0.2)',
+      duration: 1
+    }, "-=1")
 
     // Animate Scene 2 in
     .to('.scene-2', {
@@ -101,8 +129,12 @@ const stats = [
       duration: 1
     }, "-=0.5")
 
-    // Hold Scene 2
-    .to({}, { duration: 0.5 })
+    // Hold Scene 2 & rotate engine
+    .to('.story-engine', {
+      rotate: 360,
+      duration: 1.5,
+      ease: "none"
+    }, "-=1")
 
     // Animate Scene 2 out
     .to('.scene-2', {
@@ -111,6 +143,13 @@ const stats = [
       filter: "blur(10px)",
       duration: 1
     })
+
+    // Fade out engine
+    .to('.story-engine', {
+      opacity: 0,
+      scale: 1.5,
+      duration: 1
+    }, "-=1")
 
     // Animate Scene 3 in
     .to('.scene-3', {
