@@ -19,37 +19,38 @@ const stats = [
     <div class="story-bg absolute inset-0 bg-[var(--obsidian)] z-0"></div>
 
     <!-- The Expanding Image -->
-    <div class="story-image-wrapper absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[400px] aspect-video z-10 overflow-hidden rounded-2xl will-change-transform">
+    <div class="story-image-wrapper absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30vw] aspect-[3/4] z-10 overflow-hidden will-change-transform">
       <img src="/images/hero-services-full.webp" alt="Digital Engine" class="story-image absolute inset-0 w-full h-full object-cover scale-[1.5]" />
       <div class="story-image-overlay absolute inset-0 bg-[var(--obsidian)]/0 transition-colors"></div>
     </div>
 
     <!-- Scene 1: The Engine -->
-    <div class="scene scene-1 relative z-20 w-full max-w-[1320px] mx-auto px-[5vw] text-center pointer-events-none mix-blend-difference">
-      <h2 class="font-display text-[clamp(48px,10vw,160px)] leading-[0.85] tracking-tight uppercase">
-        <span class="block translate-x-[-10vw] scene-1-text-l">We build the</span>
-        <span class="block translate-x-[10vw] text-[var(--gold)] scene-1-text-r italic">digital engine.</span>
+    <div class="scene scene-1 relative z-20 w-full px-[5vw] pointer-events-none mix-blend-difference flex justify-between items-center text-[var(--warm-white)]">
+      <h2 class="font-display text-[clamp(48px,12vw,200px)] leading-[0.8] tracking-tighter uppercase scene-1-text-l w-1/2 text-right pr-8">
+        WE BUILD
+      </h2>
+      <h2 class="font-display text-[clamp(48px,12vw,200px)] leading-[0.8] tracking-tighter uppercase scene-1-text-r w-1/2 pl-8">
+        THE ENGINE.
       </h2>
     </div>
 
     <!-- Scene 2: The Business -->
     <div class="scene scene-2 absolute inset-0 z-30 flex flex-col items-center justify-center text-center opacity-0 pointer-events-none px-[5vw]">
-      <h2 class="font-display text-[clamp(48px,10vw,160px)] leading-[0.85] tracking-tight uppercase text-[var(--warm-white)] drop-shadow-2xl">
-        You run the<br/>
-        <span class="italic text-[var(--gold)]">business.</span>
+      <h2 class="font-display text-[clamp(48px,12vw,200px)] leading-[0.85] tracking-tighter uppercase text-[var(--warm-white)] drop-shadow-2xl">
+        YOU RUN <br/>
+        <span class="italic font-light text-[var(--gold)]">THE BUSINESS.</span>
       </h2>
     </div>
 
     <!-- Scene 3: The Proof (Stats) -->
-    <div class="scene scene-3 absolute inset-0 z-40 flex flex-col items-center justify-center opacity-0 pointer-events-none px-[5vw] bg-[var(--obsidian)]/80 backdrop-blur-sm">
-      <Eyebrow class="mb-16 text-[var(--gold)]">THE RESULTS //</Eyebrow>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-32 text-center w-full max-w-6xl">
+    <div class="scene scene-3 absolute inset-0 z-40 flex flex-col justify-end pb-32 opacity-0 pointer-events-none px-[5vw] bg-gradient-to-t from-[var(--obsidian)] via-[var(--obsidian)]/80 to-transparent">
+      <div class="w-full max-w-[1320px] mx-auto flex justify-between items-end border-b border-[var(--slate-800)] pb-12">
         {stats.map((stat, i) => (
-          <div class="stat-item translate-y-12 opacity-0">
-            <div class="font-display text-[clamp(80px,12vw,180px)] font-light text-[var(--warm-white)] leading-none tracking-tighter mb-4">
-              {stat.value}<span class="text-[var(--gold)]">{stat.suffix}</span>
+          <div class="stat-item translate-y-12 opacity-0 flex flex-col items-start">
+            <p class="font-mono text-[11px] md:text-[13px] text-[var(--gold)] uppercase tracking-[0.2em] mb-4">{stat.label}</p>
+            <div class="font-display text-[clamp(60px,10vw,140px)] font-light text-[var(--warm-white)] leading-none tracking-tighter">
+              {stat.value}<span class="text-[var(--gold-dim)]">{stat.suffix}</span>
             </div>
-            <p class="font-mono text-[11px] md:text-[13px] text-[var(--slate-400)] uppercase tracking-[0.2em]">{stat.label}</p>
           </div>
         ))}
       </div>
@@ -81,12 +82,11 @@ const stats = [
     });
 
     // Phase 1: Text splits apart, image scales up to fill screen
-    tl.to('.scene-1-text-l', { xPercent: -50, opacity: 0, duration: 1 }, 0)
-      .to('.scene-1-text-r', { xPercent: 50, opacity: 0, duration: 1 }, 0)
+    tl.to('.scene-1-text-l', { xPercent: -100, opacity: 0, duration: 1.5, ease: 'power2.inOut' }, 0)
+      .to('.scene-1-text-r', { xPercent: 100, opacity: 0, duration: 1.5, ease: 'power2.inOut' }, 0)
       .to('.story-image-wrapper', {
         width: '100vw',
         height: '100vh',
-        borderRadius: '0px',
         duration: 1.5,
         ease: 'power2.inOut'
       }, 0)
@@ -97,15 +97,16 @@ const stats = [
       }, 0);
 
     // Phase 2: Darken image slightly, bring in "You run the business"
-    tl.to('.story-image-overlay', { backgroundColor: 'rgba(12, 15, 18, 0.6)', duration: 0.5 }, "-=0.2")
+    tl.to('.story-image-overlay', { backgroundColor: 'rgba(12, 15, 18, 0.4)', duration: 0.5 }, "-=0.2")
       .fromTo('.scene-2', 
-        { scale: 1.2, opacity: 0 },
+        { scale: 1.1, opacity: 0 },
         { scale: 1, opacity: 1, duration: 1, ease: 'power2.out' }
       )
       .to({}, { duration: 0.5 }); // hold
 
     // Phase 3: Fade out Scene 2, Blur background, bring in Stats
-    tl.to('.scene-2', { yPercent: -20, opacity: 0, filter: 'blur(10px)', duration: 0.8 })
+    tl.to('.scene-2', { yPercent: -10, opacity: 0, duration: 0.8 })
+      .to('.story-image', { filter: 'blur(8px)', duration: 0.8 }, "-=0.8")
       .to('.scene-3', { opacity: 1, duration: 0.5 }, "-=0.4")
       .to('.stat-item', {
         y: 0,
