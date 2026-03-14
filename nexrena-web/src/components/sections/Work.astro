@@ -34,7 +34,7 @@ import { heroImages } from '../../data/hero-images';
           <a href={`/work/${project.id}`} class={`work-card block relative bg-[var(--obsidian)] overflow-hidden group ${colSpan} ${heightClass}`}>
             
             <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
-              <img src={heroImages[`project/${project.id}` as keyof typeof heroImages] ?? heroImages.work} alt="" class="work-image absolute inset-0 w-full h-full object-cover object-center opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] filter grayscale-[30%] group-hover:grayscale-0" aria-hidden="true" loading={i < 2 ? "eager" : "lazy"} />
+              <img src={heroImages[`project/${project.id}` as keyof typeof heroImages] ?? heroImages.work} alt="" class="work-image absolute inset-0 w-full h-full object-cover object-center opacity-60 group-hover:opacity-90 group-hover:scale-[1.03] transition-all duration-[1.4s] ease-[cubic-bezier(0.16,1,0.3,1)] filter grayscale-[20%] group-hover:grayscale-0" aria-hidden="true" loading={i < 2 ? "eager" : "lazy"} />
               <!-- Dark overlay that fades out on hover -->
               <div class="absolute inset-0 bg-[var(--obsidian)]/40 group-hover:bg-[var(--obsidian)]/10 transition-colors duration-700"></div>
               <!-- Gradient for text readability -->
@@ -117,6 +117,5 @@ import { heroImages } from '../../data/hero-images';
     });
   }
 
-  initWorkCards();
   document.addEventListener('astro:page-load', initWorkCards);
 </script>

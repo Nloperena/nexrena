@@ -107,12 +107,7 @@ import Eyebrow from '../ui/Eyebrow.astro';
     });
   }
 
-  document.addEventListener('astro:page-load', () => {
-    import('gsap/ScrollTrigger').then(({ ScrollTrigger }) => {
-      ScrollTrigger.getAll().forEach(t => t.kill());
-      initServiceStack();
-    });
-  });
+  document.addEventListener('astro:page-load', initServiceStack);
 </script>
 
 <style>

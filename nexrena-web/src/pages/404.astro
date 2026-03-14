@@ -1,0 +1,114 @@
+---
+import Layout from '../components/layout/Layout.astro';
+import Button from '../components/ui/Button.astro';
+---
+
+<Layout title="Page Not Found | Nexrena" description="The page you're looking for doesn't exist.">
+  <main>
+    <section class="min-h-[85vh] flex flex-col items-center justify-center text-center px-[5vw] relative overflow-hidden">
+      <!-- Floating particles -->
+      <canvas id="particles-404" class="absolute inset-0 w-full h-full pointer-events-none z-0"></canvas>
+
+      <!-- Background number with glitch -->
+      <div class="error-num absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-display text-[40vw] text-[var(--slate-800)] opacity-20 leading-none select-none pointer-events-none" aria-hidden="true">
+        404
+      </div>
+
+      <div class="relative z-10 max-w-xl">
+        <p class="font-mono text-[11px] text-[var(--gold)] tracking-[0.2em] uppercase mb-8">Page Not Found</p>
+        <h1 class="font-display text-[48px] md:text-[72px] text-[var(--warm-white)] leading-[1.05] mb-6">
+          Wrong turn.
+        </h1>
+        <p class="font-body text-[18px] text-[var(--slate-400)] leading-relaxed mb-12">
+          The page you're looking for has moved, been removed, or never existed. Let's get you back on track.
+        </p>
+        <div class="flex flex-wrap justify-center gap-4">
+          <Button href="/" variant="primary">Back to Home</Button>
+          <Button href="/work" variant="outline">View Our Work</Button>
+          <Button href="/contact" variant="outline">Contact Us</Button>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .error-num {
+    animation: glitch-flicker 4s ease-in-out infinite;
+  }
+  @keyframes glitch-flicker {
+    0%, 92%, 100% { opacity: 0.2; transform: translate(-50%, -50%); }
+    93% { opacity: 0.15; transform: translate(calc(-50% + 4px), calc(-50% - 2px)); }
+    94% { opacity: 0.25; transform: translate(calc(-50% - 3px), calc(-50% + 1px)); }
+    95% { opacity: 0.2; transform: translate(-50%, -50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .error-num { animation: none; }
+  }
+</style>
+
+<script>
+  function initParticles404() {
+    const canvas = document.getElementById('particles-404') as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let destroyed = false;
+    let rafId = 0;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const resize = () => {
+      canvas.width = canvas.clientWidth * dpr;
+      canvas.height = canvas.clientHeight * dpr;
+      ctx.scale(dpr, dpr);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const particles: { x: number; y: number; vx: number; vy: number; r: number; a: number }[] = [];
+    const count = 40;
+    const w = () => canvas.clientWidth;
+    const h = () => canvas.clientHeight;
+
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * w(),
+        y: Math.random() * h(),
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r: Math.random() * 1.5 + 0.5,
+        a: Math.random() * 0.3 + 0.1,
+      });
+    }
+
+    function draw() {
+      if (destroyed) return;
+      ctx!.clearRect(0, 0, w(), h());
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0) p.x = w();
+        if (p.x > w()) p.x = 0;
+        if (p.y < 0) p.y = h();
+        if (p.y > h()) p.y = 0;
+
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(201, 169, 110, ${p.a})`;
+        ctx!.fill();
+      }
+      rafId = requestAnimationFrame(draw);
+    }
+
+    draw();
+
+    document.addEventListener('astro:before-swap', () => {
+      destroyed = true;
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', resize);
+    }, { once: true });
+  }
+
+  document.addEventListener('astro:page-load', initParticles404);
+</script>

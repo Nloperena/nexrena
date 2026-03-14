@@ -2,5 +2,10 @@ User-agent: *
 Allow: /
 Allow: /services
 Allow: /industries
+Allow: /resources
+Allow: /resources/blog
+Allow: /resources/faq
 Allow: /work
+Allow: /about
+Allow: /contact
 Sitemap: https://nexrena.com/sitemap-index.xml

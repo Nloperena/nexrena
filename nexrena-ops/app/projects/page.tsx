@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useProjects, genId, formatCurrency, formatDate } from '@/lib/store'
 import { Project, ProjectStatus, Task, TaskStatus, ProjectPhase } from '@/lib/types'
-import { PageHeader, Badge, Btn, Modal, Field, inputCls, selectCls, StatCard } from '@/components/ui'
+import { PageHeader, Badge, Btn, Modal, Field, inputCls, selectCls, StatCard, EmptyState } from '@/components/ui'
 
 const STATUSES: ProjectStatus[] = ['not_started','discovery','strategy','execution','review','delivered','on_hold']
 const DEFAULT_PHASES = (type: string): ProjectPhase[] => {
@@ -96,7 +96,7 @@ function ProjectForm({ initial, onSave, onClose }: {
       </div>
       <Field label="Project Value ($)"><input type="number" className={inputCls} value={form.value ?? 0} onChange={e => set('value', e.target.value)} /></Field>
       <Field label="Notes"><textarea rows={3} className={inputCls} value={form.notes ?? ''} onChange={e => set('notes', e.target.value)} /></Field>
-      <p className="text-xs text-[#7A8A9E]">Default phase checklist will be auto-generated based on project type.</p>
+      <p className="text-xs text-slate-400">Default phase checklist will be auto-generated based on project type.</p>
       <div className="flex justify-end gap-2 pt-2">
         <Btn variant="ghost" onClick={onClose}>Cancel</Btn>
         <Btn type="submit">Save Project</Btn>
@@ -107,14 +107,18 @@ function ProjectForm({ initial, onSave, onClose }: {
 
 function TaskRow({ task, onToggle }: { task: Task; onToggle: () => void }) {
   return (
-    <div className="flex items-center gap-3 py-2 px-3 hover:bg-[#1E2530]/30 rounded transition-colors group">
+    <div className="flex items-center gap-3 py-2.5 px-3 hover:bg-slate-800/20 rounded-lg transition-all duration-200 group">
       <button onClick={onToggle}
-        className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center transition-colors ${
-          task.status === 'done' ? 'bg-[#C9A96E] border-[#C9A96E]' : 'border-[#3D4A5C] hover:border-[#C9A96E]'
+        className={`w-[18px] h-[18px] rounded-[5px] border flex-shrink-0 flex items-center justify-center transition-all duration-300 ${
+          task.status === 'done'
+            ? 'bg-gold border-gold shadow-[0_0_6px_rgba(201,169,110,0.3)]'
+            : 'border-slate-600 hover:border-gold/60 hover:shadow-[0_0_4px_rgba(201,169,110,0.15)]'
         }`}>
-        {task.status === 'done' && <span className="text-[#0C0F12] text-[10px] font-bold">✓</span>}
+        {task.status === 'done' && <span className="text-obsidian text-[10px] font-bold">✓</span>}
       </button>
-      <span className={`text-sm flex-1 ${task.status === 'done' ? 'line-through text-[#3D4A5C]' : 'text-[#D4DCE6]'}`}>
+      <span className={`text-sm flex-1 transition-all duration-300 ${
+        task.status === 'done' ? 'line-through text-slate-600' : 'text-slate-200 group-hover:text-white'
+      }`}>
         {task.title}
       </span>
     </div>
@@ -152,13 +156,13 @@ export default function ProjectsPage() {
         action={<Btn onClick={() => setModal('add')}>+ New Project</Btn>}
       />
 
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-3 gap-4 mb-10 stagger">
         <StatCard label="Active Projects" value={String(activeCount)} />
         <StatCard label="Total Project Value" value={formatCurrency(totalValue)} gold />
         <StatCard label="Delivered" value={String(deliveredCount)} />
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4 stagger">
         {projects.map(project => {
           const allTasks = project.phases.flatMap(ph => ph.tasks)
           const doneTasks = allTasks.filter(t => t.status === 'done').length
@@ -166,49 +170,55 @@ export default function ProjectsPage() {
           const isOpen = expanded === project.id
 
           return (
-            <div key={project.id} className="bg-[#0C0F12] border border-[#1E2530] rounded-lg overflow-hidden">
+            <div key={project.id} className="glass-panel rounded-xl overflow-hidden card-lift">
               {/* Project header */}
               <div
-                className="px-5 py-4 flex items-center gap-4 cursor-pointer hover:bg-[#1E2530]/20 transition-colors"
+                className="px-6 py-5 flex items-center gap-4 cursor-pointer hover:bg-slate-800/20 transition-all duration-200"
                 onClick={() => setExpanded(isOpen ? null : project.id)}>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
                     <p className="text-white font-medium">{project.name}</p>
                     <Badge label={project.status} />
                     <Badge label={project.type} />
                   </div>
-                  <div className="flex items-center gap-4 mt-2">
-                    <div className="flex items-center gap-2 flex-1 max-w-xs">
-                      <div className="flex-1 bg-[#1E2530] rounded-full h-1.5">
-                        <div className="bg-[#C9A96E] h-1.5 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                  <div className="flex items-center gap-4 mt-3">
+                    <div className="flex items-center gap-2.5 flex-1 max-w-xs">
+                      <div className="flex-1 bg-slate-800/80 rounded-full h-1.5 overflow-hidden">
+                        <div className="bg-gradient-to-r from-gold-dim to-gold h-1.5 rounded-full transition-all duration-700 ease-out"
+                          style={{ width: `${pct}%` }} />
                       </div>
-                      <span className="text-xs text-[#7A8A9E] w-8">{pct}%</span>
+                      <span className="text-xs text-slate-400 tabular-nums w-8">{pct}%</span>
                     </div>
-                    <span className="text-xs text-[#7A8A9E]">{doneTasks}/{allTasks.length} tasks</span>
-                    {project.endDate && <span className="text-xs text-[#7A8A9E]">Due {formatDate(project.endDate)}</span>}
+                    <span className="text-xs text-slate-400">{doneTasks}/{allTasks.length} tasks</span>
+                    {project.endDate && <span className="text-xs text-slate-400">Due {formatDate(project.endDate)}</span>}
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-[#C9A96E] font-medium">{formatCurrency(project.value)}</p>
+                  <p className="text-gold font-semibold tabular-nums">{formatCurrency(project.value)}</p>
                 </div>
                 <div className="flex gap-2" onClick={e => e.stopPropagation()}>
                   <Btn size="sm" variant="ghost" onClick={() => setModal(project)}>Edit</Btn>
                   <Btn size="sm" variant="danger" onClick={() => remove(project.id)}>Del</Btn>
                 </div>
-                <span className="text-[#7A8A9E] text-sm">{isOpen ? '▲' : '▼'}</span>
+                <span className={`text-slate-400 text-sm transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>▼</span>
               </div>
 
-              {/* Phases */}
+              {/* Phases — expandable */}
               {isOpen && (
-                <div className="border-t border-[#1E2530]">
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 divide-x divide-[#1E2530]">
-                    {project.phases.map(phase => {
+                <div className="border-t border-slate-800/60 animate-fade-in">
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 divide-x divide-slate-800/40">
+                    {project.phases.map((phase, phIdx) => {
                       const phaseDone = phase.tasks.filter(t => t.status === 'done').length
+                      const phaseTotal = phase.tasks.length
+                      const phasePct = phaseTotal > 0 ? Math.round(phaseDone / phaseTotal * 100) : 0
                       return (
-                        <div key={phase.id} className="p-4">
-                          <div className="flex items-center justify-between mb-3">
-                            <p className="text-xs font-semibold text-[#C9A96E] uppercase tracking-wider">{phase.name}</p>
-                            <span className="text-[10px] text-[#3D4A5C]">{phaseDone}/{phase.tasks.length}</span>
+                        <div key={phase.id} className="p-5 animate-fade-in-up" style={{ animationDelay: `${phIdx * 0.05}s` }}>
+                          <div className="flex items-center justify-between mb-1">
+                            <p className="text-[10px] font-bold text-gold uppercase tracking-[0.15em]">{phase.name}</p>
+                            <span className="text-[10px] text-slate-600 tabular-nums">{phaseDone}/{phaseTotal}</span>
+                          </div>
+                          <div className="bg-slate-800/60 rounded-full h-1 mb-4 overflow-hidden">
+                            <div className="bg-gold/60 h-1 rounded-full transition-all duration-500" style={{ width: `${phasePct}%` }} />
                           </div>
                           {phase.tasks.map(task => (
                             <TaskRow key={task.id} task={task}
@@ -219,8 +229,8 @@ export default function ProjectsPage() {
                     })}
                   </div>
                   {project.notes && (
-                    <div className="px-5 py-3 border-t border-[#1E2530] bg-[#1E2530]/20">
-                      <p className="text-xs text-[#7A8A9E]">{project.notes}</p>
+                    <div className="px-6 py-4 border-t border-slate-800/40 bg-slate-800/10">
+                      <p className="text-xs text-slate-400 leading-relaxed">{project.notes}</p>
                     </div>
                   )}
                 </div>
@@ -230,9 +240,12 @@ export default function ProjectsPage() {
         })}
 
         {projects.length === 0 && (
-          <div className="bg-[#0C0F12] border border-[#1E2530] rounded-lg py-16 text-center">
-            <p className="text-[#3D4A5C] text-sm">No projects yet.</p>
-            <button onClick={() => setModal('add')} className="text-[#C9A96E] text-sm mt-2 hover:underline">Create your first project →</button>
+          <div className="glass-panel rounded-xl">
+            <EmptyState
+              message="No projects yet."
+              action={() => setModal('add')}
+              actionLabel="Create your first project"
+            />
           </div>
         )}
       </div>

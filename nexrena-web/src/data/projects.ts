@@ -27,6 +27,13 @@ export interface Project {
   results?: string;
   thumbnail?: string;
   video?: string;
+  /** Whether to show an iframe embed of the live site in the preview section */
+  embedSite?: boolean;
+  /** SEO strategy highlights shown in the dedicated SEO section */
+  seoHighlights: Array<{
+    title: string;
+    description: string;
+  }>;
 }
 
 export const projects: Project[] = [
@@ -66,7 +73,14 @@ export const projects: Project[] = [
     approach: 'We rebuilt the site on Next.js with a headless CMS, implementing structured data for product categories, a gated technical specification library for qualified buyers, and a full technical SEO foundation from day one.',
     results: 'Within 90 days of launch, organic inbound lead volume increased by 140%. The site now consistently scores 96+ on Lighthouse across all pages. The sales team reports that inbound leads arrive more informed.',
     thumbnail: 'https://forzabuilt.com/images/homepage-heroes/eagle-hero.webp',
-    video: 'https://forzabuilt.com/videos/backgrounds/WebOptimized/WebM/Eagle%20Header%20Video_Optimized.webm'
+    video: 'https://forzabuilt.com/videos/backgrounds/WebOptimized/WebM/Eagle%20Header%20Video_Optimized.webm',
+    embedSite: true,
+    seoHighlights: [
+      { title: 'Technical SEO Architecture', description: 'Built a crawlable, indexable foundation from day one — clean URL structure, XML sitemaps, and canonical tags across 200+ product pages.' },
+      { title: 'Structured Data for Industrial Products', description: 'Implemented Product and FAQ schema markup across the entire catalog, earning rich snippets in Google search results.' },
+      { title: 'Content Hierarchy for Buyer Intent', description: 'Restructured information architecture around how procurement teams actually search — by application, substrate, and specification.' },
+      { title: 'Core Web Vitals Optimization', description: 'Achieved and sustained 96+ Lighthouse scores through image optimization, edge caching, and code splitting.' },
+    ]
   },
   {
     id: 'rugged-red',
@@ -104,7 +118,13 @@ export const projects: Project[] = [
     approach: 'We replatformed the entire storefront to a headless commerce architecture using React and AWS. This decoupled the frontend from the backend, allowing for sub-second page transitions and a custom, streamlined checkout flow.',
     results: 'The transition to headless architecture resulted in a 31% increase in checkout completion. Bounce rates dropped by 47% as mobile users experienced a significantly faster and more intuitive shopping journey.',
     thumbnail: 'https://ruggedred.com/images/RRMascot+Type-smaller.png',
-    video: 'https://videos.ctfassets.net/hdznx4p7ef81/1OG5dyWb0f3mWf05Dwjh0k/fbafd351797af80200e19a2cb6ef6e2c/housekeeping-products-hero-video.mp4?q=70&fm=mp4&w=1280'
+    video: 'https://videos.ctfassets.net/hdznx4p7ef81/1OG5dyWb0f3mWf05Dwjh0k/fbafd351797af80200e19a2cb6ef6e2c/housekeeping-products-hero-video.mp4?q=70&fm=mp4&w=1280',
+    seoHighlights: [
+      { title: 'Product Page SEO at Scale', description: 'Dynamically generated meta titles, descriptions, and Open Graph tags for every SKU — ensuring each product page competes in organic search.' },
+      { title: 'Category Architecture for Crawlers', description: 'Designed a flat, logical category taxonomy that search engines could crawl efficiently while supporting faceted navigation without duplicate content.' },
+      { title: 'Mobile-First Indexing', description: 'Optimized the entire storefront for mobile-first indexing with responsive images, touch-optimized UI, and sub-2-second mobile load times.' },
+      { title: 'Seasonal Traffic Resilience', description: 'AWS edge infrastructure tuned for traffic bursts during peak campaign periods, maintaining 99.95% uptime and fast TTFB globally.' },
+    ]
   },
   {
     id: 'vito-fryfilter',
@@ -141,7 +161,13 @@ export const projects: Project[] = [
     metaDescription: 'VITO Fryfilter case study: Global DTC expansion. +38% conversion, +85% international revenue. Shopify, React, commercial buyer intent.',
     approach: 'We restructured the Shopify architecture to support market-specific landing pages, implemented hreflang correctly across all international variants, and rebuilt the product pages around the commercial kitchen buyer persona.',
     results: 'International revenue increased 85% year-over-year within the first two quarters post-launch. Conversion rate across all markets lifted 38%, with the largest gains in EU markets.',
-    thumbnail: 'https://www.nicoloperena.com/VITOShop.webp'
+    thumbnail: 'https://www.nicoloperena.com/VITOShop.webp',
+    seoHighlights: [
+      { title: 'International SEO & Hreflang', description: 'Implemented correct hreflang tags across all international storefronts, eliminating duplicate content issues and ensuring regional search visibility.' },
+      { title: 'Market-Specific Landing Pages', description: 'Created geo-targeted landing pages optimized for local search intent in priority EU and North American markets.' },
+      { title: 'Commercial Buyer Intent Keywords', description: 'Researched and targeted the exact search terms commercial kitchen operators use when evaluating oil filtration solutions.' },
+      { title: 'Product Schema for Global Availability', description: 'Deployed rich product schema with pricing, availability, and review data — earning enhanced listings across international Google SERPs.' },
+    ]
   },
   {
     id: 'furniture-packages-usa',
@@ -179,6 +205,12 @@ export const projects: Project[] = [
     approach: 'We rebuilt the site on WordPress with a custom procurement workflow, restructuring navigation around buyer type rather than product category.',
     results: 'Organic search traffic grew 210% over six months. Inbound quote requests nearly doubled. Average session duration increased by over three minutes.',
     thumbnail: 'https://i.vimeocdn.com/video/1668125069-e25f25a76ac262e8bb3370b86a084508932eb338b956c8766051c022cb39b003-d?mw=2300&mh=1294',
-    video: 'https://player.vimeo.com/video/825630813?h=1e14851030&muted=1;&background=1'
+    video: 'https://player.vimeo.com/video/825630813?h=1e14851030&muted=1;&background=1',
+    seoHighlights: [
+      { title: 'Content Clusters for Procurement', description: 'Built topic authority through interlinked content clusters targeting high-value procurement keywords like "bulk furniture packages" and "rental property furnishing."' },
+      { title: 'Local SEO for Florida Markets', description: 'Optimized Google Business Profile, built location-specific landing pages, and earned local citations to dominate Florida real estate procurement searches.' },
+      { title: 'Buyer-Type Navigation Structure', description: 'Restructured site architecture around buyer personas (investors, property managers, developers) instead of product categories — matching search intent.' },
+      { title: 'Technical SEO Overhaul', description: 'Migrated from a broken legacy site with full redirect mapping, crawl error remediation, and clean URL taxonomy that preserved existing rankings.' },
+    ]
   }
 ];

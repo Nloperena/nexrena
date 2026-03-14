@@ -3,22 +3,22 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Invoice } from '@/lib/types'
 import { InvoicePrint } from '@/components/invoice-print'
-import { Btn } from '@/components/ui'
+import { Btn, LinkBtn } from '@/components/ui'
+import { api } from '@/lib/api'
 
 export default function InvoicePrintPage({ params }: { params: { id: string } }) {
   const [invoice, setInvoice] = useState<Invoice | null | 'loading'>('loading')
 
   useEffect(() => {
-    fetch('/api/invoices')
-      .then(r => r.json())
-      .then((invoices: Invoice[]) => setInvoice(invoices.find(i => i.id === params.id) ?? null))
+    api.get<Invoice[]>('/invoices')
+      .then(invoices => setInvoice(invoices.find(i => i.id === params.id) ?? null))
       .catch(() => setInvoice(null))
   }, [params.id])
 
   if (invoice === 'loading') {
     return (
-      <div className="flex items-center justify-center min-h-[60vh] text-[#7A8A9E] text-sm">
-        Loading invoice...
+      <div className="flex items-center justify-center min-h-[60vh] text-slate-400 text-sm">
+        Loading invoice…
       </div>
     )
   }
@@ -26,25 +26,34 @@ export default function InvoicePrintPage({ params }: { params: { id: string } })
   if (!invoice) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <p className="text-[#7A8A9E] text-sm">Invoice not found.</p>
-        <Link href="/invoices" className="text-[#C9A96E] text-sm hover:underline">
+        <p className="text-slate-400 text-sm">Invoice not found.</p>
+        <Link href="/invoices" className="text-gold text-sm hover:underline">
           ← Back to Invoices
         </Link>
       </div>
     )
   }
 
+  const emailSubject = encodeURIComponent(`Invoice ${invoice.number} from Nexrena LLC`)
+  const emailBody = encodeURIComponent(
+    `Hi ${invoice.clientName},\n\nPlease find attached invoice ${invoice.number}.\n\nBest regards,\nNexrena LLC\nhello@nexrena.com`
+  )
+  const mailtoHref = `mailto:${invoice.clientEmail ?? ''}?subject=${emailSubject}&body=${emailBody}`
+
   return (
     <>
       {/* Controls bar — hidden during print */}
-      <div className="no-print fixed top-0 left-56 right-0 z-50 bg-[#0C0F12] border-b border-[#1E2530]
+      <div className="no-print fixed top-0 left-56 right-0 z-50 bg-obsidian border-b border-slate-800/60
         px-6 py-3 flex items-center justify-between">
         <Link href="/invoices"
-          className="text-sm text-[#7A8A9E] hover:text-white transition-colors flex items-center gap-2">
+          className="text-sm text-slate-400 hover:text-white transition-colors flex items-center gap-2">
           ← Back to Invoices
         </Link>
-        <div className="flex items-center gap-4">
-          <span className="text-xs text-[#3D4A5C] hidden md:block">
+        <div className="flex items-center gap-3">
+          {invoice.clientEmail && (
+            <LinkBtn href={mailtoHref} variant="ghost">✉ Email Client</LinkBtn>
+          )}
+          <span className="text-xs text-slate-600 hidden md:block">
             Choose &ldquo;Save as PDF&rdquo; in your browser&apos;s print dialog
           </span>
           <Btn onClick={() => window.print()}>

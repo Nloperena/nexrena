@@ -16,8 +16,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${playfair.variable} ${dmSans.variable}`}>
       <body className="bg-[#111418] text-white min-h-screen">
         <Sidebar />
-        <main className="ml-56 min-h-screen">
-          <div className="max-w-6xl mx-auto px-8 py-8">
+        <main className="ml-56 min-h-screen relative z-10">
+          <div className="max-w-6xl mx-auto px-10 py-10">
             {children}
           </div>
         </main>

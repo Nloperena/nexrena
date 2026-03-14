@@ -34,6 +34,7 @@ const blog = defineCollection({
     description: z.string(),
     publishedAt: z.coerce.date(),
     author: z.string().default('Nexrena'),
+    category: z.enum(['seo', 'web-design', 'ecommerce', 'strategy', 'manufacturing', 'professional-services']).default('strategy'),
   }),
 });
 

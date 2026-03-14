@@ -1,0 +1,76 @@
+---
+/**
+ * Newsletter signup CTA for blog posts and blog index.
+ * Submits to the same API as the contact form.
+ */
+---
+
+<div class="newsletter-cta bg-[var(--slate-900)] border border-[var(--slate-800)] p-8 md:p-10">
+  <div class="flex flex-col md:flex-row gap-8 items-start md:items-center">
+    <div class="flex-1">
+      <span class="font-mono text-[10px] text-[var(--gold)] uppercase tracking-widest block mb-3">STAY SHARP //</span>
+      <h3 class="font-display text-[24px] text-[var(--warm-white)] mb-2">Get growth insights delivered.</h3>
+      <p class="font-body text-[14px] text-[var(--slate-400)]">
+        Practical B2B web design and SEO advice. No fluff, no spam. Unsubscribe anytime.
+      </p>
+    </div>
+    <form id="newsletter-form" class="flex flex-col sm:flex-row gap-3 w-full md:w-auto shrink-0">
+      <input 
+        type="email" 
+        name="email" 
+        required 
+        placeholder="you@company.com" 
+        class="bg-[var(--slate-800)] border border-[var(--slate-700)] text-[var(--warm-white)] font-body text-[14px] px-4 py-3 outline-none focus:border-[var(--gold)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] transition-colors w-full sm:w-[240px]"
+        autocomplete="email"
+        aria-label="Email address for newsletter"
+      />
+      <button 
+        type="submit" 
+        class="font-mono text-[11px] text-[var(--obsidian)] bg-[var(--gold)] px-6 py-3 uppercase tracking-widest hover:bg-[var(--gold-light)] transition-colors whitespace-nowrap"
+      >
+        Subscribe
+      </button>
+    </form>
+    <p id="newsletter-success" class="hidden font-mono text-[12px] text-[var(--gold)]">Subscribed. Welcome aboard.</p>
+    <p id="newsletter-error" class="hidden font-mono text-[12px] text-red-400"></p>
+  </div>
+</div>
+
+<script>
+  const NEXRENA_API = import.meta.env.PUBLIC_API_URL || 'http://localhost:4000';
+
+  function initNewsletter() {
+    const form = document.getElementById('newsletter-form') as HTMLFormElement | null;
+    const successEl = document.getElementById('newsletter-success');
+    const errorEl = document.getElementById('newsletter-error');
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (errorEl) { errorEl.classList.add('hidden'); errorEl.textContent = ''; }
+
+      const email = new FormData(form).get('email');
+      try {
+        const res = await fetch(`${NEXRENA_API}/api/leads`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, message: 'Newsletter signup', projectType: 'newsletter' }),
+        });
+
+        if (res.ok) {
+          form.classList.add('hidden');
+          successEl?.classList.remove('hidden');
+        } else {
+          throw new Error('failed');
+        }
+      } catch {
+        if (errorEl) {
+          errorEl.textContent = 'Something went wrong. Try again or email hello@nexrena.com';
+          errorEl.classList.remove('hidden');
+        }
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', initNewsletter);
+</script>

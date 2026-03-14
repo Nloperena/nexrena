@@ -40,9 +40,8 @@
 }
 
 .scroll-fade-in {
-  animation: fade-in linear both;
-  animation-timeline: view();
-  animation-range: entry 0% entry 35%;
+  opacity: 1;
+  transform: none;
 }
 
 /* ─── Scroll-Driven Scale Up ─────────────────────────────────────────────────── */
@@ -52,9 +51,8 @@
 }
 
 .scroll-scale-up {
-  animation: scale-up linear both;
-  animation-timeline: view();
-  animation-range: entry 0% entry 40%;
+  opacity: 1;
+  transform: none;
 }
 
 /* ─── Scroll-Driven Slide Up ─────────────────────────────────────────────────── */
@@ -64,9 +62,8 @@
 }
 
 .scroll-slide-up {
-  animation: slide-up linear both;
-  animation-timeline: view();
-  animation-range: entry 0% entry 30%;
+  opacity: 1;
+  transform: none;
 }
 
 /* ─── Clip-Path Reveal (left to right) ──────────────────────────────────────── */
@@ -76,9 +73,37 @@
 }
 
 .scroll-clip-reveal {
-  animation: clip-reveal linear both;
-  animation-timeline: view();
-  animation-range: entry 10% entry 50%;
+  clip-path: none;
+}
+
+/* Apply scroll-driven animations only in browsers that support them */
+@supports (animation-timeline: view()) {
+  .scroll-fade-in {
+    opacity: 0;
+    animation: fade-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 35%;
+  }
+
+  .scroll-scale-up {
+    opacity: 0;
+    animation: scale-up linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+
+  .scroll-slide-up {
+    opacity: 0;
+    animation: slide-up linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 30%;
+  }
+
+  .scroll-clip-reveal {
+    animation: clip-reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 10% entry 50%;
+  }
 }
 
 /* ─── Word-by-Word Manifesto Reveal ─────────────────────────────────────────── */

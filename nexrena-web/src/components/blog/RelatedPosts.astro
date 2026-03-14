@@ -1,0 +1,35 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BlogCard from './BlogCard.astro';
+
+interface Props {
+  currentSlug: string;
+  category: string;
+  allPosts: CollectionEntry<'blog'>[];
+}
+
+const { currentSlug, category, allPosts } = Astro.props;
+
+const related = allPosts
+  .filter(p => p.slug !== currentSlug)
+  .filter(p => p.data.category === category)
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+  .slice(0, 3);
+---
+
+{related.length > 0 && (
+  <section class="border-t border-[var(--slate-800)] pt-16 mt-16">
+    <h3 class="font-display text-[28px] text-[var(--warm-white)] mb-8">Related articles</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {related.map(post => (
+        <BlogCard
+          slug={post.slug}
+          title={post.data.title}
+          description={post.data.description}
+          publishedAt={post.data.publishedAt}
+          category={post.data.category}
+        />
+      ))}
+    </div>
+  </section>
+)}
