@@ -1,5 +1,4 @@
 ---
-// Rebuild: env vars updated
 import Layout from '../components/layout/Layout.astro';
 import PageHero from '../components/sections/PageHero.astro';
 import Button from '../components/ui/Button.astro';
@@ -12,6 +11,9 @@ const schema = webPageSchema({
   description: 'Contact Nexrena for web design, SEO, and digital growth. Based in Kissimmee, FL (Orlando metro). Start your 90-day growth plan.',
   url: `${site}/contact`,
 });
+
+// API URL for contact form - accessed at build time
+const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa9f.herokuapp.com';
 ---
 
 <Layout 
@@ -154,8 +156,8 @@ const schema = webPageSchema({
             </p>
           </div>
 
-          <script>
-            const NEXRENA_API = import.meta.env.PUBLIC_API_URL || 'http://localhost:4000';
+          <script define:vars={{ apiUrl }}>
+            const NEXRENA_API = apiUrl;
 
             function initContactForm() {
               const form = document.getElementById('contact-form') as HTMLFormElement | null;
