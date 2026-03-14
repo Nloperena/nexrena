@@ -78,7 +78,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
         </div>
 
         <!-- RIGHT: Form -->
-        <div class="bg-[var(--slate-900)] p-8 md:p-12 border border-[var(--slate-800)] reveal" style="--i: 2;">
+        <div class="bg-[var(--slate-900)] p-8 md:p-12 border border-[var(--slate-800)] reveal" style="--i: 2;" data-api-url={apiUrl}>
           <form id="contact-form" class="flex flex-col gap-6 relative z-10">
             
             <!-- Honeypot — invisible to humans, traps bots -->
@@ -156,16 +156,17 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
             </p>
           </div>
 
-          <script define:vars={{ apiUrl }}>
-            const NEXRENA_API = apiUrl;
-
+          <script>
             function initContactForm() {
+              const formWrapper = document.querySelector('[data-api-url]') as HTMLElement | null;
               const form = document.getElementById('contact-form') as HTMLFormElement | null;
               const success = document.getElementById('success-state');
               const errorEl = document.getElementById('form-error');
               const submitText = document.getElementById('submit-text');
               const submitSpinner = document.getElementById('submit-spinner');
-              if (!form || !success) return;
+              if (!form || !success || !formWrapper) return;
+
+              const NEXRENA_API = formWrapper.dataset.apiUrl || 'https://nexrena-api-5dc54effaa9f.herokuapp.com';
 
               // Inline validation on blur
               form.querySelectorAll('.contact-input[required]').forEach((input) => {
