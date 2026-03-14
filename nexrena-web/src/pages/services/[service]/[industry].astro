@@ -3,9 +3,11 @@ import Layout from '@/components/layout/Layout.astro';
 import Breadcrumb from '@/components/seo/Breadcrumb.astro';
 import PageHero from '@/components/sections/PageHero.astro';
 import Button from '@/components/ui/Button.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
 import { services } from '@/data/services';
 import { industries } from '@/data/industries';
 import { heroImages } from '@/data/hero-images';
+import { crossContent } from '@/data/cross-content';
 import { webPageSchema, breadcrumbSchema } from '@/lib/schema';
 
 export function getStaticPaths() {
@@ -26,7 +28,10 @@ const serviceTitle = service.title.replace(/\n/g, ' ');
 const site = 'https://nexrena.com';
 const pageUrl = `${site}/services/${service.id}/${industry.id}`;
 const pageTitle = `${serviceTitle} for ${industry.name}`;
-const pageDescription = `${serviceTitle} for ${industry.name.toLowerCase()}. ${industry.subhead}`;
+
+const content = crossContent[`${service.id}/${industry.id}`];
+const pageDescription = content?.intro ?? `${serviceTitle} for ${industry.name.toLowerCase()}. ${industry.subhead}`;
+
 const schema = [
   webPageSchema({ name: pageTitle, description: pageDescription, url: pageUrl }),
   breadcrumbSchema([
@@ -50,18 +55,31 @@ const industryImage = heroImages[`industries/${industry.id}` as keyof typeof her
     </div>
     <PageHero
       eyebrow={`${serviceTitle.toUpperCase()} // ${industry.name.toUpperCase()}`}
-      title={`${serviceTitle} for ${industry.name}.`}
-      subtitle={industry.subhead}
+      title={content?.headline ?? `${serviceTitle} for ${industry.name}.`}
+      subtitle={pageDescription}
       image={industryImage}
     />
+
+    {content && (
+      <section class="bg-[var(--obsidian)] border-b border-[var(--slate-800)]">
+        <div class="section-container py-16">
+          <p class="font-body text-[18px] text-[var(--slate-300)] leading-relaxed max-w-3xl reveal">
+            {content.intro}
+          </p>
+        </div>
+      </section>
+    )}
 
     <section class="bg-[var(--obsidian)] py-12 md:py-24">
       <div class="section-container">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-24">
           <div class="reveal">
-            <h2 class="font-display text-[28px] text-[var(--warm-white)] mb-8">Common challenges.</h2>
+            <Eyebrow class="mb-6">CHALLENGES //</Eyebrow>
+            <h2 class="font-display text-[28px] text-[var(--warm-white)] mb-8">
+              What {industry.name.toLowerCase()} companies face.
+            </h2>
             <ul class="space-y-6">
-              {industry.painPoints.map((point) => (
+              {(content?.challenges ?? industry.painPoints).map((point) => (
                 <li class="font-body text-[16px] text-[var(--slate-400)] flex gap-4">
                   <span class="text-[var(--gold)] shrink-0">—</span>
                   {point}
@@ -70,9 +88,12 @@ const industryImage = heroImages[`industries/${industry.id}` as keyof typeof her
             </ul>
           </div>
           <div class="reveal" style="--i: 1;">
-            <h2 class="font-display text-[28px] text-[var(--warm-white)] mb-8">How we help.</h2>
+            <Eyebrow class="mb-6">OUR APPROACH //</Eyebrow>
+            <h2 class="font-display text-[28px] text-[var(--warm-white)] mb-8">
+              How we apply {serviceTitle.toLowerCase()}.
+            </h2>
             <ul class="space-y-6">
-              {industry.solutions.map((solution) => (
+              {(content?.approach ?? industry.solutions).map((solution) => (
                 <li class="font-body text-[16px] text-[var(--slate-400)] flex gap-4">
                   <span class="text-[var(--gold)] shrink-0">—</span>
                   {solution}
@@ -84,6 +105,23 @@ const industryImage = heroImages[`industries/${industry.id}` as keyof typeof her
       </div>
     </section>
 
+    {content?.outcomes && (
+      <section class="bg-[var(--slate-900)] py-16 md:py-24 border-y border-[var(--slate-800)]">
+        <div class="section-container">
+          <Eyebrow class="mb-6">EXPECTED OUTCOMES //</Eyebrow>
+          <h2 class="font-display text-[28px] text-[var(--warm-white)] mb-12 reveal">What you can expect.</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {content.outcomes.map((outcome, i) => (
+              <div class="flex gap-4 reveal" style={`--i: ${i + 1};`}>
+                <span class="font-mono text-[14px] text-[var(--gold)] shrink-0">0{i + 1}</span>
+                <p class="font-body text-[16px] text-[var(--slate-300)] leading-relaxed">{outcome}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
     <section class="bg-[var(--cream)] py-24 md:py-32 text-[var(--obsidian)]">
       <div class="section-container">
         <div class="max-w-2xl">
@@ -91,7 +129,7 @@ const industryImage = heroImages[`industries/${industry.id}` as keyof typeof her
             Ready to grow?
           </h2>
           <p class="font-body text-[17px] text-[var(--slate-600)] mb-12 reveal" style="--i: 1;">
-            Let's map your 90-day strategy for {industry.name.toLowerCase()}. We'll audit your current setup and outline a plan that fits your goals.
+            Let's map your 90-day {serviceTitle.toLowerCase()} strategy for {industry.name.toLowerCase()}. We'll audit your current setup and build a plan that fits.
           </p>
           <Button href="/contact" variant="primary" class="reveal" style="--i: 2;">
             {industry.ctaLabel} &rarr;

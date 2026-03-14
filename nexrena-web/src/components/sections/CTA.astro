@@ -10,17 +10,18 @@
   <div class="relative w-full max-w-[1320px] mx-auto px-[5vw] pt-32 pb-16 flex-grow flex flex-col justify-center">
     
     <div class="reveal max-w-5xl">
-      <h2 class="font-display text-[clamp(64px,12vw,160px)] leading-[0.9] tracking-tight mb-12">
-        Let's build<br/>
-        <span class="italic text-[var(--obsidian)] opacity-80">something</span><br/>
-        extraordinary.
+      <p class="font-mono text-[11px] text-[var(--obsidian)] opacity-50 uppercase tracking-[0.2em] mb-8">Ready to grow?</p>
+      <h2 class="cta-headline font-display text-[clamp(56px,10vw,140px)] leading-[0.9] tracking-tight mb-12">
+        <span class="cta-scramble-line" data-text="Let's build">Let's build</span><br/>
+        <span class="cta-scramble-line italic opacity-80" data-text="something">something</span><br/>
+        <span class="cta-scramble-line" data-text="extraordinary.">extraordinary.</span>
       </h2>
       
       <div class="flex flex-col md:flex-row items-start md:items-center gap-12 mt-16">
-        <a href="/contact" class="group relative inline-flex items-center gap-6 font-display text-[32px] md:text-[48px] text-[var(--obsidian)] hover:opacity-70 transition-opacity">
+        <a href="/contact" class="group relative inline-flex items-center gap-6 font-display text-[28px] md:text-[44px] text-[var(--obsidian)] hover:opacity-70 transition-opacity">
           Start a project
-          <div class="w-16 h-16 rounded-full border border-[var(--obsidian)] flex items-center justify-center group-hover:bg-[var(--obsidian)] group-hover:text-[var(--gold)] transition-colors duration-300">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="w-14 h-14 md:w-16 md:h-16 rounded-full border-2 border-[var(--obsidian)] flex items-center justify-center group-hover:bg-[var(--obsidian)] group-hover:text-[var(--gold)] transition-colors duration-300">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
           </div>
@@ -28,7 +29,7 @@
 
         <div class="w-px h-16 bg-[var(--obsidian)] opacity-20 hidden md:block"></div>
 
-        <a href="mailto:hello@nexrena.com" class="font-mono text-[14px] uppercase tracking-widest hover:opacity-70 transition-opacity">
+        <a href="mailto:hello@nexrena.com" class="font-mono text-[13px] uppercase tracking-widest hover:opacity-70 transition-opacity">
           hello@nexrena.com
         </a>
       </div>
@@ -36,11 +37,11 @@
     
   </div>
 
-  <!-- Massive Marquee at bottom -->
-  <div class="w-full overflow-hidden border-t border-[var(--obsidian)]/10 py-6 mt-auto">
-    <div class="flex items-center gap-16 animate-marquee-fast">
-      {[1,2,3,4,5,6].map(() => (
-        <span class="font-display italic text-[80px] leading-none opacity-20 whitespace-nowrap">Nexrena Digital Growth</span>
+  <!-- Marquee -->
+  <div class="w-full overflow-hidden border-t border-[var(--obsidian)]/10 py-5 mt-auto">
+    <div class="flex items-center gap-12 animate-marquee-fast">
+      {[1,2,3,4,5,6,7,8].map(() => (
+        <span class="font-display italic text-[60px] md:text-[80px] leading-none opacity-[0.12] whitespace-nowrap select-none">Nexrena</span>
       ))}
     </div>
   </div>
@@ -62,3 +63,49 @@
     width: max-content;
   }
 </style>
+
+<script>
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+  function scrambleText(el: HTMLElement, finalText: string) {
+    const len = finalText.length;
+    let iteration = 0;
+    const totalIterations = len * 3;
+    const interval = setInterval(() => {
+      el.textContent = finalText
+        .split('')
+        .map((char, i) => {
+          if (i < iteration / 3) return finalText[i];
+          return CHARS[Math.floor(Math.random() * CHARS.length)];
+        })
+        .join('');
+      iteration++;
+      if (iteration >= totalIterations) {
+        el.textContent = finalText;
+        clearInterval(interval);
+      }
+    }, 30);
+  }
+
+  function initCtaScramble() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const lines = document.querySelectorAll('.cta-scramble-line');
+    if (!lines.length) return;
+
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const el = entry.target as HTMLElement;
+          const text = el.dataset.text || el.textContent || '';
+          setTimeout(() => scrambleText(el, text), 200);
+          obs.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    lines.forEach((line) => observer.observe(line));
+  }
+
+  document.addEventListener('astro:page-load', initCtaScramble);
+</script>

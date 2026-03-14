@@ -1,8 +1,19 @@
 ---
 import Layout from '../../../components/layout/Layout.astro';
 import PageHero from '../../../components/sections/PageHero.astro';
+import BlogCard from '../../../components/blog/BlogCard.astro';
+import NewsletterCTA from '../../../components/blog/NewsletterCTA.astro';
 import { getCollection } from 'astro:content';
 import { heroImages } from '../../../data/hero-images';
+import { blogCategories } from '../../../data/blog-categories';
+
+const POSTS_PER_PAGE = 12;
+
+const allPosts = (await getCollection('blog'))
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+
+const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
+const posts = allPosts.slice(0, POSTS_PER_PAGE);
 ---
 
 <Layout 
@@ -19,24 +30,47 @@ import { heroImages } from '../../../data/hero-images';
 
     <section class="bg-[var(--obsidian)] py-12 md:py-24">
       <div class="section-container">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {(await getCollection('blog'))
-            .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
-            .map((post) => (
-            <a href={`/resources/blog/${post.slug}`} class="group block p-6 border border-[var(--slate-800)] hover:border-[var(--gold)] transition-colors reveal">
-              <span class="font-mono text-[10px] text-[var(--gold-dim)] uppercase tracking-widest">
-                {post.data.publishedAt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-              </span>
-              <h2 class="font-display text-[24px] text-[var(--warm-white)] mt-3 mb-3 group-hover:text-[var(--gold)] transition-colors line-clamp-2">
-                {post.data.title}
-              </h2>
-              <p class="font-body text-[14px] text-[var(--slate-400)] line-clamp-2">
-                {post.data.description}
-              </p>
-              <span class="inline-block mt-4 font-mono text-[11px] text-[var(--gold)] group-hover:translate-x-2 transition-transform">Read &rarr;</span>
+
+        <!-- Category Filter -->
+        <div class="flex flex-wrap gap-3 mb-12">
+          <a href="/resources/blog" class="font-mono text-[11px] uppercase tracking-widest px-4 py-2 border transition-colors bg-[var(--gold)] text-[var(--obsidian)] border-[var(--gold)]">
+            All
+          </a>
+          {blogCategories.map(cat => (
+            <a href={`/resources/blog/category/${cat.id}`} class="font-mono text-[11px] uppercase tracking-widest px-4 py-2 border border-[var(--slate-700)] text-[var(--slate-300)] hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors">
+              {cat.name}
             </a>
           ))}
         </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {posts.map((post) => (
+            <BlogCard
+              slug={post.slug}
+              title={post.data.title}
+              description={post.data.description}
+              publishedAt={post.data.publishedAt}
+              category={post.data.category}
+            />
+          ))}
+        </div>
+
+        <!-- Newsletter -->
+        <div class="mt-16">
+          <NewsletterCTA />
+        </div>
+
+        <!-- Pagination -->
+        {totalPages > 1 && (
+          <nav class="flex justify-center items-center gap-4 mt-16" aria-label="Blog pagination">
+            <span class="font-mono text-[12px] text-[var(--gold)] border border-[var(--gold)] bg-[var(--gold)]/10 px-4 py-2">1</span>
+            {Array.from({ length: totalPages - 1 }, (_, i) => i + 2).map(page => (
+              <a href={`/resources/blog/${page}`} class="font-mono text-[12px] text-[var(--slate-400)] border border-[var(--slate-700)] px-4 py-2 hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors">
+                {page}
+              </a>
+            ))}
+          </nav>
+        )}
       </div>
     </section>
   </main>

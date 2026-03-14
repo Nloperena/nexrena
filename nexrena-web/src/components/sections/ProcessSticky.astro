@@ -89,40 +89,28 @@ const steps = [
   function initHorizontalScroll() {
     gsap.registerPlugin(ScrollTrigger);
 
-    // Only run on desktop
     if (window.innerWidth < 768) return;
-    
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const wrapper = document.getElementById('process-wrapper');
     const container = document.getElementById('process-scroll-container');
-
     if (!wrapper || !container) return;
 
-    // Calculate how far to scroll left
-    const scrollWidth = container.scrollWidth - window.innerWidth;
+    gsap.set(container, { x: 0 });
 
     gsap.to(container, {
-      x: -scrollWidth,
+      x: () => -(container.scrollWidth - window.innerWidth),
       ease: "none",
       scrollTrigger: {
         trigger: wrapper,
         pin: true,
-        scrub: 1, // Smooth scrubbing
-        end: () => "+=" + scrollWidth, // Pin duration equals scroll distance
+        scrub: 1,
+        end: () => "+=" + (container.scrollWidth - window.innerWidth),
         invalidateOnRefresh: true,
         anticipatePin: 1
       }
     });
   }
 
-  // Ensure it runs after view transitions
-  document.addEventListener('astro:page-load', () => {
-    // Clear old scroll triggers on navigation
-    import('gsap/ScrollTrigger').then(({ ScrollTrigger }) => {
-      ScrollTrigger.getAll().forEach(t => t.kill());
-      initHorizontalScroll();
-    });
-  });
+  document.addEventListener('astro:page-load', initHorizontalScroll);
 </script>

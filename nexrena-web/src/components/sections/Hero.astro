@@ -36,25 +36,25 @@ import Button from '../ui/Button.astro';
   </div>
 
   <!-- Content: lower-third layout -->
-  <div class="relative z-10 w-full max-w-[1320px] mx-auto px-5vw pb-[12vh] md:pb-[14vh] pt-32">
+  <div class="hero-content relative z-10 w-full max-w-[1320px] mx-auto px-5vw pb-[12vh] md:pb-[14vh] pt-32">
     <!-- Eyebrow -->
-    <p class="hero-eyebrow font-mono text-[10px] text-[var(--gold)] tracking-[0.2em] uppercase mb-6 opacity-0">
+    <p class="hero-eyebrow font-mono text-[10px] text-[var(--gold)] tracking-[0.2em] uppercase mb-6">
       Digital Growth Agency · Orlando, FL
     </p>
 
     <!-- Headline -->
-    <h1 class="hero-title font-display text-[var(--warm-white)] font-light leading-[0.95] tracking-tight opacity-0 max-w-4xl">
+    <h1 class="hero-title font-display text-[var(--warm-white)] font-light leading-[0.95] tracking-tight max-w-4xl">
       <span class="block text-[clamp(48px,8vw,96px)] md:text-[clamp(64px,10vw,120px)]">Growth</span>
       <span class="block text-[clamp(48px,8vw,96px)] md:text-[clamp(64px,10vw,120px)] text-[var(--gold)]">infrastructure.</span>
     </h1>
 
     <!-- Tagline -->
-    <p class="hero-tagline text-[var(--slate-200)] text-base md:text-lg font-light max-w-md mt-6 mb-10 opacity-0">
+    <p class="hero-tagline text-[var(--slate-200)] text-base md:text-lg font-light max-w-md mt-6 mb-10">
       We build the digital engine. You run the business.
     </p>
 
     <!-- CTA row -->
-    <div class="hero-cta flex flex-wrap items-center gap-4 opacity-0">
+    <div class="hero-cta flex flex-wrap items-center gap-4">
       <Button href="/contact" variant="primary" class="!rounded-full !h-12 !px-8">
         Start a Project
       </Button>
@@ -68,19 +68,19 @@ import Button from '../ui/Button.astro';
     </div>
 
     <!-- Stats bar (subtle, app-style) -->
-    <div class="hero-stats flex items-center gap-8 mt-14 pt-8 border-t border-[var(--slate-800)]/60 opacity-0">
+    <div class="hero-stats flex items-center gap-8 mt-14 pt-8 border-t border-[var(--slate-800)]/60">
       <div class="flex items-baseline gap-2">
-        <span class="font-display text-[28px] text-[var(--gold)] font-light">04</span>
+        <span class="font-display text-[28px] text-[var(--gold)] font-light hero-counter" data-target="4" data-prefix="0">0</span>
         <span class="font-mono text-[10px] text-[var(--slate-500)] uppercase tracking-wider">Projects</span>
       </div>
       <div class="w-px h-6 bg-[var(--slate-700)]"></div>
       <div class="flex items-baseline gap-2">
-        <span class="font-display text-[28px] text-[var(--gold)] font-light">3</span>
+        <span class="font-display text-[28px] text-[var(--gold)] font-light hero-counter" data-target="3">0</span>
         <span class="font-mono text-[10px] text-[var(--slate-500)] uppercase tracking-wider">Verticals</span>
       </div>
       <div class="w-px h-6 bg-[var(--slate-700)]"></div>
       <div class="flex items-baseline gap-2">
-        <span class="font-display text-[28px] text-[var(--gold)] font-light">100%</span>
+        <span class="font-display text-[28px] text-[var(--gold)] font-light hero-counter" data-target="100" data-suffix="%">0</span>
         <span class="font-mono text-[10px] text-[var(--slate-500)] uppercase tracking-wider">Retention</span>
       </div>
     </div>
@@ -100,31 +100,58 @@ import Button from '../ui/Button.astro';
     background-color: var(--obsidian);
   }
 
+  /* Elements start hidden; .is-active triggers staggered entrance */
   .hero-eyebrow {
-    animation: heroFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+    opacity: 0;
+    transform: translateY(10px);
   }
   .hero-title {
-    animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(40px);
   }
   .hero-tagline {
-    animation: heroFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+    opacity: 0;
+    transform: translateY(20px);
   }
   .hero-cta {
-    animation: heroFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+    opacity: 0;
+    transform: translateY(20px);
   }
   .hero-stats {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .hero-content.is-active .hero-eyebrow {
+    animation: heroEyebrow 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .hero-content.is-active .hero-title {
+    animation: heroTitleReveal 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+  }
+  .hero-content.is-active .hero-tagline {
+    animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+  }
+  .hero-content.is-active .hero-cta {
     animation: heroFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.65s forwards;
+  }
+  .hero-content.is-active .hero-stats {
+    animation: heroFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
+  }
+
+  @keyframes heroEyebrow {
+    from { opacity: 0; transform: translateY(10px); letter-spacing: 0.4em; }
+    to   { opacity: 1; transform: translateY(0); letter-spacing: 0.2em; }
+  }
+
+  @keyframes heroTitleReveal {
+    from { opacity: 0; clip-path: inset(0 0 100% 0); transform: translateY(40px); }
+    to   { opacity: 1; clip-path: inset(0 0 0% 0); transform: translateY(0); }
   }
 
   @keyframes heroFadeUp {
-    from {
-      opacity: 0;
-      transform: translateY(24px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   @keyframes scrollPulse {
@@ -147,9 +174,10 @@ import Button from '../ui/Button.astro';
     .hero-tagline,
     .hero-cta,
     .hero-stats {
-      animation: none;
-      opacity: 1;
-      transform: none;
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+      clip-path: none !important;
     }
     .animate-scroll-pulse {
       animation: none;
@@ -241,31 +269,31 @@ import Button from '../ui/Button.astro';
     }
   `;
 
+  let cleanupHero: (() => void) | null = null;
+
   function initWebGLHero() {
-    // Respect reduced motion
+    // Always clean up previous instance first
+    cleanupHero?.();
+    cleanupHero = null;
+
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const canvas = document.getElementById('hero-canvas') as HTMLCanvasElement;
     if (!canvas) return;
 
     const gl = canvas.getContext('webgl');
-    if (!gl) {
-      console.warn('WebGL not supported');
-      return;
-    }
+    if (!gl) return;
 
-    // Fade out fallback image when WebGL is ready
     const fallbackImg = document.getElementById('hero-fallback-img');
     if (fallbackImg) fallbackImg.style.opacity = '0';
 
-    function createShader(gl: WebGLRenderingContext, type: number, source: string) {
-      const shader = gl.createShader(type);
+    function createShader(glCtx: WebGLRenderingContext, type: number, source: string) {
+      const shader = glCtx.createShader(type);
       if (!shader) return null;
-      gl.shaderSource(shader, source);
-      gl.compileShader(shader);
-      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.error(gl.getShaderInfoLog(shader));
-        gl.deleteShader(shader);
+      glCtx.shaderSource(shader, source);
+      glCtx.compileShader(shader);
+      if (!glCtx.getShaderParameter(shader, glCtx.COMPILE_STATUS)) {
+        glCtx.deleteShader(shader);
         return null;
       }
       return shader;
@@ -273,7 +301,6 @@ import Button from '../ui/Button.astro';
 
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
     const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
-
     const program = gl.createProgram();
     if (!program || !vertexShader || !fragmentShader) return;
 
@@ -282,15 +309,10 @@ import Button from '../ui/Button.astro';
     gl.linkProgram(program);
     gl.useProgram(program);
 
-    const vertices = new Float32Array([
-      -1, -1,  1, -1, -1,  1,
-      -1,  1,  1, -1,  1,  1
-    ]);
-
+    const vertices = new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]);
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-
     const positionLoc = gl.getAttribLocation(program, 'position');
     gl.enableVertexAttribArray(positionLoc);
     gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
@@ -299,58 +321,98 @@ import Button from '../ui/Button.astro';
     const resLoc = gl.getUniformLocation(program, 'u_resolution');
     const mouseLoc = gl.getUniformLocation(program, 'u_mouse');
 
-    let mouseX = 0;
-    let mouseY = 0;
-    let targetMouseX = 0;
-    let targetMouseY = 0;
+    let mouseX = 0, mouseY = 0, targetMouseX = 0, targetMouseY = 0;
+    let startTime = performance.now();
+    let animationFrameId = 0;
+    let isVisible = true;
+    let destroyed = false;
 
-    function resize() {
-      if (!canvas) return;
-      // Adjust resolution for device pixel ratio for crisp rendering
+    const onResize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = canvas.clientWidth * dpr;
       canvas.height = canvas.clientHeight * dpr;
-      gl?.viewport(0, 0, canvas.width, canvas.height);
-      gl?.uniform2f(resLoc, canvas.width, canvas.height);
-    }
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.uniform2f(resLoc, canvas.width, canvas.height);
+    };
 
-    window.addEventListener('resize', resize);
-    resize();
-
-    window.addEventListener('mousemove', (e) => {
+    const onMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       targetMouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
-      targetMouseY = (canvas.height - (e.clientY - rect.top) * (canvas.height / rect.height));
-    });
+      targetMouseY = canvas.height - (e.clientY - rect.top) * (canvas.height / rect.height);
+    };
 
-    let startTime = performance.now();
-    let animationFrameId: number;
+    window.addEventListener('resize', onResize);
+    window.addEventListener('mousemove', onMouseMove);
+    onResize();
 
     function render(time: number) {
-      if (!gl || !program) return;
-      
+      if (destroyed || !isVisible) return;
       const elapsed = (time - startTime) * 0.001;
-      
-      // Smooth mouse interpolation
       mouseX += (targetMouseX - mouseX) * 0.05;
       mouseY += (targetMouseY - mouseY) * 0.05;
-
-      gl.uniform1f(timeLoc, elapsed);
-      gl.uniform2f(mouseLoc, mouseX, mouseY);
-
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      gl!.uniform1f(timeLoc, elapsed);
+      gl!.uniform2f(mouseLoc, mouseX, mouseY);
+      gl!.drawArrays(gl!.TRIANGLES, 0, 6);
       animationFrameId = requestAnimationFrame(render);
+    }
+
+    let visObs: IntersectionObserver | null = null;
+    const heroSection = canvas.closest('section');
+    if (heroSection) {
+      visObs = new IntersectionObserver(([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible && !destroyed) render(performance.now());
+        else cancelAnimationFrame(animationFrameId);
+      }, { threshold: 0.05 });
+      visObs.observe(heroSection);
     }
 
     render(startTime);
 
-    return () => {
-      window.removeEventListener('resize', resize);
+    cleanupHero = () => {
+      destroyed = true;
       cancelAnimationFrame(animationFrameId);
+      visObs?.disconnect();
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('mousemove', onMouseMove);
+      gl.deleteProgram(program);
     };
   }
 
-  // Initialize on load and after Astro view transitions
-  initWebGLHero();
-  document.addEventListener('astro:page-load', initWebGLHero);
+  function activateHeroContent() {
+    const content = document.querySelector('.hero-content');
+    if (content) requestAnimationFrame(() => content.classList.add('is-active'));
+  }
+
+  document.addEventListener('astro:page-load', () => { initWebGLHero(); activateHeroContent(); });
+  document.addEventListener('astro:before-swap', () => { cleanupHero?.(); cleanupHero = null; });
+
+  function animateCounters() {
+    const counters = document.querySelectorAll('.hero-counter');
+    counters.forEach((el) => {
+      const target = parseInt((el as HTMLElement).dataset.target || '0', 10);
+      const prefix = (el as HTMLElement).dataset.prefix || '';
+      const suffix = (el as HTMLElement).dataset.suffix || '';
+      let current = 0;
+      const duration = 1800;
+      const start = performance.now();
+
+      function step(now: number) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        current = Math.round(eased * target);
+        el.textContent = prefix + current + suffix;
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  }
+
+  function scheduleCounters() {
+    const stats = document.querySelector('.hero-stats');
+    if (!stats) return;
+    setTimeout(animateCounters, 1300);
+  }
+  document.addEventListener('astro:page-load', scheduleCounters);
 </script>

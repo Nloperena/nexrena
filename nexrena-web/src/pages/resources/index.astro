@@ -1,8 +1,25 @@
 ---
 import Layout from '../../components/layout/Layout.astro';
 import PageHero from '../../components/sections/PageHero.astro';
+import BlogCard from '../../components/blog/BlogCard.astro';
+import NewsletterCTA from '../../components/blog/NewsletterCTA.astro';
 import Button from '../../components/ui/Button.astro';
+import Eyebrow from '../../components/ui/Eyebrow.astro';
+import CTA from '../../components/sections/CTA.astro';
+import { getCollection } from 'astro:content';
 import { heroImages } from '../../data/hero-images';
+import { blogCategories } from '../../data/blog-categories';
+
+const allPosts = (await getCollection('blog'))
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+
+const featuredPosts = allPosts.slice(0, 3);
+const recentPosts = allPosts.slice(3, 9);
+
+const hubs = [
+  { href: '/resources/blog', icon: '01', label: 'Blog', title: 'Articles & Guides', desc: 'B2B website redesign checklists, SEO for manufacturers, and growth strategies that compound.', count: allPosts.length },
+  { href: '/resources/faq', icon: '02', label: 'FAQ', title: 'Frequently Asked Questions', desc: 'Timelines, pricing, and how we work with B2B companies. Direct answers — no runaround.' },
+];
 ---
 
 <Layout 
@@ -17,43 +34,162 @@ import { heroImages } from '../../data/hero-images';
       image={heroImages.resources}
     />
 
-    <section class="bg-[var(--obsidian)] py-12 md:py-24">
-      <div class="section-container">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-          <a href="/resources/blog" class="group block p-8 border border-[var(--slate-800)] hover:border-[var(--gold)] transition-colors reveal">
-            <span class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest">Blog</span>
-            <h2 class="font-display text-[32px] text-[var(--warm-white)] mt-4 mb-4 group-hover:text-[var(--gold)] transition-colors">
-              Articles & guides
-            </h2>
-            <p class="font-body text-[15px] text-[var(--slate-400)]">
-              B2B website redesign checklists, SEO for manufacturers, and growth strategies that compound.
-            </p>
-            <span class="inline-block mt-6 font-mono text-[11px] text-[var(--gold)] group-hover:translate-x-2 transition-transform">Explore blog &rarr;</span>
-          </a>
-          <a href="/resources/faq" class="group block p-8 border border-[var(--slate-800)] hover:border-[var(--gold)] transition-colors reveal" style="--i: 1;">
-            <span class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest">FAQ</span>
-            <h2 class="font-display text-[32px] text-[var(--warm-white)] mt-4 mb-4 group-hover:text-[var(--gold)] transition-colors">
-              Frequently asked questions
-            </h2>
-            <p class="font-body text-[15px] text-[var(--slate-400)]">
-              Timelines, pricing, and how we work with B2B companies. Web design, SEO, and full-service growth.
-            </p>
-            <span class="inline-block mt-6 font-mono text-[11px] text-[var(--gold)] group-hover:translate-x-2 transition-transform">View FAQ &rarr;</span>
-          </a>
+    <!-- Resource Hubs -->
+    <section class="bg-[var(--obsidian)]">
+      <div class="max-w-[1320px] mx-auto px-[5vw] py-24 md:py-32">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x divide-[var(--slate-800)]">
+          {hubs.map((hub, i) => (
+            <a href={hub.href} class="hub-card group block py-12 md:py-16 first:md:pr-16 last:md:pl-16 relative">
+              <div class="flex items-start justify-between mb-8">
+                <span class="font-display text-[56px] text-[var(--slate-800)] group-hover:text-[var(--gold)] transition-colors leading-none font-light">{hub.icon}</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-[var(--gold)] opacity-0 group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+              </div>
+              <span class="font-mono text-[10px] text-[var(--gold)] uppercase tracking-widest block mb-3">{hub.label}</span>
+              <h2 class="font-display text-[32px] md:text-[40px] text-[var(--warm-white)] leading-tight mb-4 group-hover:text-[var(--gold-light)] transition-colors">
+                {hub.title}
+              </h2>
+              <p class="font-body text-[15px] text-[var(--slate-400)] leading-relaxed mb-6">
+                {hub.desc}
+              </p>
+              {hub.count && (
+                <span class="font-mono text-[10px] text-[var(--slate-500)] uppercase tracking-wider">{hub.count} articles</span>
+              )}
+              <div class="absolute bottom-0 left-0 w-0 h-[1px] bg-[var(--gold)] group-hover:w-full transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]" aria-hidden="true"></div>
+            </a>
+          ))}
         </div>
       </div>
     </section>
 
-    <section class="bg-[var(--obsidian)] py-24 md:py-32 border-t border-[var(--slate-800)]">
-      <div class="section-container text-center">
-        <h2 class="font-display text-[40px] md:text-[56px] text-[var(--warm-white)] leading-[1.1] mb-8 reveal">
-          Need a custom strategy?
-        </h2>
-        <p class="text-[var(--slate-400)] text-[17px] mb-12 max-w-xl mx-auto reveal" style="--i: 1;">
-          Every business is different. Let's map your 90-day growth plan.
-        </p>
-        <Button href="/contact" variant="primary" class="reveal" style="--i: 2;">Start a project &rarr;</Button>
+    <!-- Featured Posts -->
+    <section class="bg-[var(--obsidian)] border-t border-[var(--slate-800)]">
+      <div class="max-w-[1320px] mx-auto px-[5vw] py-24 md:py-32">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
+          <div>
+            <Eyebrow class="mb-6">FEATURED //</Eyebrow>
+            <h2 class="font-display text-[40px] md:text-[56px] text-[var(--warm-white)] leading-[1.05] reveal">
+              Start here.
+            </h2>
+          </div>
+          <a href="/resources/blog" class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest hover:text-[var(--gold-light)] transition-colors reveal" style="--i: 1;">
+            View all articles &rarr;
+          </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {featuredPosts.map((post, i) => (
+            <a href={`/resources/blog/${post.slug}`} class="featured-card group block border border-[var(--slate-800)] hover:border-[var(--gold)]/40 transition-all relative overflow-hidden">
+              <div class="absolute top-0 left-0 w-full h-[2px] bg-[var(--gold)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500" aria-hidden="true"></div>
+              <div class="p-8">
+                <div class="flex items-center gap-3 mb-6">
+                  <span class="font-display text-[40px] text-[var(--slate-800)] group-hover:text-[var(--gold)]/30 transition-colors leading-none font-light">0{i + 1}</span>
+                  <div class="flex-1 h-[1px] bg-[var(--slate-800)]"></div>
+                  <span class="font-mono text-[9px] text-[var(--slate-500)] uppercase tracking-wider">
+                    {post.data.publishedAt.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                  </span>
+                </div>
+                <h3 class="font-display text-[24px] md:text-[28px] text-[var(--warm-white)] mb-4 group-hover:text-[var(--gold)] transition-colors leading-tight line-clamp-2">
+                  {post.data.title}
+                </h3>
+                <p class="font-body text-[14px] text-[var(--slate-400)] leading-relaxed line-clamp-3 mb-6">
+                  {post.data.description}
+                </p>
+                <span class="font-mono text-[11px] text-[var(--gold)] group-hover:translate-x-2 transition-transform inline-block">Read &rarr;</span>
+              </div>
+            </a>
+          ))}
+        </div>
       </div>
     </section>
+
+    <!-- Categories -->
+    <section class="bg-[var(--slate-900)] border-t border-[var(--slate-800)]">
+      <div class="max-w-[1320px] mx-auto px-[5vw] py-24 md:py-32">
+        <div class="max-w-3xl mb-16">
+          <Eyebrow class="mb-6">EXPLORE BY TOPIC //</Eyebrow>
+          <h2 class="font-display text-[36px] md:text-[48px] text-[var(--warm-white)] leading-[1.1] reveal">
+            Deep dives by category.
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {blogCategories.map((cat, i) => {
+            const count = allPosts.filter(p => p.data.category === cat.id).length;
+            return (
+              <a href={`/resources/blog/category/${cat.id}`} class="cat-card group flex items-center justify-between p-6 border border-[var(--slate-800)] hover:border-[var(--gold)]/30 transition-all">
+                <div>
+                  <h3 class="font-display text-[22px] text-[var(--warm-white)] group-hover:text-[var(--gold)] transition-colors mb-1">{cat.name}</h3>
+                  <span class="font-mono text-[10px] text-[var(--slate-500)] uppercase tracking-wider">{count} articles</span>
+                </div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-[var(--gold)] opacity-40 group-hover:opacity-100 group-hover:translate-x-1 transition-all"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Posts Grid -->
+    {recentPosts.length > 0 && (
+      <section class="bg-[var(--obsidian)] border-t border-[var(--slate-800)]">
+        <div class="max-w-[1320px] mx-auto px-[5vw] py-24 md:py-32">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
+            <div>
+              <Eyebrow class="mb-6">RECENT //</Eyebrow>
+              <h2 class="font-display text-[36px] md:text-[48px] text-[var(--warm-white)] leading-[1.1] reveal">
+                Latest thinking.
+              </h2>
+            </div>
+            <a href="/resources/blog" class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest hover:text-[var(--gold-light)] transition-colors reveal" style="--i: 1;">
+              View all &rarr;
+            </a>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {recentPosts.map(post => (
+              <BlogCard
+                slug={post.slug}
+                title={post.data.title}
+                description={post.data.description}
+                publishedAt={post.data.publishedAt}
+                category={post.data.category}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- Newsletter -->
+    <section class="bg-[var(--obsidian)] border-t border-[var(--slate-800)]">
+      <div class="max-w-[1320px] mx-auto px-[5vw] py-24">
+        <NewsletterCTA />
+      </div>
+    </section>
+
+    <CTA />
   </main>
+
+  <script>
+    import gsap from 'gsap';
+    import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+    function initResourcesAnimations() {
+      gsap.registerPlugin(ScrollTrigger);
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const cards = gsap.utils.toArray('.featured-card, .cat-card, .hub-card') as HTMLElement[];
+      if (!cards.length) return;
+
+      gsap.set(cards, { opacity: 0, y: 30 });
+      ScrollTrigger.batch(cards, {
+        start: 'top 88%',
+        onEnter: (batch) => {
+          gsap.to(batch, { opacity: 1, y: 0, duration: 0.7, stagger: 0.08, ease: 'power3.out' });
+        },
+        once: true,
+      });
+    }
+
+    document.addEventListener('astro:page-load', initResourcesAnimations);
+  </script>
 </Layout>

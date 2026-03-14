@@ -1,31 +1,39 @@
 ---
-/* 
-  Showreel Placeholder
-  30-60s compilation of project highlights
+/*
+  Showreel — Cinematic manifesto moment
+  Full-bleed visual with a brand statement that bridges the Hero into the Work section.
+  Replaces video placeholder with a purposeful scroll-driven reveal.
 */
-import Eyebrow from '../ui/Eyebrow.astro';
 ---
 
-<section class="showreel bg-[var(--obsidian)] relative w-full h-screen overflow-hidden group">
-  <!-- Poster Image / Video Element -->
-  <img src="/images/hero-work.webp" alt="Showreel Poster" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-60 transition-opacity duration-1000 scale-105 group-hover:scale-100 ease-[cubic-bezier(0.16,1,0.3,1)]" />
-  
-  <!-- Subtle Gradient Overlay -->
-  <div class="absolute inset-0 bg-gradient-to-b from-[var(--obsidian)]/80 via-transparent to-[var(--obsidian)]/80"></div>
+<section class="showreel relative w-full min-h-screen overflow-hidden flex items-center justify-center bg-[var(--obsidian)]">
+  <!-- Background Image -->
+  <img
+    src="/images/hero-work.webp"
+    alt=""
+    class="absolute inset-0 w-full h-full object-cover opacity-40 scale-105"
+    aria-hidden="true"
+    loading="lazy"
+  />
 
-  <!-- Play Button Centered -->
-  <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
-    <div class="w-24 h-24 md:w-32 md:h-32 rounded-full border border-[var(--warm-white)]/30 backdrop-blur-md flex items-center justify-center text-[var(--warm-white)] group-hover:scale-110 group-hover:bg-[var(--warm-white)] group-hover:text-[var(--obsidian)] transition-all duration-700 pointer-events-auto cursor-pointer mb-6">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" class="ml-2">
-        <path d="M8 5v14l11-7z" />
-      </svg>
-    </div>
-    <span class="font-mono text-[11px] text-[var(--warm-white)] uppercase tracking-[0.3em] opacity-80 group-hover:opacity-100 transition-opacity">
-      Watch Showreel
-    </span>
-  </div>
-  
-  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest px-4 py-2 bg-[var(--obsidian)]/80 backdrop-blur-sm border border-[var(--slate-800)] z-10">
-    Coming Soon
+  <!-- Gradient overlays for depth -->
+  <div class="absolute inset-0 bg-gradient-to-b from-[var(--obsidian)] via-transparent to-[var(--obsidian)]"></div>
+  <div class="absolute inset-0 bg-[radial-gradient(ellipse_70%_70%_at_50%_50%,transparent_0%,rgba(12,15,18,0.7)_100%)]"></div>
+
+  <!-- Content -->
+  <div class="relative z-10 w-full max-w-[1320px] mx-auto px-[5vw] text-center py-32">
+    <p class="font-mono text-[10px] text-[var(--gold)] tracking-[0.3em] uppercase mb-12 reveal">Our Philosophy</p>
+
+    <h2 class="font-display italic text-[clamp(36px,6vw,80px)] text-[var(--warm-white)] leading-[1.1] tracking-tight max-w-4xl mx-auto mb-10 reveal" style="--i: 1;">
+      We don't build websites.<br/>
+      We build <span class="text-[var(--gold)]">growth infrastructure</span><br/>
+      that compounds.
+    </h2>
+
+    <div class="w-16 h-[1px] bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent mx-auto mb-10 reveal" style="--i: 2;"></div>
+
+    <p class="font-body text-[18px] text-[var(--slate-400)] max-w-lg mx-auto leading-relaxed reveal" style="--i: 3;">
+      Every line of code, every keyword targeted, every design decision — measured against one metric: your revenue.
+    </p>
   </div>
 </section>

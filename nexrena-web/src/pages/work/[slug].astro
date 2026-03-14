@@ -5,7 +5,7 @@ import { projects } from '../../data/projects';
 import { services } from '../../data/services';
 import { industries } from '../../data/industries';
 import Eyebrow from '../../components/ui/Eyebrow.astro';
-import { heroImages } from '../../data/hero-images';
+import CTA from '../../components/sections/CTA.astro';
 import { articleSchema, breadcrumbSchema } from '../../lib/schema';
 
 export function getStaticPaths() {
@@ -16,151 +16,231 @@ export function getStaticPaths() {
 }
 
 const { project } = Astro.props;
+const nextProject = projects.find(p => p.id === project.nextProjectId);
 const site = 'https://nexrena.com';
 const projectUrl = `${site}/work/${project.id}`;
 const description = project.metaDescription || project.background || project.tagline;
+const heroImg = `/images/project-${project.id === 'furniture-packages-usa' ? 'furniture' : project.id === 'rugged-red' ? 'rugged' : project.id === 'vito-fryfilter' ? 'vito' : project.id}.webp`;
 const schema = [
-  articleSchema({
-    headline: project.name,
-    description: description,
-    datePublished: project.year,
-    url: projectUrl,
-  }),
-  breadcrumbSchema([
-    { name: 'Work', url: `${site}/work` },
-    { name: project.name, url: projectUrl },
-  ]),
+  articleSchema({ headline: project.name, description, datePublished: project.year, url: projectUrl }),
+  breadcrumbSchema([{ name: 'Work', url: `${site}/work` }, { name: project.name, url: projectUrl }]),
 ];
+
+const canEmbed = project.embedSite && project.url && project.url !== '#';
+const hasVimeo = project.video?.includes('vimeo');
+const hasVideo = project.video && !hasVimeo;
 ---
 
-<Layout 
-  title={`${project.name} | Nexrena`} 
-  description={description}
-  schema={schema}
->
+<Layout title={`${project.name} | Nexrena`} description={description} schema={schema}>
   <main>
-    <div class="section-container pt-8 pb-4">
-      <Breadcrumb items={[
-        { name: 'Work', url: `${site}/work` },
-        { name: project.name, url: projectUrl },
-      ]} />
-    </div>
-    
-    <!-- Hero Section -->
-    <section class="h-[70vh] min-h-[600px] bg-[var(--obsidian)] border-b border-[var(--slate-800)] flex items-center relative overflow-hidden grain">
-      <!-- Hero background -->
-      <img src={heroImages.work} alt="" class="absolute inset-0 w-full h-full object-cover object-center opacity-30 pointer-events-none z-0" aria-hidden="true" loading="eager" />
-      <div class="section-container w-full relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <div class="flex flex-col justify-center reveal">
-          <div class="flex flex-wrap items-center gap-4 mb-8">
-            <Eyebrow>{project.category}</Eyebrow>
-            <span class="w-1 h-1 rounded-full bg-[var(--slate-700)]"></span>
-            <span class="font-mono text-[11px] text-[var(--slate-400)]">{project.year}</span>
-          </div>
-          
-          <h1 class="font-display text-[64px] md:text-[96px] text-[var(--warm-white)] leading-none mb-6">
-            {project.name}
-          </h1>
-          
-          <div class="flex flex-wrap gap-2 mt-4">
-            {project.stack.map(tech => (
-              <span class="font-mono text-[10px] text-[var(--gold-dim)] bg-[var(--slate-800)] px-3 py-1.5 uppercase tracking-widest border border-[var(--slate-700)]">
-                {tech}
-              </span>
-            ))}
-          </div>
+
+    <!-- ═══ CINEMATIC HERO ═══ -->
+    <section class="work-hero relative h-screen min-h-[700px] flex items-end overflow-hidden grain">
+      <img src={heroImg} alt="" class="hero-bg absolute inset-0 w-full h-full object-cover opacity-40 scale-105 pointer-events-none" loading="eager" aria-hidden="true" />
+      <div class="absolute inset-0 bg-gradient-to-t from-[var(--obsidian)] via-[var(--obsidian)]/60 to-transparent pointer-events-none"></div>
+
+      <div class="relative z-10 w-full max-w-[1320px] mx-auto px-[5vw] pb-20 md:pb-28">
+        <Breadcrumb items={[{ name: 'Work', url: `${site}/work` }, { name: project.name, url: projectUrl }]} />
+
+        <div class="mt-8 flex flex-wrap items-center gap-4 hero-fade" style="--d:0">
+          <span class="font-mono text-[11px] text-[var(--gold-dim)] uppercase tracking-[0.2em]">{project.category}</span>
+          <span class="w-1 h-1 rounded-full bg-[var(--slate-600)]"></span>
+          <span class="font-mono text-[11px] text-[var(--slate-400)]">{project.year}</span>
+        </div>
+
+        <h1 class="font-display text-[clamp(56px,12vw,160px)] text-[var(--warm-white)] leading-[0.9] tracking-tight mt-4 hero-title">
+          {project.name}
+        </h1>
+
+        <p class="font-body text-[clamp(16px,2vw,22px)] text-[var(--slate-300)] max-w-2xl mt-6 leading-relaxed hero-fade" style="--d:2">
+          {project.tagline}
+        </p>
+
+        <div class="flex flex-wrap gap-2 mt-8 hero-fade" style="--d:3">
+          {project.stack.map(tech => (
+            <span class="font-mono text-[10px] text-[var(--gold-dim)] bg-[var(--slate-800)]/60 backdrop-blur-sm px-3 py-1.5 uppercase tracking-widest border border-[var(--slate-700)]/50">
+              {tech}
+            </span>
+          ))}
         </div>
       </div>
-      
-      <!-- Right 40% Hero Object Panel -->
-      <div class="hidden lg:flex absolute right-0 top-0 w-[40%] h-full bg-[var(--slate-900)] border-l border-[var(--slate-800)] items-center justify-center overflow-hidden">
-        <img 
-          src={heroImages[`project/${project.id}` as keyof typeof heroImages] ?? heroImages.work} 
-          alt={`${project.name} — ${project.tagline}. Hero object representing ${project.category}.`}
-          class="absolute inset-0 w-full h-full object-cover object-center opacity-50"
-          loading="eager"
-        />
+
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 hero-fade" style="--d:4">
+        <span class="font-mono text-[10px] text-[var(--slate-500)] uppercase tracking-widest">Scroll</span>
+        <div class="w-px h-10 bg-gradient-to-b from-[var(--gold)] to-transparent scroll-pulse"></div>
       </div>
     </section>
 
-    <!-- Content Sections -->
-    <section class="bg-[var(--obsidian)] py-32">
-      <div class="max-w-[800px] mx-auto px-[5vw]">
-        
+    <!-- ═══ IMPACT STRIP ═══ -->
+    <section class="bg-[var(--obsidian)] border-y border-[var(--slate-800)] py-12 md:py-16">
+      <div class="max-w-[1320px] mx-auto px-[5vw] grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0 md:divide-x md:divide-[var(--slate-800)]">
+        {project.proofPoints.map((point, i) => (
+          <div class="stat-counter md:px-10 first:md:pl-0 last:md:pr-0" data-metric={point.metric}>
+            <span class="stat-value block font-display text-[clamp(36px,5vw,64px)] text-[var(--gold)] leading-none">{point.metric}</span>
+            <span class="block font-body text-[14px] text-[var(--slate-400)] mt-3 leading-relaxed">{point.context}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ═══ THE STORY ═══ -->
+    <section class="bg-[var(--obsidian)] py-24 md:py-32">
+      <div class="max-w-[900px] mx-auto px-[5vw]">
+
         {project.background && (
-          <div class="mb-24 reveal">
-            <h2 class="font-mono text-[12px] text-[var(--gold)] uppercase tracking-widest border-b border-[var(--slate-800)] pb-4 mb-8">Client Overview</h2>
-            <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose">
+          <div class="mb-20 md:mb-28 reveal">
+            <p class="font-body text-[clamp(18px,2.5vw,24px)] text-[var(--slate-300)] leading-relaxed">
               {project.background}
             </p>
           </div>
         )}
 
-        <div class="mb-24 reveal">
-          <h2 class="font-mono text-[12px] text-[var(--gold)] uppercase tracking-widest border-b border-[var(--slate-800)] pb-4 mb-8">01 &mdash; Challenge</h2>
-          <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose">
-            {project.challenge}
-          </p>
+        <div class="story-block mb-20 md:mb-28 reveal">
+          <div class="flex items-baseline gap-6 mb-8 border-b border-[var(--slate-800)] pb-6">
+            <span class="font-display text-[clamp(48px,6vw,80px)] text-[var(--gold)] leading-none opacity-20">01</span>
+            <h2 class="font-display text-[clamp(28px,3vw,40px)] text-[var(--warm-white)] leading-tight">The Challenge</h2>
+          </div>
+          <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose">{project.challenge}</p>
         </div>
 
-        <div class="mb-24 reveal">
-          <h2 class="font-mono text-[12px] text-[var(--gold)] uppercase tracking-widest border-b border-[var(--slate-800)] pb-4 mb-8">02 &mdash; Strategy</h2>
-          <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose mb-8">
-            {project.solution}
-          </p>
-          
+        <div class="story-block mb-20 md:mb-28 reveal">
+          <div class="flex items-baseline gap-6 mb-8 border-b border-[var(--slate-800)] pb-6">
+            <span class="font-display text-[clamp(48px,6vw,80px)] text-[var(--gold)] leading-none opacity-20">02</span>
+            <h2 class="font-display text-[clamp(28px,3vw,40px)] text-[var(--warm-white)] leading-tight">Our Strategy</h2>
+          </div>
+          <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose mb-6">{project.solution}</p>
           {project.approach && (
-            <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose mb-8">
-              {project.approach}
-            </p>
+            <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose">{project.approach}</p>
           )}
         </div>
 
-        <div class="reveal">
-          <h2 class="font-mono text-[12px] text-[var(--gold)] uppercase tracking-widest border-b border-[var(--slate-800)] pb-4 mb-8">03 &mdash; Results</h2>
-          <blockquote class="font-display italic text-[32px] md:text-[40px] text-[var(--warm-white)] leading-tight mb-12">
-            "{project.testimonial || 'They transformed our entire digital presence in a matter of weeks.'}"
-          </blockquote>
-          
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {project.proofPoints.map((point, i) => (
-              <div class="p-8 bg-[var(--slate-900)] border border-[var(--slate-800)] reveal" style={`--i: ${i + 1};`}>
-                <span class="block font-display text-[40px] md:text-[48px] text-[var(--gold)] leading-none mb-4">{point.metric}</span>
-                <span class="font-body text-[14px] text-[var(--slate-400)] leading-relaxed">{point.context}</span>
+        <!-- ═══ SEO SOLUTIONS ═══ -->
+        <div class="story-block mb-20 md:mb-28">
+          <div class="flex items-baseline gap-6 mb-12 border-b border-[var(--slate-800)] pb-6 reveal">
+            <span class="font-display text-[clamp(48px,6vw,80px)] text-[var(--gold)] leading-none opacity-20">03</span>
+            <h2 class="font-display text-[clamp(28px,3vw,40px)] text-[var(--warm-white)] leading-tight">SEO & Growth</h2>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {project.seoHighlights.map((h, i) => (
+              <div class="seo-card group p-8 border border-[var(--slate-800)] hover:border-[var(--gold)]/30 transition-all duration-500 relative overflow-hidden">
+                <div class="absolute top-4 right-4 font-display text-[64px] text-[var(--gold)] opacity-[0.06] leading-none pointer-events-none select-none">
+                  {String(i + 1).padStart(2, '0')}
+                </div>
+                <h3 class="font-display text-[20px] text-[var(--warm-white)] mb-4 leading-snug relative z-10">{h.title}</h3>
+                <p class="font-body text-[15px] text-[var(--slate-400)] leading-relaxed relative z-10">{h.description}</p>
+                <div class="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-[var(--gold)]/0 via-[var(--gold)]/40 to-[var(--gold)]/0 scale-x-0 group-hover:scale-x-100 transition-transform duration-700"></div>
               </div>
             ))}
           </div>
-
-          {project.results && (
-            <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose">
-              {project.results}
-            </p>
-          )}
         </div>
-
       </div>
     </section>
 
-    <!-- Related: services and industries -->
-    <section class="bg-[var(--obsidian)] py-16 md:py-24 border-t border-[var(--slate-800)]">
-      <div class="section-container">
-        <h3 class="font-display text-[24px] text-[var(--warm-white)] mb-8">Explore our services and industries.</h3>
+    <!-- ═══ WEBSITE PREVIEW ═══ -->
+    <section class="bg-[var(--slate-900)] py-24 md:py-32 border-y border-[var(--slate-800)]">
+      <div class="max-w-[1320px] mx-auto px-[5vw]">
+        <Eyebrow class="mb-4">THE WORK //</Eyebrow>
+        <h2 class="font-display text-[clamp(32px,4vw,56px)] text-[var(--warm-white)] mb-12 leading-tight reveal">
+          See it live.
+        </h2>
+
+        <div class="browser-frame rounded-lg overflow-hidden border border-[var(--slate-700)] shadow-2xl reveal">
+          <div class="browser-bar flex items-center gap-2 px-4 py-3 bg-[var(--slate-800)] border-b border-[var(--slate-700)]">
+            <div class="flex gap-1.5">
+              <span class="w-3 h-3 rounded-full bg-[#ff5f57]"></span>
+              <span class="w-3 h-3 rounded-full bg-[#febc2e]"></span>
+              <span class="w-3 h-3 rounded-full bg-[#28c840]"></span>
+            </div>
+            {project.url !== '#' && (
+              <div class="flex-1 mx-4">
+                <div class="bg-[var(--slate-900)] rounded-md px-4 py-1.5 text-center">
+                  <span class="font-mono text-[11px] text-[var(--slate-400)]">{project.url.replace('https://', '')}</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div class="bg-[var(--obsidian)] aspect-video relative">
+            {canEmbed ? (
+              <iframe
+                src={project.url}
+                class="w-full h-full border-0"
+                loading="lazy"
+                title={`${project.name} live website`}
+                sandbox="allow-scripts allow-same-origin"
+              />
+            ) : hasVimeo ? (
+              <iframe
+                src={project.video}
+                class="w-full h-full border-0"
+                loading="lazy"
+                allow="autoplay; fullscreen"
+                allowfullscreen
+                title={`${project.name} project preview`}
+              />
+            ) : hasVideo ? (
+              <video autoplay muted loop playsinline class="w-full h-full object-cover" poster={project.thumbnail}>
+                <source src={project.video} type={project.video!.endsWith('.webm') ? 'video/webm' : 'video/mp4'} />
+              </video>
+            ) : project.thumbnail ? (
+              <img src={project.thumbnail} alt={`${project.name} — ${project.tagline}`} class="w-full h-full object-cover" loading="lazy" />
+            ) : null}
+          </div>
+        </div>
+
+        {project.url !== '#' && (
+          <div class="mt-8 text-center reveal">
+            <a href={project.url} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-3 font-mono text-[13px] text-[var(--gold)] hover:text-[var(--gold-light)] transition-colors uppercase tracking-widest">
+              Visit live site
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+            </a>
+          </div>
+        )}
+      </div>
+    </section>
+
+    <!-- ═══ THE IMPACT ═══ -->
+    <section class="bg-[var(--obsidian)] py-24 md:py-32">
+      <div class="max-w-[900px] mx-auto px-[5vw]">
+        {project.testimonial && (
+          <div class="mb-20 md:mb-28 relative reveal">
+            <div class="absolute -top-8 -left-4 font-display text-[120px] text-[var(--gold)] opacity-10 leading-none select-none pointer-events-none">"</div>
+            <blockquote class="font-display italic text-[clamp(28px,4vw,48px)] text-[var(--warm-white)] leading-[1.2] relative z-10">
+              {project.testimonial}
+            </blockquote>
+            <div class="w-16 h-px bg-[var(--gold)] mt-8"></div>
+          </div>
+        )}
+
+        {project.results && (
+          <div class="reveal">
+            <div class="flex items-baseline gap-6 mb-8 border-b border-[var(--slate-800)] pb-6">
+              <span class="font-display text-[clamp(48px,6vw,80px)] text-[var(--gold)] leading-none opacity-20">04</span>
+              <h2 class="font-display text-[clamp(28px,3vw,40px)] text-[var(--warm-white)] leading-tight">The Results</h2>
+            </div>
+            <p class="font-body text-[18px] text-[var(--slate-300)] leading-loose">{project.results}</p>
+          </div>
+        )}
+      </div>
+    </section>
+
+    <!-- ═══ EXPLORE ═══ -->
+    <section class="bg-[var(--obsidian)] py-16 border-t border-[var(--slate-800)]">
+      <div class="max-w-[1320px] mx-auto px-[5vw]">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
           <div>
-            <div class="flex flex-wrap gap-4">
-              {services.map((s) => (
-                <a href={`/services/${s.id}`} class="font-body text-[14px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">
-                  {s.title.replace(/\n/g, ' ')}
-                </a>
+            <Eyebrow class="mb-4">Services</Eyebrow>
+            <div class="flex flex-wrap gap-3">
+              {services.map(s => (
+                <a href={`/services/${s.id}`} class="font-body text-[14px] text-[var(--slate-400)] hover:text-[var(--gold)] transition-colors">{s.title.replace(/\n/g, ' ')}</a>
               ))}
             </div>
           </div>
           <div>
-            <div class="flex flex-wrap gap-4">
-              {industries.map((i) => (
-                <a href={`/industries/${i.id}`} class="font-body text-[14px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">
-                  {i.name}
-                </a>
+            <Eyebrow class="mb-4">Industries</Eyebrow>
+            <div class="flex flex-wrap gap-3">
+              {industries.map(ind => (
+                <a href={`/industries/${ind.id}`} class="font-body text-[14px] text-[var(--slate-400)] hover:text-[var(--gold)] transition-colors">{ind.name}</a>
               ))}
             </div>
           </div>
@@ -168,22 +248,106 @@ const schema = [
       </div>
     </section>
 
-    <!-- Next Project -->
-    <section class="bg-[var(--cream)] py-32 text-center border-t border-[var(--slate-200)] reveal section-transition-top">
-      <Eyebrow class="mb-6">NEXT PROJECT</Eyebrow>
-      <a href="/work" class="font-display text-[64px] text-[var(--obsidian)] hover:text-[var(--gold)] transition-colors inline-block relative group">
-        Explore more work
-        <span class="absolute -bottom-2 left-0 w-full h-[2px] bg-[var(--gold)] scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100"></span>
-      </a>
+    <!-- ═══ NEXT PROJECT ═══ -->
+    <section class="next-project relative h-[50vh] min-h-[400px] flex items-center justify-center overflow-hidden border-t border-[var(--slate-800)] group cursor-pointer">
+      {nextProject ? (
+        <a href={`/work/${nextProject.id}`} class="absolute inset-0 z-10 flex flex-col items-center justify-center text-center">
+          <Eyebrow class="mb-4">NEXT PROJECT</Eyebrow>
+          <span class="font-display text-[clamp(48px,8vw,120px)] text-[var(--warm-white)] leading-none group-hover:text-[var(--gold)] transition-colors duration-500">{nextProject.name}</span>
+          <span class="mt-4 font-mono text-[12px] text-[var(--slate-500)] uppercase tracking-widest group-hover:text-[var(--gold-dim)] transition-colors">View case study &rarr;</span>
+        </a>
+      ) : (
+        <a href="/work" class="absolute inset-0 z-10 flex flex-col items-center justify-center text-center">
+          <Eyebrow class="mb-4">MORE WORK</Eyebrow>
+          <span class="font-display text-[clamp(48px,8vw,120px)] text-[var(--warm-white)] leading-none group-hover:text-[var(--gold)] transition-colors duration-500">Explore all work</span>
+        </a>
+      )}
+      <div class="absolute inset-0 bg-[var(--obsidian)] group-hover:bg-[var(--slate-900)] transition-colors duration-700"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,169,110,0.04)_0%,transparent_60%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
     </section>
+
+    <CTA />
 
   </main>
 </Layout>
 
 <style>
-  .section-transition-top {
-    clip-path: polygon(0 5%, 100% 0, 100% 100%, 0 100%);
-    margin-top: -5%;
-    padding-top: calc(5% + 6rem);
+  .hero-title {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+    animation: titleReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+  }
+  .hero-fade {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: calc(0.4s + var(--d, 0) * 0.1s);
+  }
+  @keyframes titleReveal {
+    to { opacity: 1; clip-path: inset(0 0 0% 0); }
+  }
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .scroll-pulse {
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.3); }
+  }
+  .seo-card {
+    background: linear-gradient(135deg, rgba(201,169,110,0.02) 0%, transparent 60%);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-title, .hero-fade { animation: none !important; opacity: 1 !important; clip-path: none !important; transform: none !important; }
+    .scroll-pulse { animation: none !important; }
   }
 </style>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  function initWorkDetail() {
+    gsap.registerPlugin(ScrollTrigger);
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const heroImg = document.querySelector('.hero-bg') as HTMLElement;
+    const heroSection = document.querySelector('.work-hero');
+    if (heroImg && heroSection) {
+      gsap.to(heroImg, {
+        yPercent: 20,
+        scale: 1.1,
+        ease: 'none',
+        scrollTrigger: { trigger: heroSection, start: 'top top', end: 'bottom top', scrub: true },
+      });
+    }
+
+    document.querySelectorAll('.stat-counter').forEach(el => {
+      const valueEl = el.querySelector('.stat-value');
+      const metric = el.getAttribute('data-metric') || '';
+      if (!valueEl) return;
+      const match = metric.match(/^([+\-]?)(\d+)(.*)/);
+      if (!match) return;
+      const [, prefix, numStr, suffix] = match;
+      const target = parseInt(numStr, 10);
+      const counter = { val: 0 };
+      gsap.to(counter, {
+        val: target, duration: 2, ease: 'power2.out',
+        scrollTrigger: { trigger: el, start: 'top 85%', once: true },
+        onUpdate: () => { valueEl.textContent = `${prefix}${Math.round(counter.val)}${suffix}`; },
+      });
+    });
+
+    gsap.utils.toArray<HTMLElement>('.seo-card').forEach((card, i) => {
+      gsap.from(card, {
+        y: 40, opacity: 0, duration: 0.7, ease: 'power3.out',
+        scrollTrigger: { trigger: card, start: 'top 88%', once: true },
+        delay: i * 0.1,
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initWorkDetail);
+</script>

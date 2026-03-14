@@ -1,0 +1,51 @@
+name: Claw Weekly Ops
+
+on:
+  schedule:
+    # Monday 8:30 AM ET — Weekly brief
+    - cron: '30 12 * * 1'
+    # Friday 4:00 PM ET — Weekly wrap
+    - cron: '0 20 * * 5'
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Which task to run'
+        required: true
+        default: 'weekly-brief'
+        type: choice
+        options:
+          - weekly-brief
+          - weekly-wrap
+
+jobs:
+  claw-task:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install anthropic requests
+
+      - name: Determine task from schedule
+        id: task
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "task=${{ github.event.inputs.task }}" >> $GITHUB_OUTPUT
+          elif [ "$(date +%u)" = "1" ]; then
+            echo "task=weekly-brief" >> $GITHUB_OUTPUT
+          else
+            echo "task=weekly-wrap" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run Claw task
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          NEXRENA_API_URL: ${{ secrets.NEXRENA_API_URL }}
+          NEXRENA_API_KEY: ${{ secrets.NEXRENA_API_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          TASK: ${{ steps.task.outputs.task }}
+        run: python scripts/claw_task.py

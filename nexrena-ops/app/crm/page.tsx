@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useContacts, genId, formatCurrency } from '@/lib/store'
 import { Contact, DealStage } from '@/lib/types'
-import { PageHeader, Badge, Btn, Modal, Field, inputCls, selectCls } from '@/components/ui'
+import { PageHeader, Badge, Btn, Modal, Field, inputCls, selectCls, EmptyState, SectionCard } from '@/components/ui'
 
 const STAGES: DealStage[] = ['lead','contacted','discovery','proposal','negotiation','won','lost']
 const INDUSTRIES = ['industrial','ecommerce','realestate','professional','other']
@@ -17,7 +17,7 @@ function ContactForm({ initial, onSave, onClose }: {
     const now = new Date().toISOString()
     onSave({ id: form.id ?? genId(), name: form.name!, company: form.company!, email: form.email!,
       industry: form.industry ?? 'other', stage: form.stage ?? 'lead', value: Number(form.value) ?? 0,
-      phone: form.phone, notes: form.notes, createdAt: form.createdAt ?? now, updatedAt: now })
+      phone: form.phone, billingAddress: form.billingAddress, notes: form.notes, createdAt: form.createdAt ?? now, updatedAt: now })
     onClose()
   }
   return (
@@ -43,6 +43,7 @@ function ContactForm({ initial, onSave, onClose }: {
         </Field>
         <Field label="Deal Value ($)"><input type="number" className={inputCls} value={form.value ?? 0} onChange={e => set('value', e.target.value)} /></Field>
       </div>
+      <Field label="Billing Address"><input className={inputCls} value={form.billingAddress ?? ''} onChange={e => set('billingAddress', e.target.value)} placeholder="123 Main St, Orlando, FL 32801" /></Field>
       <Field label="Notes"><textarea rows={3} className={inputCls} value={form.notes ?? ''} onChange={e => set('notes', e.target.value)} placeholder="Key context, pain points, next steps..." /></Field>
       <div className="flex justify-end gap-2 pt-2">
         <Btn variant="ghost" onClick={onClose}>Cancel</Btn>
@@ -73,12 +74,14 @@ export default function CRMPage() {
         action={
           <div className="flex items-center gap-3">
             <input value={search} onChange={e => setSearch(e.target.value)}
-              className="bg-[#1E2530] border border-[#2C3444] rounded px-3 py-1.5 text-sm text-white placeholder-[#3D4A5C] focus:outline-none focus:border-[#C9A96E] w-48"
-              placeholder="Search..." />
-            <div className="flex border border-[#2C3444] rounded overflow-hidden">
+              className={`${inputCls} !w-48`}
+              placeholder="Search contacts…" />
+            <div className="flex rounded-lg overflow-hidden border border-slate-700/50">
               {(['kanban','list'] as const).map(v => (
                 <button key={v} onClick={() => setView(v)}
-                  className={`px-3 py-1.5 text-xs font-medium capitalize transition-colors ${view === v ? 'bg-[#C9A96E] text-[#0C0F12]' : 'text-[#7A8A9E] hover:text-white'}`}>
+                  className={`px-3.5 py-2 text-xs font-semibold capitalize transition-all duration-200 ${
+                    view === v ? 'bg-gold text-obsidian' : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
+                  }`}>
                   {v}
                 </button>
               ))}
@@ -89,28 +92,36 @@ export default function CRMPage() {
       />
 
       {view === 'kanban' ? (
-        <div className="flex gap-3 overflow-x-auto pb-4">
-          {STAGES.map(stage => {
+        <div className="flex gap-3 overflow-x-auto pb-4 animate-fade-in">
+          {STAGES.map((stage, stageIdx) => {
             const cards = filtered.filter(c => c.stage === stage)
             const stageVal = cards.reduce((s, c) => s + c.value, 0)
             return (
-              <div key={stage} className="flex-shrink-0 w-52">
-                <div className="flex items-center justify-between mb-2 px-1">
+              <div key={stage} className="flex-shrink-0 w-52 animate-fade-in-up" style={{ animationDelay: `${stageIdx * 0.04}s` }}>
+                <div className="flex items-center justify-between mb-3 px-1">
                   <div className="flex items-center gap-2">
                     <Badge label={stage} />
-                    <span className="text-xs text-[#3D4A5C]">{cards.length}</span>
+                    <span className="text-[10px] text-slate-600 tabular-nums">{cards.length}</span>
                   </div>
-                  {stageVal > 0 && <span className="text-[10px] text-[#7A8A9E]">{formatCurrency(stageVal)}</span>}
+                  {stageVal > 0 && <span className="text-[10px] text-slate-400 tabular-nums">{formatCurrency(stageVal)}</span>}
                 </div>
-                <div className="space-y-2 min-h-20">
-                  {cards.map(c => (
+                <div className="space-y-2 min-h-[80px]">
+                  {cards.map((c, i) => (
                     <div key={c.id} onClick={() => setModal(c)}
-                      className="bg-[#0C0F12] border border-[#1E2530] rounded-lg p-3 cursor-pointer hover:border-[#C9A96E]/50 transition-all group">
-                      <p className="text-sm text-white font-medium leading-tight">{c.name}</p>
-                      <p className="text-xs text-[#7A8A9E] mt-0.5">{c.company}</p>
-                      <div className="flex items-center justify-between mt-2">
-                        <span className="text-[10px] text-[#3D4A5C] capitalize">{c.industry}</span>
-                        <span className="text-xs text-[#C9A96E] font-medium">{formatCurrency(c.value)}</span>
+                      className="glass-panel rounded-lg p-3.5 cursor-pointer card-lift glass-panel-hover group animate-fade-in-up"
+                      style={{ animationDelay: `${(stageIdx * 0.04) + (i * 0.03)}s` }}>
+                      <div className="flex items-start gap-2.5">
+                        <div className="w-7 h-7 rounded-full bg-slate-800/60 border border-slate-700/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <span className="text-[9px] font-bold text-slate-400 uppercase">{c.name.split(' ').map(n => n[0]).join('')}</span>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm text-white font-medium leading-tight group-hover:text-gold transition-colors">{c.name}</p>
+                          <p className="text-xs text-slate-600 mt-0.5 truncate">{c.company}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-slate-800/40">
+                        <span className="text-[10px] text-slate-600 capitalize">{c.industry}</span>
+                        <span className="text-xs text-gold font-semibold tabular-nums">{formatCurrency(c.value)}</span>
                       </div>
                     </div>
                   ))}
@@ -120,33 +131,42 @@ export default function CRMPage() {
           })}
         </div>
       ) : (
-        <div className="bg-[#0C0F12] border border-[#1E2530] rounded-lg overflow-hidden">
-          <table className="nx-table">
-            <thead>
-              <tr><th>Name</th><th>Company</th><th>Industry</th><th>Stage</th><th>Value</th><th>Email</th><th></th></tr>
-            </thead>
-            <tbody>
-              {filtered.map(c => (
-                <tr key={c.id}>
-                  <td className="text-white font-medium">{c.name}</td>
-                  <td>{c.company}</td>
-                  <td className="capitalize">{c.industry}</td>
-                  <td><Badge label={c.stage} /></td>
-                  <td className="text-[#C9A96E]">{formatCurrency(c.value)}</td>
-                  <td>{c.email}</td>
-                  <td>
-                    <div className="flex gap-2">
-                      <Btn size="sm" variant="ghost" onClick={() => setModal(c)}>Edit</Btn>
-                      <Btn size="sm" variant="danger" onClick={() => remove(c.id)}>Del</Btn>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr><td colSpan={7} className="text-center text-[#3D4A5C] py-8">No contacts found.</td></tr>
-              )}
-            </tbody>
-          </table>
+        <div className="animate-fade-in">
+          <SectionCard>
+            <table className="nx-table">
+              <thead>
+                <tr><th>Name</th><th>Company</th><th>Industry</th><th>Stage</th><th className="text-right">Value</th><th>Email</th><th></th></tr>
+              </thead>
+              <tbody>
+                {filtered.map(c => (
+                  <tr key={c.id} className="group">
+                    <td>
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-7 h-7 rounded-full bg-slate-800/50 border border-slate-700/30 flex items-center justify-center flex-shrink-0">
+                          <span className="text-[9px] font-bold text-slate-400 uppercase">{c.name.split(' ').map(n => n[0]).join('')}</span>
+                        </div>
+                        <span className="text-white font-medium group-hover:text-gold transition-colors">{c.name}</span>
+                      </div>
+                    </td>
+                    <td>{c.company}</td>
+                    <td className="capitalize">{c.industry}</td>
+                    <td><Badge label={c.stage} /></td>
+                    <td className="text-right text-gold tabular-nums font-medium">{formatCurrency(c.value)}</td>
+                    <td className="text-slate-400">{c.email}</td>
+                    <td>
+                      <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <Btn size="sm" variant="ghost" onClick={() => setModal(c)}>Edit</Btn>
+                        <Btn size="sm" variant="danger" onClick={() => remove(c.id)}>Del</Btn>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {filtered.length === 0 && (
+                  <tr><td colSpan={7}><EmptyState message="No contacts found." /></td></tr>
+                )}
+              </tbody>
+            </table>
+          </SectionCard>
         </div>
       )}
 

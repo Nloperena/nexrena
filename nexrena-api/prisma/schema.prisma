@@ -1,0 +1,135 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ── CRM Contacts ─────────────────────────────────────────────────────────
+model Contact {
+  id             String  @id
+  name           String
+  company        String
+  email          String
+  phone          String?
+  billingAddress String? @map("billing_address")
+  industry       String
+  stage          String
+  value          Float   @default(0)
+  notes          String?
+  createdAt      String  @map("created_at")
+  updatedAt      String  @map("updated_at")
+
+  @@map("contacts")
+}
+
+// ── Projects ─────────────────────────────────────────────────────────────
+model Project {
+  id         String  @id
+  name       String
+  clientName String  @map("client_name")
+  contactId  String? @map("contact_id")
+  type       String
+  status     String
+  startDate  String  @map("start_date")
+  endDate    String? @map("end_date")
+  value      Float   @default(0)
+  phases     Json
+  notes      String?
+  createdAt  String  @map("created_at")
+
+  @@map("projects")
+}
+
+// ── Invoices ─────────────────────────────────────────────────────────────
+model Invoice {
+  id            String  @id
+  number        String  @unique
+  clientName    String  @map("client_name")
+  clientCompany String? @map("client_company")
+  clientEmail   String? @map("client_email")
+  clientAddress String? @map("client_address")
+  contactId     String? @map("contact_id")
+  projectId     String? @map("project_id")
+  projectName   String? @map("project_name")
+  status        String
+  lineItems     Json    @map("line_items")
+  issueDate     String  @map("issue_date")
+  dueDate       String  @map("due_date")
+  netTerms      String? @map("net_terms")
+  taxRate       Float?  @map("tax_rate")
+  paidDate      String? @map("paid_date")
+  notes         String?
+  createdAt     String  @map("created_at")
+
+  @@map("invoices")
+}
+
+// ── Website Leads ────────────────────────────────────────────────────────
+model Lead {
+  id          String   @id @default(cuid())
+  name        String
+  company     String?
+  email       String
+  budget      String?
+  projectType String?  @map("project_type")
+  message     String
+  source      String   @default("website")
+  status      String   @default("new")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("leads")
+}
+
+// ── Time Entries ─────────────────────────────────────────────────────────
+model TimeEntry {
+  id          String  @id
+  projectId   String? @map("project_id")
+  projectName String  @map("project_name")
+  description String
+  hours       Float
+  date        String
+  billable    Boolean @default(true)
+  billed      Boolean @default(false)
+  createdAt   String  @map("created_at")
+
+  @@map("time_entries")
+}
+
+// ── Proposals ────────────────────────────────────────────────────────────
+model Proposal {
+  id            String  @id
+  title         String
+  contactId     String? @map("contact_id")
+  clientName    String  @map("client_name")
+  clientCompany String? @map("client_company")
+  clientEmail   String? @map("client_email")
+  services      Json
+  discount      Float   @default(0)
+  status        String  @default("draft")
+  validUntil    String  @map("valid_until")
+  scopeOfWork   String  @map("scope_of_work")
+  timeline      String?
+  notes         String?
+  createdAt     String  @map("created_at")
+
+  @@map("proposals")
+}
+
+// ── Expenses ─────────────────────────────────────────────────────────────
+model Expense {
+  id          String  @id
+  projectId   String? @map("project_id")
+  projectName String? @map("project_name")
+  category    String
+  description String
+  amount      Float
+  date        String
+  vendor      String?
+  notes       String?
+  createdAt   String  @map("created_at")
+
+  @@map("expenses")
+}

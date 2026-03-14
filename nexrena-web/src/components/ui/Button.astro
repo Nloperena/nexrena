@@ -8,10 +8,10 @@ interface Props {
 
 const { href, variant = 'primary', class: className = '', type = 'button' } = Astro.props;
 
-const baseClass = "magnetic-btn inline-flex items-center justify-center font-mono uppercase tracking-widest text-[11px] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]";
+const baseClass = "magnetic-btn inline-flex items-center justify-center font-mono uppercase tracking-widest text-[11px] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] relative overflow-hidden";
 const variants = {
-  primary: "bg-[var(--gold)] text-[var(--obsidian)] h-[52px] px-8 hover:bg-[var(--gold-light)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)]",
-  outline: "border border-[var(--gold)] text-[var(--gold)] h-[52px] px-8 hover:bg-[var(--gold)] hover:text-[var(--obsidian)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)]",
+  primary: "btn-shine bg-[var(--gold)] text-[var(--obsidian)] h-[52px] px-8 hover:bg-[var(--gold-light)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)]",
+  outline: "btn-shine border border-[var(--gold)] text-[var(--gold)] h-[52px] px-8 hover:bg-[var(--gold)] hover:text-[var(--obsidian)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)]",
   ghost: "text-[var(--gold)] hover:text-[var(--gold-light)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] rounded-sm"
 };
 
@@ -60,11 +60,38 @@ const Tag = href ? 'a' : 'button';
 
   // Run on load and after Astro view transitions
   document.addEventListener('astro:page-load', initMagneticButtons);
-  initMagneticButtons();
 </script>
 
 <style>
   .magnetic-btn {
     will-change: transform;
+  }
+  .btn-shine::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+      120deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0) 30%,
+      rgba(255, 255, 255, 0.25) 50%,
+      rgba(255, 255, 255, 0) 70%,
+      transparent 100%
+    );
+    transition: none;
+    pointer-events: none;
+  }
+  .btn-shine:hover::after {
+    animation: btn-shine-sweep 0.6s ease-out forwards;
+  }
+  @keyframes btn-shine-sweep {
+    from { left: -100%; }
+    to   { left: 120%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-shine::after { display: none; }
   }
 </style>

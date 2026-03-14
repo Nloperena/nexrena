@@ -1,24 +1,43 @@
 ---
-const clients = ['Forzabuilt', 'Rugged Red', 'Vito Fryfilter', 'Furniture Packages USA'];
+const clients = [
+  { name: 'Forzabuilt', metric: '+42% leads' },
+  { name: 'Rugged Red', metric: '+31% conversion' },
+  { name: 'VITO Fryfilter', metric: '+85% intl revenue' },
+  { name: 'Furniture Packages USA', metric: '+210% traffic' },
+];
 ---
 
-<div class="trust-clients w-full overflow-hidden border-y border-[var(--slate-800)] py-10 bg-[var(--obsidian)] relative z-10">
-  <div class="trust-clients__track flex items-center gap-20 md:gap-32 animate-trust-marquee">
-    {[...clients, ...clients, ...clients].map((name) => (
-      <span class="trust-client-name font-display text-[clamp(28px,5vw,56px)] font-light text-[var(--slate-400)] whitespace-nowrap opacity-50 hover:opacity-100 hover:text-[var(--gold)] transition-all duration-300">
-        {name}
-      </span>
-    ))}
+<div class="trust-clients w-full overflow-hidden border-y border-[var(--slate-800)] bg-[var(--obsidian)] relative z-10">
+  <!-- Label row -->
+  <div class="max-w-[1320px] mx-auto px-[5vw] py-5 flex items-center gap-4">
+    <span class="font-mono text-[10px] text-[var(--gold-dim)] uppercase tracking-[0.2em]">Trusted by</span>
+    <div class="flex-1 h-[1px] bg-gradient-to-r from-[var(--slate-800)] to-transparent"></div>
+  </div>
+
+  <!-- Marquee -->
+  <div class="pb-8 overflow-hidden">
+    <div class="trust-clients__track flex items-center gap-16 md:gap-28 animate-trust-marquee">
+      {[...clients, ...clients, ...clients, ...clients].map((c) => (
+        <div class="trust-client flex items-baseline gap-4 whitespace-nowrap shrink-0 group">
+          <span class="font-display text-[clamp(32px,5vw,64px)] font-light text-[var(--slate-400)] opacity-50 group-hover:opacity-100 group-hover:text-[var(--warm-white)] transition-all duration-500">
+            {c.name}
+          </span>
+          <span class="font-mono text-[10px] text-[var(--gold)] uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            {c.metric}
+          </span>
+        </div>
+      ))}
+    </div>
   </div>
 </div>
 
 <style>
   @keyframes trust-marquee {
     0% { transform: translateX(0); }
-    100% { transform: translateX(-33.33%); }
+    100% { transform: translateX(-25%); }
   }
   .animate-trust-marquee {
-    animation: trust-marquee 30s linear infinite;
+    animation: trust-marquee 35s linear infinite;
   }
   .trust-clients:hover .animate-trust-marquee {
     animation-play-state: paused;

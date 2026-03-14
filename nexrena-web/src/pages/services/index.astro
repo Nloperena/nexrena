@@ -3,6 +3,8 @@ import Layout from '../../components/layout/Layout.astro';
 import PageHero from '../../components/sections/PageHero.astro';
 import Eyebrow from '../../components/ui/Eyebrow.astro';
 import Button from '../../components/ui/Button.astro';
+import ClientsStrip from '../../components/sections/ClientsStrip.astro';
+import CTA from '../../components/sections/CTA.astro';
 import { services } from '../../data/services';
 import { heroImages } from '../../data/hero-images';
 import { itemListSchema } from '../../lib/schema';
@@ -12,6 +14,12 @@ const serviceItems = services.map((s) => ({
   name: s.title.replace(/\n/g, ' '),
   url: `${site}/services/${s.id}`,
 }));
+
+const process = [
+  { num: '01', title: 'Discover', body: 'We audit your current infrastructure, map buyer journeys, and identify exactly where revenue is leaking. No guesswork — just data.' },
+  { num: '02', title: 'Build', body: 'Weekly sprint delivery. You see components come to life in the browser, not just in Figma. Every build ships with measurable conversion architecture.' },
+  { num: '03', title: 'Scale', body: 'SEO compounds. Design systems scale. Analytics sharpen targeting. Every sprint makes the next one more valuable.' },
+];
 ---
 
 <Layout 
@@ -28,77 +36,172 @@ const serviceItems = services.map((s) => ({
     />
 
     <!-- Service Cards -->
-    <section class="bg-[var(--obsidian)] py-12 md:py-0">
-      <div class="section-container">
-        <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[var(--slate-700)] -mt-12 md:-mt-0">
+    <section class="bg-[var(--obsidian)]">
+      <div class="max-w-[1320px] mx-auto px-[5vw] py-24 md:py-32">
+        <div class="flex flex-col gap-0 divide-y divide-[var(--slate-800)]">
           {services.map((service, i) => (
-            <a href={`/services/${service.id}`} class="service-card group block bg-transparent py-[48px] px-[32px] flex flex-col h-full transition-all duration-300 relative reveal hover:bg-[var(--slate-900)]" style={`--i: ${i + 1};`}>
-              <div class="absolute top-0 left-0 right-0 h-[3px] bg-[var(--gold)] transition-all duration-300 group-hover:h-[6px]"></div>
-              
-              <div class="flex justify-between items-start mb-12 mt-4">
-                <span class="font-mono text-[11px] text-[var(--gold)]">{service.number}</span>
-                <span class="text-[var(--gold)] transform transition-transform group-hover:translate-x-1">&rarr;</span>
+            <a href={`/services/${service.id}`} class="svc-row group grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 py-16 lg:py-20 items-start lg:items-center transition-colors relative">
+              <div class="lg:col-span-1 font-display text-[56px] lg:text-[72px] text-[var(--slate-800)] group-hover:text-[var(--gold)] transition-colors leading-none font-light">
+                {service.number}
               </div>
-
-              <h2 class="text-h3 font-display text-[var(--warm-white)] whitespace-pre-line mb-6 group-hover:text-[var(--gold-light)] transition-colors">
-                {service.title}
-              </h2>
-              
-              <p class="font-body text-[16px] text-[var(--slate-400)] leading-relaxed mb-12 flex-grow">
-                {service.body}
-              </p>
-
-              <div class="flex flex-wrap gap-2 mb-4">
-                {service.tags.map(tag => (
-                  <span class="font-mono text-[10px] text-[var(--gold-dim)] bg-[var(--slate-800)] px-2 py-1 uppercase tracking-wider">
-                    [{tag}]
-                  </span>
-                ))}
+              <div class="lg:col-span-4">
+                <h2 class="font-display text-[32px] lg:text-[44px] text-[var(--warm-white)] leading-[1.05] whitespace-pre-line group-hover:text-[var(--gold-light)] transition-colors">
+                  {service.title}
+                </h2>
               </div>
-
-              <span class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest">
-                Explore service
-              </span>
+              <div class="lg:col-span-5">
+                <p class="font-body text-[16px] text-[var(--slate-400)] leading-relaxed mb-4">
+                  {service.body}
+                </p>
+                <div class="flex flex-wrap gap-2">
+                  {service.tags.map(tag => (
+                    <span class="font-mono text-[9px] text-[var(--gold-dim)] bg-[var(--slate-900)] border border-[var(--slate-800)] px-2 py-1 uppercase tracking-wider group-hover:border-[var(--gold)]/20 transition-colors">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div class="lg:col-span-2 flex items-center justify-start lg:justify-end">
+                <span class="inline-flex items-center gap-2 font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest group-hover:gap-4 transition-all">
+                  Explore
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="transition-transform group-hover:translate-x-1"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </span>
+              </div>
+              <div class="absolute bottom-0 left-0 w-0 h-[1px] bg-[var(--gold)] group-hover:w-full transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]" aria-hidden="true"></div>
             </a>
           ))}
         </div>
       </div>
     </section>
 
+    <!-- Manifesto -->
+    <section class="relative w-full min-h-[70vh] overflow-hidden flex items-center justify-center bg-[var(--obsidian)]">
+      <img src={heroImages.work} alt="" class="absolute inset-0 w-full h-full object-cover opacity-30" aria-hidden="true" loading="lazy" />
+      <div class="absolute inset-0 bg-gradient-to-b from-[var(--obsidian)] via-transparent to-[var(--obsidian)]"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_70%_70%_at_50%_50%,transparent_0%,rgba(12,15,18,0.7)_100%)]"></div>
+      <div class="relative z-10 w-full max-w-[1320px] mx-auto px-[5vw] text-center py-24">
+        <p class="font-mono text-[10px] text-[var(--gold)] tracking-[0.3em] uppercase mb-10 reveal">Our Approach</p>
+        <h2 class="font-display italic text-[clamp(32px,5vw,72px)] text-[var(--warm-white)] leading-[1.1] tracking-tight max-w-4xl mx-auto mb-8 reveal" style="--i: 1;">
+          Growth isn't a campaign.<br/>
+          It's an <span class="text-[var(--gold)]">engineered system</span><br/>
+          that compounds.
+        </h2>
+        <div class="w-16 h-[1px] bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent mx-auto reveal" style="--i: 2;"></div>
+      </div>
+    </section>
+
+    <!-- Process -->
+    <section class="bg-[var(--obsidian)] border-t border-[var(--slate-800)]">
+      <div class="max-w-[1320px] mx-auto px-[5vw] py-32">
+        <div class="max-w-3xl mb-20">
+          <Eyebrow class="mb-6">HOW WE WORK //</Eyebrow>
+          <h2 class="font-display text-[40px] md:text-[64px] text-[var(--warm-white)] leading-[1.05] reveal">
+            Three phases. One outcome.
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-0 relative">
+          <div class="hidden md:block absolute top-[60px] left-0 right-0 h-[1px] bg-gradient-to-r from-[var(--gold)]/0 via-[var(--gold)]/30 to-[var(--gold)]/0 process-line" aria-hidden="true"></div>
+          {process.map((step, i) => (
+            <div class="process-step relative py-12 md:py-0 md:px-10 first:md:pl-0 last:md:pr-0 border-b md:border-b-0 border-[var(--slate-800)]">
+              <div class="relative mb-8">
+                <span class="font-display text-[80px] md:text-[100px] text-[var(--slate-800)] leading-none font-light">{step.num}</span>
+                <div class="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[var(--gold)] z-10 process-dot"></div>
+              </div>
+              <h3 class="font-display text-[28px] md:text-[32px] text-[var(--warm-white)] leading-tight mb-4">{step.title}</h3>
+              <p class="font-body text-[16px] text-[var(--slate-400)] leading-relaxed">{step.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <ClientsStrip />
+
     <!-- Approach -->
     <section class="bg-[var(--cream)] py-24 md:py-32 text-[var(--obsidian)]">
-      <div class="section-container">
-        <div class="max-w-3xl">
-          <Eyebrow class="mb-8">THE APPROACH //</Eyebrow>
-          <h2 class="font-display text-[36px] md:text-[56px] leading-[1.15] font-light mb-12 reveal">
-            Growth is an engineered system.
-          </h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-12 font-body text-[17px] leading-relaxed text-[var(--slate-600)]">
-            <p class="reveal" style="--i: 1;">
-              We don't chase vanity metrics. Every line of code, every keyword, every design decision is measured against one goal: measurable business growth.
-            </p>
-            <p class="reveal" style="--i: 2;">
-              Whether you're a mid-market manufacturer or a high-growth e-commerce brand, we build the infrastructure that lets your sales team close leads instead of chase them.
-            </p>
+      <div class="max-w-[1320px] mx-auto px-[5vw]">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+          <div>
+            <Eyebrow class="mb-8 !text-[var(--gold-dim)]">WHY NEXRENA //</Eyebrow>
+            <h2 class="font-display text-[36px] md:text-[56px] leading-[1.15] font-light mb-8 reveal">
+              One partner. Not four vendors.
+            </h2>
+            <div class="font-body text-[17px] leading-relaxed text-[var(--slate-600)] flex flex-col gap-6">
+              <p class="reveal" style="--i: 1;">
+                We don't chase vanity metrics. Every line of code, every keyword, every design decision is measured against one goal: measurable business growth.
+              </p>
+              <p class="reveal" style="--i: 2;">
+                Whether you're a mid-market manufacturer or a high-growth e-commerce brand, we build the infrastructure that lets your sales team close leads instead of chase them.
+              </p>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-6 reveal" style="--i: 3;">
+            <div class="bg-[var(--obsidian)] p-8 flex flex-col justify-between aspect-square">
+              <span class="font-display text-[48px] md:text-[56px] text-[var(--gold)] font-light">96+</span>
+              <span class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-wider">Lighthouse Score</span>
+            </div>
+            <div class="bg-[var(--obsidian)] p-8 flex flex-col justify-between aspect-square">
+              <span class="font-display text-[48px] md:text-[56px] text-[var(--gold)] font-light">3x</span>
+              <span class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-wider">Page Speed Gain</span>
+            </div>
+            <div class="bg-[var(--obsidian)] p-8 flex flex-col justify-between aspect-square">
+              <span class="font-display text-[48px] md:text-[56px] text-[var(--gold)] font-light">100%</span>
+              <span class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-wider">Client Retention</span>
+            </div>
+            <div class="bg-[var(--obsidian)] p-8 flex flex-col justify-between aspect-square">
+              <span class="font-display text-[48px] md:text-[56px] text-[var(--gold)] font-light">3wk</span>
+              <span class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-wider">First Delivery</span>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- CTA -->
-    <section class="bg-[var(--obsidian)] py-24 md:py-32 border-t border-[var(--slate-800)]">
-      <div class="section-container text-center">
-        <h2 class="font-display text-[40px] md:text-[56px] text-[var(--warm-white)] leading-[1.1] mb-8 reveal">
-          Ready to build your growth engine?
-        </h2>
-        <p class="text-[var(--slate-400)] text-[17px] mb-12 max-w-xl mx-auto reveal" style="--i: 1;">
-          Your next stage of growth starts here. Let's map your 90-day strategy.
-        </p>
-        <div class="flex flex-wrap justify-center gap-6 reveal" style="--i: 2;">
-          <Button href="/contact" variant="primary">Start a project &rarr;</Button>
-          <Button href="/work" variant="outline">View case studies</Button>
-        </div>
-      </div>
-    </section>
+    <CTA />
   </main>
+
+  <script>
+    import gsap from 'gsap';
+    import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+    function initServicesAnimations() {
+      gsap.registerPlugin(ScrollTrigger);
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const rows = gsap.utils.toArray('.svc-row') as HTMLElement[];
+      if (rows.length) {
+        gsap.set(rows, { opacity: 0, y: 30 });
+        ScrollTrigger.batch(rows, {
+          start: 'top 88%',
+          onEnter: (batch) => {
+            gsap.to(batch, { opacity: 1, y: 0, duration: 0.8, stagger: 0.12, ease: 'power3.out' });
+          },
+          once: true,
+        });
+      }
+
+      const steps = gsap.utils.toArray('.process-step') as HTMLElement[];
+      if (steps.length) {
+        gsap.set(steps, { opacity: 0, y: 40 });
+        ScrollTrigger.batch(steps, {
+          start: 'top 85%',
+          onEnter: (batch) => {
+            gsap.to(batch, { opacity: 1, y: 0, duration: 0.9, stagger: 0.2, ease: 'power3.out' });
+          },
+          once: true,
+        });
+      }
+
+      const line = document.querySelector('.process-line');
+      if (line) {
+        gsap.fromTo(line, { scaleX: 0 }, {
+          scaleX: 1, duration: 1.2, ease: 'power3.out',
+          scrollTrigger: { trigger: line, start: 'top 80%', once: true },
+        });
+      }
+    }
+
+    document.addEventListener('astro:page-load', initServicesAnimations);
+  </script>
 </Layout>

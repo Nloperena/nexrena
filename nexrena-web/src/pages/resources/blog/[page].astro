@@ -1,0 +1,88 @@
+---
+import Layout from '../../../components/layout/Layout.astro';
+import PageHero from '../../../components/sections/PageHero.astro';
+import BlogCard from '../../../components/blog/BlogCard.astro';
+import { getCollection } from 'astro:content';
+import { heroImages } from '../../../data/hero-images';
+import { blogCategories } from '../../../data/blog-categories';
+
+export async function getStaticPaths() {
+  const perPage = 12;
+  const allPosts = (await getCollection('blog'))
+    .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+
+  const totalPages = Math.ceil(allPosts.length / perPage);
+  
+  return Array.from({ length: totalPages - 1 }, (_, i) => ({
+    params: { page: String(i + 2) },
+    props: {
+      posts: allPosts.slice((i + 1) * perPage, (i + 2) * perPage),
+      currentPage: i + 2,
+      totalPages,
+    },
+  }));
+}
+
+const { posts, currentPage, totalPages } = Astro.props;
+---
+
+<Layout 
+  title={`Blog — Page ${currentPage} | Nexrena`}
+  description="B2B web design, SEO, and digital growth insights. Practical guides for manufacturers, ecommerce, and professional services."
+>
+  <main>
+    <PageHero 
+      eyebrow="BLOG //" 
+      title="Articles & guides"
+      subtitle="Practical advice on web design, SEO, and digital strategy for B2B growth."
+      image={heroImages.blog}
+      variant="short"
+    />
+
+    <section class="bg-[var(--obsidian)] py-12 md:py-24">
+      <div class="section-container">
+
+        <!-- Category Filter -->
+        <div class="flex flex-wrap gap-3 mb-12">
+          <a href="/resources/blog" class="font-mono text-[11px] uppercase tracking-widest px-4 py-2 border transition-colors bg-[var(--gold)] text-[var(--obsidian)] border-[var(--gold)]">
+            All
+          </a>
+          {blogCategories.map(cat => (
+            <a href={`/resources/blog/category/${cat.id}`} class="font-mono text-[11px] uppercase tracking-widest px-4 py-2 border border-[var(--slate-700)] text-[var(--slate-300)] hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors">
+              {cat.name}
+            </a>
+          ))}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {posts.map((post: any) => (
+            <BlogCard
+              slug={post.slug}
+              title={post.data.title}
+              description={post.data.description}
+              publishedAt={post.data.publishedAt}
+              category={post.data.category}
+            />
+          ))}
+        </div>
+
+        <!-- Pagination -->
+        <nav class="flex justify-center items-center gap-4 mt-16" aria-label="Blog pagination">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+            <a 
+              href={page === 1 ? '/resources/blog' : `/resources/blog/${page}`} 
+              class:list={[
+                'font-mono text-[12px] px-4 py-2 border transition-colors',
+                page === currentPage 
+                  ? 'text-[var(--gold)] border-[var(--gold)] bg-[var(--gold)]/10' 
+                  : 'text-[var(--slate-400)] border-[var(--slate-700)] hover:border-[var(--gold)] hover:text-[var(--gold)]',
+              ]}
+            >
+              {page}
+            </a>
+          ))}
+        </nav>
+      </div>
+    </section>
+  </main>
+</Layout>

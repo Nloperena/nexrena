@@ -3,11 +3,42 @@ const SITE = 'https://nexrena.com';
 export function organizationSchema() {
   return {
     '@context': 'https://schema.org',
-    '@type': 'Organization',
+    '@type': 'LocalBusiness',
+    '@id': `${SITE}/#organization`,
     name: 'Nexrena',
+    legalName: 'Nexrena LLC',
     url: SITE,
     logo: `${SITE}/favicon.svg`,
-    description: 'Premium B2B digital agency — web design, SEO, full-service growth.',
+    image: `${SITE}/og-default.png`,
+    description: 'Premium B2B digital agency — web design, SEO, full-service growth for mid-size companies.',
+    email: 'hello@nexrena.com',
+    foundingDate: '2025',
+    founder: {
+      '@type': 'Person',
+      name: 'Nico Loperena',
+    },
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Kissimmee',
+      addressRegion: 'FL',
+      addressCountry: 'US',
+    },
+    areaServed: [
+      { '@type': 'City', name: 'Orlando' },
+      { '@type': 'City', name: 'Kissimmee' },
+      { '@type': 'State', name: 'Florida' },
+      { '@type': 'Country', name: 'United States' },
+    ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'sales',
+      email: 'hello@nexrena.com',
+      availableLanguage: 'English',
+    },
+    priceRange: '$$$',
+    openingHours: 'Mo-Fr 09:00-18:00',
+    sameAs: ['https://www.linkedin.com/company/nexrena'],
+    knowsAbout: ['Web Design', 'SEO', 'B2B Marketing', 'Headless CMS', 'E-Commerce'],
   };
 }
 

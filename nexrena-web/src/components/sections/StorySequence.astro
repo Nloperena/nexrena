@@ -118,12 +118,5 @@ const stats = [
       .to({}, { duration: 1 }); // hold at end
   }
 
-  document.addEventListener('astro:page-load', () => {
-    import('gsap/ScrollTrigger').then(({ ScrollTrigger }) => {
-      ScrollTrigger.getAll().forEach(t => {
-        if(t.vars.trigger === '#story-sequence') t.kill();
-      });
-      initStorySequence();
-    });
-  });
+  document.addEventListener('astro:page-load', initStorySequence);
 </script>

@@ -1,6 +1,7 @@
 ---
 ---
-<div id="app-loader" class="fixed inset-0 z-[1000] bg-[var(--obsidian)] flex items-center justify-center pointer-events-none">
+<!-- Hidden by default. Only shown by JS on first visit. -->
+<div id="app-loader" class="fixed inset-0 z-[1000] bg-[var(--obsidian)] flex items-center justify-center pointer-events-none" style="display:none;" transition:persist="loader">
   <div class="loader-content flex items-center overflow-hidden">
     <div class="loader-text font-display text-[48px] md:text-[72px] text-[var(--warm-white)] flex items-center">
       <span>Nex</span><span class="text-[var(--gold)]">rena</span>
@@ -15,49 +16,25 @@
     const loader = document.getElementById('app-loader');
     if (!loader) return;
 
-    // Check if user prefers reduced motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    
-    // Check if we've already shown the loader in this session (temporarily disabled for testing)
-    // const hasSeenLoader = sessionStorage.getItem('nexrena-loader-seen');
-    const hasSeenLoader = false;
-
-    if (prefersReducedMotion || hasSeenLoader) {
-      loader.style.display = 'none';
-      return;
-    }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (sessionStorage.getItem('nexrena-loader-seen')) return;
 
     sessionStorage.setItem('nexrena-loader-seen', 'true');
 
-    const tl = gsap.timeline({
-      onComplete: () => {
-        loader.style.display = 'none';
-      }
-    });
+    // Show the loader (it starts display:none)
+    loader.style.display = 'flex';
 
-    tl.fromTo('.loader-text', 
-      { y: 150, opacity: 0, skewY: 10, scale: 0.9 },
-      { y: 0, opacity: 1, skewY: 0, scale: 1, duration: 1.2, ease: "expo.out" }
-    )
-    .to('.loader-text', {
-      opacity: 0,
-      scale: 1.1,
-      duration: 0.6,
-      delay: 1.0,
-      ease: "power2.inOut"
-    })
-    .to(loader, {
-      yPercent: -100,
-      duration: 1.0,
-      ease: "expo.inOut"
-    }, "-=0.3");
+    gsap.timeline({ onComplete: () => { loader.style.display = 'none'; } })
+      .fromTo('.loader-text',
+        { y: 100, opacity: 0, skewY: 6, scale: 0.95 },
+        { y: 0, opacity: 1, skewY: 0, scale: 1, duration: 0.9, ease: 'expo.out' })
+      .to('.loader-text', {
+        opacity: 0, scale: 1.05, duration: 0.4, delay: 0.6, ease: 'power2.inOut' })
+      .to(loader, {
+        yPercent: -100, duration: 0.7, ease: 'expo.inOut' }, '-=0.2');
   }
 
-  // Run on initial load
   initLoader();
-  
-  // With ViewTransitions, we don't want the loader to show on every page navigation
-  // The sessionStorage check handles this
 </script>
 
 <style>

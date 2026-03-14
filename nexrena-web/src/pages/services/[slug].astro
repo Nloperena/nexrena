@@ -97,12 +97,19 @@ const schema = [
           <!-- FAQs -->
           <div class="reveal">
             <h3 class="font-display text-[40px] text-[var(--warm-white)] mb-12">Common questions.</h3>
-            <div class="space-y-8">
-              {service.faq?.map((item) => (
-                <div class="border-b border-[var(--slate-800)] pb-8">
-                  <h4 class="font-body text-[18px] text-[var(--slate-200)] font-medium mb-4">{item.q}</h4>
-                  <p class="font-body text-[15px] text-[var(--slate-400)] leading-relaxed">{item.a}</p>
-                </div>
+            <div class="space-y-0">
+              {service.faq?.map((item, i) => (
+                <details class="faq-item group border-b border-[var(--slate-800)]" data-idx={i}>
+                  <summary class="flex items-center justify-between py-6 cursor-pointer list-none font-body text-[18px] text-[var(--slate-200)] font-medium hover:text-[var(--gold)] transition-colors select-none">
+                    {item.q}
+                    <span class="faq-icon shrink-0 ml-4 w-8 h-8 rounded-full border border-[var(--slate-700)] flex items-center justify-center text-[var(--gold)] transition-transform duration-300 group-open:rotate-45">
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 1v12M1 7h12"/></svg>
+                    </span>
+                  </summary>
+                  <div class="pb-6 font-body text-[15px] text-[var(--slate-400)] leading-relaxed max-w-2xl">
+                    {item.a}
+                  </div>
+                </details>
               ))}
             </div>
           </div>

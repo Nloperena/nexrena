@@ -1,128 +1,226 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { Contact, Project, Invoice } from './types'
-
-// ── seed data ────────────────────────────────────────────────────────────
-const SEED_CONTACTS: Contact[] = [
-  {
-    id: 'c1', name: 'Marcus Webb', company: 'Ironclad Industrial', email: 'marcus@ironclad.com',
-    industry: 'industrial', stage: 'discovery', value: 18000, phone: '407-555-0101',
-    notes: 'Needs full catalog rebuild. Has old WordPress site from 2016.',
-    createdAt: '2026-03-01T10:00:00Z', updatedAt: '2026-03-01T10:00:00Z',
-  },
-  {
-    id: 'c2', name: 'Sandra Reyes', company: 'Coastal Commerce Co.', email: 'sreyes@coastalco.com',
-    industry: 'ecommerce', stage: 'proposal', value: 24000, phone: '305-555-0182',
-    notes: 'Magento 1 → headless migration. Hot lead.',
-    createdAt: '2026-03-03T09:00:00Z', updatedAt: '2026-03-05T14:00:00Z',
-  },
-  {
-    id: 'c3', name: 'Tom Garland', company: 'Garland Property Group', email: 'tom@garlandpg.com',
-    industry: 'realestate', stage: 'contacted', value: 12000,
-    notes: 'Wants SEO retainer. Portal-dependent for leads.',
-    createdAt: '2026-03-06T11:00:00Z', updatedAt: '2026-03-06T11:00:00Z',
-  },
-]
-
-const SEED_PROJECTS: Project[] = [
-  {
-    id: 'p1', name: 'Ironclad Industrial — Website Rebuild', clientName: 'Ironclad Industrial',
-    contactId: 'c1', type: 'web', status: 'discovery', value: 18000,
-    startDate: '2026-03-10', endDate: '2026-04-25',
-    phases: [
-      { id: 'ph1', name: 'Discovery', tasks: [
-        { id: 't1', title: 'Brand & competitor audit', status: 'todo' },
-        { id: 't2', title: 'Sitemap + page structure', status: 'todo' },
-        { id: 't3', title: 'Kick-off call', status: 'todo' },
-      ]},
-      { id: 'ph2', name: 'Design', tasks: [
-        { id: 't4', title: 'Wireframes — key pages', status: 'todo' },
-        { id: 't5', title: 'Visual design mockups', status: 'todo' },
-        { id: 't6', title: 'Client design approval', status: 'todo' },
-      ]},
-      { id: 'ph3', name: 'Build', tasks: [
-        { id: 't7', title: 'Next.js scaffold + CMS setup', status: 'todo' },
-        { id: 't8', title: 'Product catalog build', status: 'todo' },
-        { id: 't9', title: 'SEO on-page optimization', status: 'todo' },
-      ]},
-      { id: 'ph4', name: 'Launch', tasks: [
-        { id: 't10', title: 'QA across devices', status: 'todo' },
-        { id: 't11', title: 'Client review + revisions', status: 'todo' },
-        { id: 't12', title: 'Go-live + redirect setup', status: 'todo' },
-      ]},
-    ],
-    notes: 'Deposit invoice sent. Awaiting payment before kickoff.',
-    createdAt: '2026-03-08T10:00:00Z',
-  },
-]
-
-const SEED_INVOICES: Invoice[] = [
-  {
-    id: 'i1', number: 'NX-001', clientName: 'Legacy Client', status: 'paid',
-    lineItems: [
-      { id: 'li1', description: 'Monthly retainer — web & SEO management', quantity: 1, rate: 2500 },
-    ],
-    issueDate: '2026-03-01', dueDate: '2026-03-08', paidDate: '2026-03-06',
-    createdAt: '2026-03-01T08:00:00Z',
-  },
-  {
-    id: 'i2', number: 'NX-002', clientName: 'Ironclad Industrial', contactId: 'c1', projectId: 'p1',
-    status: 'sent',
-    lineItems: [
-      { id: 'li2', description: 'Website Rebuild — 50% deposit', quantity: 1, rate: 9000 },
-    ],
-    issueDate: '2026-03-08', dueDate: '2026-03-15',
-    notes: 'Remaining 50% due at project completion.',
-    createdAt: '2026-03-08T11:00:00Z',
-  },
-]
-
-// ── storage helpers ───────────────────────────────────────────────────────
-function load<T>(key: string, seed: T): T {
-  if (typeof window === 'undefined') return seed
-  try {
-    const raw = localStorage.getItem(key)
-    return raw ? JSON.parse(raw) : seed
-  } catch { return seed }
-}
-
-function save<T>(key: string, data: T) {
-  if (typeof window === 'undefined') return
-  localStorage.setItem(key, JSON.stringify(data))
-}
+import { Contact, Project, Invoice, Lead, TimeEntry, Proposal, Expense } from './types'
+import { api } from './api'
 
 // ── hooks ────────────────────────────────────────────────────────────────
+
 export function useContacts() {
   const [contacts, setContacts] = useState<Contact[]>([])
-  useEffect(() => { setContacts(load('nx_contacts', SEED_CONTACTS)) }, [])
-  const update = useCallback((data: Contact[]) => { setContacts(data); save('nx_contacts', data) }, [])
-  const add = useCallback((c: Contact) => update([...contacts, c]), [contacts, update])
-  const edit = useCallback((c: Contact) => update(contacts.map(x => x.id === c.id ? c : x)), [contacts, update])
-  const remove = useCallback((id: string) => update(contacts.filter(x => x.id !== id)), [contacts, update])
+
+  useEffect(() => {
+    api.get<Contact[]>('/contacts').then(setContacts).catch(console.error)
+  }, [])
+
+  const add = useCallback(async (c: Contact) => {
+    setContacts(prev => [...prev, c])
+    try { await api.post('/contacts', c) }
+    catch (e) { console.error(e); setContacts(prev => prev.filter(x => x.id !== c.id)) }
+  }, [])
+
+  const edit = useCallback(async (c: Contact) => {
+    setContacts(prev => prev.map(x => x.id === c.id ? c : x))
+    try { await api.put(`/contacts/${c.id}`, c) }
+    catch (e) { console.error(e) }
+  }, [])
+
+  const remove = useCallback(async (id: string) => {
+    setContacts(prev => prev.filter(x => x.id !== id))
+    try { await api.del(`/contacts/${id}`) }
+    catch (e) { console.error(e) }
+  }, [])
+
   return { contacts, add, edit, remove }
 }
 
 export function useProjects() {
   const [projects, setProjects] = useState<Project[]>([])
-  useEffect(() => { setProjects(load('nx_projects', SEED_PROJECTS)) }, [])
-  const update = useCallback((data: Project[]) => { setProjects(data); save('nx_projects', data) }, [])
-  const add = useCallback((p: Project) => update([...projects, p]), [projects, update])
-  const edit = useCallback((p: Project) => update(projects.map(x => x.id === p.id ? p : x)), [projects, update])
-  const remove = useCallback((id: string) => update(projects.filter(x => x.id !== id)), [projects, update])
+
+  useEffect(() => {
+    api.get<Project[]>('/projects').then(setProjects).catch(console.error)
+  }, [])
+
+  const add = useCallback(async (p: Project) => {
+    setProjects(prev => [...prev, p])
+    try { await api.post('/projects', p) }
+    catch (e) { console.error(e); setProjects(prev => prev.filter(x => x.id !== p.id)) }
+  }, [])
+
+  const edit = useCallback(async (p: Project) => {
+    setProjects(prev => prev.map(x => x.id === p.id ? p : x))
+    try { await api.put(`/projects/${p.id}`, p) }
+    catch (e) { console.error(e) }
+  }, [])
+
+  const remove = useCallback(async (id: string) => {
+    setProjects(prev => prev.filter(x => x.id !== id))
+    try { await api.del(`/projects/${id}`) }
+    catch (e) { console.error(e) }
+  }, [])
+
   return { projects, add, edit, remove }
 }
 
 export function useInvoices() {
   const [invoices, setInvoices] = useState<Invoice[]>([])
-  useEffect(() => { setInvoices(load('nx_invoices', SEED_INVOICES)) }, [])
-  const update = useCallback((data: Invoice[]) => { setInvoices(data); save('nx_invoices', data) }, [])
-  const add = useCallback((i: Invoice) => update([...invoices, i]), [invoices, update])
-  const edit = useCallback((i: Invoice) => update(invoices.map(x => x.id === i.id ? i : x)), [invoices, update])
-  const remove = useCallback((id: string) => update(invoices.filter(x => x.id !== id)), [invoices, update])
+
+  useEffect(() => {
+    api.get<Invoice[]>('/invoices').then(setInvoices).catch(console.error)
+  }, [])
+
+  const add = useCallback(async (i: Invoice) => {
+    setInvoices(prev => [...prev, i])
+    try { await api.post('/invoices', i) }
+    catch (e) { console.error(e); setInvoices(prev => prev.filter(x => x.id !== i.id)) }
+  }, [])
+
+  const edit = useCallback(async (i: Invoice) => {
+    setInvoices(prev => prev.map(x => x.id === i.id ? i : x))
+    try { await api.put(`/invoices/${i.id}`, i) }
+    catch (e) { console.error(e) }
+  }, [])
+
+  const remove = useCallback(async (id: string) => {
+    setInvoices(prev => prev.filter(x => x.id !== id))
+    try { await api.del(`/invoices/${id}`) }
+    catch (e) { console.error(e) }
+  }, [])
+
   return { invoices, add, edit, remove }
 }
 
+export function useLeads() {
+  const [leads, setLeads] = useState<Lead[]>([])
+
+  useEffect(() => {
+    api.get<Lead[]>('/leads').then(setLeads).catch(console.error)
+  }, [])
+
+  const updateStatus = useCallback(async (id: string, status: Lead['status']) => {
+    setLeads(prev => prev.map(x => x.id === id ? { ...x, status } : x))
+    try { await api.patch(`/leads/${id}`, { status }) }
+    catch (e) { console.error(e) }
+  }, [])
+
+  const remove = useCallback(async (id: string) => {
+    setLeads(prev => prev.filter(x => x.id !== id))
+    try { await api.del(`/leads/${id}`) }
+    catch (e) { console.error(e) }
+  }, [])
+
+  return { leads, updateStatus, remove }
+}
+
+export function useTimeEntries() {
+  const [entries, setEntries] = useState<TimeEntry[]>([])
+
+  useEffect(() => {
+    api.get<TimeEntry[]>('/time-entries').then(setEntries).catch(console.error)
+  }, [])
+
+  const add = useCallback(async (e: TimeEntry) => {
+    setEntries(prev => [e, ...prev])
+    try { await api.post('/time-entries', e) }
+    catch (err) { console.error(err); setEntries(prev => prev.filter(x => x.id !== e.id)) }
+  }, [])
+
+  const edit = useCallback(async (e: TimeEntry) => {
+    setEntries(prev => prev.map(x => x.id === e.id ? e : x))
+    try { await api.put(`/time-entries/${e.id}`, e) }
+    catch (err) { console.error(err) }
+  }, [])
+
+  const remove = useCallback(async (id: string) => {
+    setEntries(prev => prev.filter(x => x.id !== id))
+    try { await api.del(`/time-entries/${id}`) }
+    catch (err) { console.error(err) }
+  }, [])
+
+  return { entries, add, edit, remove }
+}
+
+export function useProposals() {
+  const [proposals, setProposals] = useState<Proposal[]>([])
+
+  useEffect(() => {
+    api.get<Proposal[]>('/proposals').then(setProposals).catch(console.error)
+  }, [])
+
+  const add = useCallback(async (p: Proposal) => {
+    setProposals(prev => [p, ...prev])
+    try { await api.post('/proposals', p) }
+    catch (err) { console.error(err); setProposals(prev => prev.filter(x => x.id !== p.id)) }
+  }, [])
+
+  const edit = useCallback(async (p: Proposal) => {
+    setProposals(prev => prev.map(x => x.id === p.id ? p : x))
+    try { await api.put(`/proposals/${p.id}`, p) }
+    catch (err) { console.error(err) }
+  }, [])
+
+  const remove = useCallback(async (id: string) => {
+    setProposals(prev => prev.filter(x => x.id !== id))
+    try { await api.del(`/proposals/${id}`) }
+    catch (err) { console.error(err) }
+  }, [])
+
+  return { proposals, add, edit, remove }
+}
+
+export function useExpenses() {
+  const [expenses, setExpenses] = useState<Expense[]>([])
+
+  useEffect(() => {
+    api.get<Expense[]>('/expenses').then(setExpenses).catch(console.error)
+  }, [])
+
+  const add = useCallback(async (e: Expense) => {
+    setExpenses(prev => [e, ...prev])
+    try { await api.post('/expenses', e) }
+    catch (err) { console.error(err); setExpenses(prev => prev.filter(x => x.id !== e.id)) }
+  }, [])
+
+  const edit = useCallback(async (e: Expense) => {
+    setExpenses(prev => prev.map(x => x.id === e.id ? e : x))
+    try { await api.put(`/expenses/${e.id}`, e) }
+    catch (err) { console.error(err) }
+  }, [])
+
+  const remove = useCallback(async (id: string) => {
+    setExpenses(prev => prev.filter(x => x.id !== id))
+    try { await api.del(`/expenses/${id}`) }
+    catch (err) { console.error(err) }
+  }, [])
+
+  return { expenses, add, edit, remove }
+}
+
 // ── utils ────────────────────────────────────────────────────────────────
+
 export function genId() { return Math.random().toString(36).slice(2, 10) }
-export function formatCurrency(n: number) { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n) }
+export function formatCurrency(n: number) { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(n) }
 export function formatDate(d: string) { return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }
+
+/** Generate next sequential invoice number in NXR-YYYY-XXX format */
+export function nextInvoiceNumber(invoices: Invoice[]): string {
+  const year = new Date().getFullYear()
+  const prefix = `NXR-${year}-`
+  const existing = invoices
+    .map(i => i.number)
+    .filter(n => n.startsWith(prefix))
+    .map(n => parseInt(n.replace(prefix, ''), 10))
+    .filter(n => !isNaN(n))
+  const next = existing.length > 0 ? Math.max(...existing) + 1 : 1
+  return `${prefix}${String(next).padStart(3, '0')}`
+}
+
+/** Compute invoice subtotal (before tax) */
+export function invoiceSubtotal(inv: Invoice): number {
+  return inv.lineItems.reduce((s, l) => s + l.quantity * l.rate, 0)
+}
+
+/** Compute invoice grand total (with tax) */
+export function invoiceTotal(inv: Invoice): number {
+  const sub = invoiceSubtotal(inv)
+  return inv.taxRate ? sub + sub * (inv.taxRate / 100) : sub
+}

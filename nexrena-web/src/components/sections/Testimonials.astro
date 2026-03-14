@@ -7,17 +7,17 @@ const testimonials = [
   {
     quote: "Literally the best single website contact in the history of the company.",
     author: "Forzabuilt Leadership",
-    role: "Industrial Adhesives"
+    role: "Industrial Adhesives · B2B Manufacturing"
   },
   {
     quote: "Nexrena didn't just build us a website — they built us a lead generation machine.",
-    author: "Vito Fryfilter",
-    role: "Global Industrial Brand"
+    author: "VITO Fryfilter Team",
+    role: "Global Commercial Equipment · E-Commerce"
   },
   {
-    quote: "A true partner that understands B2B complexities and delivers measurable ROI.",
+    quote: "The new procurement flow removed constant back-and-forth and accelerated quote velocity.",
     author: "Furniture Packages USA",
-    role: "Real Estate Procurement"
+    role: "Real Estate Procurement · B2B Platform"
   }
 ];
 ---
@@ -51,6 +51,13 @@ const testimonials = [
         </div>
       ))}
     </div>
+
+    <!-- Progress dots -->
+    <div class="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3" aria-label="Testimonial progress">
+      {testimonials.map((_, i) => (
+        <div class={`test-dot w-2 h-2 rounded-full transition-all duration-500 ${i === 0 ? 'bg-[var(--gold)] w-8' : 'bg-[var(--slate-600)]'}`} data-index={i}></div>
+      ))}
+    </div>
   </div>
 </section>
 
@@ -78,31 +85,42 @@ const testimonials = [
       }
     });
 
+    const dots = gsap.utils.toArray('.test-dot') as HTMLElement[];
+
+    function setActiveDot(activeIndex: number) {
+      dots.forEach((dot, i) => {
+        if (i === activeIndex) {
+          dot.style.backgroundColor = 'var(--gold)';
+          dot.style.width = '2rem';
+        } else {
+          dot.style.backgroundColor = 'var(--slate-600)';
+          dot.style.width = '0.5rem';
+        }
+      });
+    }
+
     items.forEach((item, i) => {
       const author = item.querySelector('.test-author');
 
       if (i !== 0) {
-        // Bring in
         tl.to(item, {
           y: 0,
           opacity: 1,
           duration: 1,
-          ease: "power2.out"
+          ease: "power2.out",
+          onStart: () => setActiveDot(i),
         });
       }
 
-      // Show author
       tl.to(author, {
         y: 0,
         opacity: 1,
         duration: 0.5
       });
 
-      // Hold
       tl.to({}, { duration: 1.5 });
 
       if (i !== items.length - 1) {
-        // Fade out
         tl.to(item, {
           y: -50,
           opacity: 0,
@@ -114,12 +132,5 @@ const testimonials = [
     });
   }
 
-  document.addEventListener('astro:page-load', () => {
-    import('gsap/ScrollTrigger').then(({ ScrollTrigger }) => {
-      ScrollTrigger.getAll().forEach(t => {
-        if(t.vars.trigger === '#testimonials-scroll') t.kill();
-      });
-      initTestimonials();
-    });
-  });
+  document.addEventListener('astro:page-load', initTestimonials);
 </script>

@@ -1,245 +1,186 @@
 'use client'
 import { useState } from 'react'
-import { useInvoices, genId, formatCurrency, formatDate } from '@/lib/store'
-import { Invoice, InvoiceStatus, InvoiceLineItem } from '@/lib/types'
-import { PageHeader, Badge, Btn, Modal, Field, inputCls, selectCls, StatCard } from '@/components/ui'
+import Link from 'next/link'
+import { useInvoices, useContacts, genId, formatCurrency, formatDate, nextInvoiceNumber, invoiceTotal } from '@/lib/store'
+import { Invoice, InvoiceStatus } from '@/lib/types'
+import { PageHeader, Badge, Btn, Modal, StatCard, SectionCard, EmptyState } from '@/components/ui'
+import { InvoiceForm } from '@/components/invoice-form'
 
-const STATUSES: InvoiceStatus[] = ['draft','sent','paid','overdue','cancelled']
-
-function LineItemRow({ item, onChange, onRemove }: {
-  item: InvoiceLineItem
-  onChange: (item: InvoiceLineItem) => void
-  onRemove: () => void
-}) {
-  return (
-    <div className="grid grid-cols-12 gap-2 items-center">
-      <div className="col-span-6">
-        <input className={inputCls} value={item.description}
-          onChange={e => onChange({ ...item, description: e.target.value })}
-          placeholder="Service description" />
-      </div>
-      <div className="col-span-2">
-        <input type="number" className={inputCls} value={item.quantity}
-          onChange={e => onChange({ ...item, quantity: Number(e.target.value) })}
-          placeholder="Qty" />
-      </div>
-      <div className="col-span-2">
-        <input type="number" className={inputCls} value={item.rate}
-          onChange={e => onChange({ ...item, rate: Number(e.target.value) })}
-          placeholder="Rate" />
-      </div>
-      <div className="col-span-1 text-right">
-        <span className="text-sm text-[#C9A96E]">{formatCurrency(item.quantity * item.rate)}</span>
-      </div>
-      <div className="col-span-1 text-right">
-        <button onClick={onRemove} className="text-[#3D4A5C] hover:text-red-400 text-lg leading-none">×</button>
-      </div>
-    </div>
-  )
-}
-
-function InvoiceForm({ initial, onSave, onClose, nextNumber }: {
-  initial?: Partial<Invoice>; onSave: (i: Invoice) => void; onClose: () => void; nextNumber: string
-}) {
-  const [form, setForm] = useState<Partial<Invoice>>(initial ?? {
-    status: 'draft', number: nextNumber,
-    issueDate: new Date().toISOString().slice(0,10),
-    dueDate: new Date(Date.now() + 7*86400000).toISOString().slice(0,10),
-    lineItems: [{ id: genId(), description: '', quantity: 1, rate: 0 }],
-  })
-
-  const set = (k: keyof Invoice, v: string) => setForm(f => ({ ...f, [k]: v }))
-  const setItems = (items: InvoiceLineItem[]) => setForm(f => ({ ...f, lineItems: items }))
-  const addItem = () => setItems([...(form.lineItems ?? []), { id: genId(), description: '', quantity: 1, rate: 0 }])
-  const updateItem = (id: string, item: InvoiceLineItem) => setItems((form.lineItems ?? []).map(l => l.id === id ? item : l))
-  const removeItem = (id: string) => setItems((form.lineItems ?? []).filter(l => l.id !== id))
-
-  const total = (form.lineItems ?? []).reduce((s, l) => s + l.quantity * l.rate, 0)
-
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSave({
-      id: form.id ?? genId(),
-      number: form.number!,
-      clientName: form.clientName!,
-      status: form.status ?? 'draft',
-      lineItems: form.lineItems ?? [],
-      issueDate: form.issueDate!,
-      dueDate: form.dueDate!,
-      paidDate: form.paidDate,
-      notes: form.notes,
-      createdAt: form.createdAt ?? new Date().toISOString(),
-    })
-    onClose()
-  }
-
-  return (
-    <form onSubmit={submit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <Field label="Invoice #"><input required className={inputCls} value={form.number ?? ''} onChange={e => set('number', e.target.value)} /></Field>
-        <Field label="Client Name"><input required className={inputCls} value={form.clientName ?? ''} onChange={e => set('clientName', e.target.value)} placeholder="Acme Corp" /></Field>
-      </div>
-      <div className="grid grid-cols-3 gap-4">
-        <Field label="Status">
-          <select className={selectCls} value={form.status} onChange={e => set('status', e.target.value)}>
-            {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
-        </Field>
-        <Field label="Issue Date"><input type="date" className={inputCls} value={form.issueDate ?? ''} onChange={e => set('issueDate', e.target.value)} /></Field>
-        <Field label="Due Date"><input type="date" className={inputCls} value={form.dueDate ?? ''} onChange={e => set('dueDate', e.target.value)} /></Field>
-      </div>
-
-      {/* Line items */}
-      <div>
-        <div className="grid grid-cols-12 gap-2 mb-2">
-          <p className="col-span-6 text-[11px] text-[#7A8A9E] uppercase tracking-wider">Description</p>
-          <p className="col-span-2 text-[11px] text-[#7A8A9E] uppercase tracking-wider">Qty</p>
-          <p className="col-span-2 text-[11px] text-[#7A8A9E] uppercase tracking-wider">Rate ($)</p>
-          <p className="col-span-1 text-[11px] text-[#7A8A9E] uppercase tracking-wider text-right">Total</p>
-          <div className="col-span-1" />
-        </div>
-        <div className="space-y-2">
-          {(form.lineItems ?? []).map(item => (
-            <LineItemRow key={item.id} item={item}
-              onChange={updated => updateItem(item.id, updated)}
-              onRemove={() => removeItem(item.id)} />
-          ))}
-        </div>
-        <button type="button" onClick={addItem}
-          className="mt-3 text-xs text-[#C9A96E] hover:underline">+ Add line item</button>
-      </div>
-
-      {/* Total */}
-      <div className="flex justify-end border-t border-[#1E2530] pt-3">
-        <div className="text-right">
-          <p className="text-xs text-[#7A8A9E] mb-1">Invoice Total</p>
-          <p className="text-2xl font-serif text-[#C9A96E] font-semibold">{formatCurrency(total)}</p>
-        </div>
-      </div>
-
-      <Field label="Notes / Payment Terms">
-        <textarea rows={2} className={inputCls} value={form.notes ?? ''} onChange={e => set('notes', e.target.value)}
-          placeholder="e.g. Remaining 50% due at project completion. Payment via ACH preferred." />
-      </Field>
-
-      <div className="flex justify-end gap-2 pt-2">
-        <Btn variant="ghost" onClick={onClose}>Cancel</Btn>
-        <Btn type="submit">Save Invoice</Btn>
-      </div>
-    </form>
-  )
-}
+const STATUSES: InvoiceStatus[] = ['draft', 'sent', 'paid', 'overdue', 'cancelled']
 
 export default function InvoicesPage() {
   const { invoices, add, edit, remove } = useInvoices()
+  const { contacts } = useContacts()
   const [modal, setModal] = useState<null | 'add' | Invoice>(null)
   const [filter, setFilter] = useState<'all' | InvoiceStatus>('all')
+  const [search, setSearch] = useState('')
 
-  const getTotal = (inv: Invoice) => inv.lineItems.reduce((s, l) => s + l.quantity * l.rate, 0)
+  const getTotal = (inv: Invoice) => invoiceTotal(inv)
+  const isOverdue = (inv: Invoice) => inv.status === 'sent' && new Date(inv.dueDate) < new Date()
+  const effectiveStatus = (inv: Invoice): InvoiceStatus => isOverdue(inv) ? 'overdue' : inv.status
 
-  const totalRevenue = invoices.filter(i => i.status === 'paid').reduce((s, i) => s + getTotal(i), 0)
-  const pendingTotal = invoices.filter(i => i.status === 'sent').reduce((s, i) => s + getTotal(i), 0)
-  const overdueTotal = invoices.filter(i => i.status === 'overdue').reduce((s, i) => s + getTotal(i), 0)
+  const now = new Date()
+  const mtdStart = new Date(now.getFullYear(), now.getMonth(), 1)
+  const totalOutstanding = invoices
+    .filter(i => ['sent', 'overdue'].includes(i.status) || isOverdue(i))
+    .reduce((s, i) => s + getTotal(i), 0)
+  const paidMTD = invoices
+    .filter(i => i.status === 'paid' && i.paidDate && new Date(i.paidDate) >= mtdStart)
+    .reduce((s, i) => s + getTotal(i), 0)
+  const overdueCount = invoices.filter(i => i.status === 'overdue' || isOverdue(i)).length
 
-  const filtered = filter === 'all' ? invoices : invoices.filter(i => i.status === filter)
+  const filtered = invoices
+    .filter(i => filter === 'all' ? true : effectiveStatus(i) === filter)
+    .filter(i => {
+      if (!search) return true
+      const q = search.toLowerCase()
+      return (
+        i.clientName.toLowerCase().includes(q) ||
+        (i.clientCompany ?? '').toLowerCase().includes(q) ||
+        (i.projectName ?? '').toLowerCase().includes(q) ||
+        i.number.toLowerCase().includes(q)
+      )
+    })
 
-  const nextNumber = `NX-${String(invoices.length + 1).padStart(3, '0')}`
+  const nextNum = nextInvoiceNumber(invoices)
+
+  const handleDuplicate = (inv: Invoice) => {
+    const dup: Invoice = {
+      ...inv,
+      id: genId(),
+      number: nextInvoiceNumber(invoices),
+      status: 'draft',
+      paidDate: undefined,
+      issueDate: new Date().toISOString().slice(0, 10),
+      dueDate: new Date(Date.now() + 15 * 86400000).toISOString().slice(0, 10),
+      createdAt: new Date().toISOString(),
+      lineItems: inv.lineItems.map(l => ({ ...l, id: genId() })),
+    }
+    add(dup)
+  }
+
+  const handleMarkPaid = (inv: Invoice) => {
+    edit({ ...inv, status: 'paid', paidDate: new Date().toISOString().slice(0, 10) })
+  }
+
+  const statusCount = (s: InvoiceStatus) =>
+    invoices.filter(i => effectiveStatus(i) === s).length
 
   return (
     <div>
       <PageHeader
         title="Invoices"
-        sub={`${invoices.length} total  ·  ${formatCurrency(totalRevenue)} collected`}
+        sub={`${invoices.length} total  ·  ${formatCurrency(invoices.filter(i => i.status === 'paid').reduce((s, i) => s + getTotal(i), 0))} collected`}
         action={<Btn onClick={() => setModal('add')}>+ New Invoice</Btn>}
       />
 
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <StatCard label="Total Collected" value={formatCurrency(totalRevenue)} gold />
-        <StatCard label="Awaiting Payment" value={formatCurrency(pendingTotal)} sub={`${invoices.filter(i => i.status === 'sent').length} invoices sent`} />
-        <StatCard label="Overdue" value={formatCurrency(overdueTotal)} sub={overdueTotal > 0 ? 'Action required' : 'All clear'} />
+      {/* Summary cards */}
+      <div className="grid grid-cols-3 gap-4 mb-10 stagger">
+        <StatCard label="Total Outstanding" value={formatCurrency(totalOutstanding)} gold />
+        <StatCard label="Paid This Month" value={formatCurrency(paidMTD)}
+          sub={`${invoices.filter(i => i.status === 'paid' && i.paidDate && new Date(i.paidDate) >= mtdStart).length} invoices`} />
+        <StatCard label="Overdue" value={String(overdueCount)}
+          sub={overdueCount > 0 ? 'Action required' : 'All clear'} />
       </div>
 
-      {/* Filter tabs */}
-      <div className="flex gap-1 mb-4 border-b border-[#1E2530] pb-0">
-        {(['all', ...STATUSES] as const).map(s => (
-          <button key={s} onClick={() => setFilter(s)}
-            className={`px-4 py-2 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${
-              filter === s
-                ? 'border-[#C9A96E] text-[#C9A96E]'
-                : 'border-transparent text-[#7A8A9E] hover:text-white'
-            }`}>
-            {s} {s !== 'all' && `(${invoices.filter(i => i.status === s).length})`}
-          </button>
-        ))}
+      {/* Filter tabs + search */}
+      <div className="flex items-center justify-between mb-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+        <div className="flex gap-0.5">
+          {(['all', ...STATUSES] as const).map(s => (
+            <button key={s} onClick={() => setFilter(s)}
+              className={`px-4 py-2.5 text-xs font-semibold capitalize transition-all duration-200 rounded-lg ${
+                filter === s
+                  ? 'bg-gold/10 text-gold ring-1 ring-gold/20'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
+              }`}>
+              {s} {s !== 'all' && <span className="text-slate-600 ml-0.5">({statusCount(s)})</span>}
+            </button>
+          ))}
+        </div>
+        <input value={search} onChange={e => setSearch(e.target.value)}
+          className="bg-slate-800/50 border border-slate-700/50 rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 w-56 transition-all duration-200"
+          placeholder="Search client or project…" />
       </div>
 
-      <div className="bg-[#0C0F12] border border-[#1E2530] rounded-lg overflow-hidden">
-        <table className="nx-table">
-          <thead>
-            <tr>
-              <th>Invoice #</th>
-              <th>Client</th>
-              <th>Issue Date</th>
-              <th>Due Date</th>
-              <th>Status</th>
-              <th className="text-right">Amount</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map(inv => {
-              const total = getTotal(inv)
-              const isOverdue = inv.status === 'sent' && new Date(inv.dueDate) < new Date()
-              return (
-                <tr key={inv.id}>
-                  <td className="font-mono text-sm text-[#C9A96E]">{inv.number}</td>
-                  <td className="text-white font-medium">{inv.clientName}</td>
-                  <td>{formatDate(inv.issueDate)}</td>
-                  <td className={isOverdue ? 'text-red-400' : ''}>{formatDate(inv.dueDate)}</td>
-                  <td><Badge label={isOverdue && inv.status === 'sent' ? 'overdue' : inv.status} /></td>
-                  <td className="text-right font-semibold text-white">{formatCurrency(total)}</td>
-                  <td>
-                    <div className="flex gap-2 justify-end">
-                      <Btn size="sm" variant="ghost" onClick={() => setModal(inv)}>Edit</Btn>
-                      {inv.status === 'sent' && (
-                        <Btn size="sm" variant="primary" onClick={() => edit({ ...inv, status: 'paid', paidDate: new Date().toISOString().slice(0,10) })}>
-                          Mark Paid
-                        </Btn>
-                      )}
-                      <Btn size="sm" variant="danger" onClick={() => remove(inv.id)}>Del</Btn>
-                    </div>
-                  </td>
-                </tr>
-              )
-            })}
-            {filtered.length === 0 && (
-              <tr><td colSpan={7} className="text-center text-[#3D4A5C] py-10">No invoices found.</td></tr>
-            )}
-          </tbody>
-        </table>
+      {/* Invoice table */}
+      <div className="animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
+        <SectionCard>
+          <table className="nx-table">
+            <thead>
+              <tr>
+                <th>Invoice #</th>
+                <th>Client</th>
+                <th>Project</th>
+                <th>Issue Date</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th className="text-right">Amount</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map(inv => {
+                const total = getTotal(inv)
+                const overdue = isOverdue(inv)
+                return (
+                  <tr key={inv.id} className="group">
+                    <td className="font-mono text-sm text-gold">{inv.number}</td>
+                    <td>
+                      <p className="text-white font-medium group-hover:text-gold transition-colors">{inv.clientName}</p>
+                      {inv.clientCompany && <p className="text-xs text-slate-400 mt-0.5">{inv.clientCompany}</p>}
+                    </td>
+                    <td className="text-slate-400 text-xs">{inv.projectName ?? '—'}</td>
+                    <td className="tabular-nums">{formatDate(inv.issueDate)}</td>
+                    <td className={`tabular-nums ${overdue ? 'text-red-400' : ''}`}>{formatDate(inv.dueDate)}</td>
+                    <td><Badge label={effectiveStatus(inv)} /></td>
+                    <td className="text-right font-semibold text-white tabular-nums">{formatCurrency(total)}</td>
+                    <td>
+                      <div className="flex gap-1.5 justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <Link href={`/invoices/${inv.id}/print`}>
+                          <Btn size="sm" variant="ghost">View</Btn>
+                        </Link>
+                        <Btn size="sm" variant="ghost" onClick={() => setModal(inv)}>Edit</Btn>
+                        {(inv.status === 'sent' || overdue) && (
+                          <Btn size="sm" variant="primary" onClick={() => handleMarkPaid(inv)}>Paid</Btn>
+                        )}
+                        <Btn size="sm" variant="ghost" onClick={() => handleDuplicate(inv)}>Dup</Btn>
+                        <Btn size="sm" variant="danger" onClick={() => remove(inv.id)}>Del</Btn>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+              {filtered.length === 0 && (
+                <tr><td colSpan={8}><EmptyState message="No invoices found." /></td></tr>
+              )}
+            </tbody>
+          </table>
+        </SectionCard>
       </div>
 
-      {/* Totals row */}
+      {/* Showing total */}
       {filtered.length > 0 && (
-        <div className="flex justify-end mt-3 pr-4">
+        <div className="flex justify-end mt-4 pr-4 animate-fade-in" style={{ animationDelay: '0.2s' }}>
           <div className="text-right">
-            <p className="text-xs text-[#7A8A9E]">Showing total</p>
-            <p className="text-lg font-serif text-[#C9A96E] font-semibold">
+            <p className="text-[10px] text-slate-400 tracking-[0.1em] uppercase">Showing total</p>
+            <p className="text-xl font-serif gold-shimmer font-semibold mt-1">
               {formatCurrency(filtered.reduce((s, i) => s + getTotal(i), 0))}
             </p>
           </div>
         </div>
       )}
 
+      {/* Modal */}
       {modal && (
-        <Modal
+        <Modal wide
           title={modal === 'add' ? 'New Invoice' : `Edit — ${(modal as Invoice).number}`}
           onClose={() => setModal(null)}>
           <InvoiceForm
             initial={modal === 'add' ? undefined : modal as Invoice}
             onSave={modal === 'add' ? add : edit}
             onClose={() => setModal(null)}
-            nextNumber={nextNumber} />
+            nextNumber={nextNum}
+            contacts={contacts} />
         </Modal>
       )}
     </div>

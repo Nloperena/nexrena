@@ -10,30 +10,28 @@ interface Props {
 const { title, subtitle, number, tags, image = '/images/hero-services.webp' } = Astro.props;
 ---
 
-<section class="relative min-h-[90vh] bg-[var(--obsidian)] overflow-hidden flex items-end pb-24 md:pb-32 pt-32">
-  <!-- Dynamic Background Element -->
+<section class="svc-hero relative min-h-[90vh] bg-[var(--obsidian)] overflow-hidden flex items-end pb-24 md:pb-32 pt-32">
   <div class="absolute inset-0 z-0">
-    <img src={image} alt="" class="absolute inset-0 w-full h-full object-cover object-center opacity-30" aria-hidden="true" loading="eager" />
+    <img src={image} alt="" class="svc-hero-bg absolute inset-0 w-full h-full object-cover object-center opacity-30 will-change-transform" aria-hidden="true" loading="eager" />
     <div class="absolute inset-0 opacity-20" style="background: radial-gradient(circle at 50% 100%, var(--slate-800) 0%, transparent 70%);"></div>
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vh] bg-[var(--gold)] opacity-[0.02] blur-[120px] rounded-full mix-blend-screen"></div>
     <div class="absolute inset-0 grain"></div>
   </div>
 
-  <div class="section-container relative z-10 w-full">
+  <div class="section-container relative z-10 w-full svc-content">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-12">
-      <!-- Left Column -->
       <div class="flex-1 max-w-4xl">
-        <div class="flex items-center gap-4 mb-8 reveal">
+        <div class="svc-hero-enter flex items-center gap-4 mb-8" style="--d:0s">
           <span class="font-mono text-[14px] text-[var(--gold)]">{number}</span>
           <div class="h-[1px] w-12 bg-[var(--slate-700)]"></div>
           <span class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest">Service Overview</span>
         </div>
 
-        <h1 class="font-display text-[48px] md:text-[64px] lg:text-[80px] leading-[0.9] font-light text-[var(--warm-white)] mb-8 reveal" style="--i: 1;">
+        <h1 class="svc-hero-enter font-display text-[48px] md:text-[64px] lg:text-[80px] leading-[0.9] font-light text-[var(--warm-white)] mb-8" style="--d:0.1s">
           <span class="whitespace-pre-line">{title}</span>
         </h1>
 
-        <div class="flex flex-wrap gap-2 reveal" style="--i: 2;">
+        <div class="svc-hero-enter flex flex-wrap gap-2" style="--d:0.2s">
           {tags.map(tag => (
             <span class="font-mono text-[10px] text-[var(--gold-light)] bg-[var(--slate-800)]/50 border border-[var(--slate-700)] backdrop-blur-sm px-3 py-1.5 uppercase tracking-widest rounded-sm">
               {tag}
@@ -42,8 +40,7 @@ const { title, subtitle, number, tags, image = '/images/hero-services.webp' } = 
         </div>
       </div>
 
-      <!-- Right Column -->
-      <div class="md:w-[400px] shrink-0 reveal" style="--i: 3;">
+      <div class="svc-hero-enter md:w-[400px] shrink-0" style="--d:0.3s">
         <p class="font-body text-[18px] md:text-[20px] text-[var(--slate-300)] leading-relaxed border-l border-[var(--gold)] pl-6">
           {subtitle}
         </p>
@@ -51,3 +48,49 @@ const { title, subtitle, number, tags, image = '/images/hero-services.webp' } = 
     </div>
   </div>
 </section>
+
+<style>
+  .svc-hero-enter {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .svc-content.is-active .svc-hero-enter {
+    animation: svcEnter 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0s) forwards;
+  }
+  @keyframes svcEnter {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .svc-hero-enter {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  function initSvcHero() {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const content = document.querySelector('.svc-content');
+    if (content) requestAnimationFrame(() => content.classList.add('is-active'));
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const hero = document.querySelector('.svc-hero');
+    const bg = document.querySelector('.svc-hero-bg');
+    if (!hero || !bg) return;
+
+    gsap.to(bg, {
+      yPercent: 18,
+      ease: 'none',
+      scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true },
+    });
+  }
+
+  document.addEventListener('astro:page-load', initSvcHero);
+</script>

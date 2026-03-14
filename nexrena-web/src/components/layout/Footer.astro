@@ -5,8 +5,8 @@ import { industries } from '../../data/industries';
 <footer class="bg-[var(--obsidian)] border-t border-[var(--slate-800)] relative overflow-hidden mt-20" role="contentinfo">
   <div class="max-w-[1320px] mx-auto px-[5vw] py-20">
     <!-- ROW 1 -->
-    <div class="flex flex-col md:flex-row justify-between items-start gap-12 mb-24">
-      <div class="easter-egg-wordmark">
+    <div class="footer-row flex flex-col md:flex-row justify-between items-start gap-12 mb-24">
+      <div class="footer-col easter-egg-wordmark">
         <a href="/" class="font-display text-[64px] md:text-[80px] italic text-[var(--warm-white)] flex">
           {['N','e','x','r','e','n','a'].map((letter) => (
             <span class="inline-block transition-transform duration-300 hover:rotate-[15deg] hover:-translate-y-2 hover:text-[var(--gold)]">
@@ -18,7 +18,7 @@ import { industries } from '../../data/industries';
       
       <!-- Right: Navigation Grids -->
       <div class="flex flex-wrap gap-16 md:gap-32 w-full md:w-auto">
-        <div class="flex flex-col gap-6">
+        <div class="footer-col flex flex-col gap-6">
           <h4 class="font-mono text-[11px] text-[var(--slate-500)] tracking-widest uppercase mb-2">Pages</h4>
           <a href="/work" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Work</a>
           <a href="/services" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Services</a>
@@ -27,16 +27,16 @@ import { industries } from '../../data/industries';
           <a href="/about" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">About</a>
           <a href="/contact" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Contact</a>
         </div>
-        <div class="flex flex-col gap-6">
+        <div class="footer-col flex flex-col gap-6">
           <h4 class="font-mono text-[11px] text-[var(--slate-500)] tracking-widest uppercase mb-2">Services</h4>
           {services.map((s) => (
             <a href={`/services/${s.id}`} class="font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">{s.title.replace(/\n/g, ' ')}</a>
           ))}
         </div>
-        <div class="flex flex-col gap-6">
-          <h4 class="font-mono text-[11px] text-[var(--slate-500)] tracking-widest uppercase mb-2">Social</h4>
-          <a href="#" class="font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">LinkedIn</a>
-          <a href="#" class="font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">Instagram</a>
+        <div class="footer-col flex flex-col gap-6">
+          <h4 class="font-mono text-[11px] text-[var(--slate-500)] tracking-widest uppercase mb-2">Connect</h4>
+          <a href="https://www.linkedin.com/company/nexrena" target="_blank" rel="noopener noreferrer" class="font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">LinkedIn</a>
+          <a href="mailto:hello@nexrena.com" class="font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">Email</a>
         </div>
       </div>
     </div>
@@ -62,20 +62,45 @@ import { industries } from '../../data/industries';
 </footer>
 
 <script>
-  function updateTime() {
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  let footerInterval: ReturnType<typeof setInterval> | null = null;
+
+  function initFooterClock() {
+    if (footerInterval) clearInterval(footerInterval);
     const timeEl = document.getElementById('local-time');
     if (!timeEl) return;
-    
-    const formatter = new Intl.DateTimeFormat('en-US', {
+
+    const fmt = new Intl.DateTimeFormat('en-US', {
       timeZone: 'America/New_York',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
+      hour: '2-digit', minute: '2-digit', hour12: true,
     });
-    
-    timeEl.textContent = formatter.format(new Date());
+
+    const tick = () => { timeEl.textContent = fmt.format(new Date()); };
+    tick();
+    footerInterval = setInterval(tick, 60000);
   }
-  
-  updateTime();
-  setInterval(updateTime, 60000);
+
+  function initFooterReveal() {
+    gsap.registerPlugin(ScrollTrigger);
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const cols = gsap.utils.toArray('.footer-col') as HTMLElement[];
+    if (!cols.length) return;
+
+    gsap.set(cols, { opacity: 0, y: 40 });
+    ScrollTrigger.batch(cols, {
+      start: 'top 92%',
+      onEnter: (batch) => {
+        gsap.to(batch, { opacity: 1, y: 0, duration: 0.8, stagger: 0.12, ease: 'power3.out' });
+      },
+      once: true,
+    });
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    initFooterClock();
+    initFooterReveal();
+  });
 </script>
