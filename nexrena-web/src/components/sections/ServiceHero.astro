@@ -50,6 +50,14 @@ const { title, subtitle, number, tags, image = '/images/hero-services.webp' } = 
 </section>
 
 <style>
+  @media (max-height: 760px) {
+    .svc-hero {
+      min-height: auto;
+      padding-top: 96px;
+      padding-bottom: 72px;
+    }
+  }
+
   .svc-hero-enter {
     opacity: 0;
     transform: translateY(20px);
@@ -80,7 +88,7 @@ const { title, subtitle, number, tags, image = '/images/hero-services.webp' } = 
     const content = document.querySelector('.svc-content');
     if (content) requestAnimationFrame(() => content.classList.add('is-active'));
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.innerHeight <= 760) return;
     const hero = document.querySelector('.svc-hero');
     const bg = document.querySelector('.svc-hero-bg');
     if (!hero || !bg) return;

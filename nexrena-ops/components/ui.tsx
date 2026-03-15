@@ -167,16 +167,16 @@ export function PageHeader({ title, sub, action }: { title: string; sub?: string
 }
 
 // ── Button ────────────────────────────────────────────────────────────
-export function Btn({ children, onClick, variant = 'primary', size = 'md', type = 'button' }:
-  { children: React.ReactNode; onClick?: () => void; variant?: 'primary'|'ghost'|'danger'; size?: 'sm'|'md'; type?: 'button'|'submit' }) {
-  const base = 'inline-flex items-center gap-2 font-medium rounded-lg transition-all duration-200 active:scale-[0.97]'
+export function Btn({ children, onClick, variant = 'primary', size = 'md', type = 'button', disabled = false }:
+  { children: React.ReactNode; onClick?: () => void; variant?: 'primary'|'ghost'|'danger'; size?: 'sm'|'md'; type?: 'button'|'submit'; disabled?: boolean }) {
+  const base = 'inline-flex items-center gap-2 font-medium rounded-lg transition-all duration-200 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100'
   const sizes = { sm: 'px-3 py-1.5 text-xs', md: 'px-5 py-2.5 text-sm' }
   const variants = {
     primary: 'bg-gold text-obsidian hover:bg-gold-light btn-glow font-semibold',
     ghost:   'border border-slate-800 text-slate-400 hover:text-white hover:border-slate-600 hover:bg-slate-800/30',
     danger:  'border border-red-900/50 text-red-400 hover:bg-red-950/30 hover:border-red-800/50',
   }
-  return <button type={type} onClick={onClick} className={`${base} ${sizes[size]} ${variants[variant]}`}>{children}</button>
+  return <button type={type} onClick={onClick} disabled={disabled} className={`${base} ${sizes[size]} ${variants[variant]}`}>{children}</button>
 }
 
 /** Anchor styled like a button — use for links (avoids invalid <a><button> nesting) */

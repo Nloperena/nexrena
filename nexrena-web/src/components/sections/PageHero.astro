@@ -44,6 +44,14 @@ const isFull = variant === 'full';
 </section>
 
 <style>
+  @media (max-height: 760px) {
+    .page-hero {
+      min-height: auto !important;
+      padding-top: 96px !important;
+      padding-bottom: 72px !important;
+    }
+  }
+
   /* Elements start hidden; .is-active triggers animations after view transition */
   .page-hero-eyebrow {
     opacity: 0;
@@ -106,7 +114,7 @@ const isFull = variant === 'full';
       requestAnimationFrame(() => content.classList.add('is-active'));
     }
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.innerHeight <= 760) return;
 
     const hero = document.querySelector('.page-hero');
     const bg = document.querySelector('.page-hero-bg');

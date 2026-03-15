@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useProposals, useContacts, genId, formatCurrency, formatDate } from '@/lib/store'
 import { Proposal, ProposalStatus, ProposalService, Contact } from '@/lib/types'
@@ -14,10 +15,12 @@ function proposalTotal(p: Proposal): number {
 }
 
 export default function ProposalsPage() {
-  const { proposals, add, edit, remove } = useProposals()
+  const router = useRouter()
+  const { proposals, add, edit, remove, acceptAndCreateProject } = useProposals()
   const { contacts } = useContacts()
   const [modal, setModal] = useState<null | 'add' | Proposal>(null)
   const [filter, setFilter] = useState<'all' | ProposalStatus>('all')
+  const [accepting, setAccepting] = useState<string | null>(null)
 
   const filtered = proposals.filter(p => filter === 'all' || p.status === filter)
 
@@ -32,10 +35,20 @@ export default function ProposalsPage() {
       ...prop,
       id: genId(),
       status: 'draft',
+      projectId: undefined,
       createdAt: new Date().toISOString(),
       validUntil: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
       services: prop.services.map(s => ({ ...s, id: genId() })),
     })
+  }
+
+  const handleAccept = async (prop: Proposal) => {
+    setAccepting(prop.id)
+    const project = await acceptAndCreateProject(prop.id)
+    setAccepting(null)
+    if (project) {
+      router.push('/projects')
+    }
   }
 
   const statusCount = (s: ProposalStatus) => proposals.filter(p => p.status === s).length
@@ -71,6 +84,9 @@ export default function ProposalsPage() {
             {filtered.map(prop => {
               const total = proposalTotal(prop)
               const expired = prop.status === 'sent' && new Date(prop.validUntil) < new Date()
+              const isAccepted = prop.status === 'accepted'
+              const isAccepting = accepting === prop.id
+
               return (
                 <tr key={prop.id} className="group">
                   <td className="text-white font-medium group-hover:text-gold transition-colors">{prop.title}</td>
@@ -85,6 +101,13 @@ export default function ProposalsPage() {
                   <td>
                     <div className="flex gap-1.5 justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                       <Link href={`/proposals/${prop.id}/print`}><Btn size="sm" variant="ghost">View</Btn></Link>
+                      {prop.projectId ? (
+                        <Link href="/projects"><Btn size="sm" variant="primary">View Project →</Btn></Link>
+                      ) : (
+                        <Btn size="sm" variant="primary" onClick={() => handleAccept(prop)} disabled={isAccepting}>
+                          {isAccepting ? 'Creating…' : 'Accept & Create Project'}
+                        </Btn>
+                      )}
                       <Btn size="sm" variant="ghost" onClick={() => setModal(prop)}>Edit</Btn>
                       <Btn size="sm" variant="ghost" onClick={() => handleDuplicate(prop)}>Dup</Btn>
                       <Btn size="sm" variant="danger" onClick={() => remove(prop.id)}>Del</Btn>

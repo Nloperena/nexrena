@@ -1,54 +1,11 @@
 'use client'
 import { useState } from 'react'
 import { useProjects, genId, formatCurrency, formatDate } from '@/lib/store'
-import { Project, ProjectStatus, Task, TaskStatus, ProjectPhase } from '@/lib/types'
+import { defaultPhases } from '@/lib/project-defaults'
+import { Project, ProjectStatus, Task, TaskStatus } from '@/lib/types'
 import { PageHeader, Badge, Btn, Modal, Field, inputCls, selectCls, StatCard, EmptyState } from '@/components/ui'
 
 const STATUSES: ProjectStatus[] = ['not_started','discovery','strategy','execution','review','delivered','on_hold']
-const DEFAULT_PHASES = (type: string): ProjectPhase[] => {
-  const webPhases = [
-    { id: genId(), name: 'Discovery', tasks: [
-      { id: genId(), title: 'Brand & competitor audit', status: 'todo' as TaskStatus },
-      { id: genId(), title: 'Sitemap + page structure', status: 'todo' as TaskStatus },
-      { id: genId(), title: 'Kick-off call completed', status: 'todo' as TaskStatus },
-    ]},
-    { id: genId(), name: 'Strategy', tasks: [
-      { id: genId(), title: 'Wireframes delivered', status: 'todo' as TaskStatus },
-      { id: genId(), title: 'Client strategy approval', status: 'todo' as TaskStatus },
-    ]},
-    { id: genId(), name: 'Execution', tasks: [
-      { id: genId(), title: 'Development build', status: 'todo' as TaskStatus },
-      { id: genId(), title: 'Content integration', status: 'todo' as TaskStatus },
-      { id: genId(), title: 'SEO on-page setup', status: 'todo' as TaskStatus },
-    ]},
-    { id: genId(), name: 'Delivery', tasks: [
-      { id: genId(), title: 'QA across devices', status: 'todo' as TaskStatus },
-      { id: genId(), title: 'Client review round', status: 'todo' as TaskStatus },
-      { id: genId(), title: 'Launch + go-live', status: 'todo' as TaskStatus },
-    ]},
-  ]
-  const seoPhases = [
-    { id: genId(), name: 'Discovery', tasks: [
-      { id: genId(), title: 'Technical SEO audit', status: 'todo' as TaskStatus },
-      { id: genId(), title: 'Keyword research', status: 'todo' as TaskStatus },
-      { id: genId(), title: 'Competitor analysis', status: 'todo' as TaskStatus },
-    ]},
-    { id: genId(), name: 'Strategy', tasks: [
-      { id: genId(), title: 'SEO roadmap delivered', status: 'todo' as TaskStatus },
-      { id: genId(), title: 'Client approval', status: 'todo' as TaskStatus },
-    ]},
-    { id: genId(), name: 'Execution', tasks: [
-      { id: genId(), title: 'On-page optimizations', status: 'todo' as TaskStatus },
-      { id: genId(), title: 'Content brief + publishing', status: 'todo' as TaskStatus },
-      { id: genId(), title: 'Link building outreach', status: 'todo' as TaskStatus },
-    ]},
-    { id: genId(), name: 'Monthly Review', tasks: [
-      { id: genId(), title: 'Monthly report delivered', status: 'todo' as TaskStatus },
-      { id: genId(), title: 'Strategy adjustment', status: 'todo' as TaskStatus },
-    ]},
-  ]
-  return type === 'seo' ? seoPhases : webPhases
-}
 
 function ProjectForm({ initial, onSave, onClose }: {
   initial?: Partial<Project>; onSave: (p: Project) => void; onClose: () => void
@@ -66,7 +23,7 @@ function ProjectForm({ initial, onSave, onClose }: {
       startDate: form.startDate ?? new Date().toISOString().slice(0,10),
       endDate: form.endDate,
       value: Number(form.value) ?? 0,
-      phases: form.phases ?? DEFAULT_PHASES(form.type ?? 'web'),
+      phases: form.phases ?? defaultPhases(form.type ?? 'web'),
       notes: form.notes,
       createdAt: form.createdAt ?? new Date().toISOString(),
     })

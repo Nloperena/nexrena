@@ -4,6 +4,8 @@ import { useContacts, genId, formatCurrency } from '@/lib/store'
 import { Contact, DealStage } from '@/lib/types'
 import { PageHeader, Badge, Btn, Modal, Field, inputCls, selectCls, EmptyState, SectionCard } from '@/components/ui'
 
+import { PRIMARY_STAGES, SECONDARY_STAGES } from '@/lib/constants'
+
 const STAGES: DealStage[] = ['lead','contacted','discovery','proposal','negotiation','won','lost']
 const INDUSTRIES = ['industrial','ecommerce','realestate','professional','other']
 
@@ -38,7 +40,9 @@ function ContactForm({ initial, onSave, onClose }: {
         </Field>
         <Field label="Stage">
           <select className={selectCls} value={form.stage} onChange={e => set('stage', e.target.value as DealStage)}>
-            {STAGES.map(s => <option key={s} value={s}>{s}</option>)}
+            {PRIMARY_STAGES.map(s => <option key={s} value={s}>{s}</option>)}
+            <option disabled>───</option>
+            {SECONDARY_STAGES.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </Field>
         <Field label="Deal Value ($)"><input type="number" className={inputCls} value={form.value ?? 0} onChange={e => set('value', e.target.value)} /></Field>

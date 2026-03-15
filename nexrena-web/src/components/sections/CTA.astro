@@ -7,17 +7,20 @@
 
 <section id="cta-takeover" class="relative w-full bg-[var(--gold)] flex flex-col justify-between" style="min-height: 100vh; color: var(--obsidian);">
   
-  <div class="relative w-full max-w-[1320px] mx-auto px-[5vw] pt-32 pb-16 flex-grow flex flex-col justify-center">
+  <div class="cta-shell relative w-full max-w-[1320px] mx-auto px-[5vw] flex-grow flex flex-col justify-center">
     
     <div class="reveal max-w-5xl">
       <p class="font-mono text-[11px] text-[var(--obsidian)] opacity-50 uppercase tracking-[0.2em] mb-8">Ready to grow?</p>
-      <h2 class="cta-headline font-display text-[clamp(56px,10vw,140px)] leading-[0.9] tracking-tight mb-12">
-        <span class="cta-scramble-line" data-text="Let's build">Let's build</span><br/>
-        <span class="cta-scramble-line italic opacity-80" data-text="something">something</span><br/>
-        <span class="cta-scramble-line" data-text="extraordinary.">extraordinary.</span>
+      <h2 class="cta-headline font-display text-[clamp(56px,10vw,140px)] leading-[0.9] tracking-tight mb-6">
+        <span class="cta-scramble-line" data-text="Selective by design.">Selective by design.</span><br/>
+        <span class="cta-scramble-line italic opacity-80" data-text="If we can help,">If we can help,</span><br/>
+        <span class="cta-scramble-line" data-text="we'll tell you how.">we'll tell you how.</span>
       </h2>
+      <p class="font-body text-[var(--obsidian)] text-lg md:text-xl opacity-70 max-w-2xl mb-10 md:mb-12">
+        If not, we'll say so.
+      </p>
       
-      <div class="flex flex-col md:flex-row items-start md:items-center gap-12 mt-16">
+      <div class="flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-12 mt-12 md:mt-16">
         <a href="/contact" class="group relative inline-flex items-center gap-6 font-display text-[28px] md:text-[44px] text-[var(--obsidian)] hover:opacity-70 transition-opacity">
           Start a project
           <div class="w-14 h-14 md:w-16 md:h-16 rounded-full border-2 border-[var(--obsidian)] flex items-center justify-center group-hover:bg-[var(--obsidian)] group-hover:text-[var(--gold)] transition-colors duration-300">
@@ -52,6 +55,18 @@
   /* Optional: Make the section right above this have a z-index and shadow so the CTA looks like it's sliding underneath or pulling over */
   #cta-takeover {
     clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+  }
+
+  .cta-shell {
+    padding-top: clamp(104px, 14vh, 144px);
+    padding-bottom: clamp(64px, 9vh, 96px);
+  }
+
+  @media (max-height: 760px) {
+    .cta-shell {
+      padding-top: 88px;
+      padding-bottom: 48px;
+    }
   }
 
   @keyframes marquee-fast {

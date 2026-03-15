@@ -12,7 +12,7 @@ const stats = [
 ];
 ---
 
-<section id="story-sequence" class="relative w-full h-[400vh] bg-[var(--obsidian)]" style="color: var(--warm-white);">
+<section id="story-sequence" class="story-sequence-pinned relative w-full h-[400vh] bg-[var(--obsidian)]" style="color: var(--warm-white);">
   <div class="story-pin sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-center items-center">
     
     <!-- Background Layer -->
@@ -20,7 +20,18 @@ const stats = [
 
     <!-- The Expanding Image -->
     <div class="story-image-wrapper absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30vw] aspect-[3/4] z-10 overflow-hidden will-change-transform">
-      <img src="/images/hero-services-full.webp" alt="Digital Engine" class="story-image absolute inset-0 w-full h-full object-cover scale-[1.5]" />
+      <video
+        class="story-image absolute inset-0 w-full h-full object-cover scale-[1.5]"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        poster="/images/hero-services-full.webp"
+        aria-hidden="true"
+      >
+        <source src="/videos/showreel-brutalist.webm" type="video/webm" />
+      </video>
       <div class="story-image-overlay absolute inset-0 bg-[var(--obsidian)]/0 transition-colors"></div>
     </div>
 
@@ -59,6 +70,33 @@ const stats = [
   </div>
 </section>
 
+<section class="story-sequence-fallback bg-[var(--obsidian)] text-[var(--warm-white)] hidden">
+  <div class="section-container">
+    <Eyebrow class="mb-6">THE ENGINE //</Eyebrow>
+    <div class="max-w-4xl">
+      <h2 class="font-display text-[clamp(40px,8vw,88px)] leading-[0.9] tracking-tight mb-8">
+        We build the engine.
+        <br />
+        <span class="italic text-[var(--gold)]">You run the business.</span>
+      </h2>
+      <p class="font-body text-[18px] text-[var(--slate-300)] leading-relaxed max-w-2xl mb-12">
+        Strategy, systems, and execution designed to support real revenue growth instead of surface-level activity.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-10 border-t border-[var(--slate-800)]">
+      {stats.map((stat) => (
+        <div class="flex flex-col gap-3">
+          <p class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-[0.2em]">{stat.label}</p>
+          <div class="font-display text-[clamp(52px,8vw,108px)] font-light leading-none tracking-tighter">
+            {stat.value}<span class="text-[var(--gold-dim)]">{stat.suffix}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
 <script>
   import gsap from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -67,7 +105,7 @@ const stats = [
     gsap.registerPlugin(ScrollTrigger);
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
+    if (prefersReducedMotion || window.innerHeight <= 820) return;
 
     const sequence = document.getElementById('story-sequence');
     if (!sequence) return;
@@ -120,3 +158,15 @@ const stats = [
 
   document.addEventListener('astro:page-load', initStorySequence);
 </script>
+
+<style>
+  @media (max-height: 820px) {
+    .story-sequence-pinned {
+      display: none;
+    }
+
+    .story-sequence-fallback {
+      display: block;
+    }
+  }
+</style>

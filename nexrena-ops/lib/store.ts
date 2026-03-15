@@ -164,7 +164,21 @@ export function useProposals() {
     catch (err) { console.error(err) }
   }, [])
 
-  return { proposals, add, edit, remove }
+  const acceptAndCreateProject = useCallback(async (id: string): Promise<Project | null> => {
+    try {
+      const { proposal, project } = await api.post<{ proposal: Proposal; project: Project }>(
+        `/proposals/${id}/accept`,
+        {}
+      )
+      setProposals(prev => prev.map(x => x.id === id ? proposal : x))
+      return project
+    } catch (err) {
+      console.error(err)
+      return null
+    }
+  }, [])
+
+  return { proposals, add, edit, remove, acceptAndCreateProject }
 }
 
 export function useExpenses() {

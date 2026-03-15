@@ -19,7 +19,7 @@ import { industries } from '../../data/industries';
       <!-- Right: Navigation Grids -->
       <div class="flex flex-wrap gap-16 md:gap-32 w-full md:w-auto">
         <div class="footer-col flex flex-col gap-6">
-          <h4 class="font-mono text-[11px] text-[var(--slate-500)] tracking-widest uppercase mb-2">Pages</h4>
+          <p class="font-mono text-[11px] text-[var(--slate-500)] tracking-widest uppercase mb-2">Pages</p>
           <a href="/work" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Work</a>
           <a href="/services" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Services</a>
           <a href="/industries" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Industries</a>
@@ -28,13 +28,13 @@ import { industries } from '../../data/industries';
           <a href="/contact" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Contact</a>
         </div>
         <div class="footer-col flex flex-col gap-6">
-          <h4 class="font-mono text-[11px] text-[var(--slate-500)] tracking-widest uppercase mb-2">Services</h4>
+          <p class="font-mono text-[11px] text-[var(--slate-500)] tracking-widest uppercase mb-2">Services</p>
           {services.map((s) => (
             <a href={`/services/${s.id}`} class="font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">{s.title.replace(/\n/g, ' ')}</a>
           ))}
         </div>
         <div class="footer-col flex flex-col gap-6">
-          <h4 class="font-mono text-[11px] text-[var(--slate-500)] tracking-widest uppercase mb-2">Connect</h4>
+          <p class="font-mono text-[11px] text-[var(--slate-500)] tracking-widest uppercase mb-2">Connect</p>
           <a href="https://www.linkedin.com/company/nexrena" target="_blank" rel="noopener noreferrer" class="font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">LinkedIn</a>
           <a href="mailto:hello@nexrena.com" class="font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">Email</a>
         </div>
@@ -43,7 +43,7 @@ import { industries } from '../../data/industries';
 
     <!-- ROW 2: Massive Brand Mark -->
     <div class="w-full border-t border-[var(--slate-800)] pt-12 pb-24 overflow-hidden flex justify-center">
-      <div class="font-display text-[15vw] leading-none text-[var(--slate-800)]/50 tracking-tighter select-none cursor-default whitespace-nowrap">
+      <div class="font-display text-[15vw] leading-none text-[var(--slate-600)]/80 tracking-tighter select-none cursor-default whitespace-nowrap" aria-hidden="true">
         Nexrena<span class="text-[var(--gold)]/20">®</span>
       </div>
     </div>

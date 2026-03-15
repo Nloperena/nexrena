@@ -115,8 +115,8 @@ const imageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, site).t
         (function tick() {
           cursorX += (mouseX - cursorX) * 0.25;
           cursorY += (mouseY - cursorY) * 0.25;
-          cursor!.style.left = cursorX + 'px';
-          cursor!.style.top = cursorY + 'px';
+          cursor!.style.setProperty('--cursor-x', `${cursorX}px`);
+          cursor!.style.setProperty('--cursor-y', `${cursorY}px`);
           requestAnimationFrame(tick);
         })();
 
@@ -194,10 +194,6 @@ const imageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, site).t
           ScrollTrigger.refresh();
         });
       });
-    </script>
-    <script>
-      import { inject } from '@vercel/analytics';
-      inject();
     </script>
   </body>
 </html>
