@@ -11,8 +11,15 @@ export default function InvoicePrintPage({ params }: { params: { id: string } })
 
   useEffect(() => {
     api.get<Invoice[]>('/invoices')
-      .then(invoices => setInvoice(invoices.find(i => i.id === params.id) ?? null))
+      .then(invoices => {
+        const found = invoices.find(i => i.id === params.id) ?? null
+        setInvoice(found)
+        if (found) {
+          document.title = `Invoice ${found.number} - ${found.clientName}`
+        }
+      })
       .catch(() => setInvoice(null))
+    return () => { document.title = 'Nexrena' }
   }, [params.id])
 
   if (invoice === 'loading') {

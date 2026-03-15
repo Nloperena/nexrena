@@ -11,8 +11,15 @@ export default function ProposalPrintPage({ params }: { params: { id: string } }
 
   useEffect(() => {
     api.get<Proposal[]>('/proposals')
-      .then(proposals => setProposal(proposals.find(p => p.id === params.id) ?? null))
+      .then(proposals => {
+        const found = proposals.find(p => p.id === params.id) ?? null
+        setProposal(found)
+        if (found) {
+          document.title = `Proposal - ${found.title} - ${found.clientName}`
+        }
+      })
       .catch(() => setProposal(null))
+    return () => { document.title = 'Nexrena' }
   }, [params.id])
 
   if (proposal === 'loading') {
