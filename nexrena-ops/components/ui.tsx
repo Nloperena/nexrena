@@ -2,16 +2,18 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-const NAV = [
-  { href: '/',          label: 'Dashboard',  icon: '◈' },
+const PRIMARY_NAV = [
+  { href: '/',           label: 'Today',       icon: '◈' },
+  { href: '/leads',      label: 'Leads',       icon: '◉' },
+  { href: '/proposals',  label: 'Proposals',   icon: '◇' },
+  { href: '/projects',   label: 'Projects',    icon: '▦' },
+  { href: '/invoices',   label: 'Invoices',    icon: '▤' },
+]
+
+const SECONDARY_NAV = [
   { href: '/crm',       label: 'CRM',        icon: '◎' },
-  { href: '/proposals',  label: 'Proposals', icon: '◇' },
-  { href: '/projects',  label: 'Projects',   icon: '▦' },
-  { href: '/time',      label: 'Time',       icon: '◔' },
-  { href: '/invoices',  label: 'Invoices',   icon: '▤' },
   { href: '/expenses',  label: 'Expenses',   icon: '▥' },
   { href: '/reports',   label: 'Reports',    icon: '◩' },
-  { href: '/leads',     label: 'Leads',      icon: '◉' },
 ]
 
 export function Sidebar() {
@@ -31,26 +33,51 @@ export function Sidebar() {
       </div>
 
       {/* Nav */}
-      <nav className="relative flex-1 px-3 py-5 space-y-1">
-        {NAV.map(({ href, label, icon }) => {
-          const active = href === '/' ? path === '/' : path.startsWith(href)
-          return (
-            <Link key={href} href={href}
-              className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 ${
-                active
-                  ? 'bg-slate-800/60 text-gold'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
-              }`}>
-              <span className={`text-base leading-none transition-transform duration-200 group-hover:scale-110 ${active ? 'text-gold' : ''}`}>
-                {icon}
-              </span>
-              <span className="font-medium tracking-wide">{label}</span>
-              {active && (
-                <span className="absolute right-2 w-1 h-5 bg-gold rounded-full shadow-[0_0_8px_rgba(201,169,110,0.4)]" />
-              )}
-            </Link>
-          )
-        })}
+      <nav className="relative flex-1 px-3 py-5">
+        <div className="space-y-1">
+          {PRIMARY_NAV.map(({ href, label, icon }) => {
+            const active = href === '/' ? path === '/' : path.startsWith(href)
+            return (
+              <Link key={href} href={href}
+                className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 ${
+                  active
+                    ? 'bg-slate-800/60 text-gold'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
+                }`}>
+                <span className={`text-base leading-none transition-transform duration-200 group-hover:scale-110 ${active ? 'text-gold' : ''}`}>
+                  {icon}
+                </span>
+                <span className="font-medium tracking-wide">{label}</span>
+                {active && (
+                  <span className="absolute right-2 w-1 h-5 bg-gold rounded-full shadow-[0_0_8px_rgba(201,169,110,0.4)]" />
+                )}
+              </Link>
+            )
+          })}
+        </div>
+        <div className="my-4 mx-3 border-t border-slate-800/40" />
+        <p className="px-3 mb-2 text-[9px] text-slate-600 tracking-[0.2em] uppercase font-medium">Tools</p>
+        <div className="space-y-1">
+          {SECONDARY_NAV.map(({ href, label, icon }) => {
+            const active = path.startsWith(href)
+            return (
+              <Link key={href} href={href}
+                className={`group relative flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] transition-all duration-200 ${
+                  active
+                    ? 'bg-slate-800/60 text-gold'
+                    : 'text-slate-500 hover:text-white hover:bg-slate-800/30'
+                }`}>
+                <span className={`text-sm leading-none transition-transform duration-200 group-hover:scale-110 ${active ? 'text-gold' : ''}`}>
+                  {icon}
+                </span>
+                <span className="font-medium tracking-wide">{label}</span>
+                {active && (
+                  <span className="absolute right-2 w-1 h-4 bg-gold rounded-full shadow-[0_0_8px_rgba(201,169,110,0.4)]" />
+                )}
+              </Link>
+            )
+          })}
+        </div>
       </nav>
 
       {/* Footer */}
