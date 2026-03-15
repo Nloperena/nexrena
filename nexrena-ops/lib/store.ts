@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { Contact, Project, Invoice, Lead, TimeEntry, Proposal, Expense } from './types'
+import { Contact, Project, Invoice, Lead, TimeEntry, Proposal, Expense, Subscription } from './types'
 import { api } from './api'
 
 // ── hooks ────────────────────────────────────────────────────────────────
@@ -208,6 +208,38 @@ export function useExpenses() {
   }, [])
 
   return { expenses, add, edit, remove }
+}
+
+export function useSubscriptions() {
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
+
+  useEffect(() => {
+    api.get<Subscription[]>('/subscriptions').then(setSubscriptions).catch(console.error)
+  }, [])
+
+  const add = useCallback(async (s: Subscription) => {
+    setSubscriptions(prev => [s, ...prev])
+    try { await api.post('/subscriptions', s) }
+    catch (err) { console.error(err); setSubscriptions(prev => prev.filter(x => x.id !== s.id)) }
+  }, [])
+
+  const edit = useCallback(async (s: Subscription) => {
+    setSubscriptions(prev => prev.map(x => x.id === s.id ? s : x))
+    try { await api.put(`/subscriptions/${s.id}`, s) }
+    catch (err) { console.error(err) }
+  }, [])
+
+  const remove = useCallback(async (id: string) => {
+    setSubscriptions(prev => prev.filter(x => x.id !== id))
+    try { await api.del(`/subscriptions/${id}`) }
+    catch (err) { console.error(err) }
+  }, [])
+
+  const runBilling = useCallback(async (): Promise<{ generated: number; skipped: number; errors: string[] }> => {
+    return api.post('/subscriptions/run-billing', {})
+  }, [])
+
+  return { subscriptions, add, edit, remove, runBilling }
 }
 
 // ── utils ────────────────────────────────────────────────────────────────

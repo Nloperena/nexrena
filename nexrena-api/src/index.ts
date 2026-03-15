@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import rateLimit from 'express-rate-limit'
+import cron from 'node-cron'
 import { requireAuth } from './middleware/auth'
 
 import contactRoutes from './routes/contacts'
@@ -10,6 +11,8 @@ import leadRoutes from './routes/leads'
 import timeEntryRoutes from './routes/time-entries'
 import proposalRoutes from './routes/proposals'
 import expenseRoutes from './routes/expenses'
+import subscriptionRoutes from './routes/subscriptions'
+import { runDueBilling } from './lib/billing'
 
 const app = express()
 const PORT = process.env.PORT || 4000
@@ -44,6 +47,7 @@ app.use('/api/invoices', requireAuth, invoiceRoutes)
 app.use('/api/time-entries', requireAuth, timeEntryRoutes)
 app.use('/api/proposals', requireAuth, proposalRoutes)
 app.use('/api/expenses', requireAuth, expenseRoutes)
+app.use('/api/subscriptions', requireAuth, subscriptionRoutes)
 
 // ── Global error handler ─────────────────────────────────────────────────
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
@@ -51,5 +55,13 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
   res.status(500).json({ error: 'Internal server error' })
 })
 
-app.listen(PORT, () => console.log(`Nexrena API running on port ${PORT}`))
+app.listen(PORT, () => {
+  console.log(`Nexrena API running on port ${PORT}`)
+  // Run billing at 00:05 on the 1st of every month
+  cron.schedule('5 0 1 * *', () => {
+    runDueBilling()
+      .then(r => console.log(`[billing] generated=${r.generated} skipped=${r.skipped} errors=${r.errors.length}`))
+      .catch(err => console.error('[billing] cron error', err))
+  })
+})
 

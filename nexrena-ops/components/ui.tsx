@@ -3,11 +3,12 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const PRIMARY_NAV = [
-  { href: '/',           label: 'Today',       icon: '◈' },
-  { href: '/leads',      label: 'Leads',       icon: '◉' },
-  { href: '/proposals',  label: 'Proposals',   icon: '◇' },
-  { href: '/projects',   label: 'Projects',    icon: '▦' },
-  { href: '/invoices',   label: 'Invoices',    icon: '▤' },
+  { href: '/',               label: 'Today',         icon: '◈' },
+  { href: '/leads',          label: 'Leads',         icon: '◉' },
+  { href: '/proposals',      label: 'Proposals',     icon: '◇' },
+  { href: '/projects',       label: 'Projects',      icon: '▦' },
+  { href: '/invoices',       label: 'Invoices',      icon: '▤' },
+  { href: '/subscriptions',  label: 'Subscriptions', icon: '↻' },
 ]
 
 const SECONDARY_NAV = [
@@ -120,6 +121,11 @@ const STAGE_COLORS: Record<string, string> = {
   accepted:    'bg-emerald-950/40 text-emerald-300 ring-1 ring-emerald-800/30',
   declined:    'bg-red-950/40 text-red-300 ring-1 ring-red-800/30',
   expired:     'bg-slate-800/60 text-slate-600 ring-1 ring-slate-700/30',
+  monthly:     'bg-blue-950/40 text-blue-300 ring-1 ring-blue-800/30',
+  quarterly:   'bg-violet-950/40 text-violet-300 ring-1 ring-violet-800/30',
+  annually:    'bg-indigo-950/40 text-indigo-300 ring-1 ring-indigo-800/30',
+  active:      'bg-emerald-950/40 text-emerald-300 ring-1 ring-emerald-800/30',
+  paused:      'bg-amber-950/40 text-amber-300 ring-1 ring-amber-800/30',
   software:    'bg-cyan-950/40 text-cyan-300 ring-1 ring-cyan-800/30',
   contractors: 'bg-violet-950/40 text-violet-300 ring-1 ring-violet-800/30',
   hosting:     'bg-blue-950/40 text-blue-300 ring-1 ring-blue-800/30',
