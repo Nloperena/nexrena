@@ -147,6 +147,7 @@ const overlayLinks = [
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 16px;
     pointer-events: auto;
   }
 
@@ -187,6 +188,7 @@ const overlayLinks = [
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+    max-width: min(520px, calc(100vw - 420px));
   }
   @media (min-width: 1024px) {
     .nav__links { display: flex; }
@@ -240,13 +242,22 @@ const overlayLinks = [
     opacity: 0.5;
   }
 
+  .nav__right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    min-width: max-content;
+    flex-shrink: 0;
+  }
+
   /* ── CTA PILL ───────────────────────────────────────────────── */
   .nav__cta {
     display: none;
     align-items: center;
     gap: 8px;
-    height: 40px;
-    padding: 0 20px;
+    height: 38px;
+    padding: 0 18px;
     border: 1px solid var(--gold);
     border-radius: 100px;
     font-family: var(--font-mono);
@@ -260,8 +271,13 @@ const overlayLinks = [
     transition: color 0.3s, border-color 0.3s;
     z-index: 102;
   }
-  @media (min-width: 768px) {
+  @media (min-width: 900px) and (min-height: 760px) {
     .nav__cta { display: inline-flex; }
+  }
+  .nav.ov-active .nav__cta {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px);
   }
   .nav__cta::before {
     content: '';
@@ -380,11 +396,12 @@ const overlayLinks = [
     z-index: 3;
     max-width: 1400px;
     margin: 0 auto;
-    padding: 120px clamp(20px, 5vw, 48px) 48px;
+    padding: clamp(88px, 14vh, 128px) clamp(20px, 5vw, 48px) clamp(28px, 6vh, 56px);
     height: 100%;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 48px;
+    align-content: start;
+    gap: clamp(24px, 5vh, 48px);
     opacity: 0;
     overflow-y: auto;
   }
@@ -399,7 +416,8 @@ const overlayLinks = [
   .ov__nav {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    min-height: 0;
   }
   .ov__row {
     overflow: hidden;
@@ -408,7 +426,7 @@ const overlayLinks = [
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 12px 0;
+    padding: clamp(10px, 2vh, 16px) 0;
     text-decoration: none;
     position: relative;
     transition: padding 0.5s cubic-bezier(0.16, 1, 0.3, 1);
@@ -439,7 +457,7 @@ const overlayLinks = [
   }
   .ov__link-label {
     font-family: var(--font-display);
-    font-size: clamp(40px, 8vw, 96px);
+    font-size: clamp(34px, 7vw, 96px);
     line-height: 1;
     color: var(--slate-600);
     transition: color 0.4s, letter-spacing 0.5s cubic-bezier(0.16, 1, 0.3, 1);
@@ -477,7 +495,7 @@ const overlayLinks = [
     display: none;
     flex-direction: column;
     justify-content: flex-end;
-    padding-bottom: 24px;
+    padding-bottom: 0;
   }
   @media (min-width: 768px) {
     .ov__aside { display: flex; }
@@ -535,6 +553,54 @@ const overlayLinks = [
     color: var(--obsidian);
     border-color: var(--gold);
     background: var(--gold);
+  }
+
+  @media (max-height: 820px) {
+    .ov__content {
+      padding-top: clamp(80px, 12vh, 104px);
+      gap: 24px;
+    }
+
+    .ov__link-label {
+      font-size: clamp(30px, 6vw, 72px);
+    }
+  }
+
+  @media (max-height: 760px) {
+    .nav {
+      height: 64px;
+    }
+
+    .nav__inner {
+      padding: 0 clamp(16px, 4vw, 32px);
+    }
+
+    .nav__cta {
+      display: none !important;
+    }
+
+    .ov__content {
+      padding-top: 80px;
+      padding-bottom: 24px;
+    }
+
+    .ov__link {
+      padding: 10px 0;
+    }
+
+    .ov__link-label {
+      font-size: clamp(28px, 5.5vw, 56px);
+    }
+  }
+
+  @media (max-height: 820px) and (min-width: 768px) {
+    .ov__content {
+      grid-template-columns: 1fr;
+    }
+
+    .ov__aside {
+      display: none;
+    }
   }
 
   /* ── REDUCED MOTION ─────────────────────────────────────────── */

@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { Proposal, ProposalStatus, ProposalService, Contact } from '@/lib/types'
 import { genId, formatCurrency } from '@/lib/store'
-import { NEXRENA_SERVICES } from '@/lib/constants'
+import { NEXRENA_SERVICES, DEFAULT_PROPOSAL_TIMELINE, DEFAULT_PROPOSAL_VALIDITY_DAYS } from '@/lib/constants'
 import { Btn, Field, inputCls, selectCls } from '@/components/ui'
 
 const STATUSES: ProposalStatus[] = ['draft', 'sent', 'accepted', 'declined', 'expired']
@@ -61,7 +61,8 @@ export function ProposalForm({ initial, onSave, onClose, contacts }: ProposalFor
   const [form, setForm] = useState<Partial<Proposal>>(initial ?? {
     status: 'draft',
     discount: 0,
-    validUntil: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
+    validUntil: new Date(Date.now() + DEFAULT_PROPOSAL_VALIDITY_DAYS * 86400000).toISOString().slice(0, 10),
+    timeline: DEFAULT_PROPOSAL_TIMELINE,
     services: [{ id: genId(), description: '', price: 0 }],
     scopeOfWork: '',
   })
@@ -170,3 +171,4 @@ export function ProposalForm({ initial, onSave, onClose, contacts }: ProposalFor
     </form>
   )
 }
+

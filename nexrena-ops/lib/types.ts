@@ -125,6 +125,7 @@ export interface Proposal {
   id: string
   title: string
   contactId?: string
+  projectId?: string
   clientName: string
   clientCompany?: string
   clientEmail?: string

@@ -7,13 +7,13 @@ import Eyebrow from '../ui/Eyebrow.astro';
 
 const steps = [
   { num: '01', title: 'Discovery', body: 'We audit your existing digital presence, research your competitors, and map the exact gaps between where you are and where buyers expect you to be.' },
-  { num: '02', title: 'Strategy', body: "Every engagement starts with a clear roadmap. We define what we're building, why, and exactly what success looks like before a single pixel moves." },
-  { num: '03', title: 'Execution', body: 'We build fast and iterate in the open. You see progress weekly. No black boxes, no surprises.' },
-  { num: '04', title: 'Delivery', body: "Launch is not the end — it's the beginning. We measure, optimize, and compound from day one." },
+  { num: '02', title: 'Strategy', body: "Every engagement starts with a clear roadmap. We define what we're building, why, and exactly what success looks like — before a single pixel moves." },
+  { num: '03', title: 'Execution', body: 'We build fast and iterate in the open. You see progress weekly. No surprises, no handoff delays.' },
+  { num: '04', title: 'Delivery', body: "Launch isn't the finish line — it's the starting gun. We measure, optimize, and compound from day one." },
 ];
 ---
 
-<section id="process-wrapper" class="bg-[var(--cream)] overflow-hidden relative hidden md:block" style="color: var(--obsidian);">
+<section id="process-wrapper" class="process-desktop bg-[var(--cream)] overflow-hidden relative hidden md:block" style="color: var(--obsidian);">
   <div id="process-scroll-container" class="flex h-screen items-center w-max">
     
     <!-- Intro Panel -->
@@ -25,8 +25,8 @@ const steps = [
           Transparent.<br/>
           <span class="italic text-[var(--gold-dim)]">Delivered.</span>
         </h2>
-        <p class="font-body text-[var(--slate-600)] text-xl max-w-xl">
-          A proven process that delivers results. Keep scrolling to explore each phase of our engagement.
+        <p class="font-body text-[var(--slate-600)] text-xl max-w-xl mb-4">
+          No black boxes. No endless planning. A process that ships real work, every week.
         </p>
       </div>
     </div>
@@ -63,12 +63,15 @@ const steps = [
 </section>
 
 <!-- Mobile Fallback (Vertical) -->
-<section class="bg-[var(--cream)] py-24 md:hidden" style="color: var(--obsidian);">
+<section class="process-mobile bg-[var(--cream)] py-24 md:hidden" style="color: var(--obsidian);">
   <div class="section-container">
     <Eyebrow class="mb-6">HOW WE WORK //</Eyebrow>
-    <h2 class="font-display text-[48px] leading-[1] text-[var(--obsidian)] mb-16">
+    <h2 class="font-display text-[48px] leading-[1] text-[var(--obsidian)] mb-8">
       Structured.<br/>Transparent.<br/><span class="italic text-[var(--gold-dim)]">Delivered.</span>
     </h2>
+    <p class="font-body text-[var(--slate-600)] text-lg max-w-xl mb-16">
+      No black boxes. No endless planning. A process that ships real work, every week.
+    </p>
     
     <div class="flex flex-col gap-16">
       {steps.map((step) => (
@@ -89,7 +92,7 @@ const steps = [
   function initHorizontalScroll() {
     gsap.registerPlugin(ScrollTrigger);
 
-    if (window.innerWidth < 768) return;
+    if (window.innerWidth < 768 || window.innerHeight <= 600) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const wrapper = document.getElementById('process-wrapper');
@@ -114,3 +117,15 @@ const steps = [
 
   document.addEventListener('astro:page-load', initHorizontalScroll);
 </script>
+
+<style>
+  @media (max-height: 600px) {
+    .process-desktop {
+      display: none;
+    }
+
+    .process-mobile {
+      display: block;
+    }
+  }
+</style>

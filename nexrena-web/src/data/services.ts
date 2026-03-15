@@ -92,7 +92,7 @@ export const services: Service[] = [
     id: 'seo-growth',
     number: '02',
     title: 'SEO &\nSearch Growth',
-    body: "Rank for what your buyers search. We build content architecture and technical SEO that compounds — delivering leads you don't pay for.",
+    body: "Rank for what your buyers actually search. We build content architecture and technical SEO that compounds — delivering leads you don't pay for.",
     tags: ['Technical SEO', 'Content Strategy', 'Analytics'],
     intro: 'Search growth for B2B is an operating system, not a blog checklist. We engineer technical foundations and content maps that compound every quarter.',
     idealFor: [
@@ -140,7 +140,7 @@ export const services: Service[] = [
     id: 'full-service',
     number: '03',
     title: 'Full-Service\nGrowth',
-    body: 'Strategy, design, development, and SEO under one roof. For companies who want one partner, not four vendors.',
+    body: 'Strategy, design, development, and SEO under one roof. One partner. One roadmap. One point of accountability — not four vendors blaming each other.',
     tags: ['Strategy', 'Design', 'Dev', 'SEO'],
     intro: 'When growth is blocked by fragmented execution, we run web, search, and conversion as one integrated system.',
     idealFor: [

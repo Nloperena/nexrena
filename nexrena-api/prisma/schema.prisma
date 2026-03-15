@@ -103,6 +103,7 @@ model Proposal {
   id            String  @id
   title         String
   contactId     String? @map("contact_id")
+  projectId     String? @map("project_id")
   clientName    String  @map("client_name")
   clientCompany String? @map("client_company")
   clientEmail   String? @map("client_email")

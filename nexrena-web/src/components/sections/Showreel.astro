@@ -7,33 +7,51 @@
 ---
 
 <section class="showreel relative w-full min-h-screen overflow-hidden flex items-center justify-center bg-[var(--obsidian)]">
-  <!-- Background Image -->
-  <img
-    src="/images/hero-work.webp"
-    alt=""
-    class="absolute inset-0 w-full h-full object-cover opacity-40 scale-105"
+  <!-- Background Video -->
+  <video
+    class="absolute inset-0 w-full h-full object-cover opacity-45 scale-105"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    poster="/images/hero-work.webp"
     aria-hidden="true"
-    loading="lazy"
-  />
+  >
+    <source src="/videos/showreel-keyboard.webm" type="video/webm" />
+  </video>
 
   <!-- Gradient overlays for depth -->
   <div class="absolute inset-0 bg-gradient-to-b from-[var(--obsidian)] via-transparent to-[var(--obsidian)]"></div>
   <div class="absolute inset-0 bg-[radial-gradient(ellipse_70%_70%_at_50%_50%,transparent_0%,rgba(12,15,18,0.7)_100%)]"></div>
 
   <!-- Content -->
-  <div class="relative z-10 w-full max-w-[1320px] mx-auto px-[5vw] text-center py-32">
+  <div class="showreel__content relative z-10 w-full max-w-[1320px] mx-auto px-[5vw] text-center py-32">
     <p class="font-mono text-[10px] text-[var(--gold)] tracking-[0.3em] uppercase mb-12 reveal">Our Philosophy</p>
 
     <h2 class="font-display italic text-[clamp(36px,6vw,80px)] text-[var(--warm-white)] leading-[1.1] tracking-tight max-w-4xl mx-auto mb-10 reveal" style="--i: 1;">
       We don't build websites.<br/>
-      We build <span class="text-[var(--gold)]">growth infrastructure</span><br/>
-      that compounds.
+      We build <span class="text-[var(--gold)]">the infrastructure</span><br/>
+      your revenue runs on.
     </h2>
 
     <div class="w-16 h-[1px] bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent mx-auto mb-10 reveal" style="--i: 2;"></div>
 
     <p class="font-body text-[18px] text-[var(--slate-400)] max-w-lg mx-auto leading-relaxed reveal" style="--i: 3;">
-      Every line of code, every keyword targeted, every design decision — measured against one metric: your revenue.
+      Every line of code, every keyword targeted, every design decision — measured against one metric: your pipeline. Not impressions. Not sessions. Revenue.
     </p>
   </div>
 </section>
+
+<style>
+  @media (max-height: 760px) {
+    .showreel {
+      min-height: auto;
+    }
+
+    .showreel__content {
+      padding-top: 72px;
+      padding-bottom: 72px;
+    }
+  }
+</style>

@@ -37,11 +37,11 @@ import Eyebrow from '../ui/Eyebrow.astro';
 
           <!-- Middle Content -->
           <div class="max-w-4xl">
-            <h3 class="font-display text-[48px] md:text-[80px] lg:text-[100px] text-[var(--warm-white)] mb-8 leading-[0.95] tracking-tight whitespace-pre-line">
+            <h3 class="service-stack-card__title font-display text-[48px] md:text-[80px] lg:text-[100px] text-[var(--warm-white)] mb-8 leading-[0.95] tracking-tight whitespace-pre-line">
               {svc.title}
             </h3>
             
-            <p class="font-body text-[18px] md:text-[24px] text-[var(--slate-400)] leading-relaxed max-w-2xl mb-12">
+            <p class="service-stack-card__body font-body text-[18px] md:text-[24px] text-[var(--slate-400)] leading-relaxed max-w-2xl mb-12">
               {svc.body}
             </p>
 
@@ -64,7 +64,7 @@ import Eyebrow from '../ui/Eyebrow.astro';
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
               </div>
-              Explore this service
+              → Explore this service
             </a>
           </div>
         </div>
@@ -81,7 +81,7 @@ import Eyebrow from '../ui/Eyebrow.astro';
     gsap.registerPlugin(ScrollTrigger);
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
+    if (prefersReducedMotion || window.innerHeight <= 600) return;
 
     const cards = gsap.utils.toArray('.service-stack-card') as HTMLElement[];
     
@@ -114,5 +114,39 @@ import Eyebrow from '../ui/Eyebrow.astro';
   /* Fallback if JS fails - CSS sticky handles the actual stacking natively */
   .service-stack-card {
     position: sticky;
+  }
+
+  @media (max-height: 600px) {
+    #services-stack-wrapper {
+      padding-bottom: 80px;
+    }
+
+    #services-stack-wrapper .section-container {
+      min-height: auto;
+      padding-top: 96px;
+      padding-bottom: 72px;
+    }
+
+    .service-stack-card {
+      position: relative;
+      top: auto;
+      min-height: auto;
+      margin-bottom: 24px;
+      padding: 24px;
+    }
+  }
+
+  @media (max-height: 560px) {
+    .service-stack-card {
+      padding: 24px 20px;
+    }
+
+    .service-stack-card__title {
+      font-size: clamp(36px, 7vw, 64px);
+    }
+
+    .service-stack-card__body {
+      font-size: 18px;
+    }
   }
 </style>
