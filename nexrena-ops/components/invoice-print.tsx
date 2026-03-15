@@ -1,31 +1,37 @@
 import { Invoice } from '@/lib/types'
 import { formatCurrency, formatDate, invoiceSubtotal } from '@/lib/store'
 
-// Brand tokens — light mode document
+// Brand tokens — elegant, clean, modern editorial style
 const B = {
-  ink: '#1A1E26',
-  warmWhite: '#FDFCFA',
-  cream: '#F5F0E8',
-  gold: '#C9A96E',
-  goldDim: '#9B7D4E',
+  ink: '#0F1115',          // Very dark slate
+  warmWhite: '#FFFFFF',    // Crisp white for print
+  cream: '#F9FAFB',        // Very subtle cool gray/cream for boxes
+  gold: '#C9A96E',         // Nexrena gold
+  goldDim: '#A88D5C',
   goldLight: '#E8D5B0',
-  slate400: '#7A8A9E',
-  slate600: '#3D4A5C',
+  slate400: '#8A99A8',     // Mid gray for labels
+  slate600: '#475569',     // Darker gray for secondary text
+  border: '#E2E8F0',       // Light border color
 }
 
-const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
-  paid: { bg: '#D1FAE5', color: '#065F46' },
-  overdue: { bg: '#FEE2E2', color: '#991B1B' },
-  sent: { bg: '#DBEAFE', color: '#1E40AF' },
-  draft: { bg: '#F3F4F6', color: '#374151' },
-  cancelled: { bg: '#F3F4F6', color: '#9CA3AF' },
+const STATUS_STYLES: Record<string, { bg: string; color: string; border: string }> = {
+  paid: { bg: '#ECFDF5', color: '#065F46', border: '#A7F3D0' },
+  overdue: { bg: '#FEF2F2', color: '#991B1B', border: '#FECACA' },
+  sent: { bg: '#EFF6FF', color: '#1E40AF', border: '#BFDBFE' },
+  draft: { bg: '#F8FAFC', color: '#475569', border: '#E2E8F0' },
+  cancelled: { bg: '#F8FAFC', color: '#94A3B8', border: '#E2E8F0' },
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
-      fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase' as const,
-      color: B.goldDim, marginBottom: 10, fontFamily: 'inherit',
+      fontSize: 9, 
+      letterSpacing: '0.25em', 
+      textTransform: 'uppercase',
+      color: B.slate400, 
+      marginBottom: 12, 
+      fontFamily: "'DM Sans', sans-serif",
+      fontWeight: 600,
     }}>
       {children}
     </div>
@@ -43,236 +49,315 @@ export function InvoicePrint({ invoice }: { invoice: Invoice }) {
   return (
     <div id="invoice-print-root" style={{
       fontFamily: "'DM Sans', system-ui, sans-serif",
-      background: B.warmWhite, color: B.ink,
-      padding: '64px 72px', maxWidth: 860, margin: '0 auto', minHeight: '100vh',
+      background: B.warmWhite, 
+      color: B.ink,
+      padding: '80px', 
+      maxWidth: 900, 
+      margin: '0 auto', 
+      minHeight: '1122px', // Approx A4/Letter min height
+      display: 'flex',
+      flexDirection: 'column',
+      boxSizing: 'border-box',
+      position: 'relative'
     }}>
 
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 36 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 60 }}>
         <div>
           <div style={{
-            fontFamily: "'Playfair Display', Georgia, serif", fontSize: 36, fontWeight: 400,
-            lineHeight: 1, color: B.ink, letterSpacing: '-0.01em',
+            fontFamily: "'Playfair Display', Georgia, serif", 
+            fontSize: 42, 
+            fontWeight: 500,
+            lineHeight: 1, 
+            color: B.ink, 
+            letterSpacing: '-0.02em',
           }}>
-            N&thinsp;e&thinsp;x&thinsp;r&thinsp;e&thinsp;n&thinsp;a
+            Nex<span style={{ color: B.gold }}>rena</span>
           </div>
           <div style={{
-            fontSize: 9, letterSpacing: '0.24em', textTransform: 'uppercase' as const,
-            color: B.slate400, marginTop: 8,
+            fontSize: 10, 
+            letterSpacing: '0.3em', 
+            textTransform: 'uppercase',
+            color: B.slate600, 
+            marginTop: 12,
+            fontWeight: 500
           }}>
             Digital Growth Agency
           </div>
         </div>
+        
         <div style={{ textAlign: 'right' }}>
           <div style={{
-            fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase' as const,
-            color: B.slate400, marginBottom: 6,
+            fontSize: 12, 
+            letterSpacing: '0.4em', 
+            textTransform: 'uppercase',
+            color: B.goldDim, 
+            marginBottom: 8,
+            fontWeight: 600
           }}>
             Invoice
           </div>
           <div style={{
-            fontFamily: "'Playfair Display', Georgia, serif", fontSize: 28,
-            fontWeight: 600, color: B.ink,
+            fontFamily: "'DM Sans', sans-serif", 
+            fontSize: 24,
+            fontWeight: 300, 
+            color: B.slate600,
+            letterSpacing: '0.05em'
           }}>
             {invoice.number}
           </div>
         </div>
       </div>
 
-      {/* Gold rule */}
-      <div style={{
-        height: 1,
-        background: `linear-gradient(90deg, ${B.goldDim}, ${B.goldLight}, transparent)`,
-        marginBottom: 36,
-      }} />
-
-      {/* Date / Status row */}
-      <div style={{ display: 'flex', gap: 48, marginBottom: 40 }}>
-        {[
-          { label: 'Issue Date', value: formatDate(invoice.issueDate), color: B.ink },
-          { label: 'Due Date', value: formatDate(invoice.dueDate), color: isOverdue ? '#EF4444' : B.ink },
-        ].map(({ label, value, color }) => (
-          <div key={label}>
-            <div style={{
-              fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase' as const,
-              color: B.slate400, marginBottom: 6,
-            }}>{label}</div>
-            <div style={{ fontSize: 14, color }}>{value}</div>
-          </div>
-        ))}
-        <div>
-          <div style={{
-            fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase' as const,
-            color: B.slate400, marginBottom: 6,
-          }}>Status</div>
-          <div style={{
-            display: 'inline-block', fontSize: 11, fontWeight: 500,
-            letterSpacing: '0.1em', textTransform: 'uppercase' as const,
-            padding: '3px 10px', borderRadius: 3,
-            backgroundColor: statusStyle.bg, color: statusStyle.color,
-          }}>
-            {displayStatus}
-          </div>
-        </div>
-        {invoice.paidDate && (
-          <div>
-            <div style={{
-              fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase' as const,
-              color: B.slate400, marginBottom: 6,
-            }}>Paid</div>
-            <div style={{ fontSize: 14, color: B.ink }}>{formatDate(invoice.paidDate)}</div>
-          </div>
-        )}
-      </div>
-
-      {/* Bill To / From */}
-      <div style={{
-        display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40,
-        background: B.cream, borderRadius: 4, padding: '28px 32px', marginBottom: 48,
+      {/* Info Grid */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: '1fr 1fr 1fr', 
+        gap: 32, 
+        marginBottom: 60,
+        borderTop: `1px solid ${B.border}`,
+        borderBottom: `1px solid ${B.border}`,
+        padding: '32px 0'
       }}>
+        {/* Bill To */}
         <div>
-          <SectionLabel>Bill To</SectionLabel>
+          <SectionLabel>Billed To</SectionLabel>
           <div style={{
-            fontFamily: "'Playfair Display', Georgia, serif", fontSize: 20,
-            fontWeight: 400, color: B.ink,
+            fontFamily: "'Playfair Display', Georgia, serif", 
+            fontSize: 22,
+            fontWeight: 500, 
+            color: B.ink,
+            lineHeight: 1.2,
+            marginBottom: 8
           }}>
             {invoice.clientCompany || invoice.clientName}
           </div>
           {invoice.clientCompany && invoice.clientName && (
-            <div style={{ fontSize: 13, color: B.slate600, marginTop: 4 }}>{invoice.clientName}</div>
+            <div style={{ fontSize: 13, color: B.slate600, marginBottom: 4 }}>{invoice.clientName}</div>
           )}
           {invoice.clientEmail && (
-            <div style={{ fontSize: 12, color: B.slate600, marginTop: 2 }}>{invoice.clientEmail}</div>
+            <div style={{ fontSize: 13, color: B.slate600, marginBottom: 4 }}>{invoice.clientEmail}</div>
           )}
           {invoice.clientAddress && (
-            <div style={{ fontSize: 12, color: B.slate600, marginTop: 2 }}>{invoice.clientAddress}</div>
+            <div style={{ fontSize: 13, color: B.slate600, lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
+              {invoice.clientAddress}
+            </div>
           )}
         </div>
+
+        {/* Invoice Details */}
         <div>
-          <SectionLabel>From</SectionLabel>
-          <div style={{
-            fontFamily: "'Playfair Display', Georgia, serif", fontSize: 18,
-            fontWeight: 400, color: B.ink, marginBottom: 6,
-          }}>
-            Nexrena LLC
+          <SectionLabel>Invoice Details</SectionLabel>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div>
+              <div style={{ fontSize: 10, color: B.slate400, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2 }}>Issue Date</div>
+              <div style={{ fontSize: 14, color: B.ink, fontWeight: 500 }}>{formatDate(invoice.issueDate)}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 10, color: B.slate400, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2 }}>Due Date</div>
+              <div style={{ fontSize: 14, color: isOverdue ? '#EF4444' : B.ink, fontWeight: 500 }}>{formatDate(invoice.dueDate)}</div>
+            </div>
+            {invoice.projectName && (
+              <div>
+                <div style={{ fontSize: 10, color: B.slate400, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2 }}>Project</div>
+                <div style={{ fontSize: 14, color: B.ink, fontWeight: 500 }}>{invoice.projectName}</div>
+              </div>
+            )}
           </div>
-          <div style={{
-            fontSize: 12, color: B.slate600, lineHeight: 1.8,
-            fontFamily: 'monospace', letterSpacing: '0.03em',
-          }}>
-            Kissimmee, FL<br />
-            hello@nexrena.com<br />
-            nexrena.com
+        </div>
+
+        {/* Payment Status */}
+        <div>
+          <SectionLabel>Payment Status</SectionLabel>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-start' }}>
+            <div style={{
+              display: 'inline-flex', 
+              fontSize: 11, 
+              fontWeight: 600,
+              letterSpacing: '0.15em', 
+              textTransform: 'uppercase',
+              padding: '6px 14px', 
+              borderRadius: 20,
+              backgroundColor: statusStyle.bg, 
+              color: statusStyle.color,
+              border: `1px solid ${statusStyle.border}`
+            }}>
+              {displayStatus}
+            </div>
+            {invoice.paidDate && (
+              <div>
+                <div style={{ fontSize: 10, color: B.slate400, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2 }}>Date Paid</div>
+                <div style={{ fontSize: 14, color: B.ink, fontWeight: 500 }}>{formatDate(invoice.paidDate)}</div>
+              </div>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Project reference */}
-      {invoice.projectName && (
-        <div style={{ marginBottom: 24 }}>
-          <SectionLabel>Project Reference</SectionLabel>
-          <div style={{ fontSize: 14, color: B.ink }}>{invoice.projectName}</div>
-        </div>
-      )}
 
       {/* Line Items */}
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 8 }}>
-        <thead>
-          <tr style={{ borderBottom: `1.5px solid ${B.ink}` }}>
-            {['Description', 'Qty', 'Rate', 'Amount'].map((h, i) => (
-              <th key={h} style={{
-                textAlign: i === 0 ? 'left' : 'right' as const,
-                fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase' as const,
-                color: B.slate400, paddingBottom: 10, fontWeight: 500,
-                width: i === 0 ? 'auto' : i === 1 ? 60 : 110,
-              }}>{h}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {invoice.lineItems.map(item => (
-            <tr key={item.id} style={{ borderBottom: `1px solid ${B.goldLight}` }}>
-              <td style={{ padding: '14px 0', fontSize: 14, color: B.ink }}>{item.description}</td>
-              <td style={{ padding: '14px 0', fontSize: 14, color: B.slate600, textAlign: 'right' }}>{item.quantity}</td>
-              <td style={{ padding: '14px 0', fontSize: 14, color: B.slate600, textAlign: 'right', fontFamily: 'monospace' }}>
-                {formatCurrency(item.rate)}
-              </td>
-              <td style={{ padding: '14px 0', fontSize: 14, color: B.ink, textAlign: 'right', fontFamily: 'monospace', fontWeight: 600 }}>
-                {formatCurrency(item.quantity * item.rate)}
-              </td>
+      <div style={{ flex: 1 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 16 }}>
+          <thead>
+            <tr>
+              <th style={{ textAlign: 'left', paddingBottom: 16, borderBottom: `2px solid ${B.ink}` }}>
+                <SectionLabel>Description</SectionLabel>
+              </th>
+              <th style={{ textAlign: 'center', paddingBottom: 16, borderBottom: `2px solid ${B.ink}`, width: '15%' }}>
+                <SectionLabel>Qty / Hrs</SectionLabel>
+              </th>
+              <th style={{ textAlign: 'right', paddingBottom: 16, borderBottom: `2px solid ${B.ink}`, width: '20%' }}>
+                <SectionLabel>Rate</SectionLabel>
+              </th>
+              <th style={{ textAlign: 'right', paddingBottom: 16, borderBottom: `2px solid ${B.ink}`, width: '25%' }}>
+                <SectionLabel>Amount</SectionLabel>
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {invoice.lineItems.map((item, idx) => (
+              <tr key={item.id}>
+                <td style={{ 
+                  padding: '20px 0', 
+                  fontSize: 15, 
+                  color: B.ink, 
+                  borderBottom: `1px solid ${B.border}`,
+                  fontWeight: 500
+                }}>
+                  {item.description}
+                </td>
+                <td style={{ 
+                  padding: '20px 0', 
+                  fontSize: 15, 
+                  color: B.slate600, 
+                  textAlign: 'center',
+                  borderBottom: `1px solid ${B.border}`
+                }}>
+                  {item.quantity}
+                </td>
+                <td style={{ 
+                  padding: '20px 0', 
+                  fontSize: 15, 
+                  color: B.slate600, 
+                  textAlign: 'right', 
+                  fontFamily: 'monospace',
+                  borderBottom: `1px solid ${B.border}`
+                }}>
+                  {formatCurrency(item.rate)}
+                </td>
+                <td style={{ 
+                  padding: '20px 0', 
+                  fontSize: 16, 
+                  color: B.ink, 
+                  textAlign: 'right', 
+                  fontFamily: 'monospace', 
+                  fontWeight: 600,
+                  borderBottom: `1px solid ${B.border}`
+                }}>
+                  {formatCurrency(item.quantity * item.rate)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-      {/* Totals */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 40 }}>
-        <div style={{ minWidth: 280 }}>
-          <div style={{
-            display: 'flex', justifyContent: 'space-between', padding: '8px 0',
-            fontSize: 13, color: B.slate600,
-          }}>
-            <span>Subtotal</span>
-            <span style={{ fontFamily: 'monospace' }}>{formatCurrency(subtotal)}</span>
-          </div>
-          {(invoice.taxRate ?? 0) > 0 && (
-            <div style={{
-              display: 'flex', justifyContent: 'space-between', padding: '8px 0',
-              fontSize: 13, color: B.slate600,
-            }}>
-              <span>Tax ({invoice.taxRate}%)</span>
-              <span style={{ fontFamily: 'monospace' }}>{formatCurrency(taxAmt)}</span>
+        {/* Totals Section */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 32 }}>
+          <div style={{ width: '45%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', fontSize: 14, color: B.slate600 }}>
+              <span>Subtotal</span>
+              <span style={{ fontFamily: 'monospace' }}>{formatCurrency(subtotal)}</span>
             </div>
-          )}
-          <div style={{
-            borderTop: `1.5px solid ${B.ink}`, paddingTop: 16, marginTop: 8,
-            display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 48,
-          }}>
-            <div style={{
-              fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase' as const,
-              color: B.slate400, fontWeight: 500,
+            
+            {(invoice.taxRate ?? 0) > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', fontSize: 14, color: B.slate600 }}>
+                <span>Tax ({invoice.taxRate}%)</span>
+                <span style={{ fontFamily: 'monospace' }}>{formatCurrency(taxAmt)}</span>
+              </div>
+            )}
+            
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              paddingTop: '24px', 
+              marginTop: '12px',
+              borderTop: `2px solid ${B.ink}` 
             }}>
-              Total Due
-            </div>
-            <div style={{
-              fontFamily: "'Playfair Display', Georgia, serif", fontSize: 30,
-              fontWeight: 600, color: B.goldDim,
-            }}>
-              {formatCurrency(total)}
+              <span style={{ 
+                fontSize: 12, 
+                letterSpacing: '0.2em', 
+                textTransform: 'uppercase', 
+                color: B.ink, 
+                fontWeight: 600 
+              }}>
+                Total Due
+              </span>
+              <span style={{ 
+                fontFamily: "'Playfair Display', Georgia, serif", 
+                fontSize: 36, 
+                fontWeight: 600, 
+                color: B.ink 
+              }}>
+                {formatCurrency(total)}
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Notes */}
-      <div style={{
-        border: `1px solid ${B.goldLight}`, borderRadius: 4,
-        padding: '22px 28px', marginBottom: 48,
-      }}>
-        <SectionLabel>Notes &amp; Payment Terms</SectionLabel>
-        <div style={{ fontSize: 13, color: B.slate600, lineHeight: 1.75 }}>
-          {invoice.notes ||
-            'Payment is due within 15 days of invoice date. Nexrena LLC accepts payment via ACH bank transfer, wire transfer, or Stripe. A 1.5% monthly late fee applies to overdue balances. Thank you for your business.'}
+      {/* Push footer to bottom */}
+      <div style={{ marginTop: 'auto', paddingTop: 60 }}>
+        <div style={{ 
+          background: B.cream, 
+          padding: '32px', 
+          borderRadius: 8,
+          marginBottom: 40
+        }}>
+          <SectionLabel>Payment Terms & Notes</SectionLabel>
+          <div style={{ 
+            fontSize: 13, 
+            color: B.slate600, 
+            lineHeight: 1.6,
+            whiteSpace: 'pre-wrap'
+          }}>
+            {invoice.notes ||
+              'Payment is due within 15 days of invoice date. Nexrena LLC accepts payment via ACH bank transfer, wire transfer, or Stripe. A 1.5% monthly late fee applies to overdue balances. Thank you for your business.'}
+          </div>
         </div>
-      </div>
 
-      {/* Footer */}
-      <div style={{
-        borderTop: `1px solid ${B.goldLight}`, paddingTop: 24,
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      }}>
-        <div style={{
-          fontFamily: "'Playfair Display', Georgia, serif", fontSize: 20,
-          fontWeight: 400, color: B.ink,
+        {/* Footer */}
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'flex-end',
+          borderTop: `1px solid ${B.border}`,
+          paddingTop: 32
         }}>
-          Nex<span style={{ color: B.goldDim }}>rena</span>
-        </div>
-        <div style={{
-          fontSize: 10, color: B.slate400, textAlign: 'right', lineHeight: 2,
-          letterSpacing: '0.08em', fontFamily: 'monospace',
-        }}>
-          nexrena.com · hello@nexrena.com<br />
-          Kissimmee, FL · Digital Growth Agency
+          <div>
+            <div style={{
+              fontFamily: "'Playfair Display', Georgia, serif", 
+              fontSize: 24, 
+              fontWeight: 500, 
+              color: B.ink,
+              marginBottom: 8
+            }}>
+              Nex<span style={{ color: B.gold }}>rena</span> LLC
+            </div>
+            <div style={{ fontSize: 12, color: B.slate400 }}>
+              Digital Growth Agency
+            </div>
+          </div>
+          
+          <div style={{ 
+            fontSize: 12, 
+            color: B.slate600, 
+            textAlign: 'right', 
+            lineHeight: 1.8,
+          }}>
+            hello@nexrena.com<br />
+            nexrena.com<br />
+            Kissimmee, FL
+          </div>
         </div>
       </div>
 
