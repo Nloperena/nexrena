@@ -1,3 +1,4 @@
+import 'express-async-errors'
 import express from 'express'
 import cors from 'cors'
 import rateLimit from 'express-rate-limit'
@@ -23,11 +24,22 @@ const allowedOrigins = (process.env.CORS_ORIGINS || '')
   .map(o => o.trim())
   .filter(Boolean)
 
+// Also allow all Vercel preview deployments for nexrena projects
+const VERCEL_PREVIEW_RE = /^https:\/\/nexrena[\w-]*\.vercel\.app$/
+
+function isAllowedOrigin(origin: string | undefined): boolean {
+  if (!origin) return true  // curl, Postman, server-to-server
+  if (allowedOrigins.includes(origin)) return true
+  if (VERCEL_PREVIEW_RE.test(origin)) return true
+  return false
+}
+
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (curl, Postman, server-to-server)
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true)
-    callback(new Error(`CORS: ${origin} not allowed`))
+    if (isAllowedOrigin(origin)) return callback(null, true)
+    // Log but don't throw — throwing can crash the process in some scenarios
+    console.warn(`[CORS] rejected origin: ${origin}`)
+    callback(null, false)
   },
   credentials: true,
 }))
@@ -53,6 +65,14 @@ app.use('/api/subscriptions', requireAuth, subscriptionRoutes)
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err)
   res.status(500).json({ error: 'Internal server error' })
+})
+
+// ── Safety net — prevent unhandled rejections from crashing the process ──
+process.on('unhandledRejection', (reason) => {
+  console.error('[unhandledRejection]', reason)
+})
+process.on('uncaughtException', (err) => {
+  console.error('[uncaughtException]', err)
 })
 
 app.listen(PORT, () => {

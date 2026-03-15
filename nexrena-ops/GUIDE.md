@@ -66,6 +66,22 @@ heroku run npx prisma db push
 heroku run npx prisma db push
 ```
 
+### Restoring Data (e.g. after DB reset)
+
+From the repo root, with Heroku CLI logged in:
+
+```bash
+cd nexrena-api
+# Use Heroku DB (run from your machine; one-off dynos often can't reach Postgres)
+$env:DATABASE_URL = (npx heroku config:get DATABASE_URL --app nexrena-api)   # PowerShell
+# export DATABASE_URL=$(heroku config:get DATABASE_URL --app nexrena-api)   # Bash
+
+node prisma/seed.js                    # Warren contact + $20/mo subscription
+node prisma/seed-warren-invoices.js    # Dec website + Jan/Feb/Mar hosting invoices
+```
+
+Then reload the Ops dashboard. If you see no data, check the **connection banner** on the Today page: set `NEXT_PUBLIC_API_URL` (e.g. `https://nexrena-api-5dc54effaa9f.herokuapp.com`) and `NEXT_PUBLIC_API_KEY` to match Heroku’s `API_KEY`.
+
 ---
 
 ## Deploying the Frontend to Vercel

@@ -3,12 +3,11 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const PRIMARY_NAV = [
-  { href: '/',               label: 'Today',         icon: '◈' },
-  { href: '/leads',          label: 'Leads',         icon: '◉' },
-  { href: '/proposals',      label: 'Proposals',     icon: '◇' },
-  { href: '/projects',       label: 'Projects',      icon: '▦' },
   { href: '/invoices',       label: 'Invoices',      icon: '▤' },
   { href: '/subscriptions',  label: 'Subscriptions', icon: '↻' },
+  { href: '/proposals',      label: 'Proposals',     icon: '◇' },
+  { href: '/leads',          label: 'Leads',         icon: '◉' },
+  { href: '/projects',       label: 'Projects',      icon: '▦' },
 ]
 
 const SECONDARY_NAV = [
