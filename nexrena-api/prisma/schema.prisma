@@ -119,6 +119,24 @@ model Proposal {
   @@map("proposals")
 }
 
+// ── Subscriptions ────────────────────────────────────────────────────────
+model Subscription {
+  id              String  @id
+  contactId       String  @map("contact_id")
+  description     String
+  amount          Float
+  interval        String           // "monthly" | "quarterly" | "annually"
+  status          String  @default("active") // "active" | "paused" | "cancelled"
+  billingDay      Int     @default(1)  @map("billing_day")
+  nextBillingDate String  @map("next_billing_date")
+  skipNext        Boolean @default(false) @map("skip_next")
+  netTerms        String? @map("net_terms")
+  notes           String?
+  createdAt       String  @map("created_at")
+
+  @@map("subscriptions")
+}
+
 // ── Expenses ─────────────────────────────────────────────────────────────
 model Expense {
   id          String  @id

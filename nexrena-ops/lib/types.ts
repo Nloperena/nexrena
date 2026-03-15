@@ -139,6 +139,28 @@ export interface Proposal {
   createdAt: string
 }
 
+// ── Subscriptions ─────────────────────────────────────────────────────────
+
+export type SubscriptionInterval = 'monthly' | 'quarterly' | 'annually'
+export type SubscriptionStatus = 'active' | 'paused' | 'cancelled'
+
+export interface Subscription {
+  id: string
+  contactId: string
+  contactName?: string
+  contactCompany?: string
+  description: string
+  amount: number
+  interval: SubscriptionInterval
+  status: SubscriptionStatus
+  billingDay: number
+  nextBillingDate: string
+  skipNext: boolean
+  netTerms?: string
+  notes?: string
+  createdAt: string
+}
+
 // ── Expenses ─────────────────────────────────────────────────────────────
 
 export type ExpenseCategory = 'software' | 'contractors' | 'hosting' | 'marketing' | 'office' | 'other'
