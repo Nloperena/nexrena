@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { useInvoices, useExpenses, useTimeEntries, useProjects, useContacts, formatCurrency, invoiceTotal } from '@/lib/store'
+import { useInvoices, useExpenses, useProjects, useContacts, formatCurrency, invoiceTotal } from '@/lib/store'
 import { PageHeader, StatCard, SectionCard, SectionHeader } from '@/components/ui'
 
 function BarChart({ data, maxVal }: { data: { label: string; value: number; color?: string }[]; maxVal: number }) {
@@ -23,7 +23,6 @@ function BarChart({ data, maxVal }: { data: { label: string; value: number; colo
 export default function ReportsPage() {
   const { invoices } = useInvoices()
   const { expenses } = useExpenses()
-  const { entries } = useTimeEntries()
   const { projects } = useProjects()
   const { contacts } = useContacts()
   const [period, setPeriod] = useState<'ytd' | '12mo' | 'all'>('ytd')
@@ -43,10 +42,6 @@ export default function ReportsPage() {
   const profit = revenue - totalExpenses
   const margin = revenue > 0 ? Math.round((profit / revenue) * 100) : 0
 
-  const billableHours = entries.filter(e => e.billable && new Date(e.date) >= periodStart).reduce((s, e) => s + e.hours, 0)
-  const totalHours = entries.filter(e => new Date(e.date) >= periodStart).reduce((s, e) => s + e.hours, 0)
-  const avgHourlyRate = billableHours > 0 ? revenue / billableHours : 0
-
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   const revenueByMonth = monthNames.map((label, i) => {
     const monthRevenue = paidInvoices
@@ -59,8 +54,7 @@ export default function ReportsPage() {
   const projectProfitability = projects.slice(0, 8).map(p => {
     const projRevenue = invoices.filter(i => i.projectId === p.id && i.status === 'paid').reduce((s, i) => s + invoiceTotal(i), 0)
     const projExpenses = expenses.filter(e => e.projectId === p.id).reduce((s, e) => s + e.amount, 0)
-    const projHours = entries.filter(e => e.projectId === p.id).reduce((s, e) => s + e.hours, 0)
-    return { name: `${p.clientName}`, revenue: projRevenue, expenses: projExpenses, hours: projHours, profit: projRevenue - projExpenses }
+    return { name: `${p.clientName}`, revenue: projRevenue, expenses: projExpenses, profit: projRevenue - projExpenses }
   })
 
   const clientRevenue = contacts.filter(c => c.stage === 'won').map(c => {
@@ -94,12 +88,11 @@ export default function ReportsPage() {
         }
       />
 
-      <div className="grid grid-cols-5 gap-4 mb-10 stagger">
+      <div className="grid grid-cols-4 gap-4 mb-10 stagger">
         <StatCard label="Revenue" value={formatCurrency(revenue)} gold />
         <StatCard label="Expenses" value={formatCurrency(totalExpenses)} />
         <StatCard label="Net Profit" value={formatCurrency(profit)} sub={`${margin}% margin`} />
         <StatCard label="Outstanding" value={formatCurrency(outstanding)} sub="Unpaid invoices" />
-        <StatCard label="Effective Rate" value={formatCurrency(avgHourlyRate)} sub={`${billableHours.toFixed(0)}h billed`} />
       </div>
 
       <div className="grid grid-cols-2 gap-6 mb-6">
@@ -122,21 +115,20 @@ export default function ReportsPage() {
         <SectionCard className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           <SectionHeader title="Project Profitability" />
           <table className="nx-table">
-            <thead><tr><th>Client</th><th className="text-right">Revenue</th><th className="text-right">Costs</th><th className="text-right">Hours</th><th className="text-right">Profit</th></tr></thead>
+            <thead><tr><th>Client</th><th className="text-right">Revenue</th><th className="text-right">Costs</th><th className="text-right">Profit</th></tr></thead>
             <tbody>
               {projectProfitability.map(p => (
                 <tr key={p.name}>
                   <td className="text-white font-medium">{p.name}</td>
                   <td className="text-right tabular-nums text-gold">{formatCurrency(p.revenue)}</td>
                   <td className="text-right tabular-nums text-slate-400">{formatCurrency(p.expenses)}</td>
-                  <td className="text-right tabular-nums text-slate-400">{p.hours.toFixed(1)}h</td>
                   <td className={`text-right tabular-nums font-medium ${p.profit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                     {formatCurrency(p.profit)}
                   </td>
                 </tr>
               ))}
               {projectProfitability.length === 0 && (
-                <tr><td colSpan={5} className="text-center text-slate-600 py-8">No projects yet</td></tr>
+                <tr><td colSpan={4} className="text-center text-slate-600 py-8">No projects yet</td></tr>
               )}
             </tbody>
           </table>
@@ -154,3 +146,4 @@ export default function ReportsPage() {
     </div>
   )
 }
+
