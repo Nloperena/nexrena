@@ -164,17 +164,18 @@ export function useProposals() {
     catch (err) { console.error(err) }
   }, [])
 
-  const acceptAndCreateProject = useCallback(async (id: string): Promise<Project | null> => {
+  const acceptAndCreateProject = useCallback(async (id: string): Promise<{ project: Project } | { error: string } | null> => {
     try {
       const { proposal, project } = await api.post<{ proposal: Proposal; project: Project }>(
         `/proposals/${id}/accept`,
         {}
       )
       setProposals(prev => prev.map(x => x.id === id ? proposal : x))
-      return project
+      return { project }
     } catch (err) {
-      console.error(err)
-      return null
+      const message = err instanceof Error ? err.message : 'Unknown error'
+      console.error('[acceptAndCreateProject]', message)
+      return { error: message }
     }
   }, [])
 

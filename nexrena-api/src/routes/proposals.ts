@@ -49,61 +49,67 @@ router.delete('/:id', async (req, res) => {
 router.post('/:id/accept', async (req, res) => {
   const { id } = req.params
 
-  const proposal = await prisma.proposal.findUnique({ where: { id } })
-  if (!proposal) {
-    res.status(404).json({ error: 'Proposal not found' })
-    return
-  }
-
-  if (proposal.projectId) {
-    const existingProject = await prisma.project.findUnique({ where: { id: proposal.projectId } })
-    res.json({ proposal, project: existingProject })
-    return
-  }
-
-  const services = proposal.services as Array<{ id: string; description: string; price: number; notes?: string }>
-  const serviceDescriptions = services.map(s => s.description)
-  const projectType = inferProjectType(serviceDescriptions)
-  const phases = buildPhases(projectType)
-  const subtotal = services.reduce((sum, s) => sum + s.price, 0)
-  const total = subtotal - (proposal.discount ?? 0)
-  const projectId = makeId()
-  const now = new Date().toISOString()
-  const today = now.slice(0, 10)
-
-  const [project, updatedProposal] = await prisma.$transaction(async (tx) => {
-    const newProject = await tx.project.create({
-      data: {
-        id: projectId,
-        name: proposal.title,
-        clientName: proposal.clientCompany || proposal.clientName,
-        contactId: proposal.contactId ?? undefined,
-        type: projectType,
-        status: 'not_started',
-        startDate: today,
-        value: total,
-        phases: phases as object,
-        notes: buildProjectNotes(proposal.scopeOfWork, proposal.timeline, proposal.notes),
-        createdAt: now,
-      },
-    })
-
-    const updated = await tx.proposal.update({
-      where: { id },
-      data: { status: 'accepted', projectId },
-    })
-
-    if (proposal.contactId) {
-      await tx.contact.update({
-        where: { id: proposal.contactId },
-        data: { stage: 'won', value: total, updatedAt: now },
-      })
+  try {
+    const proposal = await prisma.proposal.findUnique({ where: { id } })
+    if (!proposal) {
+      res.status(404).json({ error: 'Proposal not found' })
+      return
     }
 
-    return [newProject, updated]
-  })
+    if (proposal.projectId) {
+      const existingProject = await prisma.project.findUnique({ where: { id: proposal.projectId } })
+      res.json({ proposal, project: existingProject })
+      return
+    }
 
-  res.json({ proposal: updatedProposal, project })
+    const services = proposal.services as Array<{ id: string; description: string; price: number; notes?: string }>
+    const serviceDescriptions = services.map(s => s.description)
+    const projectType = inferProjectType(serviceDescriptions)
+    const phases = buildPhases(projectType)
+    const subtotal = services.reduce((sum, s) => sum + s.price, 0)
+    const total = subtotal - (proposal.discount ?? 0)
+    const projectId = makeId()
+    const now = new Date().toISOString()
+    const today = now.slice(0, 10)
+
+    const [project, updatedProposal] = await prisma.$transaction(async (tx) => {
+      const newProject = await tx.project.create({
+        data: {
+          id: projectId,
+          name: proposal.title,
+          clientName: proposal.clientCompany || proposal.clientName,
+          contactId: proposal.contactId ?? undefined,
+          type: projectType,
+          status: 'not_started',
+          startDate: today,
+          value: total,
+          phases: phases as object,
+          notes: buildProjectNotes(proposal.scopeOfWork ?? '', proposal.timeline, proposal.notes),
+          createdAt: now,
+        },
+      })
+
+      const updated = await tx.proposal.update({
+        where: { id },
+        data: { status: 'accepted', projectId },
+      })
+
+      if (proposal.contactId) {
+        await tx.contact.update({
+          where: { id: proposal.contactId },
+          data: { stage: 'won', value: total, updatedAt: now },
+        })
+      }
+
+      return [newProject, updated]
+    })
+
+    res.json({ proposal: updatedProposal, project })
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unknown error'
+    console.error('[POST /proposals/:id/accept]', message)
+    res.status(500).json({ error: `Failed to create project: ${message}` })
+  }
 })
 
 export default router

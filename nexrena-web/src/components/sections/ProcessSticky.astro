@@ -1,63 +1,125 @@
 ---
 /*
   Process — Horizontal Scroll via GSAP
-  Provides a cinematic, award-winning feel by converting vertical scroll into horizontal motion.
+  Intro: full-bleed video fading through cream.
+  Steps: full-bleed media behind gradient frost that bleeds left→transparent.
 */
 import Eyebrow from '../ui/Eyebrow.astro';
 
 const steps = [
-  { num: '01', title: 'Discovery', body: 'We audit your existing digital presence, research your competitors, and map the exact gaps between where you are and where buyers expect you to be.' },
-  { num: '02', title: 'Strategy', body: "Every engagement starts with a clear roadmap. We define what we're building, why, and exactly what success looks like — before a single pixel moves." },
-  { num: '03', title: 'Execution', body: 'We build fast and iterate in the open. You see progress weekly. No surprises, no handoff delays.' },
-  { num: '04', title: 'Delivery', body: "Launch isn't the finish line — it's the starting gun. We measure, optimize, and compound from day one." },
+  {
+    num: '01',
+    title: 'Discovery',
+    body: 'We audit your existing digital presence, research your competitors, and map the exact gaps between where you are and where buyers expect you to be.',
+    proof: 'Week 1: you know exactly where you stand.',
+    media: { type: 'image', src: '/images/process-discovery.webp' },
+  },
+  {
+    num: '02',
+    title: 'Strategy',
+    body: "Every engagement starts with a clear roadmap. We define what we're building, why, and exactly what success looks like — before a single pixel moves.",
+    proof: 'Scope locked before a single pixel moves.',
+    media: { type: 'image', src: '/images/process-strategy.webp' },
+  },
+  {
+    num: '03',
+    title: 'Execution',
+    body: 'We build fast and iterate in the open. You see progress weekly. No surprises, no handoff delays.',
+    proof: 'Weekly progress. No status calls unless you want one.',
+    media: { type: 'video', src: '/videos/showreel-keyboard.webm', poster: '/images/showreel-industrial.webp' },
+  },
+  {
+    num: '04',
+    title: 'Delivery',
+    body: "Launch isn't the finish line — it's the starting gun. We measure, optimize, and compound from day one.",
+    proof: 'Launch day is day one, not the finish line.',
+    media: { type: 'image', src: '/images/process-delivery.webp' },
+  },
 ];
 ---
 
-<section id="process-wrapper" class="process-desktop bg-[var(--cream)] overflow-hidden relative hidden md:block" style="color: var(--obsidian);">
-  <div id="process-scroll-container" class="flex h-screen items-center w-max">
-    
-    <!-- Intro Panel -->
-    <div class="w-screen h-full flex flex-col justify-center px-[5vw] shrink-0">
-      <div class="max-w-3xl">
-        <Eyebrow class="mb-8">HOW WE WORK //</Eyebrow>
-        <h2 class="font-display text-[clamp(64px,8vw,120px)] leading-[0.9] tracking-tight text-[var(--obsidian)] mb-8">
-          Structured.<br/>
-          Transparent.<br/>
-          <span class="italic text-[var(--gold-dim)]">Delivered.</span>
-        </h2>
-        <p class="font-body text-[var(--slate-600)] text-xl max-w-xl mb-4">
-          No black boxes. No endless planning. A process that ships real work, every week.
-        </p>
+<section id="process-wrapper" class="process-desktop bg-[var(--cream)] overflow-hidden relative hidden md:block">
+  <div id="process-scroll-container" class="flex h-screen items-stretch w-max">
+
+    <!-- Intro Panel — subtle video texture behind cream -->
+    <div class="w-screen h-full shrink-0 relative overflow-hidden">
+      <video
+        class="absolute inset-0 w-full h-full object-cover opacity-30"
+        autoplay muted loop playsinline preload="metadata"
+        poster="/images/showreel-industrial.webp"
+      >
+        <source src="/videos/showreel-brutalist.webm" type="video/webm" />
+      </video>
+      <!-- Cream wash over video -->
+      <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(135deg, var(--cream) 30%, rgba(245,240,232,0.6) 100%);"></div>
+      <div class="relative z-10 h-full flex flex-col justify-center px-[5vw]">
+        <div class="max-w-3xl">
+          <Eyebrow class="mb-8">HOW WE WORK //</Eyebrow>
+          <h2 class="font-display text-[clamp(64px,8vw,120px)] leading-[0.9] tracking-tight text-[var(--obsidian)] mb-8">
+            Structured.<br/>
+            Transparent.<br/>
+            <span class="italic text-[var(--gold-dim)]">Delivered.</span>
+          </h2>
+          <p class="font-body text-[var(--slate-600)] text-xl max-w-xl">
+            No black boxes. No endless planning. A process that ships real work, every week.
+          </p>
+        </div>
       </div>
     </div>
 
     <!-- Step Panels -->
-    {steps.map((step, i) => (
-      <div class="w-screen h-full flex flex-col justify-center px-[5vw] shrink-0 border-l border-[var(--gold)]/20 relative overflow-hidden group process-panel">
-        
-        <!-- Large background number -->
-        <div class="absolute -right-20 -bottom-10 font-display text-[40vh] leading-none text-[var(--gold)] opacity-5 pointer-events-none select-none transition-transform duration-1000 group-hover:scale-110">
+    {steps.map((step) => (
+      <div class="w-screen h-full shrink-0 relative overflow-hidden process-panel bg-[var(--cream)]">
+
+        <!-- Full-bleed background media — kept subtle -->
+        {step.media.type === 'video' ? (
+          <video
+            class="process-visual absolute inset-0 w-full h-full object-cover opacity-50"
+            autoplay muted loop playsinline preload="metadata"
+            poster={step.media.poster}
+          >
+            <source src={step.media.src} type="video/webm" />
+          </video>
+        ) : (
+          <img
+            class="process-visual absolute inset-0 w-full h-full object-cover opacity-50"
+            src={step.media.src}
+            alt={step.title}
+            loading="lazy"
+          />
+        )}
+
+        <!-- Ghost step number — texture only -->
+        <div class="absolute right-[4vw] bottom-[-4vh] font-display text-[46vh] leading-none text-[var(--obsidian)] opacity-[0.035] pointer-events-none select-none z-10">
           {step.num}
         </div>
 
-        <div class="max-w-4xl relative z-10 flex flex-col md:flex-row gap-12 md:gap-24 items-start md:items-center">
-          <div class="font-mono text-[24px] text-[var(--gold)] border border-[var(--gold)] rounded-full w-24 h-24 flex items-center justify-center shrink-0">
-            {step.num}
-          </div>
+        <!-- Gradient frost layer — solid cream left, fades to transparent right -->
+        <div class="process-frost absolute inset-0 z-10 pointer-events-none"></div>
+
+        <!-- Text content — sits above frost -->
+        <div class="absolute inset-y-0 left-0 w-[52%] flex items-center pl-[5vw] pr-8 z-20">
           <div>
-            <h3 class="font-display text-[48px] md:text-[80px] text-[var(--obsidian)] mb-8 leading-none tracking-tight">
+            <div class="process-num font-mono text-[16px] text-[var(--gold)] border border-[var(--gold)]/70 rounded-full w-[60px] h-[60px] flex items-center justify-center mb-9">
+              {step.num}
+            </div>
+            <h3 class="process-title font-display text-[clamp(44px,4.8vw,72px)] text-[var(--obsidian)] mb-5 leading-none tracking-tight">
               {step.title}
             </h3>
-            <p class="font-body text-[20px] md:text-[24px] text-[var(--slate-600)] leading-relaxed max-w-2xl">
+            <p class="process-body font-body text-[clamp(15px,1.2vw,18px)] text-[var(--slate-600)] leading-relaxed mb-8 max-w-sm">
               {step.body}
+            </p>
+            <p class="font-mono text-[11px] text-[var(--gold-dim)] tracking-wider">
+              → {step.proof}
             </p>
           </div>
         </div>
+
       </div>
     ))}
-    
-    <!-- Outro Spacer to allow smooth exit -->
-    <div class="w-[20vw] h-full shrink-0"></div>
+
+    <!-- Outro spacer -->
+    <div class="w-[15vw] h-full shrink-0 bg-[var(--cream)]"></div>
 
   </div>
 </section>
@@ -72,13 +134,26 @@ const steps = [
     <p class="font-body text-[var(--slate-600)] text-lg max-w-xl mb-16">
       No black boxes. No endless planning. A process that ships real work, every week.
     </p>
-    
-    <div class="flex flex-col gap-16">
+
+    <div class="flex flex-col gap-0">
       {steps.map((step) => (
-        <div class="relative border-l-2 border-[var(--gold)]/30 pl-8 pb-8">
-          <div class="font-mono text-[14px] text-[var(--gold)] mb-4">{step.num}</div>
-          <h3 class="font-display text-[36px] text-[var(--obsidian)] mb-4 leading-none">{step.title}</h3>
-          <p class="font-body text-[16px] text-[var(--slate-600)] leading-relaxed">{step.body}</p>
+        <div class="relative overflow-hidden border-t border-[var(--gold)]/20">
+          <div class="aspect-[16/9] w-full relative">
+            {step.media.type === 'video' ? (
+              <video class="w-full h-full object-cover opacity-60" autoplay muted loop playsinline preload="metadata" poster={step.media.poster}>
+                <source src={step.media.src} type="video/webm" />
+              </video>
+            ) : (
+              <img class="w-full h-full object-cover opacity-60" src={step.media.src} alt={step.title} loading="lazy" />
+            )}
+            <div class="absolute inset-0" style="background: linear-gradient(to bottom, transparent 40%, var(--cream) 100%);"></div>
+          </div>
+          <div class="px-5 pb-10 -mt-6 relative z-10">
+            <div class="font-mono text-[13px] text-[var(--gold)] mb-3">{step.num}</div>
+            <h3 class="font-display text-[32px] text-[var(--obsidian)] mb-3 leading-none">{step.title}</h3>
+            <p class="font-body text-[15px] text-[var(--slate-600)] leading-relaxed mb-3">{step.body}</p>
+            <p class="font-mono text-[11px] text-[var(--gold-dim)] tracking-wider">→ {step.proof}</p>
+          </div>
         </div>
       ))}
     </div>
@@ -101,16 +176,56 @@ const steps = [
 
     gsap.set(container, { x: 0 });
 
-    gsap.to(container, {
+    const horizontalTween = gsap.to(container, {
       x: () => -(container.scrollWidth - window.innerWidth),
-      ease: "none",
+      ease: 'none',
       scrollTrigger: {
         trigger: wrapper,
         pin: true,
         scrub: 1,
-        end: () => "+=" + (container.scrollWidth - window.innerWidth),
+        end: () => '+=' + (container.scrollWidth - window.innerWidth),
         invalidateOnRefresh: true,
-        anticipatePin: 1
+        anticipatePin: 1,
+      },
+    });
+
+    const panels = gsap.utils.toArray<HTMLElement>('.process-panel');
+
+    panels.forEach((panel) => {
+      const num    = panel.querySelector('.process-num');
+      const title  = panel.querySelector('.process-title');
+      const body   = panel.querySelector('.process-body');
+      const visual = panel.querySelector<HTMLElement>('.process-visual');
+
+      gsap.set([num, title, body], { opacity: 0, y: 20 });
+
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: panel,
+          containerAnimation: horizontalTween,
+          start: 'left 65%',
+          toggleActions: 'play none none reverse',
+        },
+      })
+        .to(num,   { opacity: 1, y: 0, duration: 0.4,  ease: 'power2.out' })
+        .to(title, { opacity: 1, y: 0, duration: 0.55, ease: 'power2.out' }, '-=0.25')
+        .to(body,  { opacity: 1, y: 0, duration: 0.5,  ease: 'power2.out' }, '-=0.3');
+
+      if (visual) {
+        gsap.fromTo(visual,
+          { scale: 1.08, xPercent: 4 },
+          {
+            xPercent: -4,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: panel,
+              containerAnimation: horizontalTween,
+              start: 'left right',
+              end: 'right left',
+              scrub: true,
+            },
+          }
+        );
       }
     });
   }
@@ -119,13 +234,23 @@ const steps = [
 </script>
 
 <style>
-  @media (max-height: 600px) {
-    .process-desktop {
-      display: none;
-    }
+  .process-frost {
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    background: linear-gradient(
+      to right,
+      rgba(245, 240, 232, 0.97) 0%,
+      rgba(245, 240, 232, 0.90) 30%,
+      rgba(245, 240, 232, 0.55) 58%,
+      rgba(245, 240, 232, 0.10) 78%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(to right, black 45%, transparent 85%);
+    mask-image: linear-gradient(to right, black 45%, transparent 85%);
+  }
 
-    .process-mobile {
-      display: block;
-    }
+  @media (max-height: 600px) {
+    .process-desktop { display: none; }
+    .process-mobile  { display: block; }
   }
 </style>

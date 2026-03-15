@@ -21,6 +21,7 @@ export default function ProposalsPage() {
   const [modal, setModal] = useState<null | 'add' | Proposal>(null)
   const [filter, setFilter] = useState<'all' | ProposalStatus>('all')
   const [accepting, setAccepting] = useState<string | null>(null)
+  const [acceptError, setAcceptError] = useState<string | null>(null)
 
   const filtered = proposals.filter(p => filter === 'all' || p.status === filter)
 
@@ -44,10 +45,15 @@ export default function ProposalsPage() {
 
   const handleAccept = async (prop: Proposal) => {
     setAccepting(prop.id)
-    const project = await acceptAndCreateProject(prop.id)
+    setAcceptError(null)
+    const result = await acceptAndCreateProject(prop.id)
     setAccepting(null)
-    if (project) {
+    if (result && 'project' in result) {
       router.push('/projects')
+    } else if (result && 'error' in result) {
+      setAcceptError(result.error as string)
+    } else if (!result) {
+      setAcceptError('Could not create project — check the API logs.')
     }
   }
 
@@ -57,6 +63,13 @@ export default function ProposalsPage() {
     <div>
       <PageHeader title="Proposals" sub={`${proposals.length} total  ·  ${formatCurrency(wonValue)} won`}
         action={<Btn onClick={() => setModal('add')}>+ New Proposal</Btn>} />
+
+      {acceptError && (
+        <div className="mb-6 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center justify-between">
+          <span>⚠ {acceptError}</span>
+          <button onClick={() => setAcceptError(null)} className="ml-4 text-red-400/60 hover:text-red-400 transition-colors">✕</button>
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-4 mb-10 stagger">
         <StatCard label="Pending Value" value={formatCurrency(sentValue)} gold sub={`${proposals.filter(p => p.status === 'sent').length} awaiting response`} />
