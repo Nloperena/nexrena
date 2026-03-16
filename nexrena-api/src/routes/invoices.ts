@@ -20,8 +20,28 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   const { id } = req.params
-  const { id: _strip, ...data } = req.body
-  const invoice = await prisma.invoice.update({ where: { id }, data })
+  const b = req.body
+  const invoice = await prisma.invoice.update({
+    where: { id },
+    data: {
+      number:        b.number,
+      clientName:    b.clientName,
+      clientCompany: b.clientCompany ?? null,
+      clientEmail:   b.clientEmail   ?? null,
+      clientAddress: b.clientAddress ?? null,
+      contactId:     b.contactId     ?? null,
+      projectId:     b.projectId     ?? null,
+      projectName:   b.projectName   ?? null,
+      status:        b.status,
+      lineItems:     b.lineItems,
+      issueDate:     b.issueDate,
+      dueDate:       b.dueDate,
+      netTerms:      b.netTerms      ?? null,
+      taxRate:       b.taxRate       ?? null,
+      paidDate:      b.paidDate      ?? null,
+      notes:         b.notes         ?? null,
+    },
+  })
   res.json(invoice)
 })
 

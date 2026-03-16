@@ -75,10 +75,16 @@ export function useInvoices() {
   }, [])
 
   const edit = useCallback(async (i: Invoice) => {
-    setInvoices(prev => prev.map(x => x.id === i.id ? i : x))
-    try { await api.put(`/invoices/${i.id}`, i) }
-    catch (e) { console.error(e) }
-  }, [])
+    const prev = invoices.find(x => x.id === i.id)
+    setInvoices(cur => cur.map(x => x.id === i.id ? i : x))
+    try {
+      await api.put(`/invoices/${i.id}`, i)
+    } catch (e) {
+      console.error('[invoice edit failed]', e)
+      if (prev) setInvoices(cur => cur.map(x => x.id === i.id ? prev : x))
+      alert('Failed to save invoice. Please try again.')
+    }
+  }, [invoices])
 
   const remove = useCallback(async (id: string) => {
     setInvoices(prev => prev.filter(x => x.id !== id))

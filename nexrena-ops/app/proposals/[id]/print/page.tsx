@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Proposal } from '@/lib/types'
 import { ProposalPrint } from '@/components/proposal-print'
@@ -9,18 +9,21 @@ import { api } from '@/lib/api'
 export default function ProposalPrintPage({ params }: { params: { id: string } }) {
   const [proposal, setProposal] = useState<Proposal | null | 'loading'>('loading')
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setProposal('loading')
     api.get<Proposal[]>('/proposals')
       .then(proposals => {
         const found = proposals.find(p => p.id === params.id) ?? null
         setProposal(found)
-        if (found) {
-          document.title = `Proposal - ${found.title} - ${found.clientName}`
-        }
+        if (found) document.title = `Proposal - ${found.title} - ${found.clientName}`
       })
       .catch(() => setProposal(null))
-    return () => { document.title = 'Nexrena' }
   }, [params.id])
+
+  useEffect(() => {
+    load()
+    return () => { document.title = 'Nexrena' }
+  }, [load])
 
   if (proposal === 'loading') {
     return (
@@ -58,6 +61,7 @@ export default function ProposalPrintPage({ params }: { params: { id: string } }
           <span className="text-xs text-slate-600 hidden md:block">
             Choose &ldquo;Save as PDF&rdquo; in your browser&apos;s print dialog
           </span>
+          <Btn variant="ghost" onClick={load}>↻ Refresh</Btn>
           <Btn onClick={() => window.print()}>Download PDF</Btn>
         </div>
       </div>
