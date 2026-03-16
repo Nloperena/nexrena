@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <style>
+    @keyframes spinCW { 100% { transform: rotate(360deg); } }
+    @keyframes spinCCW { 100% { transform: rotate(-360deg); } }
+    @keyframes slowPulse {
+      0%, 100% { opacity: 0.4; transform: scale(0.95); }
+      50% { opacity: 0.8; transform: scale(1.05); }
+    }
+    
+    .ring-outer { transform-origin: center; animation: spinCW 12s linear infinite, slowPulse 4s ease-in-out infinite; }
+    .ring-inner { transform-origin: center; animation: spinCCW 8s linear infinite; }
+  </style>
+
+  <circle cx="32" cy="32" r="20" fill="none" stroke="#b89354" stroke-width="1" stroke-dasharray="4 8" class="ring-outer" />
+  
+  <circle cx="32" cy="32" r="12" fill="none" stroke="#f5d796" stroke-width="0.5" stroke-dasharray="2 4" class="ring-inner" opacity="0.6" />
+  
+  <circle cx="32" cy="32" r="28" fill="none" stroke="#5a7a7a" stroke-width="0.5" opacity="0.15" />
+</svg>

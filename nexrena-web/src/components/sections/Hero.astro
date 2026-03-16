@@ -22,6 +22,15 @@ import Button from '../ui/Button.astro';
       loading="eager"
       fetchpriority="high"
     />
+
+    <!-- Growth bar overlay layered above coded/WebGL effect -->
+    <img
+      src="/images/hero-growth-bar.svg"
+      alt=""
+      class="hero-growth-overlay absolute inset-0 w-full h-full object-cover pointer-events-none"
+      aria-hidden="true"
+      loading="eager"
+    />
     
     <!-- Netflix-style bottom gradient overlay -->
     <div
@@ -108,6 +117,11 @@ import Button from '../ui/Button.astro';
   .hero-content {
     padding-top: clamp(104px, 18vh, 156px);
     padding-bottom: clamp(72px, 12vh, 112px);
+  }
+
+  .hero-growth-overlay {
+    opacity: 0.42;
+    mix-blend-mode: screen;
   }
 
   /* Elements start hidden; .is-active triggers staggered entrance */
@@ -200,6 +214,10 @@ import Button from '../ui/Button.astro';
     .hero-content {
       padding-top: 104px;
       padding-bottom: 64px;
+    }
+
+    .hero-growth-overlay {
+      opacity: 0.34;
     }
   }
 

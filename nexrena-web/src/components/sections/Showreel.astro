@@ -24,6 +24,13 @@
   <!-- Gradient overlays for depth -->
   <div class="absolute inset-0 bg-gradient-to-b from-[var(--obsidian)] via-transparent to-[var(--obsidian)]"></div>
   <div class="absolute inset-0 bg-[radial-gradient(ellipse_70%_70%_at_50%_50%,transparent_0%,rgba(12,15,18,0.7)_100%)]"></div>
+  <img
+    src="/images/showreel-infrastructure-overlay.svg"
+    alt=""
+    class="showreel__text-overlay absolute inset-0 w-full h-full object-cover pointer-events-none"
+    aria-hidden="true"
+    loading="lazy"
+  />
 
   <!-- Content -->
   <div class="showreel__content relative z-10 w-full max-w-[1320px] mx-auto px-[5vw] text-center py-32">
@@ -44,6 +51,12 @@
 </section>
 
 <style>
+  .showreel__text-overlay {
+    z-index: 5;
+    opacity: 0.5;
+    mix-blend-mode: screen;
+  }
+
   @media (max-height: 760px) {
     .showreel {
       min-height: auto;
@@ -52,6 +65,12 @@
     .showreel__content {
       padding-top: 72px;
       padding-bottom: 72px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .showreel__text-overlay {
+      opacity: 0.42;
     }
   }
 </style>
