@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Invoice } from '@/lib/types'
 import { InvoicePrint } from '@/components/invoice-print'
@@ -9,18 +9,21 @@ import { api } from '@/lib/api'
 export default function InvoicePrintPage({ params }: { params: { id: string } }) {
   const [invoice, setInvoice] = useState<Invoice | null | 'loading'>('loading')
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setInvoice('loading')
     api.get<Invoice[]>('/invoices')
       .then(invoices => {
         const found = invoices.find(i => i.id === params.id) ?? null
         setInvoice(found)
-        if (found) {
-          document.title = `Invoice ${found.number} - ${found.clientName}`
-        }
+        if (found) document.title = `Invoice ${found.number} - ${found.clientName}`
       })
       .catch(() => setInvoice(null))
-    return () => { document.title = 'Nexrena' }
   }, [params.id])
+
+  useEffect(() => {
+    load()
+    return () => { document.title = 'Nexrena' }
+  }, [load])
 
   if (invoice === 'loading') {
     return (
@@ -60,6 +63,7 @@ export default function InvoicePrintPage({ params }: { params: { id: string } })
           {invoice.clientEmail && (
             <LinkBtn href={mailtoHref} variant="ghost">✉ Email Client</LinkBtn>
           )}
+          <Btn variant="ghost" onClick={load}>↻ Refresh</Btn>
           <span className="text-xs text-slate-600 hidden md:block">
             Choose &ldquo;Save as PDF&rdquo; in your browser&apos;s print dialog
           </span>
