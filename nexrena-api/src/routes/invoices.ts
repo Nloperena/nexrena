@@ -24,7 +24,7 @@ router.put('/:id', async (req, res) => {
   const invoice = await prisma.invoice.update({
     where: { id },
     data: {
-      number:        b.number,
+      // number is immutable — never update it to avoid unique-constraint issues
       clientName:    b.clientName,
       clientCompany: b.clientCompany ?? null,
       clientEmail:   b.clientEmail   ?? null,
