@@ -169,7 +169,13 @@ export function InvoiceForm({ initial, onSave, onClose, nextNumber, contacts }: 
 
       <div className="grid grid-cols-2 gap-4">
         <Field label="Invoice #">
-          <input required className={inputCls} value={form.number ?? ''} onChange={e => set('number', e.target.value)} />
+          <input
+            required
+            className={inputCls + (isEdit ? ' opacity-50 cursor-not-allowed' : '')}
+            value={form.number ?? ''}
+            onChange={e => set('number', e.target.value)}
+            readOnly={isEdit}
+          />
         </Field>
         <Field label="Status">
           <select className={selectCls} value={form.status} onChange={e => set('status', e.target.value)}>
