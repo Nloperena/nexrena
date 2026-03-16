@@ -25,8 +25,25 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   const { id } = req.params
-  const { id: _strip, ...data } = req.body
-  const proposal = await prisma.proposal.update({ where: { id }, data })
+  const b = req.body
+  const proposal = await prisma.proposal.update({
+    where: { id },
+    data: {
+      title:        b.title,
+      contactId:    b.contactId    ?? null,
+      projectId:    b.projectId    ?? null,
+      clientName:   b.clientName,
+      clientCompany:b.clientCompany ?? null,
+      clientEmail:  b.clientEmail  ?? null,
+      services:     b.services,
+      discount:     b.discount     ?? 0,
+      status:       b.status,
+      validUntil:   b.validUntil,
+      scopeOfWork:  b.scopeOfWork,
+      timeline:     b.timeline     ?? null,
+      notes:        b.notes        ?? null,
+    },
+  })
   res.json(proposal)
 })
 
@@ -95,7 +112,8 @@ router.post('/:id/accept', async (req, res) => {
       })
 
       if (proposal.contactId) {
-        await tx.contact.update({
+        // updateMany won't throw if the contact no longer exists
+        await tx.contact.updateMany({
           where: { id: proposal.contactId },
           data: { stage: 'won', value: total, updatedAt: now },
         })
