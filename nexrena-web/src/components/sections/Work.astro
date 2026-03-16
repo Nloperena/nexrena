@@ -1,10 +1,12 @@
 ---
 import Eyebrow from '../ui/Eyebrow.astro';
+import WorkHeadingAccent from '../ui/WorkHeadingAccent.astro';
 import { projects } from '../../data/projects';
 import { heroImages } from '../../data/hero-images';
 ---
 
 <section id="work" class="work-section bg-[var(--obsidian)] relative pt-32 pb-0 overflow-hidden">
+  <WorkHeadingAccent class="work-heading-overlay absolute inset-0 w-full h-full pointer-events-none" />
   <div class="section-container relative z-10 flex flex-col justify-center mb-16 scroll-scale-up">
     <div class="reveal" style="--i: 0;">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-6">
@@ -121,9 +123,23 @@ import { heroImages } from '../../data/hero-images';
 </script>
 
 <style>
+  .work-heading-overlay {
+    z-index: 5;
+    object-fit: cover;
+    object-position: right top;
+    mix-blend-mode: normal;
+    opacity: 0.9;
+  }
+
   @media (max-height: 760px) {
     .work-section {
       padding-top: 96px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .work-heading-overlay {
+      opacity: 0.82;
     }
   }
 </style>

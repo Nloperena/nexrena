@@ -23,7 +23,7 @@ import Eyebrow from '../ui/Eyebrow.astro';
       <div class="service-stack-card sticky top-[10vh] w-full min-h-[80vh] bg-[var(--slate-900)] rounded-3xl border border-[var(--slate-800)] p-8 md:p-16 flex flex-col justify-between overflow-hidden shadow-2xl origin-top mb-12" style={`z-index: ${i + 10};`}>
         
         <!-- Large background number -->
-        <div class="absolute -right-10 -bottom-20 font-display text-[30vh] text-[var(--gold)] opacity-5 pointer-events-none select-none">
+        <div class="absolute right-8 -bottom-16 font-display text-[30vh] text-[var(--gold)] opacity-5 pointer-events-none select-none">
           {svc.number}
         </div>
 
@@ -36,36 +36,37 @@ import Eyebrow from '../ui/Eyebrow.astro';
           </div>
 
           <!-- Middle Content -->
-          <div class="max-w-4xl">
+          <div class="max-w-5xl">
             <h3 class="service-stack-card__title font-display text-[48px] md:text-[80px] lg:text-[100px] text-[var(--warm-white)] mb-8 leading-[0.95] tracking-tight whitespace-pre-line">
               {svc.title}
             </h3>
-            
-            <p class="service-stack-card__body font-body text-[18px] md:text-[24px] text-[var(--slate-400)] leading-relaxed max-w-2xl mb-12">
-              {svc.body}
-            </p>
 
-            <ul class="flex flex-wrap gap-3 mb-12">
-              {svc.tags.map((tag) => (
-                <li>
-                  <span class="font-mono text-[11px] text-[var(--slate-300)] bg-[var(--obsidian)] px-4 py-2 uppercase tracking-wider rounded-md border border-[var(--slate-800)]">
-                    {tag}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+            <div class="service-stack-card__meta-grid">
+              <p class="service-stack-card__body font-body text-[18px] md:text-[24px] text-[var(--slate-400)] leading-relaxed max-w-2xl">
+                {svc.body}
+              </p>
 
-          <!-- Bottom Row -->
-          <div>
-            <a href={`/services/${svc.id}`} class="group inline-flex items-center gap-4 font-mono text-[13px] text-[var(--gold)] uppercase tracking-[0.2em] hover:text-[var(--warm-white)] transition-colors">
-              <div class="w-12 h-12 rounded-full border border-[var(--gold)] group-hover:bg-[var(--gold)] flex items-center justify-center transition-all duration-300">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="group-hover:text-[var(--obsidian)]">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-              </div>
-              → Explore this service
-            </a>
+              <aside class="service-stack-card__meta">
+                <ul class="flex flex-wrap gap-3">
+                  {svc.tags.map((tag) => (
+                    <li>
+                      <span class="font-mono text-[11px] text-[var(--slate-300)] bg-[var(--obsidian)] px-4 py-2 uppercase tracking-wider rounded-md border border-[var(--slate-800)]">
+                        {tag}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <a href={`/services/${svc.id}`} class="group inline-flex items-center gap-4 font-mono text-[13px] text-[var(--gold)] uppercase tracking-[0.2em] hover:text-[var(--warm-white)] transition-colors">
+                  <div class="w-12 h-12 rounded-full border border-[var(--gold)] group-hover:bg-[var(--gold)] flex items-center justify-center transition-all duration-300">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="group-hover:text-[var(--obsidian)]">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                  </div>
+                  → Explore this service
+                </a>
+              </aside>
+            </div>
           </div>
         </div>
       </div>
@@ -114,6 +115,29 @@ import Eyebrow from '../ui/Eyebrow.astro';
   /* Fallback if JS fails - CSS sticky handles the actual stacking natively */
   .service-stack-card {
     position: sticky;
+  }
+
+  .service-stack-card__meta-grid {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .service-stack-card__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .service-stack-card__meta-grid {
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 360px);
+      align-items: start;
+      column-gap: 3.5rem;
+    }
+
+    .service-stack-card__meta {
+      align-items: flex-start;
+    }
   }
 
   @media (max-height: 600px) {
