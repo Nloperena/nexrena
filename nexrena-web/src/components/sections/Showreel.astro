@@ -7,27 +7,13 @@
 ---
 
 <section class="showreel relative w-full min-h-screen overflow-hidden flex items-center justify-center bg-[var(--obsidian)]">
-  <!-- Background Video -->
-  <video
-    class="absolute inset-0 w-full h-full object-cover opacity-45 scale-105"
-    autoplay
-    muted
-    loop
-    playsinline
-    preload="metadata"
-    poster="/images/showreel-industrial.webp"
-    aria-hidden="true"
-  >
-    <source src="/videos/showreel-keyboard.webm" type="video/webm" />
-  </video>
-
   <!-- Gradient overlays for depth -->
   <div class="absolute inset-0 bg-gradient-to-b from-[var(--obsidian)] via-transparent to-[var(--obsidian)]"></div>
   <div class="absolute inset-0 bg-[radial-gradient(ellipse_70%_70%_at_50%_50%,transparent_0%,rgba(12,15,18,0.7)_100%)]"></div>
   <img
     src="/images/showreel-infrastructure-overlay.svg"
     alt=""
-    class="showreel__text-overlay absolute inset-0 w-full h-full object-cover pointer-events-none"
+    class="showreel__text-overlay absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[117%] md:w-[85%] max-w-7xl h-auto max-h-[90vh] object-contain pointer-events-none"
     aria-hidden="true"
     loading="lazy"
   />
