@@ -18,8 +18,8 @@ export const heroImages = {
   about: '/images/hero-about.webp',
   contact: '/images/hero-contact.webp',
   // Project hero objects (singular focus per field)
-  'project/forzabuilt': '/images/project-forzabuilt.webp',
-  'project/rugged-red': '/images/project-rugged.webp',
-  'project/vito-fryfilter': '/images/project-vito.webp',
-  'project/furniture-packages-usa': '/images/project-furniture.webp',
+  'project/forzabuilt': '/images/project-forzabuilt.svg',
+  'project/rugged-red': '/images/project-rugged.svg',
+  'project/vito-fryfilter': '/images/project-vito.svg',
+  'project/furniture-packages-usa': '/images/project-furniture.svg',
 } as const;

@@ -5,6 +5,9 @@
 */
 import { services as servicesData } from '../../data/services';
 import Eyebrow from '../ui/Eyebrow.astro';
+import FullServiceOrbitsBg from '../ui/FullServiceOrbitsBg.astro';
+import RotatingNetworkSphereBg from '../ui/RotatingNetworkSphereBg.astro';
+import WebDesignCinematicBg from '../ui/WebDesignCinematicBg.astro';
 ---
 
 <section id="services-stack-wrapper" class="bg-[var(--obsidian)] relative w-full pb-32">
@@ -21,9 +24,18 @@ import Eyebrow from '../ui/Eyebrow.astro';
   <div class="relative w-full px-[5vw] mx-auto max-w-[1320px] service-cards-container">
     {servicesData.map((svc, i) => (
       <div class="service-stack-card sticky top-[10vh] w-full min-h-[80vh] bg-[var(--slate-900)] rounded-3xl border border-[var(--slate-800)] p-8 md:p-16 flex flex-col justify-between overflow-hidden shadow-2xl origin-top mb-12" style={`z-index: ${i + 10};`}>
-        
+        {i === 0 && (
+          <WebDesignCinematicBg class="service-cinematic-bg right-[-20%] left-auto w-[120%] md:w-[100%] z-0 opacity-100 mix-blend-screen scale-[1.3] md:scale-[1.5] transform-gpu" />
+        )}
+        {i === 1 && (
+          <RotatingNetworkSphereBg class="service-sphere-bg right-[-20%] left-auto w-[120%] md:w-[100%] z-0 opacity-100 mix-blend-screen scale-[1.3] md:scale-[1.5] transform-gpu" />
+        )}
+        {i === 2 && (
+          <FullServiceOrbitsBg class="service-orbits-bg right-[-20%] left-auto w-[120%] md:w-[100%] z-0 opacity-100 mix-blend-screen scale-[1.3] md:scale-[1.5] transform-gpu" />
+        )}
+
         <!-- Large background number -->
-        <div class="absolute right-8 -bottom-16 font-display text-[30vh] text-[var(--gold)] opacity-5 pointer-events-none select-none">
+        <div class="absolute right-8 -bottom-16 font-display text-[30vh] text-[var(--gold)] opacity-5 pointer-events-none select-none z-10">
           {svc.number}
         </div>
 
@@ -128,6 +140,21 @@ import Eyebrow from '../ui/Eyebrow.astro';
     gap: 1.5rem;
   }
 
+  .service-sphere-bg {
+    top: 0;
+    bottom: 0;
+  }
+
+  .service-cinematic-bg {
+    top: 0;
+    bottom: 0;
+  }
+
+  .service-orbits-bg {
+    top: 0;
+    bottom: 0;
+  }
+
   @media (min-width: 1024px) {
     .service-stack-card__meta-grid {
       grid-template-columns: minmax(0, 1fr) minmax(320px, 360px);
@@ -138,6 +165,10 @@ import Eyebrow from '../ui/Eyebrow.astro';
     .service-stack-card__meta {
       align-items: flex-start;
     }
+  }
+
+  @media (max-width: 767px) {
+    /* Backgrounds are handled via Tailwind classes now for consistent heroic scaling */
   }
 
   @media (max-height: 600px) {
