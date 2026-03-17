@@ -1,0 +1,357 @@
+---
+const { class: className = '' } = Astro.props;
+---
+
+<div class={`web-design-cinematic-bg ${className}`} aria-hidden="true">
+  <canvas id="web-design-wireframe-canvas" width="1200" height="675"></canvas>
+</div>
+
+<script>
+  let cleanupWireframe: (() => void) | null = null;
+
+  function initWebDesignWireframe() {
+    cleanupWireframe?.();
+    cleanupWireframe = null;
+
+    const canvas = document.getElementById('web-design-wireframe-canvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const G = canvas.getContext('2d');
+    if (!G) return;
+
+    const W = 1200, H = 675, bg = '#050507', gold = '#b89354', lt = '#f5d796';
+    let t = 0;
+    const LOOP = 26;
+    let raf = 0;
+
+    const eio = (x: number) => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+    const eo = (x: number) => 1 - (1 - x) * (1 - x);
+    const ei = (x: number) => x * x;
+    const lp = (a: number, b: number, v: number) => a + (b - a) * v;
+    const cl = (x: number) => Math.max(0, Math.min(1, x));
+    const sc = (s: number, e: number) => cl(((t % LOOP) - s) / (e - s));
+
+    const camDist = 900;
+    let rotX = -0.18, rotZ = 0.08;
+    const centerX = 600, centerY = 338;
+
+    function project(x: number, y: number, z: number) {
+      const cz = Math.cos(rotZ), sz = Math.sin(rotZ);
+      const x1 = x * cz - y * sz, y1 = x * sz + y * cz, z1 = z;
+      const cx = Math.cos(rotX), sx = Math.sin(rotX);
+      const x2 = x1, y2 = y1 * cx - z1 * sx, z2 = y1 * sx + z1 * cx;
+      const scale = camDist / (camDist + z2);
+      return { x: centerX + x2 * scale, y: centerY + y2 * scale, z: z2, s: scale };
+    }
+
+    function drawWireLine(x1: number, y1: number, z1: number, x2: number, y2: number, z2: number, color: string, width: number, baseAlpha: number, segments = 20) {
+      for (let i = 0; i < segments; i++) {
+        const t1 = i / segments, t2 = (i + 1) / segments;
+        const ax = lp(x1, x2, t1), ay = lp(y1, y2, t1), az = lp(z1, z2, t1);
+        const bx = lp(x1, x2, t2), by = lp(y1, y2, t2), bz = lp(z1, z2, t2);
+        const pa = project(ax, ay, az), pb = project(bx, by, bz);
+        const midZ = (pa.z + pb.z) / 2;
+        const depthFade = cl((midZ + 400) / 800);
+        const a = baseAlpha * (0.08 + 0.92 * depthFade);
+        if (a < 0.01) continue;
+        G.beginPath(); G.moveTo(pa.x, pa.y); G.lineTo(pb.x, pb.y);
+        G.strokeStyle = color; G.globalAlpha = a;
+        G.lineWidth = width * (0.4 + 0.6 * depthFade);
+        G.stroke();
+      }
+    }
+
+    function drawWireRect(x: number, y: number, z: number, w: number, h: number, color: string, width: number, alpha: number, progress: number) {
+      progress = cl(progress);
+      const totalPerimeter = 2 * (w + h);
+      const drawn = totalPerimeter * progress;
+      const corners: [number, number, number][] = [
+        [x - w / 2, y - h / 2, z], [x + w / 2, y - h / 2, z],
+        [x + w / 2, y + h / 2, z], [x - w / 2, y + h / 2, z]
+      ];
+      const edges: [typeof corners[0], typeof corners[0], number][] = [
+        [corners[0], corners[1], w], [corners[1], corners[2], h],
+        [corners[2], corners[3], w], [corners[3], corners[0], h]
+      ];
+      let consumed = 0;
+      for (let i = 0; i < 4; i++) {
+        const e = edges[i], len = e[2];
+        if (consumed >= drawn) break;
+        const segProgress = cl((drawn - consumed) / len);
+        consumed += len;
+        const [a, b] = [e[0], e[1]];
+        const ex = lp(a[0], b[0], segProgress), ey = lp(a[1], b[1], segProgress), ez = lp(a[2], b[2], segProgress);
+        drawWireLine(a[0], a[1], a[2], ex, ey, ez, color, width, alpha, Math.max(4, Math.floor(segProgress * 12)));
+      }
+    }
+
+    function drawWireRoundRect(x: number, y: number, z: number, w: number, h: number, color: string, width: number, alpha: number, progress: number) {
+      drawWireRect(x, y, z, w, h, color, width, alpha, progress);
+      if (progress > 0.95) {
+        const corners: [number, number][] = [[-w / 2, -h / 2], [w / 2, -h / 2], [w / 2, h / 2], [-w / 2, h / 2]];
+        for (let i = 0; i < 4; i++) {
+          const p = project(x + corners[i][0], y + corners[i][1], z);
+          const df = cl((p.z + 400) / 800);
+          G.beginPath(); G.arc(p.x, p.y, 1.5 * df, 0, Math.PI * 2);
+          G.fillStyle = lt; G.globalAlpha = alpha * 0.4 * df; G.fill();
+        }
+      }
+    }
+
+    function drawWireHLine(x: number, y: number, z: number, w: number, color: string, width: number, alpha: number, progress: number) {
+      progress = cl(progress);
+      drawWireLine(x - w / 2, y, z, x - w / 2 + w * progress, y, z, color, width, alpha, Math.max(3, Math.floor(progress * 10)));
+    }
+
+    function drawWireCircle(cx: number, cy: number, cz: number, r: number, color: string, width: number, alpha: number, progress: number, pts = 32) {
+      const count = Math.floor(pts * cl(progress));
+      for (let i = 0; i < count; i++) {
+        const a1 = i / pts * Math.PI * 2, a2 = (i + 1) / pts * Math.PI * 2;
+        const p1 = project(cx + Math.cos(a1) * r, cy + Math.sin(a1) * r, cz);
+        const p2 = project(cx + Math.cos(a2) * r, cy + Math.sin(a2) * r, cz);
+        const df = cl(((p1.z + p2.z) / 2 + 400) / 800);
+        G.beginPath(); G.moveTo(p1.x, p1.y); G.lineTo(p2.x, p2.y);
+        G.strokeStyle = color; G.globalAlpha = alpha * (0.1 + 0.9 * df);
+        G.lineWidth = width * (0.4 + 0.6 * df); G.stroke();
+      }
+    }
+
+    function drawNode(x: number, y: number, z: number, r: number, glowing: boolean, alpha: number) {
+      const p = project(x, y, z);
+      const df = cl((p.z + 400) / 800);
+      const a = alpha * (0.1 + 0.9 * df);
+      if (a < 0.01) return;
+      const sz = r * (0.5 + 0.5 * df) * p.s;
+      if (glowing) {
+        const gr = G.createRadialGradient(p.x, p.y, 0, p.x, p.y, sz * 5);
+        gr.addColorStop(0, `rgba(245,215,150,${0.5 * a})`);
+        gr.addColorStop(1, 'rgba(245,215,150,0)');
+        G.globalAlpha = 1; G.fillStyle = gr;
+        G.beginPath(); G.arc(p.x, p.y, sz * 5, 0, Math.PI * 2); G.fill();
+        G.beginPath(); G.arc(p.x, p.y, sz * 2.5, 0, Math.PI * 2);
+        G.strokeStyle = lt; G.lineWidth = 0.4; G.globalAlpha = a * 0.3; G.stroke();
+      }
+      G.beginPath(); G.arc(p.x, p.y, sz, 0, Math.PI * 2);
+      G.fillStyle = glowing ? '#fff' : lt; G.globalAlpha = a; G.fill();
+    }
+
+    const nodes: { x: number; y: number; z: number; r: number; glow: boolean; ph: number; sp: number }[] = [];
+    for (let i = 0; i < 20; i++) {
+      nodes.push({
+        x: (Math.random() - 0.5) * 900,
+        y: (Math.random() - 0.5) * 550,
+        z: (Math.random() - 0.5) * 300,
+        r: 1.8 + Math.random() * 2.5,
+        glow: Math.random() < 0.35,
+        ph: Math.random() * Math.PI * 2,
+        sp: 0.2 + Math.random() * 0.3
+      });
+    }
+
+    const edges: [number, number][] = [];
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y, dz = nodes[i].z - nodes[j].z;
+        if (Math.sqrt(dx * dx + dy * dy + dz * dz) < 350 && edges.length < 35) edges.push([i, j]);
+      }
+    }
+
+    const parts: { f: number; o: number; t: number; sp: number; sz: number; br: number }[] = [];
+    for (let i = 0; i < 22; i++) {
+      const e = edges[Math.floor(Math.random() * edges.length)];
+      parts.push({ f: e[0], o: e[1], t: Math.random(), sp: 0.001 + Math.random() * 0.003, sz: 0.7 + Math.random() * 1.2, br: 0.3 + Math.random() * 0.5 });
+    }
+
+    function master() {
+      const l = t % LOOP;
+      if (l < 2.5) return eo(l / 2.5);
+      if (l > 22) return 1 - ei((l - 22) / 4);
+      return 1;
+    }
+
+    const BW = 500, BH = 340, BZ = 0, BTH = 22, BBH = 18;
+
+    type UIEl = { type: string; x: number; y: number; z: number; w?: number; h?: number; r?: number; a: number[]; d: number[]; c: string; lw?: number; al: number; glow?: boolean };
+    const ui: UIEl[] = [
+      { type: 'rect', x: 0, y: 0, z: BZ, w: BW, h: BH, a: [2, 4.5], d: [19, 22], c: gold, lw: 0.8, al: 0.5 },
+      { type: 'hline', x: 0, y: -BH / 2 + BTH, z: BZ, w: BW, a: [2.5, 4.8], d: [19, 21.5], c: gold, lw: 0.5, al: 0.3 },
+      { type: 'rect', x: 0, y: -BH / 2 + BTH + BBH / 2 + 1, z: BZ, w: BW - 40, h: BBH - 4, a: [3, 5.2], d: [18.5, 21], c: gold, lw: 0.4, al: 0.2 },
+      { type: 'node', x: -BW / 2 + 20, y: -BH / 2 + BTH / 2, z: BZ + 5, r: 3, glow: false, a: [3, 4.5], d: [19.5, 21.5], c: lt, al: 0.4 },
+      { type: 'node', x: -BW / 2 + 32, y: -BH / 2 + BTH / 2, z: BZ + 5, r: 3, glow: false, a: [3.2, 4.7], d: [19.3, 21.3], c: lt, al: 0.4 },
+      { type: 'node', x: -BW / 2 + 44, y: -BH / 2 + BTH / 2, z: BZ + 5, r: 3, glow: false, a: [3.4, 4.9], d: [19.1, 21.1], c: lt, al: 0.4 },
+      { type: 'rect', x: -BW / 2 + 120, y: -BH / 2 + BTH / 2, z: BZ + 2, w: 100, h: 14, a: [3.5, 5], d: [19, 21], c: lt, lw: 0.4, al: 0.2 },
+      { type: 'hline', x: 0, y: -BH / 2 + BTH + BBH / 2 + 1, z: BZ + 2, w: BW * 0.5, a: [4, 6], d: [18, 20.5], c: lt, lw: 0.3, al: 0.15 },
+      { type: 'hline', x: 0, y: -BH / 2 + BTH + BBH + 20, z: BZ + 3, w: BW - 30, a: [5, 7], d: [17.5, 20], c: gold, lw: 0.5, al: 0.25 },
+      { type: 'rect', x: -BW / 2 + 50, y: -BH / 2 + BTH + BBH + 20, z: BZ + 5, w: 40, h: 12, a: [5.5, 7.2], d: [17.2, 19.8], c: lt, lw: 0.4, al: 0.2 },
+      { type: 'hline', x: BW / 2 - 120, y: -BH / 2 + BTH + BBH + 17, z: BZ + 5, w: 25, a: [5.8, 7.5], d: [17, 19.5], c: gold, lw: 0.3, al: 0.15 },
+      { type: 'hline', x: BW / 2 - 80, y: -BH / 2 + BTH + BBH + 17, z: BZ + 5, w: 25, a: [6, 7.7], d: [16.8, 19.3], c: gold, lw: 0.3, al: 0.15 },
+      { type: 'hline', x: BW / 2 - 40, y: -BH / 2 + BTH + BBH + 17, z: BZ + 5, w: 25, a: [6.2, 7.9], d: [16.6, 19.1], c: gold, lw: 0.3, al: 0.15 },
+      { type: 'rect', x: BW / 2 - 40, y: -BH / 2 + BTH + BBH + 20, z: BZ + 8, w: 50, h: 14, a: [6.5, 8.2], d: [16.3, 18.8], c: lt, lw: 0.5, al: 0.3 },
+      { type: 'rect', x: -BW / 2 + 145, y: -BH / 2 + BTH + BBH + 62, z: BZ + 10, w: 250, h: 18, a: [7.5, 9.5], d: [15.5, 18], c: lt, lw: 0.6, al: 0.3 },
+      { type: 'hline', x: -BW / 2 + 120, y: -BH / 2 + BTH + BBH + 90, z: BZ + 10, w: 190, a: [8, 10], d: [15, 17.5], c: gold, lw: 0.4, al: 0.2 },
+      { type: 'hline', x: -BW / 2 + 130, y: -BH / 2 + BTH + BBH + 110, z: BZ + 10, w: 210, a: [8.5, 10.5], d: [14.5, 17], c: gold, lw: 0.3, al: 0.12 },
+      { type: 'hline', x: -BW / 2 + 110, y: -BH / 2 + BTH + BBH + 124, z: BZ + 10, w: 170, a: [8.7, 10.7], d: [14.3, 16.8], c: gold, lw: 0.3, al: 0.1 },
+      { type: 'rect', x: -BW / 2 + 90, y: -BH / 2 + BTH + BBH + 150, z: BZ + 12, w: 90, h: 22, a: [9, 11], d: [14, 16.5], c: lt, lw: 0.6, al: 0.35 },
+      { type: 'rect', x: BW / 2 - 120, y: -BH / 2 + BTH + BBH + 100, z: BZ + 8, w: 200, h: 130, a: [8, 10.5], d: [14.5, 17.5], c: gold, lw: 0.5, al: 0.18 },
+      { type: 'cross', x: BW / 2 - 120, y: -BH / 2 + BTH + BBH + 100, z: BZ + 10, w: 200, h: 130, a: [9, 11], d: [14, 17], c: gold, lw: 0.3, al: 0.08 },
+      { type: 'circle', x: BW / 2 - 120, y: -BH / 2 + BTH + BBH + 90, z: BZ + 12, r: 20, a: [9.5, 11.5], d: [13.5, 16.5], c: lt, lw: 0.4, al: 0.15 },
+      { type: 'hline', x: 0, y: -BH / 2 + BTH + BBH + 200, z: BZ + 5, w: BW - 40, a: [10.5, 12], d: [13, 15.5], c: gold, lw: 0.3, al: 0.1 },
+      { type: 'rect', x: -BW / 2 + 95, y: -BH / 2 + BTH + BBH + 250, z: BZ + 15, w: 140, h: 80, a: [11, 13], d: [12.5, 15], c: gold, lw: 0.5, al: 0.2 },
+      { type: 'circle', x: -BW / 2 + 60, y: -BH / 2 + BTH + BBH + 228, z: BZ + 18, r: 8, a: [11.3, 13.2], d: [12.3, 14.8], c: lt, lw: 0.4, al: 0.2 },
+      { type: 'hline', x: -BW / 2 + 100, y: -BH / 2 + BTH + BBH + 235, z: BZ + 18, w: 70, a: [11.5, 13.3], d: [12.2, 14.7], c: lt, lw: 0.3, al: 0.15 },
+      { type: 'hline', x: -BW / 2 + 90, y: -BH / 2 + BTH + BBH + 255, z: BZ + 18, w: 90, a: [11.7, 13.5], d: [12, 14.5], c: gold, lw: 0.3, al: 0.08 },
+      { type: 'hline', x: -BW / 2 + 80, y: -BH / 2 + BTH + BBH + 268, z: BZ + 18, w: 60, a: [11.8, 13.6], d: [11.9, 14.4], c: gold, lw: 0.3, al: 0.06 },
+      { type: 'rect', x: 0, y: -BH / 2 + BTH + BBH + 250, z: BZ + 15, w: 140, h: 80, a: [11.5, 13.5], d: [12, 14.5], c: gold, lw: 0.5, al: 0.2 },
+      { type: 'circle', x: -40, y: -BH / 2 + BTH + BBH + 228, z: BZ + 18, r: 8, a: [11.8, 13.7], d: [11.8, 14.3], c: lt, lw: 0.4, al: 0.2 },
+      { type: 'hline', x: 0, y: -BH / 2 + BTH + BBH + 235, z: BZ + 18, w: 70, a: [12, 13.8], d: [11.7, 14.2], c: lt, lw: 0.3, al: 0.15 },
+      { type: 'hline', x: -5, y: -BH / 2 + BTH + BBH + 255, z: BZ + 18, w: 90, a: [12.2, 14], d: [11.5, 14], c: gold, lw: 0.3, al: 0.08 },
+      { type: 'rect', x: BW / 2 - 95, y: -BH / 2 + BTH + BBH + 250, z: BZ + 15, w: 140, h: 80, a: [12, 14], d: [11.5, 14], c: gold, lw: 0.5, al: 0.2 },
+      { type: 'circle', x: BW / 2 - 130, y: -BH / 2 + BTH + BBH + 228, z: BZ + 18, r: 8, a: [12.3, 14.2], d: [11.3, 13.8], c: lt, lw: 0.4, al: 0.2 },
+      { type: 'hline', x: BW / 2 - 95, y: -BH / 2 + BTH + BBH + 235, z: BZ + 18, w: 70, a: [12.5, 14.3], d: [11.2, 13.7], c: lt, lw: 0.3, al: 0.15 },
+      { type: 'hline', x: BW / 2 - 100, y: -BH / 2 + BTH + BBH + 255, z: BZ + 18, w: 90, a: [12.7, 14.5], d: [11, 13.5], c: gold, lw: 0.3, al: 0.08 }
+    ];
+
+    const ckf = [
+      { x: -100, y: -80, z: 30, t: 5 }, { x: -180, y: -50, z: 25, t: 7.5 },
+      { x: -150, y: 30, z: 20, t: 9.5 }, { x: 130, y: -20, z: 25, t: 11 },
+      { x: -160, y: 80, z: 20, t: 12.5 }, { x: 0, y: 100, z: 25, t: 14 },
+      { x: 0, y: 20, z: 30, t: 16 },
+      { x: -30, y: -80, z: 35, t: 19 }, { x: -50, y: -180, z: 40, t: 21.5 }
+    ];
+
+    function getCur(l: number) {
+      for (let i = 0; i < ckf.length - 1; i++) {
+        const a = ckf[i], b = ckf[i + 1];
+        if (l >= a.t && l < b.t) {
+          const s = eio((l - a.t) / (b.t - a.t));
+          return { x: lp(a.x, b.x, s), y: lp(a.y, b.y, s), z: lp(a.z, b.z, s) };
+        }
+      }
+      return null;
+    }
+
+    function draw() {
+      const l = t % LOOP, m = master();
+      G.clearRect(0, 0, W, H);
+
+      const ag = G.createRadialGradient(centerX, centerY, 20, centerX, centerY, 450);
+      ag.addColorStop(0, `rgba(184,147,84,${0.12 * m})`);
+      ag.addColorStop(0.5, `rgba(184,147,84,${0.03 * m})`);
+      ag.addColorStop(1, 'rgba(5,5,7,0)');
+      G.globalAlpha = 1; G.fillStyle = ag; G.fillRect(0, 0, W, H);
+
+      for (let i = 0; i < edges.length; i++) {
+        const a = nodes[edges[i][0]], b = nodes[edges[i][1]];
+        drawWireLine(a.x, a.y, a.z, b.x, b.y, b.z, gold, 0.5, 0.06 * m, 8);
+      }
+      for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i], pulse = 0.7 + 0.3 * Math.sin(t * n.sp + n.ph);
+        drawNode(n.x, n.y, n.z, n.r * pulse, n.glow, 0.4 * m * pulse);
+      }
+      for (let i = 0; i < parts.length; i++) {
+        const p = parts[i];
+        p.t += p.sp;
+        if (p.t >= 1) { const e = edges[Math.floor(Math.random() * edges.length)]; p.f = e[0]; p.o = e[1]; p.t = 0; }
+        const na = nodes[p.f], nb = nodes[p.o];
+        const al = p.br * m * Math.sin(p.t * Math.PI);
+        if (al < 0.008) continue;
+        for (let k = 5; k >= 0; k--) {
+          const tt = Math.max(0, p.t - k * 0.015);
+          const tp = project(lp(na.x, nb.x, tt), lp(na.y, nb.y, tt), lp(na.z, nb.z, tt));
+          const s2 = (5 - k) / 5;
+          G.beginPath(); G.arc(tp.x, tp.y, p.sz * s2 * 0.6 * tp.s, 0, Math.PI * 2);
+          G.fillStyle = lt; G.globalAlpha = al * s2 * 0.35; G.fill();
+        }
+        const hp = project(lp(na.x, nb.x, p.t), lp(na.y, nb.y, p.t), lp(na.z, nb.z, p.t));
+        const gg = G.createRadialGradient(hp.x, hp.y, 0, hp.x, hp.y, p.sz * 3 * hp.s);
+        gg.addColorStop(0, `rgba(245,215,150,${0.25 * al})`); gg.addColorStop(1, 'rgba(245,215,150,0)');
+        G.globalAlpha = 1; G.fillStyle = gg; G.beginPath(); G.arc(hp.x, hp.y, p.sz * 3 * hp.s, 0, Math.PI * 2); G.fill();
+        G.beginPath(); G.arc(hp.x, hp.y, p.sz * 0.7 * hp.s, 0, Math.PI * 2); G.fillStyle = '#fff'; G.globalAlpha = al; G.fill();
+      }
+
+      if (m < 0.001) { t += 1 / 60; raf = requestAnimationFrame(draw); return; }
+
+      for (let i = 0; i < ui.length; i++) {
+        const el = ui[i];
+        const ain = eio(sc(el.a[0], el.a[1]));
+        const aot = 1 - eio(sc(el.d[0], el.d[1]));
+        const pr = Math.min(ain, aot);
+        if (pr < 0.003) continue;
+        const alph = el.al * pr * m;
+
+        if (el.type === 'rect' && el.w != null && el.h != null) {
+          drawWireRoundRect(el.x, el.y, el.z, el.w, el.h, el.c, el.lw ?? 0.5, alph, pr);
+        } else if (el.type === 'hline' && el.w != null) {
+          drawWireHLine(el.x, el.y, el.z, el.w, el.c, el.lw ?? 0.5, alph, pr);
+        } else if (el.type === 'circle' && el.r != null) {
+          drawWireCircle(el.x, el.y, el.z, el.r, el.c, el.lw ?? 0.4, alph, pr);
+        } else if (el.type === 'node' && el.r != null) {
+          drawNode(el.x, el.y, el.z, el.r, el.glow ?? false, alph);
+        } else if (el.type === 'cross' && el.w != null && el.h != null) {
+          const cpr = eo(pr);
+          drawWireLine(el.x - el.w / 2, el.y - el.h / 2, el.z, el.x - el.w / 2 + el.w * cpr, el.y - el.h / 2 + el.h * cpr, el.z, el.c, el.lw ?? 0.3, alph, 8);
+          drawWireLine(el.x + el.w / 2, el.y - el.h / 2, el.z, el.x + el.w / 2 - el.w * cpr, el.y - el.h / 2 + el.h * cpr, el.z, el.c, el.lw ?? 0.3, alph, 8);
+        }
+      }
+
+      const cIn = eo(sc(5, 6.5)), cOt = 1 - ei(sc(19, 21.5));
+      const cA = Math.min(cIn, cOt);
+      const cp = getCur(l);
+      if (cp && cA > 0.005) {
+        const pp = project(cp.x, cp.y, cp.z);
+        const df = cl((pp.z + 400) / 800);
+        G.save(); G.translate(pp.x, pp.y); G.rotate(t * 0.3);
+        G.beginPath(); G.arc(0, 0, 14 * pp.s, 0, Math.PI * 2);
+        G.setLineDash([3, 4.5]); G.strokeStyle = lt; G.lineWidth = 0.5;
+        G.globalAlpha = cA * m * 0.2 * df; G.stroke(); G.setLineDash([]); G.restore();
+        const cg = G.createRadialGradient(pp.x, pp.y, 0, pp.x, pp.y, 18 * pp.s);
+        cg.addColorStop(0, `rgba(245,215,150,${0.1 * cA * df})`); cg.addColorStop(1, 'rgba(245,215,150,0)');
+        G.globalAlpha = 1; G.fillStyle = cg; G.beginPath(); G.arc(pp.x, pp.y, 18 * pp.s, 0, Math.PI * 2); G.fill();
+        const sz = pp.s;
+        G.globalAlpha = cA * m * 0.8 * df;
+        G.fillStyle = bg; G.strokeStyle = lt; G.lineWidth = 1; G.lineJoin = 'round';
+        G.beginPath();
+        G.moveTo(pp.x - 5 * sz, pp.y - 5 * sz); G.lineTo(pp.x + 8 * sz, pp.y - 1 * sz);
+        G.lineTo(pp.x + 0.5 * sz, pp.y + 0.5 * sz); G.lineTo(pp.x - 1 * sz, pp.y + 8 * sz);
+        G.closePath(); G.fill(); G.stroke();
+        G.beginPath(); G.arc(pp.x - 3.5 * sz, pp.y - 3.5 * sz, 1 * sz, 0, Math.PI * 2);
+        G.fillStyle = '#fff'; G.globalAlpha = cA * m * 0.6 * df; G.fill();
+      }
+
+      const sT = sc(14, 16);
+      if (sT > 0 && sT < 1) {
+        const sweepX = -BW / 2 + BW * 1.2 * eio(sT) - BW * 0.1;
+        const sp1 = project(sweepX, BH / 2, BZ);
+        const sg = G.createLinearGradient(sp1.x - 80, 0, sp1.x + 80, 0);
+        sg.addColorStop(0, 'rgba(245,215,150,0)');
+        sg.addColorStop(0.5, `rgba(245,215,150,${0.025 * m})`);
+        sg.addColorStop(1, 'rgba(245,215,150,0)');
+        G.globalAlpha = 1; G.fillStyle = sg;
+        const tl = project(-BW / 2, -BH / 2, BZ), br = project(BW / 2, BH / 2, BZ);
+        G.fillRect(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
+      }
+
+      t += 1 / 60;
+      raf = requestAnimationFrame(draw);
+    }
+
+    draw();
+    cleanupWireframe = () => cancelAnimationFrame(raf);
+  }
+
+  document.addEventListener('astro:page-load', initWebDesignWireframe);
+  document.addEventListener('astro:before-swap', () => { cleanupWireframe?.(); cleanupWireframe = null; });
+</script>
+
+<style>
+  .web-design-cinematic-bg {
+    position: absolute;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .web-design-cinematic-bg canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+</style>

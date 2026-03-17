@@ -11,25 +11,15 @@ import Button from '../ui/Button.astro';
   <!-- Interactive WebGL Background -->
   <div class="absolute inset-0 z-0 bg-[var(--obsidian)]">
     <canvas id="hero-canvas" class="absolute inset-0 w-full h-full opacity-80 mix-blend-screen"></canvas>
-    
-    <!-- Fallback image if JS fails or loading -->
-    <img
-      src="/images/hero-home.webp"
-      alt=""
-      class="absolute inset-0 w-full h-full object-cover object-center opacity-30 transition-opacity duration-1000"
-      id="hero-fallback-img"
-      aria-hidden="true"
-      loading="eager"
-      fetchpriority="high"
-    />
 
-    <!-- Growth bar overlay layered above coded/WebGL effect -->
+    <!-- Growth bar overlay layered above coded/WebGL effect (also acts as poster) -->
     <img
       src="/images/hero-growth-bar.svg"
       alt=""
       class="hero-growth-overlay absolute inset-0 w-full h-full object-cover pointer-events-none"
       aria-hidden="true"
       loading="eager"
+      fetchpriority="high"
     />
     
     <!-- Netflix-style bottom gradient overlay -->
@@ -337,9 +327,6 @@ import Button from '../ui/Button.astro';
 
     const gl = canvas.getContext('webgl');
     if (!gl) return;
-
-    const fallbackImg = document.getElementById('hero-fallback-img');
-    if (fallbackImg) fallbackImg.style.opacity = '0';
 
     function createShader(glCtx: WebGLRenderingContext, type: number, source: string) {
       const shader = glCtx.createShader(type);

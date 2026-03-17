@@ -1,0 +1,335 @@
+---
+const { class: className = '' } = Astro.props;
+---
+
+<div class={`rotating-network-sphere-bg ${className}`} aria-hidden="true">
+  <canvas id="work-sphere-canvas" width="1200" height="675"></canvas>
+</div>
+
+<script>
+  let cleanupSphere: (() => void) | null = null;
+
+  function initWorkSphere() {
+    cleanupSphere?.();
+    cleanupSphere = null;
+
+    const canvas = document.getElementById('work-sphere-canvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const W = 1200;
+    const H = 675;
+    const cx = 850;
+    const cy = 337;
+    const R = 220;
+    const MERIDIANS = 12;
+    const POINTS_PER_LINE = 120;
+    const TILT_X = -0.35;
+    const TILT_Z = 0.26;
+    const ROT_SPEED = 0.003;
+    let angle = 0;
+    let raf = 0;
+
+    function rotY(x: number, y: number, z: number, a: number) {
+      const c = Math.cos(a), s = Math.sin(a);
+      return [x * c + z * s, y, -x * s + z * c];
+    }
+    function rotX(x: number, y: number, z: number, a: number) {
+      const c = Math.cos(a), s = Math.sin(a);
+      return [x, y * c - z * s, y * s + z * c];
+    }
+    function rotZ(x: number, y: number, z: number, a: number) {
+      const c = Math.cos(a), s = Math.sin(a);
+      return [x * c - y * s, x * s + y * c, z];
+    }
+    function project(x: number, y: number, z: number) {
+      let [rx, ry, rz] = rotX(x, y, z, TILT_X);
+      [rx, ry, rz] = rotZ(rx, ry, rz, TILT_Z);
+      return { x: cx + rx, y: cy + ry, z: rz };
+    }
+    function spherePos(lat: number, lon: number, rotA: number) {
+      const cl = Math.cos(lat);
+      let x = R * cl * Math.cos(lon), y = R * Math.sin(lat), z = R * cl * Math.sin(lon);
+      [x, y, z] = rotY(x, y, z, rotA);
+      return { x, y, z };
+    }
+
+    const nodeDefs = [
+      { lat: 0.3, lon: 0.8, r: 5, glow: true },
+      { lat: -0.5, lon: 2.1, r: 4, glow: true },
+      { lat: 0.9, lon: 3.5, r: 3.5, glow: false },
+      { lat: -0.2, lon: 5.0, r: 4.5, glow: true },
+      { lat: 0.6, lon: 1.5, r: 3, glow: false },
+      { lat: -0.8, lon: 4.2, r: 3.5, glow: false },
+      { lat: 0.1, lon: 0.2, r: 3, glow: true },
+      { lat: -0.4, lon: 3.0, r: 4, glow: true },
+      { lat: 0.7, lon: 4.8, r: 3, glow: false },
+      { lat: -0.6, lon: 1.0, r: 3.5, glow: true },
+      { lat: 0.4, lon: 2.7, r: 3, glow: false },
+      { lat: -0.1, lon: 5.8, r: 4, glow: true }
+    ];
+    const edges = [
+      [0, 1], [0, 4], [0, 6], [1, 2], [1, 7], [2, 3], [2, 8], [3, 5], [3, 11],
+      [4, 7], [4, 10], [5, 9], [5, 7], [6, 11], [6, 0], [7, 10], [8, 9], [8, 11],
+      [9, 1], [10, 2], [10, 3], [11, 5]
+    ];
+
+    class Particle {
+      from = 0;
+      to = 0;
+      t = 0;
+      speed = 0;
+      size = 0;
+      bright = 0;
+      constructor() { this.reset(); }
+      reset() {
+        const e = edges[Math.floor(Math.random() * edges.length)];
+        if (Math.random() < 0.5) { this.from = e[0]; this.to = e[1]; }
+        else { this.from = e[1]; this.to = e[0]; }
+        this.t = 0;
+        this.speed = 0.004 + Math.random() * 0.008;
+        this.size = 1.2 + Math.random() * 1.8;
+        this.bright = 0.5 + Math.random() * 0.5;
+      }
+      update() {
+        this.t += this.speed;
+        if (this.t >= 1) this.reset();
+      }
+    }
+    const particles = Array.from({ length: 40 }, () => {
+      const p = new Particle();
+      p.t = Math.random();
+      return p;
+    });
+
+    function slerp3D(a: {x: number; y: number; z: number}, b: {x: number; y: number; z: number}, t: number) {
+      const dot = (a.x * b.x + a.y * b.y + a.z * b.z) / (R * R);
+      const omega = Math.acos(Math.max(-1, Math.min(1, dot)));
+      if (omega < 0.001) return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t, z: a.z + (b.z - a.z) * t };
+      const sinO = Math.sin(omega);
+      const wA = Math.sin((1 - t) * omega) / sinO;
+      const wB = Math.sin(t * omega) / sinO;
+      return { x: wA * a.x + wB * b.x, y: wA * a.y + wB * b.y, z: wA * a.z + wB * b.z };
+    }
+
+    function drawLine(pts: Array<{x: number; y: number; z: number}>, color: string, width: number, opacity: number) {
+      for (let i = 0; i < pts.length - 1; i++) {
+        const p1 = pts[i], p2 = pts[i + 1];
+        const f = (((p1.z + p2.z) * 0.5) + R) / (2 * R);
+        const a = opacity * (0.08 + 0.92 * f);
+        if (a < 0.03) continue;
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.strokeStyle = color;
+        ctx.globalAlpha = a;
+        ctx.lineWidth = width * (0.4 + 0.6 * f);
+        ctx.stroke();
+      }
+    }
+
+    const onResize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const bounds = canvas.getBoundingClientRect();
+      canvas.width = Math.max(1, Math.round(bounds.width * dpr));
+      canvas.height = Math.max(1, Math.round(bounds.height * dpr));
+      ctx.setTransform((canvas.width / W), 0, 0, (canvas.height / H), 0, 0);
+    };
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      const ag = ctx.createRadialGradient(cx, cy, 0, cx, cy, 380);
+      ag.addColorStop(0, 'rgba(184,147,84,0.12)');
+      ag.addColorStop(0.5, 'rgba(184,147,84,0.03)');
+      ag.addColorStop(1, 'rgba(5,5,7,0)');
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = ag;
+      ctx.fillRect(0, 0, W, H);
+
+      // Outer orbit
+      const orbitPts = [];
+      for (let i = 0; i <= POINTS_PER_LINE; i++) {
+        const t = (i / POINTS_PER_LINE) * Math.PI * 2;
+        orbitPts.push(project(320 * Math.cos(t), 0, 320 * Math.sin(t)));
+      }
+      ctx.globalAlpha = 0.2;
+      ctx.strokeStyle = '#b89354';
+      ctx.lineWidth = 0.5;
+      ctx.setLineDash([4, 8]);
+      ctx.beginPath();
+      orbitPts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Meridians
+      for (let i = 0; i < MERIDIANS; i++) {
+        const ma = (i / MERIDIANS) * Math.PI;
+        const pts = [];
+        for (let j = 0; j <= POINTS_PER_LINE; j++) {
+          const t = (j / POINTS_PER_LINE) * Math.PI * 2;
+          let x = R * Math.cos(t) * Math.cos(ma), y = R * Math.sin(t), z = R * Math.cos(t) * Math.sin(ma);
+          [x, y, z] = rotY(x, y, z, angle);
+          pts.push(project(x, y, z));
+        }
+        drawLine(pts, '#b89354', 0.8, 0.45);
+      }
+
+      // Parallels
+      const lats = [-0.85, -0.6, -0.35, 0, 0.35, 0.6, 0.85];
+      for (const lat of lats) {
+        const r = R * Math.cos(lat), yOffset = R * Math.sin(lat);
+        const isEquator = Math.abs(lat) < 0.01;
+        const pts = [];
+        for (let j = 0; j <= POINTS_PER_LINE; j++) {
+          const t = (j / POINTS_PER_LINE) * Math.PI * 2;
+          let x = r * Math.cos(t), y = yOffset, z = r * Math.sin(t);
+          [x, y, z] = rotY(x, y, z, angle);
+          pts.push(project(x, y, z));
+        }
+        drawLine(pts, isEquator ? '#f5d796' : '#b89354', isEquator ? 1.2 : 0.8, isEquator ? 0.6 : 0.4);
+      }
+
+      // Network edges
+      for (const [ai, bi] of edges) {
+        const a = spherePos(nodeDefs[ai].lat, nodeDefs[ai].lon, angle);
+        const b = spherePos(nodeDefs[bi].lat, nodeDefs[bi].lon, angle);
+        const pts = [];
+        for (let s = 0; s <= 30; s++) {
+          const t = s / 30;
+          const mid = slerp3D(a, b, t);
+          const len = Math.sqrt(mid.x * mid.x + mid.y * mid.y + mid.z * mid.z);
+          const lift = 1 + 0.06 * Math.sin(t * Math.PI);
+          pts.push(project((mid.x / len) * R * lift, (mid.y / len) * R * lift, (mid.z / len) * R * lift));
+        }
+        drawLine(pts, '#b89354', 0.4, 0.2);
+      }
+
+      // Particles + trails
+      for (const p of particles) {
+        p.update();
+        const a = spherePos(nodeDefs[p.from].lat, nodeDefs[p.from].lon, angle);
+        const b = spherePos(nodeDefs[p.to].lat, nodeDefs[p.to].lon, angle);
+        const trailPts = [];
+        const trailLength = 8;
+        for (let ti = trailLength; ti >= 0; ti--) {
+          const tt = Math.max(0, p.t - ti * 0.012);
+          const mid = slerp3D(a, b, tt);
+          const len = Math.sqrt(mid.x * mid.x + mid.y * mid.y + mid.z * mid.z);
+          const lift = 1 + 0.06 * Math.sin(tt * Math.PI);
+          trailPts.push(project((mid.x / len) * R * lift, (mid.y / len) * R * lift, (mid.z / len) * R * lift));
+        }
+
+        const head = trailPts[trailPts.length - 1];
+        const front = (head.z + R) / (2 * R);
+        if (front < 0.15) continue;
+        const alpha = p.bright * (0.1 + 0.9 * front);
+
+        for (let i = 0; i < trailPts.length - 1; i++) {
+          const seg = i / (trailPts.length - 1);
+          const p1 = trailPts[i], p2 = trailPts[i + 1];
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.strokeStyle = '#f5d796';
+          ctx.globalAlpha = alpha * seg * 0.7;
+          ctx.lineWidth = p.size * seg * (0.4 + 0.6 * front);
+          ctx.stroke();
+        }
+
+        const glow = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, p.size * 4);
+        glow.addColorStop(0, `rgba(245,215,150,${0.5 * alpha})`);
+        glow.addColorStop(1, 'rgba(245,215,150,0)');
+        ctx.beginPath();
+        ctx.arc(head.x, head.y, p.size * 4, 0, Math.PI * 2);
+        ctx.fillStyle = glow;
+        ctx.globalAlpha = 1;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(head.x, head.y, p.size * (0.4 + 0.6 * front), 0, Math.PI * 2);
+        ctx.fillStyle = '#fff';
+        ctx.globalAlpha = alpha;
+        ctx.fill();
+      }
+
+      // Nodes
+      for (const n of nodeDefs) {
+        const pos = spherePos(n.lat, n.lon, angle);
+        const p = project(pos.x, pos.y, pos.z);
+        const f = (p.z + R) / (2 * R);
+        if (f < 0.15) continue;
+        const alpha = 0.15 + 0.85 * f;
+        const size = n.r * (0.5 + 0.5 * f);
+
+        if (n.glow) {
+          const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size * 5);
+          g.addColorStop(0, `rgba(245,215,150,${0.35 * alpha})`);
+          g.addColorStop(1, 'rgba(245,215,150,0)');
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, size * 5, 0, Math.PI * 2);
+          ctx.fillStyle = g;
+          ctx.globalAlpha = 1;
+          ctx.fill();
+        }
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+        ctx.fillStyle = n.glow ? '#fff' : '#f5d796';
+        ctx.globalAlpha = alpha;
+        ctx.fill();
+
+        if (n.glow) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, size * 3, 0, Math.PI * 2);
+          ctx.strokeStyle = '#f5d796';
+          ctx.lineWidth = 0.5;
+          ctx.globalAlpha = alpha * 0.4;
+          ctx.stroke();
+        }
+      }
+
+      // Rim light
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      const rim = ctx.createLinearGradient(cx - R, cy - R, cx + R, cy + R);
+      rim.addColorStop(0, 'rgba(245,215,150,0.4)');
+      rim.addColorStop(0.3, 'rgba(184,147,84,0.05)');
+      rim.addColorStop(1, 'rgba(184,147,84,0)');
+      ctx.strokeStyle = rim;
+      ctx.lineWidth = 1.5;
+      ctx.globalAlpha = 1;
+      ctx.stroke();
+
+      angle += ROT_SPEED;
+      raf = requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', onResize);
+    onResize();
+    draw();
+
+    cleanupSphere = () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', onResize);
+    };
+  }
+
+  document.addEventListener('astro:page-load', initWorkSphere);
+  document.addEventListener('astro:before-swap', () => { cleanupSphere?.(); cleanupSphere = null; });
+</script>
+
+<style>
+  .rotating-network-sphere-bg {
+    position: absolute;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .rotating-network-sphere-bg canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+</style>

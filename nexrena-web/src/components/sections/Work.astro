@@ -1,46 +1,50 @@
 ---
 import Eyebrow from '../ui/Eyebrow.astro';
-import WorkHeadingAccent from '../ui/WorkHeadingAccent.astro';
 import { projects } from '../../data/projects';
 import { heroImages } from '../../data/hero-images';
 ---
 
 <section id="work" class="work-section bg-[var(--obsidian)] relative pt-32 pb-0 overflow-hidden">
-  <WorkHeadingAccent class="work-heading-overlay absolute inset-0 w-full h-full pointer-events-none" />
-  <div class="section-container relative z-10 flex flex-col justify-center mb-16 scroll-scale-up">
-    <div class="reveal" style="--i: 0;">
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-6">
+  <img
+    src="/images/work-heading-network-bg.svg"
+    alt=""
+    class="work-heading-overlay absolute inset-0 w-full h-full pointer-events-none"
+    aria-hidden="true"
+    loading="lazy"
+  />
+  <div class="work-intro sticky top-0 h-screen w-full z-10 flex items-end">
+    <div class="section-container relative w-full pb-20 md:pb-24 scroll-scale-up">
+      <div class="reveal" style="--i: 0;">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-6">
         <div>
-          <p class="font-mono text-[10px] text-[var(--gold)] tracking-[0.2em] uppercase mb-4">Selected Work</p>
-          <h2 class="font-display text-[clamp(64px,12vw,160px)] text-[var(--warm-white)] leading-[0.9] tracking-tight">
+          <p class="font-mono text-[10px] text-[var(--gold)] tracking-[0.2em] uppercase mb-4">Case Studies</p>
+          <h2 class="work-intro-title font-display text-[var(--warm-white)] leading-[0.98] tracking-tight max-w-5xl">
             Growth infrastructure for companies that mean business.
           </h2>
         </div>
         <a href="/work" class="font-mono text-[11px] text-[var(--warm-white)] uppercase tracking-widest border border-[var(--slate-700)] px-8 py-4 hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors rounded-full">
-          View All Projects
+          View All Case Studies
         </a>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Full Bleed Grid -->
-  <div class="w-full relative z-10">
+  <!-- Full Bleed Grid (unveils under sticky intro) -->
+  <div class="work-grid-wrap w-full relative z-20">
     <div class="work-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
       {projects.map((project, i) => {
-        // Vary heights to create a masonry-like feel
-        const heightClass = i % 4 === 0 || i % 4 === 3 ? 'h-[56vh] md:h-[72vh]' : 'h-[46vh] md:h-[60vh]';
-        // Some cards span 2 columns on desktop
+        // Eliminate gaps by making items stretch fully within their row
         const colSpan = i === 0 || i === 3 ? 'md:col-span-2 lg:col-span-2' : 'col-span-1';
+        const heightClass = 'min-h-[50vh] md:min-h-[60vh] lg:min-h-[70vh] h-full';
 
         return (
-          <a href={`/work/${project.id}`} class={`work-card block relative bg-[var(--obsidian)] overflow-hidden group ${colSpan} ${heightClass}`}>
+          <a href={`/work/${project.id}`} class={`work-card block relative bg-transparent overflow-hidden group ${colSpan} ${heightClass}`} style="opacity: 0.3; filter: blur(12px) grayscale(80%);">
             
             <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
-              <img src={heroImages[`project/${project.id}` as keyof typeof heroImages] ?? heroImages.work} alt="" class="work-image absolute inset-0 w-full h-full object-cover object-center opacity-60 group-hover:opacity-90 group-hover:scale-[1.03] transition-all duration-[1.4s] ease-[cubic-bezier(0.16,1,0.3,1)] filter grayscale-[20%] group-hover:grayscale-0" aria-hidden="true" loading="lazy" decoding="async" />
-              <!-- Dark overlay that fades out on hover -->
-              <div class="absolute inset-0 bg-[var(--obsidian)]/40 group-hover:bg-[var(--obsidian)]/10 transition-colors duration-700"></div>
+              <img src={heroImages[`project/${project.id}` as keyof typeof heroImages] ?? heroImages.work} alt="" class="work-image absolute inset-0 w-full h-full object-cover object-center opacity-60 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-[1.4s] ease-[cubic-bezier(0.16,1,0.3,1)]" aria-hidden="true" loading="lazy" decoding="async" />
               <!-- Gradient for text readability -->
-              <div class="absolute inset-0 bg-gradient-to-t from-[var(--obsidian)]/90 via-transparent to-transparent opacity-100 group-hover:opacity-80 transition-opacity duration-700"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-[var(--obsidian)]/80 via-transparent to-transparent opacity-100 group-hover:opacity-80 transition-opacity duration-700"></div>
             </div>
 
             <!-- Content Container (Slides up on hover) -->
@@ -86,35 +90,32 @@ import { heroImages } from '../../data/hero-images';
 
 <script>
   import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
   function initWorkCards() {
+    gsap.registerPlugin(ScrollTrigger);
+    
     // Check if user prefers reduced motion
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion || window.innerWidth < 768) return;
+    if (prefersReducedMotion) return;
 
     const cards = document.querySelectorAll('.work-card');
     
     cards.forEach((card) => {
-      card.addEventListener('mouseenter', () => {
-        // Extreme rack focus effect for full-bleed grid
-        gsap.to(cards, {
-          opacity: (i, el) => el === card ? 1 : 0.3,
-          filter: (i, el) => el === card ? 'blur(0px) grayscale(0%)' : 'blur(4px) grayscale(80%)',
-          duration: 0.8,
-          ease: 'power3.out',
-          overwrite: 'auto'
-        });
+      // Unblur when scrolling into the viewport
+      ScrollTrigger.create({
+        trigger: card,
+        start: "top 75%",
+        end: "bottom 25%",
+        onEnter: () => gsap.to(card, { opacity: 1, filter: 'blur(0px) grayscale(0%)', duration: 1.2, ease: 'power3.out', overwrite: 'auto' }),
+        onLeave: () => gsap.to(card, { opacity: 0.3, filter: 'blur(12px) grayscale(80%)', duration: 1.2, ease: 'power3.out', overwrite: 'auto' }),
+        onEnterBack: () => gsap.to(card, { opacity: 1, filter: 'blur(0px) grayscale(0%)', duration: 1.2, ease: 'power3.out', overwrite: 'auto' }),
+        onLeaveBack: () => gsap.to(card, { opacity: 0.3, filter: 'blur(12px) grayscale(80%)', duration: 1.2, ease: 'power3.out', overwrite: 'auto' })
       });
-      
-      card.addEventListener('mouseleave', () => {
-        // Restore all cards
-        gsap.to(cards, {
-          opacity: 1,
-          filter: 'blur(0px) grayscale(0%)',
-          duration: 0.8,
-          ease: 'power3.out',
-          overwrite: 'auto'
-        });
+
+      // Maintain hover effect over other cards when hovering a specific one
+      card.addEventListener('mouseenter', () => {
+        gsap.to(card, { opacity: 1, filter: 'blur(0px) grayscale(0%)', duration: 0.4, overwrite: 'auto' });
       });
     });
   }
@@ -123,23 +124,46 @@ import { heroImages } from '../../data/hero-images';
 </script>
 
 <style>
+  .work-intro-title {
+    font-size: clamp(52px, 7vw, 96px);
+  }
+
   .work-heading-overlay {
     z-index: 5;
     object-fit: cover;
     object-position: right top;
-    mix-blend-mode: normal;
-    opacity: 0.9;
+    mix-blend-mode: screen;
+    opacity: 0.62;
+  }
+
+  .work-grid-wrap {
+    margin-top: -16vh;
+    padding-top: 16vh;
   }
 
   @media (max-height: 760px) {
     .work-section {
       padding-top: 96px;
     }
+
+    .work-grid-wrap {
+      margin-top: -10vh;
+      padding-top: 10vh;
+    }
   }
 
   @media (max-width: 767px) {
+    .work-intro-title {
+      font-size: clamp(40px, 10.5vw, 64px);
+    }
+
+    .work-grid-wrap {
+      margin-top: -8vh;
+      padding-top: 8vh;
+    }
+
     .work-heading-overlay {
-      opacity: 0.82;
+      opacity: 0.48;
     }
   }
 </style>
