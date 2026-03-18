@@ -157,6 +157,8 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
           </div>
 
           <script>
+            import { track } from '@vercel/analytics';
+
             function initContactForm() {
               const formWrapper = document.querySelector('[data-api-url]') as HTMLElement | null;
               const form = document.getElementById('contact-form') as HTMLFormElement | null;
@@ -167,9 +169,23 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
               if (!form || !success || !formWrapper) return;
 
               const NEXRENA_API = formWrapper.dataset.apiUrl || 'https://nexrena-api-5dc54effaa9f.herokuapp.com';
+              let hasTrackedContactStart = false;
+
+              const safeTrack = (eventName: string, data: Record<string, unknown> = {}) => {
+                try {
+                  track(eventName, data);
+                } catch {
+                  // Ignore analytics errors.
+                }
+              };
 
               // Inline validation on blur
               form.querySelectorAll('.contact-input[required]').forEach((input) => {
+                input.addEventListener('focus', () => {
+                  if (hasTrackedContactStart) return;
+                  hasTrackedContactStart = true;
+                  safeTrack('contact_form_started');
+                });
                 input.addEventListener('blur', () => {
                   const el = input as HTMLInputElement;
                   const errorSpan = el.closest('.form-field')?.querySelector('.field-error') as HTMLElement | null;
@@ -218,6 +234,11 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
                   message: fd.message,
                 };
 
+                safeTrack('contact_form_submit_attempt', {
+                  projectType: payload.projectType ?? 'unspecified',
+                  budget: payload.budget ?? 'unspecified',
+                });
+
                 try {
                   const res = await fetch(`${NEXRENA_API}/api/leads`, {
                     method: 'POST',
@@ -229,10 +250,15 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
                     form.classList.add('hidden');
                     success.classList.remove('hidden');
                     success.style.display = 'flex';
+                    safeTrack('contact_form_submit_success', {
+                      projectType: payload.projectType ?? 'unspecified',
+                      budget: payload.budget ?? 'unspecified',
+                    });
                   } else {
                     throw new Error('Submission failed');
                   }
                 } catch {
+                  safeTrack('contact_form_submit_error');
                   if (errorEl) {
                     errorEl.textContent = 'Something went wrong. Please email us directly at hello@nexrena.com';
                     errorEl.classList.remove('hidden');

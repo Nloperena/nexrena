@@ -72,6 +72,7 @@ const imageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, site).t
     <script>
       import gsap from 'gsap';
       import { ScrollTrigger } from 'gsap/ScrollTrigger';
+      import { initAnalyticsEvents } from '@/lib/analytics-events';
       gsap.registerPlugin(ScrollTrigger);
 
       // ── Global GSAP cleanup on navigation ──
@@ -118,6 +119,7 @@ const imageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, site).t
       }
 
       document.addEventListener('astro:page-load', setupScrollReveal);
+      document.addEventListener('astro:page-load', initAnalyticsEvents);
 
       // ── Page Entrance Stagger ──
       function triggerPageEntrance() {
