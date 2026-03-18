@@ -267,26 +267,28 @@ const steps = [
     document.querySelectorAll('#process-wrapper, .process-mobile').forEach(el => videoObserver.observe(el));
   });
 
-  // Toggle play state of SVGs based on active scrolling
+  // Play SVGs based on scroll velocity through GSAP ScrollTrigger
   document.addEventListener('astro:page-load', () => {
-    let scrollTimeout: number | undefined;
-    
-    const onScroll = () => {
-      document.body.classList.add('is-scrolling');
-      clearTimeout(scrollTimeout);
-      scrollTimeout = window.setTimeout(() => {
-        document.body.classList.remove('is-scrolling');
-      }, 150);
-    };
+    gsap.registerPlugin(ScrollTrigger);
+    const wrapper = document.getElementById('process-wrapper') ?? document.querySelector('.process-mobile');
+    if (!wrapper) return;
 
-    window.addEventListener('scroll', onScroll, { passive: true });
+    let timeout: number;
     
-    // Cleanup on view transitions
-    document.addEventListener('astro:before-swap', () => {
-      window.removeEventListener('scroll', onScroll);
-      clearTimeout(scrollTimeout);
-      document.body.classList.remove('is-scrolling');
-    }, { once: true });
+    ScrollTrigger.create({
+      trigger: wrapper,
+      start: "top bottom",
+      end: "bottom top",
+      onUpdate: (self) => {
+        if (Math.abs(self.getVelocity()) > 50) {
+          document.body.classList.add('is-scrolling');
+          clearTimeout(timeout);
+          timeout = window.setTimeout(() => {
+            document.body.classList.remove('is-scrolling');
+          }, 150);
+        }
+      }
+    });
   });
 </script>
 
