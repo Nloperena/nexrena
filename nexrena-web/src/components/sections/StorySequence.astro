@@ -21,12 +21,12 @@ const stats = [
     <!-- The Expanding Image -->
     <div class="story-image-wrapper absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30vw] aspect-[3/4] z-10 overflow-hidden will-change-transform">
       <video
+        id="story-bg-video"
         class="story-image absolute inset-0 w-full h-full object-cover scale-[1.5]"
-        autoplay
         muted
         loop
         playsinline
-        preload="metadata"
+        preload="none"
         poster="/images/story-engine.webp"
         aria-hidden="true"
       >
@@ -100,12 +100,13 @@ const stats = [
 <script>
   import gsap from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { getMotionTier } from '@/lib/perf';
 
   function initStorySequence() {
     gsap.registerPlugin(ScrollTrigger);
 
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion || window.innerHeight <= 820) return;
+    const tier = getMotionTier();
+    if (tier === 'minimal' || window.innerHeight <= 820) return;
 
     const sequence = document.getElementById('story-sequence');
     if (!sequence) return;
@@ -142,9 +143,10 @@ const stats = [
       )
       .to({}, { duration: 0.5 }); // hold
 
-    // Phase 3: Fade out Scene 2, Blur background, bring in Stats
+    // Phase 3: Fade out Scene 2, Blur background (full-motion only), bring in Stats
+    const useBlur = tier === 'full';
     tl.to('.scene-2', { yPercent: -10, opacity: 0, duration: 0.8 })
-      .to('.story-image', { filter: 'blur(8px)', duration: 0.8 }, "-=0.8")
+      .to('.story-image', useBlur ? { filter: 'blur(8px)', duration: 0.8 } : { opacity: 0.3, duration: 0.8 }, "-=0.8")
       .to('.scene-3', { opacity: 1, duration: 0.5 }, "-=0.4")
       .to('.stat-item', {
         y: 0,
@@ -157,6 +159,23 @@ const stats = [
   }
 
   document.addEventListener('astro:page-load', initStorySequence);
+
+  // Start the background video only when the section is in view
+  document.addEventListener('astro:page-load', () => {
+    const video = document.getElementById('story-bg-video') as HTMLVideoElement | null;
+    const section = document.getElementById('story-sequence');
+    if (!video || !section) return;
+
+    const videoObserver = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    }, { threshold: 0.05 });
+
+    videoObserver.observe(section);
+  });
 </script>
 
 <style>

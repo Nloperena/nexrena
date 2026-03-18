@@ -313,6 +313,8 @@ import Button from '../ui/Button.astro';
     }
   `;
 
+  import { canUseWebGL } from '@/lib/perf';
+
   let cleanupHero: (() => void) | null = null;
 
   function initWebGLHero() {
@@ -320,7 +322,7 @@ import Button from '../ui/Button.astro';
     cleanupHero?.();
     cleanupHero = null;
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !canUseWebGL()) return;
 
     const canvas = document.getElementById('hero-canvas') as HTMLCanvasElement;
     if (!canvas) return;

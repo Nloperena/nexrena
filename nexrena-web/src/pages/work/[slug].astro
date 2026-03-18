@@ -6,6 +6,7 @@ import { services } from '../../data/services';
 import { industries } from '../../data/industries';
 import Eyebrow from '../../components/ui/Eyebrow.astro';
 import CTA from '../../components/sections/CTA.astro';
+import HeaderConceptBg from '../../components/ui/HeaderConceptBg.astro';
 import { articleSchema, breadcrumbSchema } from '../../lib/schema';
 
 export function getStaticPaths() {
@@ -20,7 +21,6 @@ const nextProject = projects.find(p => p.id === project.nextProjectId);
 const site = 'https://nexrena.com';
 const projectUrl = `${site}/work/${project.id}`;
 const description = project.metaDescription || project.background || project.tagline;
-const heroImg = `/images/project-${project.id === 'furniture-packages-usa' ? 'furniture' : project.id === 'rugged-red' ? 'rugged' : project.id === 'vito-fryfilter' ? 'vito' : project.id}.webp`;
 const schema = [
   articleSchema({ headline: project.name, description, datePublished: project.year, url: projectUrl }),
   breadcrumbSchema([{ name: 'Work', url: `${site}/work` }, { name: project.name, url: projectUrl }]),
@@ -36,7 +36,7 @@ const hasVideo = project.video && !hasVimeo;
 
     <!-- ═══ CINEMATIC HERO ═══ -->
     <section class="work-hero relative h-screen min-h-[700px] flex items-end overflow-hidden grain">
-      <img src={heroImg} alt="" class="hero-bg absolute inset-0 w-full h-full object-cover opacity-40 scale-105 pointer-events-none" loading="eager" aria-hidden="true" />
+      <HeaderConceptBg class="opacity-90" />
       <div class="absolute inset-0 bg-gradient-to-t from-[var(--obsidian)] via-[var(--obsidian)]/60 to-transparent pointer-events-none"></div>
 
       <div class="relative z-10 w-full max-w-[1320px] mx-auto px-[5vw] pb-20 md:pb-28">
@@ -272,6 +272,11 @@ const hasVideo = project.video && !hasVimeo;
 </Layout>
 
 <style>
+  .work-hero {
+    isolation: isolate;
+    padding-top: max(96px, calc(var(--nav-safe, 72px) + 24px));
+  }
+
   .hero-title {
     opacity: 0;
     clip-path: inset(0 0 100% 0);
@@ -312,17 +317,6 @@ const hasVideo = project.video && !hasVimeo;
   function initWorkDetail() {
     gsap.registerPlugin(ScrollTrigger);
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    const heroImg = document.querySelector('.hero-bg') as HTMLElement;
-    const heroSection = document.querySelector('.work-hero');
-    if (heroImg && heroSection) {
-      gsap.to(heroImg, {
-        yPercent: 20,
-        scale: 1.1,
-        ease: 'none',
-        scrollTrigger: { trigger: heroSection, start: 'top top', end: 'bottom top', scrub: true },
-      });
-    }
 
     document.querySelectorAll('.stat-counter').forEach(el => {
       const valueEl = el.querySelector('.stat-value');

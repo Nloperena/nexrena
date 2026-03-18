@@ -89,33 +89,35 @@ import WebDesignCinematicBg from '../ui/WebDesignCinematicBg.astro';
 <script>
   import gsap from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { getMotionTier } from '@/lib/perf';
 
   function initServiceStack() {
     gsap.registerPlugin(ScrollTrigger);
 
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion || window.innerHeight <= 600) return;
+    if (window.innerHeight <= 600) return;
+    const tier = getMotionTier();
+    if (tier === 'minimal') return;
 
     const cards = gsap.utils.toArray('.service-stack-card') as HTMLElement[];
-    
-    // Create a smooth 3D stacking effect
+
     cards.forEach((card, i) => {
-      // Don't scale the last card
       if (i === cards.length - 1) return;
+
+      // Skip blur on reduced-tier devices — filter animations are GPU-expensive
+      const useBlur = tier === 'full';
 
       ScrollTrigger.create({
         trigger: card,
-        start: "top 10%", // When card hits its sticky top position
-        endTrigger: ".service-cards-container",
-        end: "bottom bottom",
-        pin: false, // CSS sticky handles the pinning
+        start: 'top 10%',
+        endTrigger: '.service-cards-container',
+        end: 'bottom bottom',
         scrub: true,
         animation: gsap.to(card, {
-          scale: 0.9 - (cards.length - i) * 0.02, // Scale down slightly as user scrolls past
-          opacity: 0.3, // Darken as it gets pushed back
-          filter: "blur(2px)",
-          ease: "none"
-        })
+          scale: 0.9 - (cards.length - i) * 0.02,
+          opacity: 0.3,
+          ...(useBlur ? { filter: 'blur(2px)' } : {}),
+          ease: 'none',
+        }),
       });
     });
   }

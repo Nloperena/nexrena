@@ -42,7 +42,7 @@ import { heroImages } from '../../data/hero-images';
           <a href={`/work/${project.id}`} class={`work-card block relative bg-transparent overflow-hidden group ${colSpan} ${heightClass}`} style="opacity: 0.3; filter: blur(12px) grayscale(80%);">
             
             <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
-              <img src={heroImages[`project/${project.id}` as keyof typeof heroImages] ?? heroImages.work} alt="" class="work-image absolute inset-0 w-full h-full object-cover object-center opacity-60 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-[1.4s] ease-[cubic-bezier(0.16,1,0.3,1)]" aria-hidden="true" loading="lazy" decoding="async" />
+              <img src={heroImages[`project/${project.id}` as keyof typeof heroImages] ?? heroImages.work} alt="" class="work-image absolute inset-0 w-full h-full object-cover object-center opacity-60 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-[1.4s] ease-[cubic-bezier(0.16,1,0.3,1)]" aria-hidden="true" loading="lazy" decoding="async" width="1920" height="1080" />
               <!-- Gradient for text readability -->
               <div class="absolute inset-0 bg-gradient-to-t from-[var(--obsidian)]/80 via-transparent to-transparent opacity-100 group-hover:opacity-80 transition-opacity duration-700"></div>
             </div>
@@ -91,31 +91,42 @@ import { heroImages } from '../../data/hero-images';
 <script>
   import gsap from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { getMotionTier } from '@/lib/perf';
 
   function initWorkCards() {
     gsap.registerPlugin(ScrollTrigger);
-    
-    // Check if user prefers reduced motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
+
+    const tier = getMotionTier();
+    if (tier === 'minimal') return;
+
+    // On reduced-power devices skip the expensive blur/grayscale filter;
+    // use opacity only so cards still reveal on scroll.
+    const useFilter = tier === 'full';
+
+    const visibleProps = useFilter
+      ? { opacity: 1, filter: 'blur(0px) grayscale(0%)', duration: 1.2, ease: 'power3.out', overwrite: 'auto' }
+      : { opacity: 1, duration: 0.8, ease: 'power3.out', overwrite: 'auto' };
+    const hiddenProps = useFilter
+      ? { opacity: 0.3, filter: 'blur(12px) grayscale(80%)', duration: 1.2, ease: 'power3.out', overwrite: 'auto' }
+      : { opacity: 0.3, duration: 0.8, ease: 'power3.out', overwrite: 'auto' };
 
     const cards = document.querySelectorAll('.work-card');
-    
+
     cards.forEach((card) => {
-      // Unblur when scrolling into the viewport
       ScrollTrigger.create({
         trigger: card,
-        start: "top 75%",
-        end: "bottom 25%",
-        onEnter: () => gsap.to(card, { opacity: 1, filter: 'blur(0px) grayscale(0%)', duration: 1.2, ease: 'power3.out', overwrite: 'auto' }),
-        onLeave: () => gsap.to(card, { opacity: 0.3, filter: 'blur(12px) grayscale(80%)', duration: 1.2, ease: 'power3.out', overwrite: 'auto' }),
-        onEnterBack: () => gsap.to(card, { opacity: 1, filter: 'blur(0px) grayscale(0%)', duration: 1.2, ease: 'power3.out', overwrite: 'auto' }),
-        onLeaveBack: () => gsap.to(card, { opacity: 0.3, filter: 'blur(12px) grayscale(80%)', duration: 1.2, ease: 'power3.out', overwrite: 'auto' })
+        start: 'top 75%',
+        end: 'bottom 25%',
+        onEnter:     () => gsap.to(card, visibleProps),
+        onLeave:     () => gsap.to(card, hiddenProps),
+        onEnterBack: () => gsap.to(card, visibleProps),
+        onLeaveBack: () => gsap.to(card, hiddenProps),
       });
 
-      // Maintain hover effect over other cards when hovering a specific one
       card.addEventListener('mouseenter', () => {
-        gsap.to(card, { opacity: 1, filter: 'blur(0px) grayscale(0%)', duration: 0.4, overwrite: 'auto' });
+        gsap.to(card, useFilter
+          ? { opacity: 1, filter: 'blur(0px) grayscale(0%)', duration: 0.4, overwrite: 'auto' }
+          : { opacity: 1, duration: 0.4, overwrite: 'auto' });
       });
     });
   }

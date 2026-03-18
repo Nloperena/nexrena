@@ -3,746 +3,392 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 const navLinks = [
   { label: 'Work', href: '/work' },
   { label: 'Services', href: '/services' },
-  { label: 'About', href: '/about' },
-  { label: 'Resources', href: '/resources' },
-];
-const overlayLinks = [
-  { label: 'Work', href: '/work' },
-  { label: 'Services', href: '/services' },
   { label: 'Industries', href: '/industries' },
   { label: 'Resources', href: '/resources' },
   { label: 'About', href: '/about' },
-  { label: 'Contact', href: '/contact' },
 ];
 ---
 
-<!-- ═══ TOP BAR ═══ -->
-<header id="main-nav" class="nav" role="banner" transition:persist="nav" style="view-transition-name: nav-persist;">
-
-  <!-- Glass backdrop — revealed on scroll -->
-  <div class="nav__glass" aria-hidden="true"></div>
-
-  <div class="nav__inner">
-
-    <!-- LOGO -->
-    <a href="/" class="nav__logo" aria-label="Nexrena home">
-      <span class="nav__logo-n">N</span>
-      <span class="nav__logo-rest">exrena</span>
+<header id="main-nav" class="site-nav" role="banner">
+  <div class="site-nav__island">
+    <a href="/" class="site-nav__logo" aria-label="Nexrena home">
+      <span class="site-nav__logo-n">N</span>
+      <span class="site-nav__logo-rest">exrena</span>
     </a>
 
-    <!-- DESKTOP LINKS (centred) -->
-    <nav class="nav__links" aria-label="Main navigation">
+    <nav class="site-nav__links" aria-label="Main navigation">
       {navLinks.map((link) => {
         const isActive = currentPath === link.href || currentPath.startsWith(link.href + '/');
         return (
-          <a href={link.href} class={`nav__link ${isActive ? 'is-active' : ''}`} aria-current={isActive ? 'page' : undefined}>
-            <span class="nav__link-text">{link.label}</span>
-            <span class="nav__link-line" aria-hidden="true"></span>
+          <a href={link.href} class={`site-nav__link ${isActive ? 'is-active' : ''}`} aria-current={isActive ? 'page' : undefined}>
+            {link.label}
           </a>
         );
       })}
     </nav>
 
-    <!-- RIGHT CLUSTER -->
-    <div class="nav__right">
-      <!-- CTA pill -->
-      <a href="/contact" class="nav__cta">
-        <span class="nav__cta-text">Let's Talk</span>
-        <span class="nav__cta-arrow" aria-hidden="true">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </span>
-      </a>
-
-      <!-- MENU TOGGLE -->
-      <button id="menu-toggle-btn" class="nav__toggle" aria-expanded="false" aria-controls="overlay-menu" aria-label="Toggle menu">
-        <div class="nav__toggle-icon">
-          <span class="nav__bar nav__bar--top"></span>
-          <span class="nav__bar nav__bar--bot"></span>
+    <div class="site-nav__actions">
+      <a href="/contact" class="site-nav__cta">Let's Talk</a>
+      <button class="site-nav__toggle" type="button" aria-expanded="false" aria-label="Toggle menu">
+        <div class="hamburger">
+          <span class="line line-1"></span>
+          <span class="line line-2"></span>
         </div>
       </button>
     </div>
   </div>
 </header>
 
-<!-- ═══ FULL-SCREEN OVERLAY ═══ -->
-<div id="overlay-menu" class="ov" role="dialog" aria-modal="true" aria-label="Navigation menu" inert>
-
-  <!-- Animated background panels -->
-  <div class="ov__panel ov__panel--1" aria-hidden="true"></div>
-  <div class="ov__panel ov__panel--2" aria-hidden="true"></div>
-
-  <!-- Content -->
-  <div class="ov__content">
-
-    <!-- Navigation column -->
-    <nav class="ov__nav" aria-label="Full navigation">
-      {overlayLinks.map((link, i) => (
-        <div class="ov__row">
-          <a href={link.href} class="overlay-link ov__link" data-index={i}>
-            <span class="ov__link-num">0{i + 1}</span>
-            <span class="ov__link-label">{link.label}</span>
-            <span class="ov__link-arrow">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
-            </span>
+<div class="mobile-menu" aria-hidden="true" inert>
+  <div class="mobile-menu__backdrop"></div>
+  <div class="mobile-menu__content">
+    <nav class="mobile-menu__nav">
+      {navLinks.map((link, i) => {
+        const isActive = currentPath === link.href || currentPath.startsWith(link.href + '/');
+        return (
+          <a href={link.href} class={`mobile-menu__link ${isActive ? 'is-active' : ''}`} style={`--delay: ${i * 0.05}s`}>
+            {link.label}
           </a>
-          <div class="ov__link-rule"></div>
-        </div>
-      ))}
+        );
+      })}
+      <a href="/contact" class="mobile-menu__link mobile-menu__link--cta" style={`--delay: ${navLinks.length * 0.05}s`}>
+        Let's Talk
+      </a>
     </nav>
-
-    <!-- Sidebar column -->
-    <aside class="ov__aside">
-      <div class="overlay-info ov__aside-inner">
-        <div class="ov__aside-block">
-          <p class="ov__aside-label">Get in touch</p>
-          <a href="mailto:hello@nexrena.com" class="ov__aside-email">hello@nexrena.com</a>
-        </div>
-        <div class="ov__aside-block">
-          <p class="ov__aside-label">Location</p>
-          <p class="ov__aside-body">Orlando Metro<br/>Florida, USA</p>
-        </div>
-        <div class="ov__aside-socials">
-          <a href="https://www.linkedin.com/company/nexrena" target="_blank" rel="noopener noreferrer" class="ov__aside-social" aria-label="LinkedIn">Li</a>
-        </div>
-      </div>
-    </aside>
   </div>
 </div>
 
-<!-- ═══ STYLES ═══ -->
 <style>
-  /* ── NAV BAR ─────────────────────────────────────────────────── */
-  .nav {
+  :global(:root) {
+    --nav-safe: 104px;
+  }
+
+  .site-nav {
     position: fixed;
-    top: 0; left: 0; right: 0;
-    height: 72px;
-    z-index: 100;
+    top: 24px;
+    left: 0;
+    width: 100%;
+    z-index: 3100;
     pointer-events: none;
-    transform: translateY(0);
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    justify-content: center;
+    padding: 0 16px;
   }
-  .nav.is-hidden {
-    transform: translateY(-100%);
-  }
-  .nav__glass {
-    position: absolute;
-    inset: 0;
-    background: rgba(12, 15, 18, 0);
-    backdrop-filter: blur(0px);
-    border-bottom: 1px solid transparent;
-    transition: background 0.5s, backdrop-filter 0.5s, border-color 0.5s;
-  }
-  .nav.is-scrolled .nav__glass {
-    background: rgba(12, 15, 18, 0.85);
-    backdrop-filter: blur(16px) saturate(1.8);
-    border-bottom-color: rgba(201, 169, 110, 0.08);
-  }
-  .nav__inner {
-    position: relative;
-    z-index: 2;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 clamp(20px, 5vw, 48px);
-    height: 100%;
+
+  .site-nav__island {
+    pointer-events: auto;
+    width: 100%;
+    max-width: 1000px;
+    height: 56px;
+    background: rgba(12, 15, 18, 0.75);
+    backdrop-filter: blur(16px) saturate(1.2);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    border: 1px solid rgba(122, 138, 158, 0.15);
+    border-radius: 999px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
-    pointer-events: auto;
+    padding: 0 8px 0 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* ── LOGO ────────────────────────────────────────────────────── */
-  .nav__logo {
+  .site-nav__island.is-menu-open {
+    background: transparent;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .site-nav__logo {
     font-family: var(--font-display);
-    font-size: 24px;
     color: var(--warm-white);
     text-decoration: none;
     display: flex;
     align-items: baseline;
-    position: relative;
-    z-index: 102;
+    font-size: 22px;
     letter-spacing: -0.02em;
   }
-  .nav__logo-n {
+
+  .site-nav__logo-n {
     color: var(--gold);
     font-style: italic;
-    font-weight: 500;
-    font-size: 28px;
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .nav__logo:hover .nav__logo-n {
-    transform: translateY(-2px) rotate(-4deg);
-  }
-  .nav__logo-rest {
-    transition: color 0.3s;
-  }
-  .nav__logo:hover .nav__logo-rest {
-    color: var(--gold-light);
+    font-size: 24px;
+    line-height: 1;
   }
 
-  /* ── DESKTOP LINKS ──────────────────────────────────────────── */
-  .nav__links {
+  .site-nav__links {
     display: none;
     align-items: center;
-    gap: 36px;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    max-width: min(520px, calc(100vw - 420px));
-  }
-  @media (min-width: 1024px) {
-    .nav__links { display: flex; }
+    gap: 32px;
   }
 
-  .nav__link {
-    position: relative;
-    font-family: var(--font-body);
-    font-size: 13px;
-    font-weight: 400;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--slate-400);
-    text-decoration: none;
-    padding: 4px 0;
-    transition: color 0.3s;
-    overflow: hidden;
-  }
-  .nav__link:hover,
-  .nav__link:focus-visible {
-    color: var(--warm-white);
-  }
-  .nav__link-text {
-    display: inline-block;
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .nav__link:hover .nav__link-text {
-    transform: translateY(-1px);
-  }
-  .nav__link-line {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 1.5px;
-    background: var(--gold);
-    transform: scaleX(0);
-    transform-origin: right;
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .nav__link:hover .nav__link-line {
-    transform: scaleX(1);
-    transform-origin: left;
-  }
-  .nav__link.is-active {
-    color: var(--warm-white);
-  }
-  .nav__link.is-active .nav__link-line {
-    transform: scaleX(1);
-    transform-origin: left;
-    opacity: 0.5;
-  }
-
-  .nav__right {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
-    min-width: max-content;
-    flex-shrink: 0;
-  }
-
-  /* ── CTA PILL ───────────────────────────────────────────────── */
-  .nav__cta {
-    display: none;
-    align-items: center;
-    gap: 8px;
-    height: 38px;
-    padding: 0 18px;
-    border: 1px solid var(--gold);
-    border-radius: 100px;
+  .site-nav__link {
     font-family: var(--font-mono);
     font-size: 11px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--gold);
+    color: var(--slate-400);
     text-decoration: none;
+    padding: 4px 0;
     position: relative;
-    overflow: hidden;
-    transition: color 0.3s, border-color 0.3s;
-    z-index: 102;
-  }
-  @media (min-width: 900px) and (min-height: 760px) {
-    .nav__cta { display: inline-flex; }
-  }
-  .nav.ov-active .nav__cta {
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(-6px);
-  }
-  .nav__cta::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--gold);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    border-radius: inherit;
-  }
-  .nav__cta:hover::before {
-    transform: scaleX(1);
-  }
-  .nav__cta:hover {
-    color: var(--obsidian);
-    border-color: var(--gold);
-  }
-  .nav__cta-text,
-  .nav__cta-arrow {
-    position: relative;
-    z-index: 1;
-  }
-  .nav__cta-arrow {
-    display: flex;
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .nav__cta:hover .nav__cta-arrow {
-    transform: translateX(3px);
+    transition: color 0.2s ease;
   }
 
-  /* ── TOGGLE BUTTON ──────────────────────────────────────────── */
-  .nav__toggle {
-    position: relative;
-    z-index: 102;
-    width: 48px;
-    height: 48px;
+  .site-nav__link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--gold);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .site-nav__link:hover,
+  .site-nav__link:focus-visible,
+  .site-nav__link.is-active {
+    color: var(--warm-white);
+  }
+
+  .site-nav__link.is-active::after {
+    opacity: 1;
+  }
+
+  .site-nav__actions {
     display: flex;
     align-items: center;
+    gap: 12px;
+  }
+
+  .site-nav__cta {
+    display: none;
+    height: 40px;
+    align-items: center;
     justify-content: center;
-    background: none;
-    border: none;
+    padding: 0 20px;
+    border-radius: 999px;
+    background: var(--gold);
+    color: var(--obsidian);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .site-nav__cta:hover,
+  .site-nav__cta:focus-visible {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(201, 169, 110, 0.3);
+  }
+
+  .site-nav__toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(122, 138, 158, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
+    transition: background 0.2s ease, border-color 0.2s ease;
   }
-  .nav__toggle-icon {
+
+  .site-nav__island.is-menu-open .site-nav__toggle {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .site-nav__toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .hamburger {
+    width: 16px;
+    height: 12px;
     position: relative;
-    width: 28px;
-    height: 16px;
   }
-  .nav__bar {
+
+  .line {
     position: absolute;
     left: 0;
     width: 100%;
     height: 1.5px;
-    background: var(--gold);
-    transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1),
-                width 0.3s cubic-bezier(0.76, 0, 0.24, 1),
-                opacity 0.3s;
-  }
-  .nav__bar--top {
-    top: 0;
-    width: 100%;
-  }
-  .nav__bar--bot {
-    bottom: 0;
-    width: 60%;
-    margin-left: auto;
-    right: 0;
-    left: auto;
-  }
-  .nav__toggle:hover .nav__bar--bot {
-    width: 100%;
+    background: var(--warm-white);
+    border-radius: 2px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Active state (menu open) */
-  .nav__toggle[aria-expanded="true"] .nav__bar--top {
-    transform: translateY(7.25px) rotate(45deg);
-    width: 100%;
+  .line-1 { top: 2px; }
+  .line-2 { bottom: 2px; }
+
+  .site-nav__toggle[aria-expanded="true"] .line-1 {
+    transform: translateY(3.5px) rotate(45deg);
   }
-  .nav__toggle[aria-expanded="true"] .nav__bar--bot {
-    transform: translateY(-7.25px) rotate(-45deg);
-    width: 100%;
+  .site-nav__toggle[aria-expanded="true"] .line-2 {
+    transform: translateY(-3.5px) rotate(-45deg);
   }
 
-  /* ── OVERLAY ────────────────────────────────────────────────── */
-  .ov {
+  /* Mobile Menu Styles */
+  .mobile-menu {
     position: fixed;
     inset: 0;
-    z-index: 101;
+    z-index: 3050;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     pointer-events: none;
     visibility: hidden;
+    transition: visibility 0.4s;
   }
-  .ov.is-open {
+
+  .mobile-menu[aria-hidden="false"] {
     pointer-events: auto;
     visibility: visible;
   }
 
-  .ov__panel {
+  .mobile-menu__backdrop {
     position: absolute;
     inset: 0;
-    transform: scaleY(0);
-    transform-origin: top;
+    background: rgba(8, 10, 13, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    opacity: 0;
+    transition: opacity 0.4s ease;
   }
-  .ov__panel--1 {
-    background: var(--ink);
+
+  .mobile-menu[aria-hidden="false"] .mobile-menu__backdrop {
+    opacity: 1;
+  }
+
+  .mobile-menu__content {
+    position: relative;
+    width: 100%;
+    padding: 0 32px;
     z-index: 1;
   }
-  .ov__panel--2 {
-    background: var(--obsidian);
-    z-index: 2;
-  }
 
-  .ov__content {
-    position: relative;
-    z-index: 3;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: clamp(88px, 14vh, 128px) clamp(20px, 5vw, 48px) clamp(28px, 6vh, 56px);
-    height: 100%;
-    display: grid;
-    grid-template-columns: 1fr;
-    align-content: start;
-    gap: clamp(24px, 5vh, 48px);
-    opacity: 0;
-    overflow-y: auto;
-  }
-  @media (min-width: 768px) {
-    .ov__content {
-      grid-template-columns: 7fr 3fr;
-      overflow: hidden;
-    }
-  }
-
-  /* ── OVERLAY LINKS ──────────────────────────────────────────── */
-  .ov__nav {
+  .mobile-menu__nav {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    min-height: 0;
-  }
-  .ov__row {
-    overflow: hidden;
-  }
-  .ov__link {
-    display: flex;
+    gap: 24px;
     align-items: center;
-    gap: 16px;
-    padding: clamp(10px, 2vh, 16px) 0;
-    text-decoration: none;
-    position: relative;
-    transition: padding 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  @media (min-width: 768px) {
-    .ov__link { padding: 16px 0; }
-  }
-  .ov__link:hover {
-    padding-left: 16px;
-  }
-  .ov__link-num {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--gold-dim);
-    letter-spacing: 0.1em;
-    opacity: 0;
-    transform: translateX(-8px);
-    transition: opacity 0.3s, transform 0.3s, color 0.3s;
-    display: none;
-  }
-  @media (min-width: 768px) {
-    .ov__link-num { display: block; }
-  }
-  .ov__link:hover .ov__link-num {
-    opacity: 1;
-    transform: translateX(0);
-    color: var(--gold);
-  }
-  .ov__link-label {
-    font-family: var(--font-display);
-    font-size: clamp(34px, 7vw, 96px);
-    line-height: 1;
-    color: var(--slate-600);
-    transition: color 0.4s, letter-spacing 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    font-weight: 300;
-  }
-  .ov__link:hover .ov__link-label {
-    color: var(--warm-white);
-    letter-spacing: 0.02em;
-  }
-  .ov__link-arrow {
-    color: var(--gold);
-    opacity: 0;
-    transform: translate(-12px, 12px);
-    transition: opacity 0.3s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    display: flex;
-    margin-left: auto;
-  }
-  .ov__link:hover .ov__link-arrow {
-    opacity: 1;
-    transform: translate(0, 0);
-  }
-  .ov__link-rule {
-    height: 1px;
-    background: var(--slate-800);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .ov.is-open .ov__link-rule {
-    transform: scaleX(1);
   }
 
-  /* ── OVERLAY ASIDE ──────────────────────────────────────────── */
-  .ov__aside {
-    display: none;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding-bottom: 0;
+  .mobile-menu__link {
+    font-family: var(--font-display);
+    font-size: 32px;
+    color: var(--slate-300);
+    text-decoration: none;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.4s ease, transform 0.4s ease, color 0.2s ease;
+    transition-delay: var(--delay);
   }
-  @media (min-width: 768px) {
-    .ov__aside { display: flex; }
+
+  .mobile-menu__link.is-active,
+  .mobile-menu__link:hover {
+    color: var(--gold);
   }
-  .ov__aside-inner {
-    padding-left: 32px;
-    border-left: 1px solid var(--slate-800);
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-  }
-  .ov__aside-label {
+
+  .mobile-menu__link--cta {
+    margin-top: 16px;
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 14px;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.1em;
     color: var(--gold);
-    margin-bottom: 8px;
-  }
-  .ov__aside-email {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: 24px;
-    color: var(--warm-white);
-    text-decoration: none;
-    transition: color 0.3s;
-  }
-  .ov__aside-email:hover { color: var(--gold); }
-  .ov__aside-body {
-    font-family: var(--font-body);
-    font-size: 15px;
-    color: var(--slate-400);
-    line-height: 1.6;
-  }
-  .ov__aside-socials {
-    display: flex;
-    gap: 12px;
-    margin-top: 8px;
-  }
-  .ov__aside-social {
-    width: 40px;
-    height: 40px;
-    border: 1px solid var(--slate-700);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--slate-400);
-    text-decoration: none;
-    transition: color 0.3s, border-color 0.3s, background 0.3s;
-  }
-  .ov__aside-social:hover {
-    color: var(--obsidian);
-    border-color: var(--gold);
-    background: var(--gold);
+    border: 1px solid var(--gold);
+    padding: 14px 36px;
+    border-radius: 999px;
   }
 
-  @media (max-height: 820px) {
-    .ov__content {
-      padding-top: clamp(80px, 12vh, 104px);
-      gap: 24px;
-    }
+  .mobile-menu[aria-hidden="false"] .mobile-menu__link {
+    opacity: 1;
+    transform: translateY(0);
+  }
 
-    .ov__link-label {
-      font-size: clamp(30px, 6vw, 72px);
-    }
+  @media (min-width: 1024px) {
+    .site-nav__links { display: flex; }
+    .site-nav__toggle { display: none; }
+    .site-nav__cta { display: inline-flex; }
   }
 
   @media (max-height: 760px) {
-    .nav {
-      height: 64px;
+    :global(:root) {
+      --nav-safe: 88px;
     }
-
-    .nav__inner {
-      padding: 0 clamp(16px, 4vw, 32px);
-    }
-
-    .nav__cta {
-      display: none !important;
-    }
-
-    .ov__content {
-      padding-top: 80px;
-      padding-bottom: 24px;
-    }
-
-    .ov__link {
-      padding: 10px 0;
-    }
-
-    .ov__link-label {
-      font-size: clamp(28px, 5.5vw, 56px);
-    }
-  }
-
-  @media (max-height: 820px) and (min-width: 768px) {
-    .ov__content {
-      grid-template-columns: 1fr;
-    }
-
-    .ov__aside {
-      display: none;
-    }
-  }
-
-  /* ── REDUCED MOTION ─────────────────────────────────────────── */
-  @media (prefers-reduced-motion: reduce) {
-    .nav__glass,
-    .nav__link-line,
-    .nav__cta::before,
-    .nav__bar,
-    .ov__panel,
-    .ov__link-rule {
-      transition: none !important;
+    .site-nav {
+      top: 16px;
     }
   }
 </style>
 
-<!-- ═══ SCRIPT ═══ -->
 <script>
-  import gsap from 'gsap';
-
-  if (!(window as any).__nexNavInit) {
-    (window as any).__nexNavInit = true;
-
-    const nav   = document.getElementById('main-nav')!;
-    const btn   = document.getElementById('menu-toggle-btn')!;
-    const ov    = document.getElementById('overlay-menu')!;
-    const links = document.querySelectorAll<HTMLElement>('.overlay-link');
-    const info  = document.querySelector<HTMLElement>('.overlay-info');
-    const p1    = ov.querySelector('.ov__panel--1') as HTMLElement;
-    const p2    = ov.querySelector('.ov__panel--2') as HTMLElement;
-    const content = ov.querySelector('.ov__content') as HTMLElement;
-    const rules = ov.querySelectorAll('.ov__link-rule');
+  function setupNav() {
+    const toggleBtn = document.querySelector('.site-nav__toggle');
+    const mobileMenu = document.querySelector('.mobile-menu');
+    const backdrop = document.querySelector('.mobile-menu__backdrop');
+    const links = document.querySelectorAll('.mobile-menu__link');
+    const island = document.querySelector('.site-nav__island');
+    
+    if (!toggleBtn || !mobileMenu || !island) return;
 
     let isOpen = false;
-    let lastScrollY = 0;
-    const SCROLL_THRESHOLD = 10;
 
-    function onScroll() {
-      if (isOpen) return;
-      const currentY = window.scrollY;
-      nav.classList.toggle('is-scrolled', currentY > 60);
-
-      // Hide on scroll down, show on scroll up (only after hero area)
-      if (currentY > 400) {
-        const delta = currentY - lastScrollY;
-        if (delta > SCROLL_THRESHOLD) {
-          nav.classList.add('is-hidden');
-        } else if (delta < -SCROLL_THRESHOLD) {
-          nav.classList.remove('is-hidden');
-        }
-      } else {
-        nav.classList.remove('is-hidden');
-      }
-      lastScrollY = currentY;
-    }
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-
-    // ── Open / Close timeline ──
-    const openTl = gsap.timeline({ paused: true, onReverseComplete: () => {
-      ov.classList.remove('is-open');
-      ov.setAttribute('inert', '');
-      nav.classList.remove('ov-active');
-    }});
-
-    openTl
-      .set(ov, { visibility: 'visible' })
-      .to(p1, { scaleY: 1, duration: 0.5, ease: 'power4.inOut' })
-      .to(p2, { scaleY: 1, duration: 0.5, ease: 'power4.inOut' }, '-=0.35')
-      .to(content, { opacity: 1, duration: 0.3 }, '-=0.2')
-      .fromTo(links,
-        { yPercent: 110, rotate: 3 },
-        { yPercent: 0, rotate: 0, duration: 0.9, stagger: 0.06, ease: 'expo.out' },
-        '-=0.25')
-      .fromTo(info,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' },
-        '-=0.6')
-      .fromTo(rules,
-        { scaleX: 0 },
-        { scaleX: 1, duration: 0.8, stagger: 0.04, ease: 'power3.out' },
-        '-=0.8');
-
-    function openMenu() {
+    const openMenu = () => {
       isOpen = true;
-      ov.classList.add('is-open');
-      ov.removeAttribute('inert');
-      nav.classList.add('ov-active');
-      btn.setAttribute('aria-expanded', 'true');
+      mobileMenu.setAttribute('aria-hidden', 'false');
+      mobileMenu.removeAttribute('inert');
+      toggleBtn.setAttribute('aria-expanded', 'true');
+      island.classList.add('is-menu-open');
       document.body.style.overflow = 'hidden';
-      openTl.timeScale(1).play();
-    }
+    };
 
-    function closeMenu() {
-      if (!isOpen) return;
+    const closeMenu = () => {
       isOpen = false;
-      btn.setAttribute('aria-expanded', 'false');
+      mobileMenu.setAttribute('aria-hidden', 'true');
+      mobileMenu.setAttribute('inert', '');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      island.classList.remove('is-menu-open');
       document.body.style.overflow = '';
-      openTl.timeScale(1.6).reverse();
-    }
+    };
 
-    // Instant reset — no animation, used during page navigation
-    function resetMenu() {
-      isOpen = false;
-      btn.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
-      openTl.pause().progress(0);
-      ov.classList.remove('is-open');
-      ov.setAttribute('inert', '');
-      nav.classList.remove('ov-active');
-      // Reset inline styles GSAP may have left on elements
-      gsap.set([p1, p2], { scaleY: 0 });
-      gsap.set(content, { opacity: 0 });
-      gsap.set(links, { yPercent: 0, rotate: 0, opacity: 1 });
-      gsap.set(rules, { scaleX: 0 });
-      if (info) gsap.set(info, { opacity: 0, y: 30 });
-    }
-
-    function toggleMenu() {
+    // Make sure we don't attach multiple event listeners on page load
+    // by cloning the button (optional) or using an AbortController.
+    // However, since Astro replaces the DOM body entirely on transition, 
+    // the previous elements are detached and garbage collected.
+    // So attaching a listener to the *newly* found elements is safe.
+    
+    toggleBtn.addEventListener('click', (e) => {
+      e.preventDefault();
       isOpen ? closeMenu() : openMenu();
-    }
-
-    btn.addEventListener('click', toggleMenu);
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && isOpen) { closeMenu(); btn.focus(); }
     });
-    // Navigation clicks: reset instantly so the page swap is immediate
-    links.forEach(l => l.addEventListener('click', () => { if (isOpen) resetMenu(); }));
-    document.addEventListener('astro:before-swap', resetMenu);
 
-    // ── Hover focus effect on overlay links ──
+    backdrop?.addEventListener('click', closeMenu);
+    
     links.forEach(link => {
-      link.addEventListener('mouseenter', () => {
-        gsap.to(links, {
-          opacity: (i, el) => el === link ? 1 : 0.25,
-          duration: 0.4, ease: 'power2.out', overwrite: 'auto',
-        });
+      link.addEventListener('click', () => {
+        closeMenu();
       });
     });
 
-    const navEl = ov.querySelector('.ov__nav');
-    navEl?.addEventListener('mouseleave', () => {
-      gsap.to(links, { opacity: 1, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        closeMenu();
+      }
     });
   }
+
+  // Set up the nav on initial load and subsequent view transitions
+  document.addEventListener('astro:page-load', setupNav);
 </script>

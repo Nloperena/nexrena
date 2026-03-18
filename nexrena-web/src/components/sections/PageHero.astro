@@ -1,5 +1,6 @@
 ---
 import Eyebrow from '../ui/Eyebrow.astro';
+import HeaderConceptBg from '../ui/HeaderConceptBg.astro';
 
 interface Props {
   eyebrow: string;
@@ -9,20 +10,14 @@ interface Props {
   variant?: 'full' | 'short';
 }
 
-const { eyebrow, title, subtitle, image = '/images/hero-home.webp', variant = 'short' } = Astro.props;
+const { eyebrow, title, subtitle, variant = 'short' } = Astro.props;
 const isFull = variant === 'full';
 ---
 
 <section class={`page-hero relative bg-[var(--obsidian)] overflow-hidden flex flex-col justify-center ${isFull ? 'min-h-[85vh] py-24 md:py-32' : 'py-24 md:py-32'} grain`}>
-  <!-- Background with parallax -->
+  <!-- Animated SVG concept background -->
   <div class="absolute inset-0 pointer-events-none z-0">
-    <img 
-      src={image} 
-      alt="" 
-      class="page-hero-bg absolute inset-0 w-full h-full object-cover object-center opacity-40 will-change-transform" 
-      aria-hidden="true" 
-      loading="eager" 
-    />
+    <HeaderConceptBg />
     <div class="absolute inset-0 opacity-[0.12]" style="background-image: radial-gradient(var(--gold) 0.5px, transparent 0.5px); background-size: 40px 40px;"></div>
     <div class="absolute inset-0 bg-gradient-to-b from-[var(--obsidian)] via-transparent to-[var(--obsidian)]"></div>
   </div>
@@ -44,10 +39,15 @@ const isFull = variant === 'full';
 </section>
 
 <style>
+  .page-hero {
+    isolation: isolate;
+    padding-top: max(96px, calc(var(--nav-safe, 72px) + 28px));
+  }
+
   @media (max-height: 760px) {
     .page-hero {
       min-height: auto !important;
-      padding-top: 96px !important;
+      padding-top: max(88px, calc(var(--nav-safe, 64px) + 20px)) !important;
       padding-bottom: 72px !important;
     }
   }
@@ -103,33 +103,11 @@ const isFull = variant === 'full';
 </style>
 
 <script>
-  import gsap from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
   function initPageHero() {
-    gsap.registerPlugin(ScrollTrigger);
-
     const content = document.querySelector('.ph-content');
     if (content) {
       requestAnimationFrame(() => content.classList.add('is-active'));
     }
-
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.innerHeight <= 760) return;
-
-    const hero = document.querySelector('.page-hero');
-    const bg = document.querySelector('.page-hero-bg');
-    if (!hero || !bg) return;
-
-    gsap.to(bg, {
-      yPercent: 20,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: hero,
-        start: 'top top',
-        end: 'bottom top',
-        scrub: true,
-      },
-    });
   }
 
   document.addEventListener('astro:page-load', initPageHero);
