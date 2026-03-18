@@ -272,8 +272,22 @@ export function invoiceSubtotal(inv: Invoice): number {
   return inv.lineItems.reduce((s, l) => s + l.quantity * l.rate, 0)
 }
 
+/** Compute taxable subtotal (only line items marked taxable) */
+export function invoiceTaxableSubtotal(inv: Invoice): number {
+  return inv.lineItems
+    .filter((l) => l.taxable)
+    .reduce((s, l) => s + l.quantity * l.rate, 0)
+}
+
+/** Compute invoice tax amount (products/equipment only) */
+export function invoiceTaxAmount(inv: Invoice): number {
+  const rate = inv.taxRate ?? 0
+  if (rate <= 0) return 0
+  return invoiceTaxableSubtotal(inv) * (rate / 100)
+}
+
 /** Compute invoice grand total (with tax) */
 export function invoiceTotal(inv: Invoice): number {
   const sub = invoiceSubtotal(inv)
-  return inv.taxRate ? sub + sub * (inv.taxRate / 100) : sub
+  return sub + invoiceTaxAmount(inv)
 }

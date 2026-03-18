@@ -1,5 +1,5 @@
 import { Invoice } from '@/lib/types'
-import { formatCurrency, formatDate, invoiceSubtotal } from '@/lib/store'
+import { formatCurrency, formatDate, invoiceSubtotal, invoiceTaxAmount, invoiceTaxableSubtotal } from '@/lib/store'
 
 // Brand tokens — elegant, clean, modern editorial style
 const B = {
@@ -40,7 +40,8 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 export function InvoicePrint({ invoice }: { invoice: Invoice }) {
   const subtotal = invoiceSubtotal(invoice)
-  const taxAmt = invoice.taxRate ? subtotal * (invoice.taxRate / 100) : 0
+  const taxableSubtotal = invoiceTaxableSubtotal(invoice)
+  const taxAmt = invoiceTaxAmount(invoice)
   const total = subtotal + taxAmt
   const isOverdue = invoice.status === 'sent' && new Date(invoice.dueDate) < new Date()
   const displayStatus = isOverdue ? 'overdue' : invoice.status
@@ -270,8 +271,14 @@ export function InvoicePrint({ invoice }: { invoice: Invoice }) {
             
             {(invoice.taxRate ?? 0) > 0 && (
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', fontSize: 14, color: B.slate600 }}>
-                <span>Tax ({invoice.taxRate}%)</span>
+                <span>Tax ({invoice.taxRate}% on products)</span>
                 <span style={{ fontFamily: 'monospace' }}>{formatCurrency(taxAmt)}</span>
+              </div>
+            )}
+            {taxAmt > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0 12px', fontSize: 12, color: B.slate400 }}>
+                <span>Taxable subtotal</span>
+                <span style={{ fontFamily: 'monospace' }}>{formatCurrency(taxableSubtotal)}</span>
               </div>
             )}
             

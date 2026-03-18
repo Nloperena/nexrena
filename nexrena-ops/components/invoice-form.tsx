@@ -6,6 +6,12 @@ import { NEXRENA_SERVICES, DEFAULT_PAYMENT_TERMS, NET_TERMS_OPTIONS } from '@/li
 import { Btn, Field, inputCls, selectCls } from '@/components/ui'
 
 const STATUSES: InvoiceStatus[] = ['draft', 'sent', 'paid', 'overdue', 'cancelled']
+const DEFAULT_PRODUCT_TAX_RATE = 7.5
+
+function isLikelyTaxableProduct(description: string): boolean {
+  if (!description) return false
+  return /(amazon|equipment|adapter|splitter|hdmi|ethernet|shipping|extender|cable|product)/i.test(description)
+}
 
 function LineItemRow({ item, onChange, onRemove }: {
   item: InvoiceLineItem; onChange: (item: InvoiceLineItem) => void; onRemove: () => void
@@ -21,7 +27,7 @@ function LineItemRow({ item, onChange, onRemove }: {
         {isCustom ? (
           <div className="flex gap-1">
             <input className={inputCls} value={item.description}
-              onChange={e => onChange({ ...item, description: e.target.value })}
+              onChange={e => onChange({ ...item, description: e.target.value, taxable: isLikelyTaxableProduct(e.target.value) })}
               placeholder="Custom service description" />
             <button type="button" onClick={() => setIsCustom(false)}
               className="text-[10px] text-slate-400 hover:text-gold shrink-0 px-1 transition-colors">list</button>
@@ -30,8 +36,8 @@ function LineItemRow({ item, onChange, onRemove }: {
           <div className="flex gap-1">
             <select className={selectCls} value={item.description}
               onChange={e => {
-                if (e.target.value === '__custom__') { setIsCustom(true); onChange({ ...item, description: '' }) }
-                else onChange({ ...item, description: e.target.value })
+                if (e.target.value === '__custom__') { setIsCustom(true); onChange({ ...item, description: '', taxable: false }) }
+                else onChange({ ...item, description: e.target.value, taxable: isLikelyTaxableProduct(e.target.value) })
               }}>
               <option value="">Select service…</option>
               {NEXRENA_SERVICES.map(s => <option key={s} value={s}>{s}</option>)}
@@ -54,7 +60,17 @@ function LineItemRow({ item, onChange, onRemove }: {
         <span className="text-sm text-gold font-medium tabular-nums">{formatCurrency(item.quantity * item.rate)}</span>
       </div>
       <div className="col-span-1 text-right">
-        <button type="button" onClick={onRemove} className="text-slate-600 hover:text-red-400 text-lg leading-none transition-colors">×</button>
+        <div className="flex flex-col items-end gap-1">
+          <label className="text-[10px] text-slate-500 inline-flex items-center gap-1 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={!!item.taxable}
+              onChange={e => onChange({ ...item, taxable: e.target.checked })}
+            />
+            Tax
+          </label>
+          <button type="button" onClick={onRemove} className="text-slate-600 hover:text-red-400 text-lg leading-none transition-colors">×</button>
+        </div>
       </div>
     </div>
   )
@@ -84,19 +100,20 @@ export function InvoiceForm({ initial, onSave, onClose, nextNumber, contacts }: 
     netTerms: 'net15',
     issueDate: new Date().toISOString().slice(0, 10),
     dueDate: computeDueDate(new Date().toISOString().slice(0, 10), 'net15'),
-    lineItems: [{ id: genId(), description: '', quantity: 1, rate: 0 }],
+    lineItems: [{ id: genId(), description: '', quantity: 1, rate: 0, taxable: false }],
     notes: DEFAULT_PAYMENT_TERMS,
-    taxRate: 0,
+    taxRate: DEFAULT_PRODUCT_TAX_RATE,
   })
 
   const set = (k: keyof Invoice, v: string | number | undefined) => setForm(f => ({ ...f, [k]: v }))
   const setItems = (items: InvoiceLineItem[]) => setForm(f => ({ ...f, lineItems: items }))
-  const addItem = () => setItems([...(form.lineItems ?? []), { id: genId(), description: '', quantity: 1, rate: 0 }])
+  const addItem = () => setItems([...(form.lineItems ?? []), { id: genId(), description: '', quantity: 1, rate: 0, taxable: false }])
   const updateItem = (id: string, item: InvoiceLineItem) => setItems((form.lineItems ?? []).map(l => l.id === id ? item : l))
   const removeItem = (id: string) => setItems((form.lineItems ?? []).filter(l => l.id !== id))
 
   const subtotal = (form.lineItems ?? []).reduce((s, l) => s + l.quantity * l.rate, 0)
-  const taxAmt = form.taxRate ? subtotal * ((form.taxRate ?? 0) / 100) : 0
+  const taxableSubtotal = (form.lineItems ?? []).filter(l => l.taxable).reduce((s, l) => s + l.quantity * l.rate, 0)
+  const taxAmt = form.taxRate ? taxableSubtotal * ((form.taxRate ?? 0) / 100) : 0
   const total = subtotal + taxAmt
 
   const handleTermsChange = (terms: NetTerms) => {
@@ -251,7 +268,7 @@ export function InvoiceForm({ initial, onSave, onClose, nextNumber, contacts }: 
             <span className="text-white tabular-nums">{formatCurrency(subtotal)}</span>
           </div>
           <div className="flex justify-between items-center text-sm gap-2">
-            <span className="text-slate-400">Tax</span>
+            <span className="text-slate-400">Tax (products only)</span>
             <div className="flex items-center gap-1">
               <input type="number" min={0} max={100} step="0.1" className={inputCls + ' w-16 text-center !py-1 text-xs'}
                 value={form.taxRate ?? 0} onChange={e => set('taxRate', Number(e.target.value))} />
@@ -259,6 +276,12 @@ export function InvoiceForm({ initial, onSave, onClose, nextNumber, contacts }: 
             </div>
             <span className="text-white tabular-nums">{formatCurrency(taxAmt)}</span>
           </div>
+          {taxAmt > 0 && (
+            <div className="flex justify-between text-xs text-slate-500 -mt-1">
+              <span>Taxable subtotal</span>
+              <span className="tabular-nums">{formatCurrency(taxableSubtotal)}</span>
+            </div>
+          )}
           <div className="flex justify-between items-baseline border-t border-slate-800/60 pt-3">
             <span className="text-[10px] text-slate-400 uppercase tracking-[0.15em] font-medium">Grand Total</span>
             <span className="text-xl font-serif text-gold font-semibold tabular-nums">{formatCurrency(total)}</span>

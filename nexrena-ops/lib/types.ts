@@ -54,6 +54,7 @@ export interface InvoiceLineItem {
   description: string
   quantity: number
   rate: number
+  taxable?: boolean
 }
 
 export type NetTerms = 'net15' | 'net30' | 'custom'
