@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useInvoices, useExpenses, useProjects, useContacts, formatCurrency, invoiceTotal } from '@/lib/store'
 import { PageHeader, StatCard, SectionCard, SectionHeader } from '@/components/ui'
+import { SafetyWarningReports } from '@/components/safety-warning-reports'
 
 function BarChart({ data, maxVal }: { data: { label: string; value: number; color?: string }[]; maxVal: number }) {
   return (
@@ -143,6 +144,8 @@ export default function ReportsPage() {
           )}
         </SectionCard>
       </div>
+
+      <SafetyWarningReports />
     </div>
   )
 }
