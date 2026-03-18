@@ -20,6 +20,10 @@ function patternMatches(a: number[], b: number[]) {
   return a.length === b.length && a.every((n, i) => n === b[i])
 }
 
+function normalizeUsername(value: string) {
+  return value.trim().toLowerCase()
+}
+
 export function FakeAuthGate({ children }: Props) {
   const [hydrated, setHydrated] = useState(false)
   const [unlocked, setUnlocked] = useState(false)
@@ -68,7 +72,9 @@ export function FakeAuthGate({ children }: Props) {
 
   const tryCredentials = (e: React.FormEvent) => {
     e.preventDefault()
-    if (username === AUTH_USER && password === AUTH_PASS) {
+    const isUserMatch = normalizeUsername(username) === normalizeUsername(AUTH_USER)
+    const isPassMatch = password.trim() === AUTH_PASS
+    if (isUserMatch && isPassMatch) {
       setCredentialError('')
       setStep('pattern')
       return
@@ -122,11 +128,31 @@ export function FakeAuthGate({ children }: Props) {
           <form className="space-y-4" onSubmit={tryCredentials}>
             <div>
               <label className="block text-[10px] text-slate-400 tracking-[0.15em] uppercase mb-2 font-medium">Username</label>
-              <input className={inputCls} value={username} onChange={(e) => setUsername(e.target.value)} />
+              <input
+                className={inputCls}
+                autoCorrect="off"
+                autoCapitalize="none"
+                spellCheck={false}
+                autoComplete="username"
+                value={username}
+                onChange={(e) => {
+                  setCredentialError('')
+                  setUsername(e.target.value)
+                }}
+              />
             </div>
             <div>
               <label className="block text-[10px] text-slate-400 tracking-[0.15em] uppercase mb-2 font-medium">Password</label>
-              <input type="password" className={inputCls} value={password} onChange={(e) => setPassword(e.target.value)} />
+              <input
+                type="password"
+                className={inputCls}
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => {
+                  setCredentialError('')
+                  setPassword(e.target.value)
+                }}
+              />
             </div>
             {credentialError && <p className="text-xs text-red-400">{credentialError}</p>}
             <div className="pt-1">
