@@ -266,9 +266,39 @@ const steps = [
     // Observe both desktop and mobile sections
     document.querySelectorAll('#process-wrapper, .process-mobile').forEach(el => videoObserver.observe(el));
   });
+
+  // Toggle play state of SVGs based on active scrolling
+  document.addEventListener('astro:page-load', () => {
+    let scrollTimeout: number | undefined;
+    
+    const onScroll = () => {
+      document.body.classList.add('is-scrolling');
+      clearTimeout(scrollTimeout);
+      scrollTimeout = window.setTimeout(() => {
+        document.body.classList.remove('is-scrolling');
+      }, 150);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    
+    // Cleanup on view transitions
+    document.addEventListener('astro:before-swap', () => {
+      window.removeEventListener('scroll', onScroll);
+      clearTimeout(scrollTimeout);
+      document.body.classList.remove('is-scrolling');
+    }, { once: true });
+  });
 </script>
 
 <style>
+  .process-visual :global(svg *) {
+    animation-play-state: paused !important;
+  }
+  
+  :global(body.is-scrolling) .process-visual :global(svg *) {
+    animation-play-state: running !important;
+  }
+
   .process-frost {
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
