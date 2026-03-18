@@ -3,6 +3,7 @@ const prisma = new PrismaClient()
 
 const WARREN_CONTACT_ID = 'warren-daughtridge-ttag'
 const WARREN_SUBSCRIPTION_ID = 'sub-warren-website-hosting'
+const JOE_CONTACT_ID = 'joe-loperena-furniture-packages'
 
 function firstOfNextMonth() {
   const d = new Date()
@@ -43,6 +44,36 @@ async function seed() {
     },
   })
 
+  await prisma.contact.upsert({
+    where: { id: JOE_CONTACT_ID },
+    create: {
+      id: JOE_CONTACT_ID,
+      name: 'Joe Loperena',
+      company: 'Furniture Packages USA',
+      email: 'accounts@furniturepackagesusa.com',
+      phone: '407-348-8848',
+      billingAddress: '2440 Tesoro Court, Kissimmee, FL 34744',
+      industry: 'other',
+      stage: 'won',
+      value: 0,
+      notes: 'Client record for Furniture Packages USA.',
+      createdAt: now,
+      updatedAt: now,
+    },
+    update: {
+      name: 'Joe Loperena',
+      company: 'Furniture Packages USA',
+      email: 'accounts@furniturepackagesusa.com',
+      phone: '407-348-8848',
+      billingAddress: '2440 Tesoro Court, Kissimmee, FL 34744',
+      industry: 'other',
+      stage: 'won',
+      value: 0,
+      notes: 'Client record for Furniture Packages USA.',
+      updatedAt: now,
+    },
+  })
+
   await prisma.subscription.upsert({
     where: { id: WARREN_SUBSCRIPTION_ID },
     create: {
@@ -70,7 +101,7 @@ async function seed() {
     },
   })
 
-  console.log('Seed complete: Warren Daughtridge (contact + $20/mo Website Hosting subscription)')
+  console.log('Seed complete: Warren Daughtridge + Joe Loperena contacts; Warren hosting subscription')
 }
 
 seed()
