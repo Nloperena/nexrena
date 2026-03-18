@@ -44,8 +44,8 @@ const steps = [
     <!-- Intro Panel — subtle video texture behind cream -->
     <div class="w-screen h-full shrink-0 relative overflow-hidden">
       <video
-        class="absolute inset-0 w-full h-full object-cover opacity-30"
-        autoplay muted loop playsinline preload="metadata"
+        class="process-bg-video absolute inset-0 w-full h-full object-cover opacity-30"
+        muted loop playsinline preload="none"
         poster="/images/showreel-industrial.webp"
       >
         <source src="/videos/showreel-brutalist.webm" type="video/webm" />
@@ -74,8 +74,8 @@ const steps = [
         <!-- Full-bleed background media — kept subtle -->
         {step.media.type === 'video' ? (
           <video
-            class="process-visual absolute inset-0 w-full h-full object-cover opacity-50"
-            autoplay muted loop playsinline preload="metadata"
+            class="process-bg-video process-visual absolute inset-0 w-full h-full object-cover opacity-50"
+            muted loop playsinline preload="none"
             poster={step.media.poster}
           >
             <source src={step.media.src} type="video/webm" />
@@ -140,7 +140,7 @@ const steps = [
         <div class="relative overflow-hidden border-t border-[var(--gold)]/20">
           <div class="aspect-[16/9] w-full relative">
             {step.media.type === 'video' ? (
-              <video class="w-full h-full object-cover opacity-60" autoplay muted loop playsinline preload="metadata" poster={step.media.poster}>
+              <video class="process-bg-video w-full h-full object-cover opacity-60" muted loop playsinline preload="none" poster={step.media.poster}>
                 <source src={step.media.src} type="video/webm" />
               </video>
             ) : (
@@ -231,6 +231,28 @@ const steps = [
   }
 
   document.addEventListener('astro:page-load', initHorizontalScroll);
+
+  // Play videos only when the process section enters the viewport
+  document.addEventListener('astro:page-load', () => {
+    const wrapper = document.getElementById('process-wrapper') ?? document.querySelector('.process-mobile');
+    if (!wrapper) return;
+
+    const videoObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const videos = entry.target.querySelectorAll<HTMLVideoElement>('video.process-bg-video');
+        videos.forEach(v => {
+          if (entry.isIntersecting) {
+            v.play().catch(() => {});
+          } else {
+            v.pause();
+          }
+        });
+      });
+    }, { threshold: 0.1 });
+
+    // Observe both desktop and mobile sections
+    document.querySelectorAll('#process-wrapper, .process-mobile').forEach(el => videoObserver.observe(el));
+  });
 </script>
 
 <style>

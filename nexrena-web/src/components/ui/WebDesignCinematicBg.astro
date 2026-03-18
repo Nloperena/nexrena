@@ -7,11 +7,15 @@ const { class: className = '' } = Astro.props;
 </div>
 
 <script>
+  import { canUseCanvas } from '@/lib/perf';
+
   let cleanupWireframe: (() => void) | null = null;
 
   function initWebDesignWireframe() {
     cleanupWireframe?.();
     cleanupWireframe = null;
+
+    if (!canUseCanvas()) return;
 
     const canvas = document.getElementById('web-design-wireframe-canvas') as HTMLCanvasElement | null;
     if (!canvas) return;
@@ -22,6 +26,7 @@ const { class: className = '' } = Astro.props;
     let t = 0;
     const LOOP = 26;
     let raf = 0;
+    let isVisible = false;
 
     const eio = (x: number) => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
     const eo = (x: number) => 1 - (1 - x) * (1 - x);
@@ -334,8 +339,18 @@ const { class: className = '' } = Astro.props;
       raf = requestAnimationFrame(draw);
     }
 
-    draw();
-    cleanupWireframe = () => cancelAnimationFrame(raf);
+    // Pause rendering when the card is off-screen
+    const card = canvas.closest('.service-stack-card') ?? canvas.parentElement;
+    const visObs = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (isVisible) requestAnimationFrame(draw);
+    }, { threshold: 0.05 });
+    if (card) visObs.observe(card);
+
+    cleanupWireframe = () => {
+      cancelAnimationFrame(raf);
+      visObs.disconnect();
+    };
   }
 
   document.addEventListener('astro:page-load', initWebDesignWireframe);

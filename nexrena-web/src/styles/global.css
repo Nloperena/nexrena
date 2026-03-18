@@ -67,17 +67,23 @@
   --text-h3:     clamp(24px, 2.5vw, 36px);
   --text-body:   18px;
   --text-label:  11px;
+  --nav-safe: 72px;
+}
+
+@media (max-height: 760px) {
+  :root {
+    --nav-safe: 64px;
+  }
 }
 
 /* scroll-behavior: smooth causes multi-second delays on Astro view transitions.
    Smooth scrolling for anchor links is handled by JS where needed. */
 
-@media (hover: hover) and (pointer: fine) {
-  html,
-  body,
-  body * {
-    cursor: none !important;
-  }
+/* cursor: none is applied only after the custom cursor JS initialises
+   (added via JS on pointer-fine devices), preventing a flash of no cursor. */
+.custom-cursor-active,
+.custom-cursor-active * {
+  cursor: none !important;
 }
 
 body {
@@ -203,7 +209,6 @@ h1, h2, h3, .font-display {
 .reveal {
   transform: translateY(40px);
   opacity: 0;
-  will-change: transform, opacity;
   transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), 
               opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
   transition-delay: calc(var(--i, 0) * 90ms);
@@ -217,7 +222,6 @@ h1, h2, h3, .font-display {
 .reveal-scale {
   transform: translateY(40px) scale(0.96);
   opacity: 0;
-  will-change: transform, opacity;
   transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1),
               opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   transition-delay: calc(var(--i, 0) * 90ms);

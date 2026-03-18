@@ -1,4 +1,6 @@
 ---
+import HeaderConceptBg from '../ui/HeaderConceptBg.astro';
+
 interface Props {
   title: string;
   subtitle: string;
@@ -7,12 +9,12 @@ interface Props {
   image?: string;
 }
 
-const { title, subtitle, number, tags, image = '/images/hero-services.webp' } = Astro.props;
+const { title, subtitle, number, tags } = Astro.props;
 ---
 
 <section class="svc-hero relative min-h-[90vh] bg-[var(--obsidian)] overflow-hidden flex items-end pb-24 md:pb-32 pt-32">
   <div class="absolute inset-0 z-0">
-    <img src={image} alt="" class="svc-hero-bg absolute inset-0 w-full h-full object-cover object-center opacity-30 will-change-transform" aria-hidden="true" loading="eager" />
+    <HeaderConceptBg />
     <div class="absolute inset-0 opacity-20" style="background: radial-gradient(circle at 50% 100%, var(--slate-800) 0%, transparent 70%);"></div>
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vh] bg-[var(--gold)] opacity-[0.02] blur-[120px] rounded-full mix-blend-screen"></div>
     <div class="absolute inset-0 grain"></div>
@@ -50,10 +52,15 @@ const { title, subtitle, number, tags, image = '/images/hero-services.webp' } = 
 </section>
 
 <style>
+  .svc-hero {
+    isolation: isolate;
+    padding-top: max(112px, calc(var(--nav-safe, 72px) + 40px));
+  }
+
   @media (max-height: 760px) {
     .svc-hero {
       min-height: auto;
-      padding-top: 96px;
+      padding-top: max(88px, calc(var(--nav-safe, 64px) + 20px));
       padding-bottom: 72px;
     }
   }
@@ -79,25 +86,9 @@ const { title, subtitle, number, tags, image = '/images/hero-services.webp' } = 
 </style>
 
 <script>
-  import gsap from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
   function initSvcHero() {
-    gsap.registerPlugin(ScrollTrigger);
-
     const content = document.querySelector('.svc-content');
     if (content) requestAnimationFrame(() => content.classList.add('is-active'));
-
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.innerHeight <= 760) return;
-    const hero = document.querySelector('.svc-hero');
-    const bg = document.querySelector('.svc-hero-bg');
-    if (!hero || !bg) return;
-
-    gsap.to(bg, {
-      yPercent: 18,
-      ease: 'none',
-      scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true },
-    });
   }
 
   document.addEventListener('astro:page-load', initSvcHero);
