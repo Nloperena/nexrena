@@ -44,13 +44,6 @@ const steps = [
 
     <!-- Intro Panel — subtle video texture behind cream -->
     <div class="w-screen h-full shrink-0 relative overflow-hidden">
-      <video
-        class="process-bg-video absolute inset-0 w-full h-full object-cover opacity-30"
-        muted loop playsinline preload="none"
-        poster="/images/showreel-industrial.webp"
-      >
-        <source src="/videos/showreel-brutalist.webm" type="video/webm" />
-      </video>
       <!-- Cream wash over video -->
       <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(135deg, var(--cream) 30%, rgba(245,240,232,0.6) 100%);"></div>
       <div class="relative z-10 h-full flex flex-col justify-center px-[5vw]">
@@ -266,41 +259,9 @@ const steps = [
     // Observe both desktop and mobile sections
     document.querySelectorAll('#process-wrapper, .process-mobile').forEach(el => videoObserver.observe(el));
   });
-
-  // Play SVGs based on scroll velocity through GSAP ScrollTrigger
-  document.addEventListener('astro:page-load', () => {
-    gsap.registerPlugin(ScrollTrigger);
-    const wrapper = document.getElementById('process-wrapper') ?? document.querySelector('.process-mobile');
-    if (!wrapper) return;
-
-    let timeout: number;
-    
-    ScrollTrigger.create({
-      trigger: wrapper,
-      start: "top bottom",
-      end: "bottom top",
-      onUpdate: (self) => {
-        if (Math.abs(self.getVelocity()) > 50) {
-          document.body.classList.add('is-scrolling');
-          clearTimeout(timeout);
-          timeout = window.setTimeout(() => {
-            document.body.classList.remove('is-scrolling');
-          }, 150);
-        }
-      }
-    });
-  });
 </script>
 
 <style>
-  .process-visual :global(svg *) {
-    animation-play-state: paused !important;
-  }
-  
-  :global(body.is-scrolling) .process-visual :global(svg *) {
-    animation-play-state: running !important;
-  }
-
   .process-frost {
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
