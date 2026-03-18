@@ -5,6 +5,7 @@
   Steps: full-bleed media behind gradient frost that bleeds left→transparent.
 */
 import Eyebrow from '../ui/Eyebrow.astro';
+import { processDiscoverySvg, processStrategySvg, processExecutionSvg, processDeliverySvg } from '../../lib/processSvgs';
 
 const steps = [
   {
@@ -12,28 +13,28 @@ const steps = [
     title: 'Discovery',
     body: 'We audit your existing digital presence, research your competitors, and map the exact gaps between where you are and where buyers expect you to be.',
     proof: 'Week 1: you know exactly where you stand.',
-    media: { type: 'image', src: '/images/process-discovery.webp' },
+    media: { type: 'svg', content: processDiscoverySvg },
   },
   {
     num: '02',
     title: 'Strategy',
     body: "Every engagement starts with a clear roadmap. We define what we're building, why, and exactly what success looks like — before a single pixel moves.",
     proof: 'Scope locked before a single pixel moves.',
-    media: { type: 'image', src: '/images/process-strategy.webp' },
+    media: { type: 'svg', content: processStrategySvg },
   },
   {
     num: '03',
     title: 'Execution',
     body: 'We build fast and iterate in the open. You see progress weekly. No surprises, no handoff delays.',
     proof: 'Weekly progress. No status calls unless you want one.',
-    media: { type: 'video', src: '/videos/showreel-keyboard.webm', poster: '/images/showreel-industrial.webp' },
+    media: { type: 'svg', content: processExecutionSvg },
   },
   {
     num: '04',
     title: 'Delivery',
     body: "Launch isn't the finish line — it's the starting gun. We measure, optimize, and compound from day one.",
     proof: 'Launch day is day one, not the finish line.',
-    media: { type: 'image', src: '/images/process-delivery.webp' },
+    media: { type: 'svg', content: processDeliverySvg },
   },
 ];
 ---
@@ -80,6 +81,12 @@ const steps = [
           >
             <source src={step.media.src} type="video/webm" />
           </video>
+        ) : step.media.type === 'svg' ? (
+          <div 
+            class="process-visual absolute inset-0 w-full h-full opacity-60 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:object-cover" 
+            set:html={step.media.content} 
+            aria-hidden="true"
+          />
         ) : (
           <img
             class="process-visual absolute inset-0 w-full h-full object-cover opacity-50"
@@ -143,6 +150,12 @@ const steps = [
               <video class="process-bg-video w-full h-full object-cover opacity-60" muted loop playsinline preload="none" poster={step.media.poster}>
                 <source src={step.media.src} type="video/webm" />
               </video>
+            ) : step.media.type === 'svg' ? (
+              <div 
+                class="w-full h-full opacity-70 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:object-cover" 
+                set:html={step.media.content} 
+                aria-hidden="true"
+              />
             ) : (
               <img class="w-full h-full object-cover opacity-60" src={step.media.src} alt={step.title} loading="lazy" />
             )}
