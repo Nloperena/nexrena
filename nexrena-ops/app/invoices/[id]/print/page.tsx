@@ -46,7 +46,7 @@ export default function InvoicePrintPage({ params }: { params: { id: string } })
 
   const emailSubject = encodeURIComponent(`Invoice ${invoice.number} from Nexrena LLC`)
   const emailBody = encodeURIComponent(
-    `Hi ${invoice.clientName},\n\nPlease find attached invoice ${invoice.number}.\n\nBest regards,\nNexrena LLC\nhello@nexrena.com`
+    `Hi ${invoice.clientName},\n\nPlease find attached invoice ${invoice.number}.\n\nBest regards,\nNexrena LLC\nNicholasL@Nexrena.com`
   )
   const mailtoHref = `mailto:${invoice.clientEmail ?? ''}?subject=${emailSubject}&body=${emailBody}`
 

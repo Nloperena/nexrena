@@ -22,7 +22,7 @@ Don't use your job title. Use a value proposition.
 > - Furniture Packages USA: +210% organic traffic in 6 months
 >
 > If your website is a brochure when it should be a pipeline, let's talk.
-> hello@nexrena.com | nexrena.com
+> NicholasL@Nexrena.com | nexrena.com
 
 ### Other Profile Settings
 - Banner: Branded Nexrena graphic (obsidian + gold)
