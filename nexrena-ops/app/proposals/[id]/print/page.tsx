@@ -44,7 +44,7 @@ export default function ProposalPrintPage({ params }: { params: { id: string } }
 
   const emailSubject = encodeURIComponent(`Proposal: ${proposal.title} — Nexrena`)
   const emailBody = encodeURIComponent(
-    `Hi ${proposal.clientName},\n\nPlease find attached our proposal for "${proposal.title}."\n\nLooking forward to hearing your thoughts.\n\nBest regards,\nNexrena LLC\nhello@nexrena.com`
+    `Hi ${proposal.clientName},\n\nPlease find attached our proposal for "${proposal.title}."\n\nLooking forward to hearing your thoughts.\n\nBest regards,\nNexrena LLC\nNicholasL@Nexrena.com`
   )
   const mailtoHref = `mailto:${proposal.clientEmail ?? ''}?subject=${emailSubject}&body=${emailBody}`
 

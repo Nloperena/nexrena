@@ -361,7 +361,7 @@ export function InvoicePrint({ invoice }: { invoice: Invoice }) {
             textAlign: 'right', 
             lineHeight: 1.8,
           }}>
-            hello@nexrena.com<br />
+            NicholasL@Nexrena.com<br />
             nexrena.com<br />
             Kissimmee, FL
           </div>

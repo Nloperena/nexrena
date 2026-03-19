@@ -89,7 +89,7 @@ function buildPrintHtml(report: SafetyWarningReport): string {
       <div class="label">Scope Limitation</div>
       <p>${formatMultiline(report.scopeLimitation)}</p>
     </section>
-    <footer class="footer">Nexrena LLC · hello@nexrena.com · nexrena.com</footer>
+    <footer class="footer">Nexrena LLC · NicholasL@Nexrena.com · nexrena.com</footer>
   </main>
 </body>
 </html>`

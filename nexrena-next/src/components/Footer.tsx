@@ -33,8 +33,8 @@ export function Footer() {
               <h4 className="font-mono text-xs tracking-widest text-gold-dim uppercase mb-6">Connect</h4>
               <ul className="flex flex-col gap-4 font-body font-light text-warmWhite/80">
                 <li>
-                  <a href="mailto:hello@nexrena.com" className="hover:text-gold transition-colors">
-                    hello@nexrena.com
+                  <a href="mailto:NicholasL@Nexrena.com" className="hover:text-gold transition-colors">
+                    NicholasL@Nexrena.com
                   </a>
                 </li>
                 <li>

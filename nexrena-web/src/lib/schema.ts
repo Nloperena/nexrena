@@ -11,7 +11,7 @@ export function organizationSchema() {
     logo: `${SITE}/favicon.svg`,
     image: `${SITE}/og-default.png`,
     description: 'Premium B2B digital agency — web design, SEO, full-service growth for mid-size companies.',
-    email: 'hello@nexrena.com',
+    email: 'NicholasL@Nexrena.com',
     foundingDate: '2025',
     founder: {
       '@type': 'Person',
@@ -32,7 +32,7 @@ export function organizationSchema() {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'sales',
-      email: 'hello@nexrena.com',
+      email: 'NicholasL@Nexrena.com',
       availableLanguage: 'English',
     },
     priceRange: '$$$',

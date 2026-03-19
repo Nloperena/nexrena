@@ -16,7 +16,7 @@ Everything you need to look legitimate and be operational. Do these in order.
 - [ ] Request verification (usually a postcard or phone call)
 
 ### Email
-- [ ] hello@nexrena.com working and checked daily
+- [ ] NicholasL@Nexrena.com working and checked daily
 - [ ] Email signature set up (see template below)
 - [ ] Auto-responder off (respond personally to every inquiry)
 
