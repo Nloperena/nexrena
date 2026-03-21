@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-labelledby="titleA descA">
+  <title id="titleA">Nexrena Logo Option A</title>
+  <desc id="descA">Geometric monogram icon with clean wordmark.</desc>
+  <defs>
+    <linearGradient id="gradA" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f5d796"/>
+      <stop offset="100%" stop-color="#b89354"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="300" fill="#050507"/>
+  <g transform="translate(80 60)">
+    <rect x="0" y="0" width="180" height="180" rx="36" fill="none" stroke="url(#gradA)" stroke-width="8"/>
+    <path d="M38 140V40l58 72V40h24v100h-20L62 94v46z" fill="url(#gradA)"/>
+    <path d="M124 40h20c30 0 50 20 50 50 0 15-6 29-17 38l19 12-14 20-28-18c-9 3-19 4-30 4V40zm20 84h19c16 0 27-11 27-26s-11-26-27-26h-19v52z" fill="url(#gradA)"/>
+  </g>
+  <text x="320" y="148" fill="#f8efe0" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="92" font-weight="600" letter-spacing="5">NEXRENA</text>
+  <rect x="325" y="176" width="440" height="4" fill="url(#gradA)"/>
+  <text x="326" y="214" fill="#c9a050" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" letter-spacing="7">BUILD INTELLIGENTLY</text>
+</svg>

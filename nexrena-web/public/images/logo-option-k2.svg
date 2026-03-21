@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-labelledby="titleK2">
+  <title id="titleK2">Nexrena Logo - Globe House Data Nodes</title>
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&amp;family=DM+Mono:wght@400&amp;display=swap');
+      .text-nex { font-family: 'Cormorant Garamond', serif; font-size: 130px; font-weight: 400; fill: #FDFCFA; letter-spacing: -0.02em; }
+      .text-rena { font-family: 'Cormorant Garamond', serif; font-size: 130px; font-weight: 400; fill: #C9A96E; letter-spacing: -0.02em; }
+      .tagline { font-family: 'DM Mono', monospace; font-size: 14px; fill: #7A8A9E; letter-spacing: 0.35em; text-transform: uppercase; }
+    </style>
+  </defs>
+  
+  <rect width="1200" height="300" fill="#0C0F12"/>
+  
+  <g transform="translate(190, 150)">
+    <!-- Tech/Data Globe Grid -->
+    <circle cx="0" cy="0" r="75" fill="none" stroke="#2C3444" stroke-width="1.5" stroke-dasharray="2 4"/>
+    <circle cx="0" cy="0" r="50" fill="none" stroke="#2C3444" stroke-width="1" opacity="0.6"/>
+    
+    <!-- House formed by connected tech nodes -->
+    <path d="M -55 -15 L 0 -70 L 55 -15" fill="none" stroke="#C9A96E" stroke-width="2"/>
+    <path d="M -40 -30 V 45" fill="none" stroke="#9B7D4E" stroke-width="2"/>
+    <path d="M 40 -30 V 45" fill="none" stroke="#9B7D4E" stroke-width="2"/>
+    <path d="M -60 45 L 60 45" fill="none" stroke="#E8D5B0" stroke-width="1.5"/>
+    
+    <!-- Data points -->
+    <circle cx="0" cy="-70" r="4.5" fill="#FDFCFA"/>
+    <circle cx="-55" cy="-15" r="3.5" fill="#C9A96E"/>
+    <circle cx="55" cy="-15" r="3.5" fill="#C9A96E"/>
+    <circle cx="-40" cy="-30" r="2.5" fill="#E8D5B0"/>
+    <circle cx="40" cy="-30" r="2.5" fill="#E8D5B0"/>
+    <circle cx="-40" cy="45" r="3.5" fill="#9B7D4E"/>
+    <circle cx="40" cy="45" r="3.5" fill="#9B7D4E"/>
+    <circle cx="0" cy="45" r="2.5" fill="#E8D5B0"/>
+    
+    <!-- Internal connection -->
+    <line x1="0" y1="-70" x2="0" y2="45" stroke="#9B7D4E" stroke-width="1" opacity="0.5"/>
+  </g>
+  
+  <text x="360" y="175">
+    <tspan class="text-nex">Nex</tspan><tspan class="text-rena">rena</tspan>
+  </text>
+  <text x="366" y="235" class="tagline">Intelligent Dwellings</text>
+</svg>

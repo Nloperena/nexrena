@@ -1,4 +1,6 @@
 ---
+import Logo from '../ui/Logo.astro';
+
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 const navLinks = [
   { label: 'Work', href: '/work' },
@@ -11,9 +13,8 @@ const navLinks = [
 
 <header id="main-nav" class="site-nav" role="banner">
   <div class="site-nav__island">
-    <a href="/" class="site-nav__logo" aria-label="Nexrena home">
-      <span class="site-nav__logo-n">N</span>
-      <span class="site-nav__logo-rest">exrena</span>
+    <a href="/" class="flex items-center" aria-label="Nexrena home">
+      <Logo class="h-6 md:h-7 w-auto" showTagline={false} />
     </a>
 
     <nav class="site-nav__links" aria-label="Main navigation">

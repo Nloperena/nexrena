@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nexrena Logo Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&family=DM+Mono:wght@400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg: #0C0F12;
+        --panel: #1A1E26;
+        --text: #FDFCFA;
+        --muted: #7A8A9E;
+        --border: #2C3444;
+        --gold: #C9A96E;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0; padding: 32px;
+        font-family: 'DM Sans', sans-serif; font-weight: 300;
+        background: var(--bg); color: var(--text);
+      }
+
+      h1 { margin: 0 0 8px; font-size: 28px; font-family: 'Cormorant Garamond', serif; font-weight: 400; }
+      p { margin: 0 0 24px; color: var(--muted); }
+
+      .grid { display: grid; gap: 32px; max-width: 1200px; }
+      .card { border: 1px solid var(--border); border-radius: 12px; background: var(--panel); overflow: hidden; }
+      .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+      .card-header strong { font-size: 16px; font-family: 'Cormorant Garamond', serif; font-weight: 500; color: var(--gold); letter-spacing: 0.05em; }
+      .file { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--muted); }
+      .preview { padding: 24px; display: grid; gap: 24px; }
+      .surface { border: 1px solid #111418; border-radius: 8px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+      .surface.dark { background: #0C0F12; }
+      .surface img { display: block; width: 100%; height: auto; }
+      
+      .hero-card {
+        border-color: var(--gold);
+        box-shadow: 0 0 30px rgba(201, 169, 110, 0.15);
+      }
+      .hero-card .card-header {
+        background: rgba(201, 169, 110, 0.05);
+        border-bottom-color: var(--gold);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Nexrena Logo - Animated K1 Direction</h1>
+    <p>The globe house concept with added volumetric depth, orbital animations, and assembly sequence.</p>
+
+    <div class="grid">
+      <!-- HERO ANIMATED -->
+      <section class="card hero-card">
+        <div class="card-header">
+          <strong>Option K.1 Animated — 3D Seamless Integration</strong>
+          <span class="file">images/logo-option-k1-animated.svg</span>
+        </div>
+        <div class="preview">
+          <div class="surface dark">
+            <!-- Use object tag instead of img for embedded SVG animations to run reliably -->
+            <object type="image/svg+xml" data="./images/logo-option-k1-animated.svg" style="width: 100%; display: block;">
+              <img src="./images/logo-option-k1-animated.svg" alt="Animated Option K1" />
+            </object>
+          </div>
+          <p style="font-size: 13px; text-align: center; margin: 0; color: var(--muted);">
+            <em>(Refresh page to replay the assembly animation)</em>
+          </p>
+        </div>
+      </section>
+
+      <hr style="border-color: #2C3444; margin: 32px 0;">
+      
+      <!-- PREVIOUS ITERATIONS -->
+      <h3>Static Iterations</h3>
+
+      <section class="card">
+        <div class="card-header">
+          <strong>Option K.1 — Seamless Integration (Static)</strong>
+          <span class="file">images/logo-option-k1.svg</span>
+        </div>
+        <div class="preview">
+          <div class="surface dark"><img src="./images/logo-option-k1.svg" alt="Option K1" /></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <strong>Option K.2 — Tech/Data Nodes</strong>
+          <span class="file">images/logo-option-k2.svg</span>
+        </div>
+        <div class="preview">
+          <div class="surface dark"><img src="./images/logo-option-k2.svg" alt="Option K2" /></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <strong>Option K.3 — Architectural Blueprint</strong>
+          <span class="file">images/logo-option-k3.svg</span>
+        </div>
+        <div class="preview">
+          <div class="surface dark"><img src="./images/logo-option-k3.svg" alt="Option K3" /></div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

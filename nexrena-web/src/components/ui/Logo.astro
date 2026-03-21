@@ -1,0 +1,140 @@
+---
+interface Props {
+  class?: string;
+  showTagline?: boolean;
+}
+
+const { class: className = '', showTagline = true } = Astro.props;
+---
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="50 40 1000 220" role="img" aria-label="Nexrena Logo" class={className}>
+  <defs>
+    <style>
+      .logo-text-nex { font-family: 'Cormorant Garamond', serif; font-size: 130px; font-weight: 400; fill: #FDFCFA; letter-spacing: -0.02em; }
+      .logo-text-rena { font-family: 'Cormorant Garamond', serif; font-size: 130px; font-weight: 400; fill: #C9A96E; letter-spacing: -0.02em; }
+      .logo-tagline { font-family: 'DM Mono', monospace; font-size: 14px; fill: #7A8A9E; letter-spacing: 0.35em; text-transform: uppercase; }
+
+      /* Assembly sequence */
+      .assemble-globe {
+        stroke-dasharray: 500;
+        stroke-dashoffset: 500;
+        animation: logo-draw 2s ease-in-out forwards;
+      }
+      
+      .assemble-house {
+        stroke-dasharray: 400;
+        stroke-dashoffset: 400;
+        animation: logo-draw 2.5s ease-in-out 0.5s forwards;
+      }
+      
+      .assemble-walls {
+        stroke-dasharray: 200;
+        stroke-dashoffset: 200;
+        animation: logo-draw 1.5s ease-in-out 1.2s forwards;
+      }
+      
+      .assemble-fade {
+        opacity: 0;
+        animation: logo-fade-in 2s ease-out 2s forwards;
+      }
+      
+      .node-pulse {
+        opacity: 0;
+        animation: logo-fade-in 1s ease-out 2.5s forwards, logo-pulse 3s ease-in-out 2.5s infinite alternate;
+      }
+
+      @keyframes logo-draw {
+        to { stroke-dashoffset: 0; }
+      }
+      
+      @keyframes logo-fade-in {
+        to { opacity: 1; }
+      }
+      
+      @keyframes logo-pulse {
+        0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(245, 215, 150, 0.5)); }
+        100% { transform: scale(1.15); filter: drop-shadow(0 0 8px rgba(245, 215, 150, 0.9)); }
+      }
+    </style>
+    
+    <linearGradient id="logo-gold-depth" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8D5B0" />
+      <stop offset="50%" stop-color="#C9A96E" />
+      <stop offset="100%" stop-color="#9B7D4E" />
+    </linearGradient>
+    
+    <!-- Deep gradient for 3D sphere volume -->
+    <radialGradient id="logo-sphere-vol" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#1A1E26" stop-opacity="0.8"/>
+      <stop offset="60%" stop-color="#0C0F12" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#050507" stop-opacity="1"/>
+    </radialGradient>
+
+    <radialGradient id="logo-sphere-highlight" cx="35%" cy="25%" r="60%">
+      <stop offset="0%" stop-color="#E8D5B0" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#E8D5B0" stop-opacity="0"/>
+    </radialGradient>
+
+    <clipPath id="logo-globe-clip">
+      <circle cx="0" cy="0" r="75"/>
+    </clipPath>
+  </defs>
+  
+  <!-- Transparent background for seamless integration -->
+  
+  <g transform="translate(190, 150)">
+    
+    <!-- 3D Base Volume (fades in) -->
+    <circle cx="0" cy="0" r="75" fill="url(#logo-sphere-vol)" class="assemble-fade"/>
+    <circle cx="0" cy="0" r="75" fill="url(#logo-sphere-highlight)" class="assemble-fade"/>
+    
+    <!-- Animated orbits in background for 3D motion, clipped to globe -->
+    <g class="assemble-fade" clip-path="url(#logo-globe-clip)">
+      <g>
+        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="20s" repeatCount="indefinite" />
+        <ellipse cx="0" cy="0" rx="75" ry="20" fill="none" stroke="#2C3444" stroke-width="1.5" transform="rotate(45)"/>
+        <circle cx="53" cy="53" r="2.5" fill="#7A8A9E" />
+      </g>
+      <g>
+        <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="24s" repeatCount="indefinite" />
+        <ellipse cx="0" cy="0" rx="75" ry="30" fill="none" stroke="#3D4A5C" stroke-width="1" transform="rotate(-30)"/>
+        <circle cx="-65" cy="-38" r="2" fill="#9B7D4E" />
+      </g>
+    </g>
+
+    <!-- Outer Globe Structure (draws in) -->
+    <path d="M -50 -55 A 75 75 0 1 0 50 -55" fill="none" stroke="#3D4A5C" stroke-width="1.5" class="assemble-globe"/>
+    
+    <!-- Depth/Latitude arc (draws in) -->
+    <ellipse cx="0" cy="0" rx="75" ry="35" fill="none" stroke="#E8D5B0" stroke-width="1" opacity="0.3" class="assemble-globe"/>
+    
+    <!-- Center grid/architectural line (fades in) -->
+    <line x1="0" y1="-75" x2="0" y2="75" stroke="#E8D5B0" stroke-width="1" stroke-dasharray="2 4" opacity="0.4" class="assemble-fade"/>
+
+    <!-- House integration -->
+    <path d="M -75 0 L 0 -75 L 75 0" fill="none" stroke="url(#logo-gold-depth)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="assemble-house"/>
+    
+    <!-- Left wall -->
+    <path d="M -45 28 V -45" fill="none" stroke="#9B7D4E" stroke-width="2.5" stroke-linecap="round" class="assemble-walls"/>
+    <!-- Right wall -->
+    <path d="M 45 28 V -45" fill="none" stroke="#9B7D4E" stroke-width="2.5" stroke-linecap="round" class="assemble-walls"/>
+    
+    <!-- The curved foundation joining the walls along the 3D globe curve -->
+    <path d="M -45 28 C -30 45, 30 45, 45 28" fill="none" stroke="#C9A96E" stroke-width="3" stroke-linecap="round" class="assemble-walls"/>
+    
+    <!-- Central intelligence node (pulses) -->
+    <g class="node-pulse">
+      <circle cx="0" cy="-5" r="4" fill="#FDFCFA"/>
+      <circle cx="0" cy="-5" r="10" fill="none" stroke="#E8D5B0" stroke-width="0.5" opacity="0.5"/>
+    </g>
+    
+  </g>
+  
+  <text x="360" y="175" class="assemble-fade">
+    <tspan class="logo-text-nex">Nex</tspan><tspan class="logo-text-rena">rena</tspan>
+  </text>
+  
+  {showTagline && (
+    <text x="366" y="235" class="logo-tagline assemble-fade">Global Infrastructure</text>
+  )}
+</svg>

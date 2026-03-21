@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-labelledby="titleD">
+  <title id="titleD">Nexrena Logo - Architectural Monogram</title>
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&amp;family=DM+Mono:wght@400&amp;display=swap');
+      .text-nex { font-family: 'Cormorant Garamond', serif; font-size: 130px; font-weight: 400; fill: #FDFCFA; letter-spacing: -0.02em; }
+      .text-rena { font-family: 'Cormorant Garamond', serif; font-size: 130px; font-weight: 400; fill: #C9A96E; letter-spacing: -0.02em; }
+      .tagline { font-family: 'DM Mono', monospace; font-size: 14px; fill: #7A8A9E; letter-spacing: 0.35em; text-transform: uppercase; }
+    </style>
+    <linearGradient id="gold-grad-d" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E8D5B0"/>
+      <stop offset="50%" stop-color="#C9A96E"/>
+      <stop offset="100%" stop-color="#9B7D4E"/>
+    </linearGradient>
+  </defs>
+  
+  <rect width="1200" height="300" fill="#0C0F12"/>
+  
+  <g transform="translate(140, 60)">
+    <!-- Elegant Monoline N -->
+    <path d="M 40 180 V 20 L 140 180 V 20" fill="none" stroke="url(#gold-grad-d)" stroke-width="4" stroke-miterlimit="10"/>
+    <!-- Subtle accent lines -->
+    <line x1="20" y1="20" x2="60" y2="20" stroke="#C9A96E" stroke-width="1.5"/>
+    <line x1="120" y1="180" x2="160" y2="180" stroke="#C9A96E" stroke-width="1.5"/>
+    <!-- Nodes -->
+    <circle cx="40" cy="20" r="4" fill="#FDFCFA"/>
+    <circle cx="140" cy="180" r="4" fill="#FDFCFA"/>
+  </g>
+  
+  <text x="360" y="175">
+    <tspan class="text-nex">Nex</tspan><tspan class="text-rena">rena</tspan>
+  </text>
+  <text x="366" y="235" class="tagline">Intelligent Infrastructure</text>
+</svg>

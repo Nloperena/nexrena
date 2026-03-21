@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-labelledby="titleJ">
+  <title id="titleJ">Nexrena Logo - Kinetic Rings</title>
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&amp;family=DM+Mono:wght@400&amp;display=swap');
+      .text-nex { font-family: 'Cormorant Garamond', serif; font-size: 130px; font-weight: 400; fill: #FDFCFA; letter-spacing: -0.02em; }
+      .text-rena { font-family: 'Cormorant Garamond', serif; font-size: 130px; font-weight: 400; fill: #C9A96E; letter-spacing: -0.02em; }
+      .tagline { font-family: 'DM Mono', monospace; font-size: 14px; fill: #7A8A9E; letter-spacing: 0.35em; text-transform: uppercase; }
+    </style>
+  </defs>
+  
+  <rect width="1200" height="300" fill="#0C0F12"/>
+  
+  <g transform="translate(190, 150)">
+    <!-- Asymmetric offset rings -->
+    <circle cx="-15" cy="-10" r="65" fill="none" stroke="#9B7D4E" stroke-width="1.5" opacity="0.8"/>
+    <circle cx="15" cy="15" r="55" fill="none" stroke="#C9A96E" stroke-width="2"/>
+    <circle cx="0" cy="0" r="85" fill="none" stroke="#E8D5B0" stroke-width="0.75" stroke-dasharray="4 6" opacity="0.6"/>
+    
+    <!-- Nodes on outer dashed ring -->
+    <circle cx="0" cy="-85" r="3" fill="#C9A96E"/>
+    <circle cx="60" cy="60" r="4.5" fill="#FDFCFA"/>
+    <circle cx="-73" cy="42" r="2.5" fill="#9B7D4E"/>
+    
+    <!-- Dynamic orbital nodes -->
+    <circle cx="15" cy="-40" r="6" fill="#E8D5B0"/>
+    <circle cx="-15" cy="55" r="4" fill="#C9A96E"/>
+    
+    <!-- Interconnecting data lines -->
+    <line x1="15" y1="-40" x2="-15" y2="55" stroke="#E8D5B0" stroke-width="1.5" opacity="0.7"/>
+    <line x1="60" y1="60" x2="-15" y2="55" stroke="#FDFCFA" stroke-width="1" opacity="0.4"/>
+    <line x1="15" y1="-40" x2="0" y2="-85" stroke="#C9A96E" stroke-width="1" opacity="0.5"/>
+  </g>
+  
+  <text x="360" y="175">
+    <tspan class="text-nex">Nex</tspan><tspan class="text-rena">rena</tspan>
+  </text>
+  <text x="366" y="235" class="tagline">Intelligent Networks</text>
+</svg>

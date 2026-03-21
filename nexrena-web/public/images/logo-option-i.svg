@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-labelledby="titleI">
+  <title id="titleI">Nexrena Logo - Hexagon Gateway</title>
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&amp;family=DM+Mono:wght@400&amp;display=swap');
+      .text-nex { font-family: 'Cormorant Garamond', serif; font-size: 130px; font-weight: 400; fill: #FDFCFA; letter-spacing: -0.02em; }
+      .text-rena { font-family: 'Cormorant Garamond', serif; font-size: 130px; font-weight: 400; fill: #C9A96E; letter-spacing: -0.02em; }
+      .tagline { font-family: 'DM Mono', monospace; font-size: 14px; fill: #7A8A9E; letter-spacing: 0.35em; text-transform: uppercase; }
+    </style>
+  </defs>
+  
+  <rect width="1200" height="300" fill="#0C0F12"/>
+  
+  <g transform="translate(190, 150)">
+    <!-- Outer Hex -->
+    <polygon points="0,-80 70,-40 70,40 0,80 -70,40 -70,-40" fill="none" stroke="#C9A96E" stroke-width="1.5"/>
+    
+    <!-- Portal framing lines -->
+    <line x1="-70" y1="-40" x2="0" y2="80" stroke="#9B7D4E" stroke-width="1.5"/>
+    <line x1="70" y1="-40" x2="0" y2="80" stroke="#E8D5B0" stroke-width="1.5"/>
+    <line x1="-70" y1="40" x2="70" y2="40" stroke="#C9A96E" stroke-width="1.5" opacity="0.6"/>
+    
+    <!-- Core diamond -->
+    <polygon points="0,-26 23,-13 23,13 0,26 -23,13 -23,-13" fill="#C9A96E" opacity="0.2"/>
+    <polygon points="0,-26 23,-13 23,13 0,26 -23,13 -23,-13" fill="none" stroke="#E8D5B0" stroke-width="2"/>
+    
+    <!-- Central Node -->
+    <circle cx="0" cy="0" r="3.5" fill="#FDFCFA"/>
+    <circle cx="0" cy="-80" r="3" fill="#C9A96E"/>
+  </g>
+  
+  <text x="360" y="175">
+    <tspan class="text-nex">Nex</tspan><tspan class="text-rena">rena</tspan>
+  </text>
+  <text x="366" y="235" class="tagline">Data Architecture</text>
+</svg>
