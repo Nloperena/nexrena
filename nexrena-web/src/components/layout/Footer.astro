@@ -1,18 +1,15 @@
 ---
 import { services } from '../../data/services';
 import { industries } from '../../data/industries';
+import Logo from '../ui/Logo.astro';
 ---
 <footer class="bg-[var(--obsidian)] border-t border-[var(--slate-800)] relative overflow-hidden mt-20" role="contentinfo">
   <div class="max-w-[1320px] mx-auto px-[5vw] py-20">
     <!-- ROW 1 -->
     <div class="footer-row flex flex-col md:flex-row justify-between items-start gap-12 mb-24">
-      <div class="footer-col easter-egg-wordmark">
-        <a href="/" class="font-display text-[64px] md:text-[80px] italic text-[var(--warm-white)] flex">
-          {['N','e','x','r','e','n','a'].map((letter) => (
-            <span class="inline-block transition-transform duration-300 hover:rotate-[15deg] hover:-translate-y-2 hover:text-[var(--gold)]">
-              {letter}
-            </span>
-          ))}
+      <div class="footer-col">
+        <a href="/" class="block w-full max-w-[280px] md:max-w-[320px]" aria-label="Nexrena home">
+          <Logo />
         </a>
       </div>
       

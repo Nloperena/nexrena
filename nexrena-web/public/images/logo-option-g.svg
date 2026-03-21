@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-labelledby="titleG">
+  <title id="titleG">Nexrena Logo - Geodesic Sphere</title>
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&amp;family=DM+Mono:wght@400&amp;display=swap');
+      .text-nex { font-family: 'Cormorant Garamond', serif; font-size: 130px; font-weight: 400; fill: #FDFCFA; letter-spacing: -0.02em; }
+      .text-rena { font-family: 'Cormorant Garamond', serif; font-size: 130px; font-weight: 400; fill: #C9A96E; letter-spacing: -0.02em; }
+      .tagline { font-family: 'DM Mono', monospace; font-size: 14px; fill: #7A8A9E; letter-spacing: 0.35em; text-transform: uppercase; }
+    </style>
+  </defs>
+  
+  <rect width="1200" height="300" fill="#0C0F12"/>
+  
+  <g transform="translate(190, 150)">
+    <!-- Base structural sphere -->
+    <circle cx="0" cy="0" r="75" fill="none" stroke="#2C3444" stroke-width="1"/>
+    
+    <!-- Longitude / Latitude Rings -->
+    <ellipse cx="0" cy="0" rx="75" ry="25" fill="none" stroke="#E8D5B0" stroke-width="1.5" transform="rotate(45)"/>
+    <ellipse cx="0" cy="0" rx="75" ry="25" fill="none" stroke="#9B7D4E" stroke-width="1.5" transform="rotate(-45)"/>
+    
+    <ellipse cx="0" cy="0" rx="25" ry="75" fill="none" stroke="#C9A96E" stroke-width="1.5" opacity="0.8"/>
+    <ellipse cx="0" cy="0" rx="75" ry="25" fill="none" stroke="#C9A96E" stroke-width="1.5" opacity="0.8"/>
+    
+    <!-- Core nodes -->
+    <circle cx="0" cy="0" r="4" fill="#FDFCFA"/>
+    <circle cx="53" cy="-53" r="3" fill="#E8D5B0"/>
+    <circle cx="-53" cy="53" r="3" fill="#E8D5B0"/>
+    <circle cx="-53" cy="-53" r="2" fill="#9B7D4E"/>
+    <circle cx="53" cy="53" r="2" fill="#9B7D4E"/>
+  </g>
+  
+  <text x="360" y="175">
+    <tspan class="text-nex">Nex</tspan><tspan class="text-rena">rena</tspan>
+  </text>
+  <text x="366" y="235" class="tagline">Global Infrastructure</text>
+</svg>

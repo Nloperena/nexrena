@@ -1,0 +1,6 @@
+feat: Add new globe house logo designs and implement animated version site-wide
+
+- Created multiple logo SVG explorations (A through M, including animated K1)
+- Added logo-preview.html to easily view all logo iterations
+- Extracted final animated K1 design into Logo.astro component
+- Implemented Logo.astro in Nav.astro and Footer.astro
