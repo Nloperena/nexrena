@@ -1,4 +1,14 @@
 {
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        { "type": "host", "value": "www.nexrena.com" }
+      ],
+      "destination": "https://nexrena.com/$1",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/favicon.svg",

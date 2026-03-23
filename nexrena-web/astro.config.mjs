@@ -2,7 +2,7 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
-import sitemap from '@astrojs/sitemap';
+import sitemap, { ChangeFreqEnum } from '@astrojs/sitemap';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -23,16 +23,30 @@ export default defineConfig({
       // Remaining URLs (home, about, contact, work, etc.) go to sitemap-pages-0.xml.
       chunks: {
         services: (item) => {
-          if (/\/services\//.test(item.url)) return item;
+          if (/\/services\//.test(item.url)) {
+            item.changefreq = ChangeFreqEnum.WEEKLY;
+            item.priority = 0.9;
+            return item;
+          }
         },
         industries: (item) => {
-          if (/\/industries\//.test(item.url)) return item;
+          if (/\/industries\//.test(item.url)) {
+            item.changefreq = ChangeFreqEnum.WEEKLY;
+            item.priority = 0.8;
+            return item;
+          }
         },
         'resources-blog': (item) => {
-          if (/\/resources\/blog\//.test(item.url)) return item;
+          if (/\/resources\/blog\//.test(item.url)) {
+            item.changefreq = ChangeFreqEnum.WEEKLY;
+            item.priority = 0.8;
+            return item;
+          }
         },
         'resources-other': (item) => {
           if (/\/resources\//.test(item.url) && !/\/resources\/blog\//.test(item.url)) {
+            item.changefreq = ChangeFreqEnum.MONTHLY;
+            item.priority = 0.7;
             return item;
           }
         },
