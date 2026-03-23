@@ -11,7 +11,16 @@ import tailwindcss from '@tailwindcss/vite';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  integrations: [react(), mdx(), sitemap()],
+  trailingSlash: 'always',
+  integrations: [
+    react(),
+    mdx(),
+    sitemap({
+      filter: (page) =>
+        !/\/resources\/blog\/\d+\/$/.test(page) &&
+        !/\/resources\/blog\/category\//.test(page),
+    }),
+  ],
   site: 'https://nexrena.com',
 
   vite: {

@@ -5,6 +5,7 @@ import Button from '../../components/ui/Button.astro';
 import { faqItems } from '../../data/faq';
 import { heroImages } from '../../data/hero-images';
 import { faqPageSchema } from '../../lib/schema';
+import { services } from '../../data/services';
 
 const site = Astro.site?.toString() ?? 'https://nexrena.com';
 const faqUrl = `${site}/resources/faq`;
@@ -28,7 +29,7 @@ const schema = faqPageSchema(faqItems.map((f) => ({ question: f.question, answer
       <div class="section-container max-w-3xl">
         <div class="space-y-12 divide-y divide-[var(--slate-800)]">
           {faqItems.map((item, i) => (
-            <div class="pt-12 first:pt-0 reveal" style={`--i: ${i + 1};`}>
+            <div id={item.id} class="pt-12 first:pt-0 reveal scroll-mt-28" style={`--i: ${i + 1};`}>
               <h2 class="font-display text-[24px] md:text-[28px] text-[var(--warm-white)] mb-4">
                 {item.question}
               </h2>
@@ -37,6 +38,38 @@ const schema = faqPageSchema(faqItems.map((f) => ({ question: f.question, answer
               </p>
             </div>
           ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[var(--obsidian)] py-16 border-t border-[var(--slate-800)]">
+      <div class="section-container">
+        <h2 class="font-display text-[30px] md:text-[40px] text-[var(--warm-white)] mb-8">Related resources</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="p-6 border border-[var(--slate-800)]">
+            <h3 class="font-display text-[24px] text-[var(--warm-white)] mb-4">Core services</h3>
+            <div class="space-y-3">
+              {services.map((service) => (
+                <a href={`/services/${service.id}/`} class="block font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">
+                  {service.title.replace(/\n/g, ' ')}
+                </a>
+              ))}
+            </div>
+          </div>
+          <div class="p-6 border border-[var(--slate-800)]">
+            <h3 class="font-display text-[24px] text-[var(--warm-white)] mb-4">SEO and growth guides</h3>
+            <div class="space-y-3">
+              <a href="/resources/blog/" class="block font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">
+                Visit the blog hub
+              </a>
+              <a href="/resources/blog/seo-audit-checklist/" class="block font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">
+                Read the SEO audit checklist
+              </a>
+              <a href="/resources/blog/website-redesign-process/" class="block font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">
+                Read the website redesign process guide
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </section>

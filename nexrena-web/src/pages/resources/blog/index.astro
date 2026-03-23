@@ -33,11 +33,11 @@ const posts = allPosts.slice(0, POSTS_PER_PAGE);
 
         <!-- Category Filter -->
         <div class="flex flex-wrap gap-3 mb-12">
-          <a href="/resources/blog" class="font-mono text-[11px] uppercase tracking-widest px-4 py-2 border transition-colors bg-[var(--gold)] text-[var(--obsidian)] border-[var(--gold)]">
+          <a href="/resources/blog/" class="font-mono text-[11px] uppercase tracking-widest px-4 py-2 border transition-colors bg-[var(--gold)] text-[var(--obsidian)] border-[var(--gold)]">
             All
           </a>
           {blogCategories.map(cat => (
-            <a href={`/resources/blog/category/${cat.id}`} class="font-mono text-[11px] uppercase tracking-widest px-4 py-2 border border-[var(--slate-700)] text-[var(--slate-300)] hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors">
+            <a href={`/resources/blog/category/${cat.id}/`} class="font-mono text-[11px] uppercase tracking-widest px-4 py-2 border border-[var(--slate-700)] text-[var(--slate-300)] hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors">
               {cat.name}
             </a>
           ))}
@@ -65,7 +65,7 @@ const posts = allPosts.slice(0, POSTS_PER_PAGE);
           <nav class="flex justify-center items-center gap-4 mt-16" aria-label="Blog pagination">
             <span class="font-mono text-[12px] text-[var(--gold)] border border-[var(--gold)] bg-[var(--gold)]/10 px-4 py-2">1</span>
             {Array.from({ length: totalPages - 1 }, (_, i) => i + 2).map(page => (
-              <a href={`/resources/blog/${page}`} class="font-mono text-[12px] text-[var(--slate-400)] border border-[var(--slate-700)] px-4 py-2 hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors">
+              <a href={`/resources/blog/${page}/`} class="font-mono text-[12px] text-[var(--slate-400)] border border-[var(--slate-700)] px-4 py-2 hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors">
                 {page}
               </a>
             ))}

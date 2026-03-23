@@ -1,15 +1,24 @@
 const SITE = 'https://nexrena.com';
 
+export function absoluteUrl(path: string) {
+  const normalized = path === '/' || /\.[a-z0-9]+$/i.test(path)
+    ? path
+    : path.endsWith('/')
+      ? path
+      : `${path}/`;
+  return new URL(normalized, SITE).toString();
+}
+
 export function organizationSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
-    '@id': `${SITE}/#organization`,
+    '@id': `${absoluteUrl('/')}#organization`,
     name: 'Nexrena',
     legalName: 'Nexrena LLC',
-    url: SITE,
-    logo: `${SITE}/favicon.svg`,
-    image: `${SITE}/og-default.png`,
+    url: absoluteUrl('/'),
+    logo: absoluteUrl('/favicon.svg'),
+    image: absoluteUrl('/og-default.png'),
     description: 'Premium B2B digital agency — web design, SEO, full-service growth for mid-size companies.',
     email: 'NicholasL@Nexrena.com',
     foundingDate: '2025',
@@ -52,9 +61,9 @@ export function serviceSchema(service: { id: string; title: string; body: string
     provider: {
       '@type': 'Organization',
       name: 'Nexrena',
-      url: SITE,
+      url: absoluteUrl('/'),
     },
-    url: `${SITE}/services/${service.id}`,
+    url: absoluteUrl(`/services/${service.id}`),
   };
 }
 
@@ -90,7 +99,7 @@ export function itemListSchema(items: Array<{ name: string; url: string }>, list
       '@type': 'ListItem',
       position: i + 1,
       name: item.name,
-      url: item.url,
+      item: item.url,
     })),
   };
 }
@@ -113,16 +122,42 @@ export function articleSchema(article: {
     author: {
       '@type': 'Organization',
       name: 'Nexrena',
-      url: SITE,
+      url: absoluteUrl('/'),
     },
     publisher: {
       '@type': 'Organization',
       name: 'Nexrena',
-      url: SITE,
+      url: absoluteUrl('/'),
       logo: {
         '@type': 'ImageObject',
-        url: `${SITE}/favicon.svg`,
+        url: absoluteUrl('/favicon.svg'),
       },
+    },
+  };
+}
+
+export function caseStudySchema(caseStudy: {
+  name: string;
+  description: string;
+  url: string;
+  datePublished?: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: caseStudy.name,
+    description: caseStudy.description,
+    url: caseStudy.url,
+    ...(caseStudy.datePublished ? { datePublished: caseStudy.datePublished } : {}),
+    author: {
+      '@type': 'Organization',
+      name: 'Nexrena',
+      url: absoluteUrl('/'),
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Nexrena',
+      url: absoluteUrl('/'),
     },
   };
 }

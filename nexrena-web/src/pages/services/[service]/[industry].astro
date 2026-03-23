@@ -8,7 +8,9 @@ import { services } from '@/data/services';
 import { industries } from '@/data/industries';
 import { heroImages } from '@/data/hero-images';
 import { crossContent } from '@/data/cross-content';
-import { webPageSchema, breadcrumbSchema } from '@/lib/schema';
+import { absoluteUrl, webPageSchema, breadcrumbSchema } from '@/lib/schema';
+import { getCollection } from 'astro:content';
+import { getFaqLinkForIndustry, getPreferredBlogCategoriesForServiceIndustry } from '@/data/seo-internal-links';
 
 export function getStaticPaths() {
   const paths: Array<{ params: { service: string; industry: string }; props: { service: typeof services[0]; industry: typeof industries[0] } }> = [];
@@ -25,8 +27,7 @@ export function getStaticPaths() {
 
 const { service, industry } = Astro.props;
 const serviceTitle = service.title.replace(/\n/g, ' ');
-const site = 'https://nexrena.com';
-const pageUrl = `${site}/services/${service.id}/${industry.id}`;
+const pageUrl = absoluteUrl(`/services/${service.id}/${industry.id}`);
 const pageTitle = `${serviceTitle} for ${industry.name}`;
 
 const content = crossContent[`${service.id}/${industry.id}`];
@@ -35,21 +36,27 @@ const pageDescription = content?.intro ?? `${serviceTitle} for ${industry.name.t
 const schema = [
   webPageSchema({ name: pageTitle, description: pageDescription, url: pageUrl }),
   breadcrumbSchema([
-    { name: 'Services', url: `${site}/services` },
-    { name: serviceTitle, url: `${site}/services/${service.id}` },
+    { name: 'Services', url: absoluteUrl('/services') },
+    { name: serviceTitle, url: absoluteUrl(`/services/${service.id}`) },
     { name: industry.name, url: pageUrl },
   ]),
 ];
 
 const industryImage = heroImages[`industries/${industry.id}` as keyof typeof heroImages] ?? heroImages.industries;
+const preferredCategories = new Set(getPreferredBlogCategoriesForServiceIndustry(service.id, industry.id));
+const relatedPosts = (await getCollection('blog'))
+  .filter((post) => preferredCategories.has(post.data.category))
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+  .slice(0, 3);
+const faqLink = getFaqLinkForIndustry(industry.id);
 ---
 
 <Layout title={`${pageTitle} | Nexrena`} description={pageDescription} schema={schema}>
   <main>
     <div class="section-container pt-8 pb-4">
       <Breadcrumb items={[
-        { name: 'Services', url: `${site}/services` },
-        { name: serviceTitle, url: `${site}/services/${service.id}` },
+        { name: 'Services', url: absoluteUrl('/services') },
+        { name: serviceTitle, url: absoluteUrl(`/services/${service.id}`) },
         { name: industry.name, url: pageUrl },
       ]} />
     </div>
@@ -121,6 +128,33 @@ const industryImage = heroImages[`industries/${industry.id}` as keyof typeof her
         </div>
       </section>
     )}
+
+    <section class="bg-[var(--obsidian)] py-16 border-y border-[var(--slate-800)]">
+      <div class="section-container">
+        <div class="flex items-end justify-between gap-6 mb-8">
+          <div>
+            <h3 class="font-display text-[30px] text-[var(--warm-white)]">Related guides</h3>
+            <p class="font-body text-[15px] text-[var(--slate-400)] mt-2">
+              Supporting resources for {industry.name.toLowerCase()} teams evaluating {serviceTitle.toLowerCase()}.
+            </p>
+          </div>
+          <a href={faqLink.href} class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-wider hover:text-[var(--gold-light)] transition-colors">
+            {faqLink.title} &rarr;
+          </a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {relatedPosts.map((post) => (
+            <a href={`/resources/blog/${post.slug}/`} class="block p-6 border border-[var(--slate-800)] hover:border-[var(--gold)]/40 transition-colors">
+              <span class="font-mono text-[10px] uppercase tracking-wider text-[var(--gold)]">
+                {post.data.category.replace('-', ' ')}
+              </span>
+              <h4 class="font-display text-[22px] text-[var(--warm-white)] mt-3 mb-3 leading-tight">{post.data.title}</h4>
+              <p class="font-body text-[14px] text-[var(--slate-400)] line-clamp-3">{post.data.description}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
 
     <section class="bg-[var(--cream)] py-24 md:py-32 text-[var(--obsidian)]">
       <div class="section-container">

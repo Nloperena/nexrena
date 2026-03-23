@@ -23,6 +23,7 @@ const posts = (await getCollection('blog'))
 <Layout 
   title={`${category.name} Articles | Nexrena`}
   description={category.description}
+  noindex={true}
 >
   <main>
     <PageHero 

@@ -9,7 +9,9 @@ import Button from '../../components/ui/Button.astro';
 import { services } from '../../data/services';
 import { industries } from '../../data/industries';
 import { heroImages } from '../../data/hero-images';
-import { serviceSchema, breadcrumbSchema } from '../../lib/schema';
+import { absoluteUrl, serviceSchema, breadcrumbSchema } from '../../lib/schema';
+import { getCollection } from 'astro:content';
+import { getPreferredBlogCategoriesForService } from '../../data/seo-internal-links';
 
 export function getStaticPaths() {
   return services.map((service, i) => ({
@@ -21,15 +23,19 @@ export function getStaticPaths() {
 const { service } = Astro.props;
 const serviceTitle = service.title.replace(/\n/g, ' ');
 const serviceImage = heroImages[`services/${service.id}` as keyof typeof heroImages] ?? heroImages.services;
-const site = 'https://nexrena.com';
-const serviceUrl = `${site}/services/${service.id}`;
+const serviceUrl = absoluteUrl(`/services/${service.id}`);
 const schema = [
   serviceSchema(service),
   breadcrumbSchema([
-    { name: 'Services', url: `${site}/services` },
+    { name: 'Services', url: absoluteUrl('/services') },
     { name: serviceTitle, url: serviceUrl },
   ]),
 ];
+const preferredCategories = new Set(getPreferredBlogCategoriesForService(service.id));
+const relatedPosts = (await getCollection('blog'))
+  .filter((post) => preferredCategories.has(post.data.category))
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+  .slice(0, 3);
 ---
 
 <Layout 
@@ -40,7 +46,7 @@ const schema = [
   <main>
     <div class="section-container pt-8 pb-4">
       <Breadcrumb items={[
-        { name: 'Services', url: `${site}/services` },
+        { name: 'Services', url: absoluteUrl('/services') },
         { name: serviceTitle, url: serviceUrl },
       ]} />
     </div>
@@ -77,13 +83,40 @@ const schema = [
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {industries.map((industry) => (
             <div class="flex flex-col gap-2">
-              <a href={`/industries/${industry.id}`} class="font-body text-[15px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors font-medium">
+              <a href={`/industries/${industry.id}/`} class="font-body text-[15px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors font-medium">
                 {industry.name}
               </a>
-              <a href={`/services/${service.id}/${industry.id}`} class="font-mono text-[11px] text-[var(--slate-400)] hover:text-[var(--gold)] transition-colors">
+              <a href={`/services/${service.id}/${industry.id}/`} class="font-mono text-[11px] text-[var(--slate-400)] hover:text-[var(--gold)] transition-colors">
                 {serviceTitle} for {industry.name} →
               </a>
             </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[var(--obsidian)] py-16 border-t border-[var(--slate-800)]">
+      <div class="section-container">
+        <div class="flex items-end justify-between gap-6 mb-8">
+          <div>
+            <h3 class="font-display text-[30px] text-[var(--warm-white)]">Related guides</h3>
+            <p class="font-body text-[15px] text-[var(--slate-400)] mt-2">
+              Supporting resources for teams evaluating {serviceTitle.toLowerCase()}.
+            </p>
+          </div>
+          <a href="/resources/faq/" class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-wider hover:text-[var(--gold-light)] transition-colors">
+            Browse FAQ &rarr;
+          </a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {relatedPosts.map((post) => (
+            <a href={`/resources/blog/${post.slug}/`} class="block p-6 border border-[var(--slate-800)] hover:border-[var(--gold)]/40 transition-colors">
+              <span class="font-mono text-[10px] uppercase tracking-wider text-[var(--gold)]">
+                {post.data.category.replace('-', ' ')}
+              </span>
+              <h4 class="font-display text-[22px] text-[var(--warm-white)] mt-3 mb-3 leading-tight">{post.data.title}</h4>
+              <p class="font-body text-[14px] text-[var(--slate-400)] line-clamp-3">{post.data.description}</p>
+            </a>
           ))}
         </div>
       </div>

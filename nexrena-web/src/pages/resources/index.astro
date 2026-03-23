@@ -17,8 +17,8 @@ const featuredPosts = allPosts.slice(0, 3);
 const recentPosts = allPosts.slice(3, 9);
 
 const hubs = [
-  { href: '/resources/blog', icon: '01', label: 'Blog', title: 'Articles & Guides', desc: 'B2B website redesign checklists, SEO for manufacturers, and growth strategies that compound.', count: allPosts.length },
-  { href: '/resources/faq', icon: '02', label: 'FAQ', title: 'Frequently Asked Questions', desc: 'Timelines, pricing, and how we work with B2B companies. Direct answers — no runaround.' },
+  { href: '/resources/blog/', icon: '01', label: 'Blog', title: 'Articles & Guides', desc: 'B2B website redesign checklists, SEO for manufacturers, and growth strategies that compound.', count: allPosts.length },
+  { href: '/resources/faq/', icon: '02', label: 'FAQ', title: 'Frequently Asked Questions', desc: 'Timelines, pricing, and how we work with B2B companies. Direct answers — no runaround.' },
 ];
 ---
 
@@ -71,14 +71,14 @@ const hubs = [
               Start here.
             </h2>
           </div>
-          <a href="/resources/blog" class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest hover:text-[var(--gold-light)] transition-colors reveal" style="--i: 1;">
+          <a href="/resources/blog/" class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest hover:text-[var(--gold-light)] transition-colors reveal" style="--i: 1;">
             View all articles &rarr;
           </a>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           {featuredPosts.map((post, i) => (
-            <a href={`/resources/blog/${post.slug}`} class="featured-card group block border border-[var(--slate-800)] hover:border-[var(--gold)]/40 transition-all relative overflow-hidden">
+            <a href={`/resources/blog/${post.slug}/`} class="featured-card group block border border-[var(--slate-800)] hover:border-[var(--gold)]/40 transition-all relative overflow-hidden">
               <div class="absolute top-0 left-0 w-full h-[2px] bg-[var(--gold)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500" aria-hidden="true"></div>
               <div class="p-8">
                 <div class="flex items-center gap-3 mb-6">
@@ -116,7 +116,7 @@ const hubs = [
           {blogCategories.map((cat, i) => {
             const count = allPosts.filter(p => p.data.category === cat.id).length;
             return (
-              <a href={`/resources/blog/category/${cat.id}`} class="cat-card group flex items-center justify-between p-6 border border-[var(--slate-800)] hover:border-[var(--gold)]/30 transition-all">
+              <a href={`/resources/blog/category/${cat.id}/`} class="cat-card group flex items-center justify-between p-6 border border-[var(--slate-800)] hover:border-[var(--gold)]/30 transition-all">
                 <div>
                   <h3 class="font-display text-[22px] text-[var(--warm-white)] group-hover:text-[var(--gold)] transition-colors mb-1">{cat.name}</h3>
                   <span class="font-mono text-[10px] text-[var(--slate-500)] uppercase tracking-wider">{count} articles</span>
@@ -140,7 +140,7 @@ const hubs = [
                 Latest thinking.
               </h2>
             </div>
-            <a href="/resources/blog" class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest hover:text-[var(--gold-light)] transition-colors reveal" style="--i: 1;">
+            <a href="/resources/blog/" class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest hover:text-[var(--gold-light)] transition-colors reveal" style="--i: 1;">
               View all &rarr;
             </a>
           </div>

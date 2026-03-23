@@ -13,7 +13,7 @@ import { blogCategories } from '../../data/blog-categories';
 const cat = blogCategories.find(c => c.id === category);
 ---
 
-<a href={`/resources/blog/${slug}`} class="group block p-6 border border-[var(--slate-800)] hover:border-[var(--gold)] transition-colors reveal">
+<a href={`/resources/blog/${slug}/`} class="group block p-6 border border-[var(--slate-800)] hover:border-[var(--gold)] transition-colors reveal">
   <div class="flex items-center gap-3 mb-3">
     <span class="font-mono text-[10px] text-[var(--gold-dim)] uppercase tracking-widest">
       {publishedAt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
