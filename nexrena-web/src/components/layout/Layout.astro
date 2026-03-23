@@ -17,6 +17,10 @@ interface Props {
   description?: string;
   schema?: object | object[];
   ogImage?: string;
+  ogType?: 'website' | 'article';
+  articlePublishedTime?: string;
+  articleAuthor?: string;
+  noindex?: boolean;
 }
 
 const {
@@ -24,33 +28,42 @@ const {
   description = 'Premium B2B digital agency — web design, SEO, full-service growth.',
   schema,
   ogImage = 'https://nexrena.com/og-default.png',
+  ogType = 'website',
+  articlePublishedTime,
+  articleAuthor,
+  noindex = false,
 } = Astro.props;
 
 const site = Astro.site?.toString() ?? 'https://nexrena.com';
-const canonical = new URL(Astro.url.pathname, site).toString();
+const path = Astro.url.pathname;
+const normalizedPath = path === '/' || /\.[a-z0-9]+$/i.test(path)
+  ? path
+  : path.endsWith('/')
+    ? path
+    : `${path}/`;
+const canonical = new URL(normalizedPath, site).toString();
 const imageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, site).toString();
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDNLMRMXKW"></script>
-    <script is:inline>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-PDNLMRMXKW');
-    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex,follow" />}
     <link rel="canonical" href={canonical} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={imageUrl} />
     <meta property="og:url" content={canonical} />
+    {ogType === 'article' && articlePublishedTime && (
+      <meta property="article:published_time" content={articlePublishedTime} />
+    )}
+    {ogType === 'article' && articleAuthor && (
+      <meta property="article:author" content={articleAuthor} />
+    )}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
@@ -158,6 +171,26 @@ const imageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, site).t
         'requestIdleCallback' in window
           ? (window as any).requestIdleCallback(cb, { timeout: 300 })
           : setTimeout(cb, 50);
+
+      idle(() => {
+        const gaId = 'G-PDNLMRMXKW';
+        if ((window as any).__nexrenaGtagLoaded) return;
+        (window as any).__nexrenaGtagLoaded = true;
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag(...args: any[]) {
+          window.dataLayer.push(args);
+        }
+
+        (window as any).gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', gaId);
+
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+        document.head.appendChild(script);
+      });
 
       idle(() => {
         // Scroll Progress Bar

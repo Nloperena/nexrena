@@ -7,7 +7,7 @@ import { industries } from '../../data/industries';
 import Eyebrow from '../../components/ui/Eyebrow.astro';
 import CTA from '../../components/sections/CTA.astro';
 import HeaderConceptBg from '../../components/ui/HeaderConceptBg.astro';
-import { articleSchema, breadcrumbSchema } from '../../lib/schema';
+import { absoluteUrl, breadcrumbSchema, caseStudySchema } from '../../lib/schema';
 
 export function getStaticPaths() {
   return projects.map(project => ({
@@ -18,12 +18,16 @@ export function getStaticPaths() {
 
 const { project } = Astro.props;
 const nextProject = projects.find(p => p.id === project.nextProjectId);
-const site = 'https://nexrena.com';
-const projectUrl = `${site}/work/${project.id}`;
+const projectUrl = absoluteUrl(`/work/${project.id}`);
 const description = project.metaDescription || project.background || project.tagline;
 const schema = [
-  articleSchema({ headline: project.name, description, datePublished: project.year, url: projectUrl }),
-  breadcrumbSchema([{ name: 'Work', url: `${site}/work` }, { name: project.name, url: projectUrl }]),
+  caseStudySchema({
+    name: project.name,
+    description,
+    datePublished: `${project.year}-01-01`,
+    url: projectUrl,
+  }),
+  breadcrumbSchema([{ name: 'Work', url: absoluteUrl('/work') }, { name: project.name, url: projectUrl }]),
 ];
 
 const canEmbed = project.embedSite && project.url && project.url !== '#';
@@ -40,7 +44,7 @@ const hasVideo = project.video && !hasVimeo;
       <div class="absolute inset-0 bg-gradient-to-t from-[var(--obsidian)] via-[var(--obsidian)]/60 to-transparent pointer-events-none"></div>
 
       <div class="relative z-10 w-full max-w-[1320px] mx-auto px-[5vw] pb-20 md:pb-28">
-        <Breadcrumb items={[{ name: 'Work', url: `${site}/work` }, { name: project.name, url: projectUrl }]} />
+        <Breadcrumb items={[{ name: 'Work', url: absoluteUrl('/work') }, { name: project.name, url: projectUrl }]} />
 
         <div class="mt-8 flex flex-wrap items-center gap-4 hero-fade" style="--d:0">
           <span class="font-mono text-[11px] text-[var(--gold-dim)] uppercase tracking-[0.2em]">{project.category}</span>
