@@ -3,17 +3,65 @@
     @keyframes spinCW { 100% { transform: rotate(360deg); } }
     @keyframes spinCCW { 100% { transform: rotate(-360deg); } }
     @keyframes slowPulse {
-      0%, 100% { opacity: 0.4; transform: scale(0.95); }
-      50% { opacity: 0.8; transform: scale(1.05); }
+      0%, 100% { transform: scale(0.96); opacity: 0.9; }
+      50% { transform: scale(1.06); opacity: 1; }
     }
-    
-    .ring-outer { transform-origin: center; animation: spinCW 12s linear infinite, slowPulse 4s ease-in-out infinite; }
-    .ring-inner { transform-origin: center; animation: spinCCW 8s linear infinite; }
+
+    .outer-ring {
+      transform-origin: center;
+      animation: spinCW 11s linear infinite, slowPulse 3.2s ease-in-out infinite;
+    }
+
+    .inner-ring {
+      transform-origin: center;
+      animation: spinCCW 7.5s linear infinite;
+    }
+
+    .node {
+      transform-origin: center;
+      animation: slowPulse 2.1s ease-in-out infinite;
+    }
   </style>
 
-  <circle cx="32" cy="32" r="20" fill="none" stroke="#b89354" stroke-width="1" stroke-dasharray="4 8" class="ring-outer" />
-  
-  <circle cx="32" cy="32" r="12" fill="none" stroke="#f5d796" stroke-width="0.5" stroke-dasharray="2 4" class="ring-inner" opacity="0.6" />
-  
-  <circle cx="32" cy="32" r="28" fill="none" stroke="#5a7a7a" stroke-width="0.5" opacity="0.15" />
+  <defs>
+    <filter id="idleGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1.6" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <circle cx="32" cy="32" r="28" fill="#0c0f12" opacity="0.45" />
+  <circle cx="32" cy="32" r="27" fill="none" stroke="#e8d5b0" stroke-width="1.8" opacity="0.45" />
+
+  <g filter="url(#idleGlow)">
+    <circle
+      cx="32"
+      cy="32"
+      r="20"
+      fill="none"
+      stroke="#c9a96e"
+      stroke-width="2.4"
+      stroke-linecap="round"
+      stroke-dasharray="8 8"
+      class="outer-ring"
+    />
+
+    <circle
+      cx="32"
+      cy="32"
+      r="12"
+      fill="none"
+      stroke="#f5d796"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-dasharray="4 5"
+      class="inner-ring"
+      opacity="0.95"
+    />
+
+    <circle cx="32" cy="32" r="2.6" fill="#fdfcfa" class="node" />
+  </g>
 </svg>

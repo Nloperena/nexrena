@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 336 192" width="336" height="192">
+  <title>Nexrena - Premium Business Card Back</title>
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&amp;family=DM+Sans:wght@600&amp;display=swap');
+      
+      .bg { fill: #050608; }
+      
+      .brand-large { font-family: 'Cormorant Garamond', serif; font-size: 56px; font-weight: 400; letter-spacing: -0.02em; }
+      .tagline { font-family: 'DM Sans', sans-serif; font-size: 6px; font-weight: 600; letter-spacing: 0.35em; fill: #A88D5C; text-transform: uppercase; }
+    </style>
+    
+    <!-- Mathematically perfect isometric / hexagonal structural pattern -->
+    <pattern id="iso" width="24" height="41.568" patternUnits="userSpaceOnUse">
+      <g stroke="#C9A96E" stroke-width="0.3" opacity="0.3" fill="none">
+        <path d="M12,-6.928 L24,0 L24,13.856 L12,20.784 L0,13.856 L0,0 Z" />
+        <line x1="0" y1="0" x2="12" y2="6.928" />
+        <line x1="24" y1="0" x2="12" y2="6.928" />
+        <line x1="12" y1="20.784" x2="12" y2="6.928" />
+        <g transform="translate(12, 20.784)">
+          <path d="M12,-6.928 L24,0 L24,13.856 L12,20.784 L0,13.856 L0,0 Z" />
+          <line x1="0" y1="0" x2="12" y2="6.928" />
+          <line x1="24" y1="0" x2="12" y2="6.928" />
+          <line x1="12" y1="20.784" x2="12" y2="6.928" />
+        </g>
+      </g>
+    </pattern>
+
+    <!-- Radial mask to reveal the isometric pattern at the edges and fade into absolute dark center -->
+    <radialGradient id="center-fade" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#050608" stop-opacity="1"/>
+      <stop offset="45%" stop-color="#050608" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#050608" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Deep Void Background -->
+  <rect width="336" height="192" class="bg" />
+  
+  <!-- Isometric Tech Stack Field -->
+  <rect width="336" height="192" fill="url(#iso)" />
+  
+  <!-- Reveal mask (blocks center pattern, reveals pattern gracefully at the edges) -->
+  <rect width="336" height="192" fill="url(#center-fade)" />
+  
+  <!-- Delicate perimeter foil line mimicking a premium plate/border -->
+  <rect x="8" y="8" width="320" height="176" fill="none" stroke="#C9A96E" stroke-width="0.25" opacity="0.3" />
+
+  <!-- Center Typography (The Star) -->
+  <text x="168" y="106" text-anchor="middle" class="brand-large">
+    <tspan fill="#FDFCFA">Nex</tspan><tspan fill="#C9A96E">rena</tspan>
+  </text>
+  
+  <text x="170" y="134" text-anchor="middle" class="tagline">One partner for your entire tech stack</text>
+</svg>

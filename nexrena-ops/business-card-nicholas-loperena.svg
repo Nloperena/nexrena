@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 336 192" width="336" height="192">
+  <title>Nicholas Loperena - Premium Business Card Front</title>
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&amp;family=DM+Sans:wght@400;500;600&amp;display=swap');
+      
+      .bg { fill: #080A0E; }
+      
+      /* Typography */
+      .name { font-family: 'Cormorant Garamond', serif; font-size: 44px; font-weight: 400; letter-spacing: 0.02em; fill: #FDFCFA; }
+      .title { font-family: 'DM Sans', sans-serif; font-size: 6.5px; font-weight: 600; letter-spacing: 0.3em; fill: #C9A96E; text-transform: uppercase; }
+      
+      .whisper { font-family: 'DM Sans', sans-serif; font-size: 4.5px; font-weight: 500; letter-spacing: 0.35em; fill: #2C3444; text-transform: uppercase; }
+      
+      .contact { font-family: 'DM Sans', sans-serif; font-size: 8px; font-weight: 400; letter-spacing: 0.04em; }
+      
+      .brand-small { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 400; letter-spacing: -0.02em; }
+    </style>
+  </defs>
+
+  <!-- Deep Matte Background -->
+  <rect width="336" height="192" class="bg" />
+  
+  <!-- Architectural Foil Lines (Asymmetric) -->
+  <!-- Horizontal line creating the lower third boundary -->
+  <line x1="36" y1="148" x2="336" y2="148" stroke="#C9A96E" stroke-width="0.5" opacity="0.4" />
+  <!-- Vertical line dropping from top to meet horizontal, anchoring the grid -->
+  <line x1="240" y1="0" x2="240" y2="148" stroke="#C9A96E" stroke-width="0.5" opacity="0.15" />
+
+  <!-- Services: Whispering Edge Text (Breaking Convention) -->
+  <text transform="rotate(-90 14 178)" x="14" y="178" class="whisper">HARDWARE · NETWORKING · SOFTWARE · WEB · SEO</text>
+
+  <!-- Hero Name (Massive, stacked, dominating) -->
+  <text x="36" y="76" class="name">NICHOLAS</text>
+  <text x="36" y="118" class="name">LOPERENA</text>
+  
+  <!-- Title (Sharp, metallic, tracking) -->
+  <text x="38" y="136" class="title">TECHNOLOGY CONSULTANT</text>
+
+  <!-- Contact Grid (Minimal, piped) -->
+  <text x="36" y="164" class="contact">
+    <tspan fill="#C9A96E">407-790-5891</tspan>
+    <tspan fill="#3D4A5C" dx="10">|</tspan>
+    <tspan fill="#FDFCFA" dx="10">nicholas@nexrena.com</tspan>
+  </text>
+  
+  <text x="36" y="178" class="contact">
+    <tspan fill="#C9A96E">nexrena.com</tspan>
+    <tspan fill="#3D4A5C" dx="10">|</tspan>
+    <tspan fill="#FDFCFA" dx="10">nicoloperena.com</tspan>
+  </text>
+
+  <!-- Brand Top Right -->
+  <text x="316" y="32" text-anchor="end" class="brand-small">
+    <tspan fill="#FDFCFA">Nex</tspan><tspan fill="#C9A96E">rena</tspan>
+  </text>
+</svg>
