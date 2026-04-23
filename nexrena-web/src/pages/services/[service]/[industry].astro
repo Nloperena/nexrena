@@ -12,6 +12,11 @@ import { absoluteUrl, webPageSchema, breadcrumbSchema } from '@/lib/schema';
 import { getCollection } from 'astro:content';
 import { getFaqLinkForIndustry, getPreferredBlogCategoriesForServiceIndustry } from '@/data/seo-internal-links';
 
+const KEEP_MATRIX_PATHS = new Set([
+  'web-design/manufacturing',
+  'seo-growth/manufacturing',
+]);
+
 export function getStaticPaths() {
   const paths: Array<{ params: { service: string; industry: string }; props: { service: typeof services[0]; industry: typeof industries[0] } }> = [];
   for (const service of services) {
@@ -26,6 +31,11 @@ export function getStaticPaths() {
 }
 
 const { service, industry } = Astro.props;
+const matrixKey = `${service.id}/${industry.id}`;
+const shouldKeepMatrixPage = KEEP_MATRIX_PATHS.has(matrixKey);
+if (!shouldKeepMatrixPage) {
+  return Astro.redirect(`/services/${service.id}/`, 301);
+}
 const serviceTitle = service.title.replace(/\n/g, ' ');
 const pageUrl = absoluteUrl(`/services/${service.id}/${industry.id}`);
 const pageTitle = `${serviceTitle} for ${industry.name}`;

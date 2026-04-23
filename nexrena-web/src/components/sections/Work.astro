@@ -2,6 +2,12 @@
 import Eyebrow from '../ui/Eyebrow.astro';
 import { projects } from '../../data/projects';
 import { heroImages } from '../../data/hero-images';
+import { normalizeInternalHref } from '@/lib/url';
+
+const projectPriority = ['forzabuilt', 'furniture-packages-usa', 'rugged-red', 'vito-fryfilter'];
+const orderedProjects = [...projects].sort(
+  (a, b) => projectPriority.indexOf(a.id) - projectPriority.indexOf(b.id)
+);
 ---
 
 <section id="work" class="work-section bg-[var(--obsidian)] relative pt-32 pb-0 overflow-hidden">
@@ -16,15 +22,15 @@ import { heroImages } from '../../data/hero-images';
     <div class="section-container relative w-full pb-20 md:pb-24 scroll-scale-up">
       <div class="reveal" style="--i: 0;">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-6">
-        <div>
-          <p class="font-mono text-[10px] text-[var(--gold)] tracking-[0.2em] uppercase mb-4">Case Studies</p>
-          <h2 class="work-intro-title font-display text-[var(--warm-white)] leading-[0.98] tracking-tight max-w-5xl">
-            Growth infrastructure for companies that mean business.
-          </h2>
-        </div>
-        <a href="/work" class="font-mono text-[11px] text-[var(--warm-white)] uppercase tracking-widest border border-[var(--slate-700)] px-8 py-4 hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors rounded-full">
-          View All Case Studies
-        </a>
+          <div>
+            <p class="font-mono text-[10px] text-[var(--gold)] tracking-[0.2em] uppercase mb-4">Case Studies</p>
+            <h2 class="work-intro-title font-display text-[var(--warm-white)] leading-[0.98] tracking-tight max-w-5xl">
+              Growth infrastructure for companies that mean business.
+            </h2>
+          </div>
+          <a href="/work/" class="font-mono text-[11px] text-[var(--warm-white)] uppercase tracking-widest border border-[var(--slate-700)] px-8 py-4 hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors rounded-full" data-cta-zone="work" data-cta-role="secondary">
+            View All Case Studies
+          </a>
         </div>
       </div>
     </div>
@@ -33,24 +39,34 @@ import { heroImages } from '../../data/hero-images';
   <!-- Full Bleed Grid (unveils under sticky intro) -->
   <div class="work-grid-wrap w-full relative z-20">
     <div class="work-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
-      {projects.map((project, i) => {
-        // Eliminate gaps by making items stretch fully within their row
+      {orderedProjects.map((project, i) => {
         const colSpan = i === 0 || i === 3 ? 'md:col-span-2 lg:col-span-2' : 'col-span-1';
         const heightClass = 'min-h-[50vh] md:min-h-[60vh] lg:min-h-[70vh] h-full';
 
         return (
-          <a href={`/work/${project.id}`} class={`work-card block relative bg-transparent overflow-hidden group ${colSpan} ${heightClass}`} style="opacity: 0.3; filter: blur(12px) grayscale(80%);">
-            
-            <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
-              <img src={heroImages[`project/${project.id}` as keyof typeof heroImages] ?? heroImages.work} alt="" class="work-image absolute inset-0 w-full h-full object-cover object-center opacity-60 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-[1.4s] ease-[cubic-bezier(0.16,1,0.3,1)]" aria-hidden="true" loading="lazy" decoding="async" width="1920" height="1080" />
-              <!-- Gradient for text readability -->
-              <div class="absolute inset-0 bg-gradient-to-t from-[var(--obsidian)]/80 via-transparent to-transparent opacity-100 group-hover:opacity-80 transition-opacity duration-700"></div>
+          <a
+            href={normalizeInternalHref(`/work/${project.id}`)}
+            class={`work-card group ${colSpan} ${heightClass}`}
+            data-index={i}
+          >
+            <div class="work-card__media">
+              <img
+                src={heroImages[`project/${project.id}` as keyof typeof heroImages] ?? heroImages.work}
+                alt=""
+                class="work-card__image"
+                aria-hidden="true"
+                loading="lazy"
+                decoding="async"
+                width="1920"
+                height="1080"
+              />
+              <div class="work-card__scrim"></div>
             </div>
 
-            <!-- Content Container (Slides up on hover) -->
-            <div class="absolute inset-0 p-8 md:p-12 flex flex-col justify-end z-10">
-              <div class="transform translate-y-8 group-hover:translate-y-0 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">
-                
+            <div class="work-card__shutter" aria-hidden="true"></div>
+
+            <div class="work-card__content">
+              <div class="work-card__content-inner">
                 <div class="flex items-center gap-4 mb-4">
                   <span class="font-mono text-[10px] text-[var(--gold)] uppercase tracking-widest">
                     0{i + 1}
@@ -64,21 +80,20 @@ import { heroImages } from '../../data/hero-images';
                 <h3 class="font-display text-[48px] md:text-[64px] lg:text-[80px] text-[var(--warm-white)] mb-4 leading-none tracking-tight">
                   {project.name}
                 </h3>
-                
-                <div class="overflow-hidden">
-                  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700 delay-100 ease-[cubic-bezier(0.16,1,0.3,1)]">
+
+                <div class="work-card__meta">
+                  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
                     <p class="font-body text-[16px] md:text-[18px] text-[var(--slate-300)] max-w-md">
                       {project.tagline}
                     </p>
-                    
-                    <div class="w-12 h-12 rounded-full border border-[var(--gold)]/50 flex items-center justify-center text-[var(--gold)] group-hover:bg-[var(--gold)] group-hover:text-[var(--obsidian)] transition-colors duration-300 shrink-0">
+
+                    <div class="work-card__arrow">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M5 12h14M12 5l7 7-7 7"/>
                       </svg>
                     </div>
                   </div>
                 </div>
-
               </div>
             </div>
           </a>
@@ -89,46 +104,42 @@ import { heroImages } from '../../data/hero-images';
 </section>
 
 <script>
-  import gsap from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import { getMotionTier } from '@/lib/perf';
 
   function initWorkCards() {
-    gsap.registerPlugin(ScrollTrigger);
-
     const tier = getMotionTier();
-    if (tier === 'minimal') return;
+    const cards = document.querySelectorAll<HTMLElement>('.work-card');
+    if (!cards.length) return;
 
-    // On reduced-power devices skip the expensive blur/grayscale filter;
-    // use opacity only so cards still reveal on scroll.
-    const useFilter = tier === 'full';
+    // Minimal: skip scroll-linked motion entirely, just reveal.
+    if (tier === 'minimal') {
+      cards.forEach((card) => card.classList.add('is-revealed'));
+      return;
+    }
 
-    const visibleProps = useFilter
-      ? { opacity: 1, filter: 'blur(0px) grayscale(0%)', duration: 1.2, ease: 'power3.out', overwrite: 'auto' }
-      : { opacity: 1, duration: 0.8, ease: 'power3.out', overwrite: 'auto' };
-    const hiddenProps = useFilter
-      ? { opacity: 0.3, filter: 'blur(12px) grayscale(80%)', duration: 1.2, ease: 'power3.out', overwrite: 'auto' }
-      : { opacity: 0.3, duration: 0.8, ease: 'power3.out', overwrite: 'auto' };
+    // Reduced: single-shot reveal, no reverse dimming (cheaper; fewer class flips).
+    const oneShot = tier === 'reduced';
 
-    const cards = document.querySelectorAll('.work-card');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const target = entry.target as HTMLElement;
+          if (entry.isIntersecting) {
+            target.classList.add('is-revealed');
+            if (oneShot) observer.unobserve(target);
+          } else if (!oneShot) {
+            target.classList.remove('is-revealed');
+          }
+        }
+      },
+      {
+        // Reveal when ~25% of the card is in view, re-dim as it leaves.
+        rootMargin: '0px 0px -15% 0px',
+        threshold: [0, 0.25, 0.6],
+      }
+    );
 
-    cards.forEach((card) => {
-      ScrollTrigger.create({
-        trigger: card,
-        start: 'top 75%',
-        end: 'bottom 25%',
-        onEnter:     () => gsap.to(card, visibleProps),
-        onLeave:     () => gsap.to(card, hiddenProps),
-        onEnterBack: () => gsap.to(card, visibleProps),
-        onLeaveBack: () => gsap.to(card, hiddenProps),
-      });
-
-      card.addEventListener('mouseenter', () => {
-        gsap.to(card, useFilter
-          ? { opacity: 1, filter: 'blur(0px) grayscale(0%)', duration: 0.4, overwrite: 'auto' }
-          : { opacity: 1, duration: 0.4, overwrite: 'auto' });
-      });
-    });
+    cards.forEach((card) => observer.observe(card));
   }
 
   document.addEventListener('astro:page-load', initWorkCards);
@@ -143,8 +154,7 @@ import { heroImages } from '../../data/hero-images';
     z-index: 5;
     object-fit: cover;
     object-position: right top;
-    mix-blend-mode: screen;
-    opacity: 0.62;
+    opacity: 0.42;
   }
 
   .work-grid-wrap {
@@ -152,11 +162,174 @@ import { heroImages } from '../../data/hero-images';
     padding-top: 16vh;
   }
 
-  @media (max-height: 760px) {
-    .work-section {
-      padding-top: 96px;
-    }
+  /* ── Card frame ─────────────────────────────────────────────── */
+  .work-card {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: var(--obsidian);
+    isolation: isolate;
+    /* Initial dim state — mimics the "out of focus" feeling from the old
+       blur/grayscale filter without paying the filter compositing cost. */
+    opacity: 0.45;
+    transform: translate3d(0, 16px, 0);
+    clip-path: inset(6% 0% 6% 0%);
+    transition:
+      opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 900ms cubic-bezier(0.16, 1, 0.3, 1),
+      clip-path 1100ms cubic-bezier(0.77, 0, 0.175, 1);
+    will-change: auto;
+  }
 
+  .work-card.is-revealed {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    clip-path: inset(0 0 0 0);
+  }
+
+  .work-card:hover {
+    opacity: 1;
+  }
+
+  /* ── Media layer ────────────────────────────────────────────── */
+  .work-card__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .work-card__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0.62;
+    transform: scale(1.02);
+    transition:
+      opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 1400ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .work-card:hover .work-card__image {
+    opacity: 1;
+    transform: scale(1.045);
+  }
+
+  .work-card__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(12, 15, 18, 0.85) 0%,
+      rgba(12, 15, 18, 0.25) 45%,
+      transparent 75%
+    );
+    opacity: 1;
+    transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .work-card:hover .work-card__scrim {
+    opacity: 0.78;
+  }
+
+  /* ── Gold shutter line ──────────────────────────────────────── */
+  /* One-time sweep that plays when the card reveals. Pure transform,
+     GPU-cheap, and replaces the old continuous blur tween. */
+  .work-card__shutter {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(201, 169, 110, 0.9) 50%,
+      transparent 100%
+    );
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .work-card.is-revealed .work-card__shutter {
+    animation: workShutterSweep 1100ms cubic-bezier(0.77, 0, 0.175, 1) forwards;
+  }
+
+  @keyframes workShutterSweep {
+    0%   { transform: translate3d(0, 0, 0);     opacity: 0; }
+    12%  {                                       opacity: 1; }
+    90%  {                                       opacity: 1; }
+    100% { transform: translate3d(0, 100vh, 0); opacity: 0; }
+  }
+
+  /* ── Content ────────────────────────────────────────────────── */
+  .work-card__content {
+    position: absolute;
+    inset: 0;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    z-index: 3;
+  }
+
+  @media (min-width: 768px) {
+    .work-card__content { padding: 3rem; }
+  }
+
+  .work-card__content-inner {
+    transform: translate3d(0, 2rem, 0);
+    transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .work-card:hover .work-card__content-inner {
+    transform: translate3d(0, 0, 0);
+  }
+
+  .work-card__meta {
+    overflow: hidden;
+  }
+
+  .work-card__meta > div {
+    transform: translate3d(0, 100%, 0);
+    opacity: 0;
+    transition:
+      transform 700ms cubic-bezier(0.16, 1, 0.3, 1) 100ms,
+      opacity 700ms cubic-bezier(0.16, 1, 0.3, 1) 100ms;
+  }
+
+  .work-card:hover .work-card__meta > div {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+
+  .work-card__arrow {
+    width: 3rem;
+    height: 3rem;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    border: 1px solid rgba(201, 169, 110, 0.5);
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 300ms ease, color 300ms ease;
+  }
+
+  .work-card:hover .work-card__arrow {
+    background: var(--gold);
+    color: var(--obsidian);
+  }
+
+  /* ── Layout / breakpoints ───────────────────────────────────── */
+  @media (max-height: 760px) {
+    .work-section { padding-top: 96px; }
     .work-grid-wrap {
       margin-top: -10vh;
       padding-top: 10vh;
@@ -167,14 +340,29 @@ import { heroImages } from '../../data/hero-images';
     .work-intro-title {
       font-size: clamp(40px, 10.5vw, 64px);
     }
-
     .work-grid-wrap {
       margin-top: -8vh;
       padding-top: 8vh;
     }
-
     .work-heading-overlay {
-      opacity: 0.48;
+      opacity: 0.34;
+    }
+  }
+
+  /* ── Reduced motion / reduced tier ──────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .work-card {
+      opacity: 1 !important;
+      transform: none !important;
+      clip-path: none !important;
+      transition: none !important;
+    }
+    .work-card__shutter { display: none; }
+    .work-card__image,
+    .work-card__scrim,
+    .work-card__content-inner,
+    .work-card__meta > div {
+      transition: none !important;
     }
   }
 </style>

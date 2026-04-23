@@ -2,17 +2,17 @@
 import Layout from '../../components/layout/Layout.astro';
 import PageHero from '../../components/sections/PageHero.astro';
 import Eyebrow from '../../components/ui/Eyebrow.astro';
-import Button from '../../components/ui/Button.astro';
 import ClientsStrip from '../../components/sections/ClientsStrip.astro';
 import CTA from '../../components/sections/CTA.astro';
 import { services } from '../../data/services';
 import { heroImages } from '../../data/hero-images';
 import { itemListSchema } from '../../lib/schema';
+import { normalizeInternalHref } from '@/lib/url';
 
 const site = 'https://nexrena.com';
 const serviceItems = services.map((s) => ({
   name: s.title.replace(/\n/g, ' '),
-  url: `${site}/services/${s.id}`,
+  url: `${site}/services/${s.id}/`,
 }));
 
 const process = [
@@ -30,8 +30,8 @@ const process = [
   <main>
     <PageHero 
       eyebrow="WHAT WE BUILD //" 
-      title="Three ways we grow your business."
-      subtitle="Web design. Search growth. Full-service partnerships. Each built for measurable results — not vanity metrics."
+      title="Three ways to work together."
+      subtitle="Senior, full-stack execution across strategy, design, development, and SEO. Selective by design, scoped around measurable outcomes."
       image={heroImages.services}
     />
 
@@ -40,7 +40,7 @@ const process = [
       <div class="max-w-[1320px] mx-auto px-[5vw] py-24 md:py-32">
         <div class="flex flex-col gap-0 divide-y divide-[var(--slate-800)]">
           {services.map((service, i) => (
-            <a href={`/services/${service.id}`} class="svc-row group grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 py-16 lg:py-20 items-start lg:items-center transition-colors relative">
+            <a href={normalizeInternalHref(`/services/${service.id}`)} class="svc-row group grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 py-16 lg:py-20 items-start lg:items-center transition-colors relative">
               <div class="lg:col-span-1 font-display text-[56px] lg:text-[72px] text-[var(--slate-800)] group-hover:text-[var(--gold)] transition-colors leading-none font-light">
                 {service.number}
               </div>
@@ -125,33 +125,33 @@ const process = [
           <div>
             <Eyebrow class="mb-8 !text-[var(--gold-dim)]">WHY NEXRENA //</Eyebrow>
             <h2 class="font-display text-[36px] md:text-[56px] leading-[1.15] font-light mb-8 reveal">
-              One partner. Not four vendors.
+              One senior operator. No handoff tax.
             </h2>
             <div class="font-body text-[17px] leading-relaxed text-[var(--slate-600)] flex flex-col gap-6">
               <p class="reveal" style="--i: 1;">
-                We don't chase vanity metrics. Every line of code, every keyword, every design decision is measured against one goal: measurable business growth.
+                Strategy, design, development, and SEO stay in one execution loop. That means fewer coordination losses and faster time from decision to shipped work.
               </p>
               <p class="reveal" style="--i: 2;">
-                Whether you're a mid-market manufacturer or a high-growth e-commerce brand, we build the infrastructure that lets your sales team close leads instead of chase them.
+                If there is not a clear path to measurable impact, we will say so early. If there is, you get a 90-day plan before any long engagement.
               </p>
             </div>
           </div>
           <div class="grid grid-cols-2 gap-6 reveal" style="--i: 3;">
             <div class="bg-[var(--obsidian)] p-8 flex flex-col justify-between aspect-square">
-              <span class="font-display text-[48px] md:text-[56px] text-[var(--gold)] font-light">96+</span>
-              <span class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-wider">Lighthouse Score</span>
+              <span class="font-display text-[44px] md:text-[56px] text-[var(--gold)] font-light">99%</span>
+              <span class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-wider">SEO Health (Forzabuilt)</span>
             </div>
             <div class="bg-[var(--obsidian)] p-8 flex flex-col justify-between aspect-square">
-              <span class="font-display text-[48px] md:text-[56px] text-[var(--gold)] font-light">3x</span>
-              <span class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-wider">Page Speed Gain</span>
+              <span class="font-display text-[44px] md:text-[56px] text-[var(--gold)] font-light">99%</span>
+              <span class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-wider">Lighthouse Desktop</span>
             </div>
             <div class="bg-[var(--obsidian)] p-8 flex flex-col justify-between aspect-square">
-              <span class="font-display text-[48px] md:text-[56px] text-[var(--gold)] font-light">100%</span>
-              <span class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-wider">Client Retention</span>
+              <span class="font-display text-[44px] md:text-[56px] text-[var(--gold)] font-light">0 to 28</span>
+              <span class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-wider">MQLs in 4 Months</span>
             </div>
             <div class="bg-[var(--obsidian)] p-8 flex flex-col justify-between aspect-square">
-              <span class="font-display text-[48px] md:text-[56px] text-[var(--gold)] font-light">3wk</span>
-              <span class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-wider">First Delivery</span>
+              <span class="font-display text-[44px] md:text-[56px] text-[var(--gold)] font-light">200+</span>
+              <span class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-wider">SKU Migration Scope</span>
             </div>
           </div>
         </div>

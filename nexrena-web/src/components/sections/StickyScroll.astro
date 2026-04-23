@@ -4,9 +4,24 @@ import Eyebrow from '../ui/Eyebrow.astro';
 interface Props {
   statement: string;
   agitation: string;
+  statusQuoTitle?: string;
+  shiftTitle?: string;
+  statusQuoItems?: string[];
+  shiftItems?: string[];
 }
 
-const { statement, agitation } = Astro.props;
+const {
+  statement,
+  agitation,
+  statusQuoTitle = 'The Status Quo',
+  shiftTitle = 'The Nexrena Shift',
+  statusQuoItems = [
+    'Siloed teams blaming each other',
+    "Pretty designs that don't convert",
+    'Traffic that never enters pipeline',
+  ],
+  shiftItems = ['Unified accountability', 'Engineered for conversion', 'High-intent acquisition'],
+} = Astro.props;
 ---
 
 <section class="bg-[var(--cream)] text-[var(--obsidian)] relative z-20">
@@ -32,37 +47,25 @@ const { statement, agitation } = Astro.props;
         
         <div class="mt-24 grid grid-cols-1 sm:grid-cols-2 gap-12 border-t border-[var(--slate-200)] pt-16 reveal" style="--i: 1;">
           <div>
-            <h4 class="font-mono text-[11px] uppercase tracking-widest text-[var(--slate-400)] mb-4">The Status Quo</h4>
+            <h4 class="font-mono text-[11px] uppercase tracking-widest text-[var(--slate-400)] mb-4">{statusQuoTitle}</h4>
             <ul class="space-y-4">
-              <li class="flex items-start gap-3 font-body text-[15px] text-[var(--slate-600)]">
-                <span class="mt-1.5 w-1.5 h-1.5 bg-[var(--slate-300)] shrink-0 rounded-full"></span>
-                Siloed teams blaming each other
-              </li>
-              <li class="flex items-start gap-3 font-body text-[15px] text-[var(--slate-600)]">
-                <span class="mt-1.5 w-1.5 h-1.5 bg-[var(--slate-300)] shrink-0 rounded-full"></span>
-                Pretty designs that don't convert
-              </li>
-              <li class="flex items-start gap-3 font-body text-[15px] text-[var(--slate-600)]">
-                <span class="mt-1.5 w-1.5 h-1.5 bg-[var(--slate-300)] shrink-0 rounded-full"></span>
-                Traffic that never enters pipeline
-              </li>
+              {statusQuoItems.map((item) => (
+                <li class="flex items-start gap-3 font-body text-[15px] text-[var(--slate-600)]">
+                  <span class="mt-1.5 w-1.5 h-1.5 bg-[var(--slate-300)] shrink-0 rounded-full"></span>
+                  {item}
+                </li>
+              ))}
             </ul>
           </div>
           <div>
-            <h4 class="font-mono text-[11px] uppercase tracking-widest text-[var(--gold-dim)] mb-4">The Nexrena Shift</h4>
+            <h4 class="font-mono text-[11px] uppercase tracking-widest text-[var(--gold-dim)] mb-4">{shiftTitle}</h4>
             <ul class="space-y-4">
-              <li class="flex items-start gap-3 font-body text-[15px] text-[var(--obsidian)] font-medium">
-                <span class="mt-1.5 w-1.5 h-1.5 bg-[var(--gold)] shrink-0 rounded-full"></span>
-                Unified accountability
-              </li>
-              <li class="flex items-start gap-3 font-body text-[15px] text-[var(--obsidian)] font-medium">
-                <span class="mt-1.5 w-1.5 h-1.5 bg-[var(--gold)] shrink-0 rounded-full"></span>
-                Engineered for conversion
-              </li>
-              <li class="flex items-start gap-3 font-body text-[15px] text-[var(--obsidian)] font-medium">
-                <span class="mt-1.5 w-1.5 h-1.5 bg-[var(--gold)] shrink-0 rounded-full"></span>
-                High-intent acquisition
-              </li>
+              {shiftItems.map((item) => (
+                <li class="flex items-start gap-3 font-body text-[15px] text-[var(--obsidian)] font-medium">
+                  <span class="mt-1.5 w-1.5 h-1.5 bg-[var(--gold)] shrink-0 rounded-full"></span>
+                  {item}
+                </li>
+              ))}
             </ul>
           </div>
         </div>
