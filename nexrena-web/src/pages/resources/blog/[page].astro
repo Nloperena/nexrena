@@ -5,6 +5,7 @@ import BlogCard from '../../../components/blog/BlogCard.astro';
 import { getCollection } from 'astro:content';
 import { heroImages } from '../../../data/hero-images';
 import { blogCategories } from '../../../data/blog-categories';
+import { normalizeInternalHref } from '@/lib/url';
 
 export async function getStaticPaths() {
   const perPage = 12;
@@ -45,11 +46,11 @@ const { posts, currentPage, totalPages } = Astro.props;
 
         <!-- Category Filter -->
         <div class="flex flex-wrap gap-3 mb-12">
-          <a href="/resources/blog" class="font-mono text-[11px] uppercase tracking-widest px-4 py-2 border transition-colors bg-[var(--gold)] text-[var(--obsidian)] border-[var(--gold)]">
+          <a href="/resources/blog/" class="font-mono text-[11px] uppercase tracking-widest px-4 py-2 border transition-colors bg-[var(--gold)] text-[var(--obsidian)] border-[var(--gold)]">
             All
           </a>
           {blogCategories.map(cat => (
-            <a href={`/resources/blog/category/${cat.id}`} class="font-mono text-[11px] uppercase tracking-widest px-4 py-2 border border-[var(--slate-700)] text-[var(--slate-300)] hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors">
+            <a href={normalizeInternalHref(`/resources/blog/category/${cat.id}`)} class="font-mono text-[11px] uppercase tracking-widest px-4 py-2 border border-[var(--slate-700)] text-[var(--slate-300)] hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors">
               {cat.name}
             </a>
           ))}
@@ -71,7 +72,7 @@ const { posts, currentPage, totalPages } = Astro.props;
         <nav class="flex justify-center items-center gap-4 mt-16" aria-label="Blog pagination">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
             <a 
-              href={page === 1 ? '/resources/blog' : `/resources/blog/${page}`} 
+              href={page === 1 ? '/resources/blog/' : normalizeInternalHref(`/resources/blog/${page}`)} 
               class:list={[
                 'font-mono text-[12px] px-4 py-2 border transition-colors',
                 page === currentPage 

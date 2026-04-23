@@ -1,0 +1,92 @@
+---
+/*
+  BuyerClarity — Fast qualifying block.
+  Three columns that answer "is this for me?", "what will I get?", "what changes?"
+  Placed early in the homepage to accelerate contact-form intent.
+*/
+import Eyebrow from '../ui/Eyebrow.astro';
+
+const audiences = [
+  { label: 'Manufacturers', desc: 'Complex catalogs, technical buyers, long sales cycles.' },
+  { label: 'E-commerce brands', desc: 'Migrating to faster stacks and compounding organic traffic.' },
+  { label: 'Professional services', desc: 'Consulting, legal, accounting, real estate teams selling expertise.' },
+];
+
+const deliverables = [
+  { step: '01', label: 'Week 1 — Audit', desc: 'Full review of site, search visibility, and funnel leaks.' },
+  { step: '02', label: 'Week 2 — Roadmap', desc: 'Prioritized 90-day plan with scope, sequencing, and targets.' },
+  { step: '03', label: 'Week 3+ — Execution', desc: 'Weekly delivery. Visible progress. No status-meeting theater.' },
+];
+
+const outcomes = [
+  { metric: 'Higher lead quality', desc: 'Buyers arrive informed, qualified, and ready to talk.' },
+  { metric: 'Faster page speed', desc: 'Sub-second load times that support rankings and conversions.' },
+  { metric: 'Compounding visibility', desc: 'Organic growth that doesn\'t stop when a budget does.' },
+];
+---
+
+<section class="buyer-clarity relative w-full bg-[var(--obsidian)] border-t border-[var(--slate-800)]">
+  <div class="section-container py-24 md:py-32">
+    <div class="max-w-3xl mb-16 md:mb-20 reveal">
+      <Eyebrow class="mb-6">START HERE //</Eyebrow>
+      <h2 class="font-display text-[clamp(40px,6vw,72px)] text-[var(--warm-white)] leading-[1.05] tracking-tight">
+        A focused 90-day plan — <span class="italic text-[var(--gold)]">built around your buyers</span>, not our portfolio.
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-12">
+      <div class="reveal" style="--i: 1;">
+        <p class="font-mono text-[10px] text-[var(--gold)] tracking-[0.2em] uppercase mb-6">Who this is for</p>
+        <ul class="flex flex-col gap-5">
+          {audiences.map((a) => (
+            <li class="border-l border-[var(--slate-800)] pl-5">
+              <p class="font-display text-[22px] md:text-[24px] text-[var(--warm-white)] leading-tight mb-1">{a.label}</p>
+              <p class="font-body text-[15px] text-[var(--slate-400)] leading-relaxed">{a.desc}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="reveal" style="--i: 2;">
+        <p class="font-mono text-[10px] text-[var(--gold)] tracking-[0.2em] uppercase mb-6">What you get in 90 days</p>
+        <ul class="flex flex-col gap-5">
+          {deliverables.map((d) => (
+            <li class="border-l border-[var(--slate-800)] pl-5">
+              <div class="flex items-baseline gap-3 mb-1">
+                <span class="font-mono text-[11px] text-[var(--gold-dim)]">{d.step}</span>
+                <p class="font-display text-[22px] md:text-[24px] text-[var(--warm-white)] leading-tight">{d.label}</p>
+              </div>
+              <p class="font-body text-[15px] text-[var(--slate-400)] leading-relaxed">{d.desc}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="reveal" style="--i: 3;">
+        <p class="font-mono text-[10px] text-[var(--gold)] tracking-[0.2em] uppercase mb-6">What changes</p>
+        <ul class="flex flex-col gap-5">
+          {outcomes.map((o) => (
+            <li class="border-l border-[var(--slate-800)] pl-5">
+              <p class="font-display text-[22px] md:text-[24px] text-[var(--warm-white)] leading-tight mb-1">{o.metric}</p>
+              <p class="font-body text-[15px] text-[var(--slate-400)] leading-relaxed">{o.desc}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-16 md:mt-20 pt-10 border-t border-[var(--slate-800)] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 reveal" style="--i: 4;">
+      <p class="font-body text-[17px] md:text-[18px] text-[var(--slate-300)] max-w-xl leading-relaxed">
+        Tell us where you are today. We'll come back with a plan — or tell you plainly if we're not the right fit.
+      </p>
+      <a
+        href="/contact/"
+        class="inline-flex h-14 items-center justify-center rounded-full bg-[var(--gold)] px-10 font-mono text-[12px] uppercase tracking-widest text-[var(--obsidian)] hover:bg-[var(--gold-light)] transition-colors focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)]"
+        data-cta-zone="buyer-clarity"
+        data-cta-role="primary"
+      >
+        Get Your 90-Day Growth Plan
+      </a>
+    </div>
+  </div>
+</section>

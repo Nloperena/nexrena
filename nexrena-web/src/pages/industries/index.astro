@@ -5,73 +5,112 @@ import Eyebrow from '../../components/ui/Eyebrow.astro';
 import { industries } from '../../data/industries';
 import { heroImages } from '../../data/hero-images';
 import { itemListSchema } from '../../lib/schema';
+import { normalizeInternalHref } from '@/lib/url';
 
 const site = 'https://nexrena.com';
+const primaryIndustry = industries.find((industry) => industry.id === 'manufacturing') ?? industries[0];
+const adjacentIndustries = industries.filter((industry) => industry.id !== primaryIndustry.id);
+const adjacentIndustryCopy: Record<string, { subhead: string; cta: string }> = {
+  ecommerce: {
+    subhead:
+      'Selective engagements for DTC and B2B ecommerce teams where technical implementation depth is the bottleneck.',
+    cta: 'See ecommerce fit',
+  },
+  'professional-services': {
+    subhead:
+      'Selective engagements for expertise-led firms that need stronger authority positioning and cleaner high-intent lead capture.',
+    cta: 'See services fit',
+  },
+};
 const industryItems = industries.map((i) => ({
   name: i.name,
-  url: `${site}/industries/${i.id}`,
+  url: `${site}/industries/${i.id}/`,
 }));
 ---
 
 <Layout 
   title="Industries | Nexrena" 
-  description="Digital growth for manufacturing, ecommerce, and professional services. We build websites and search strategies that convert technical buyers."
+  description="Industries served by Nexrena, with primary focus on industrial B2B and manufacturing growth systems."
   schema={itemListSchema(industryItems, 'Nexrena Industries')}
 >
   <main>
     <PageHero 
       eyebrow="INDUSTRIES //" 
-      title="Built for your industry."
-      subtitle="We specialize in manufacturing, ecommerce, and professional services — industries where technical buyers research online before they ever talk to a rep."
+      title="Industrial B2B is our deepest lane."
+      subtitle="Nexrena is built around manufacturing and technical-buyer growth systems."
       image={heroImages.industries}
     />
 
     <section class="bg-[var(--obsidian)] py-12 md:py-24">
       <div class="section-container">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 divide-y md:divide-y-0 md:divide-x divide-[var(--slate-800)]">
-          {industries.map((industry, i) => (
-            <a href={`/industries/${industry.id}`} class="group block py-8 md:py-0 md:px-8 first:pt-0 md:first:pt-0 md:first:pl-0 last:pb-0 md:last:pr-0 reveal" style={`--i: ${i + 1};`}>
-              <span class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest block mb-4">{industry.name}</span>
-              <h2 class="font-display text-[28px] text-[var(--warm-white)] mb-4 group-hover:text-[var(--gold)] transition-colors">
-                {industry.headline}
+        <div class="border border-[var(--slate-800)] bg-[var(--slate-900)]/40 p-8 md:p-12 reveal">
+          <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-10">
+            <div>
+              <span class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest block mb-4">{primaryIndustry.name}</span>
+              <h2 class="font-display text-[32px] md:text-[48px] text-[var(--warm-white)] leading-tight mb-4">
+                Built for technical-buyer journeys in industrial B2B.
               </h2>
+              <p class="font-body text-[16px] text-[var(--slate-300)] leading-relaxed max-w-3xl">
+                Proven in production with ForzaBuilt: IA restructured around application, substrate, and specification; 200+ SKU migration to Astro; and post-launch SEO recovery to 99% technical health.
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-3 shrink-0">
+              <a href={normalizeInternalHref('/contact')} class="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest border border-[var(--gold)] text-[var(--gold)] px-5 py-3 hover:bg-[var(--gold)] hover:text-[var(--obsidian)] transition-colors">
+                Plan your manufacturing project
+                <span aria-hidden="true">&rarr;</span>
+              </a>
+              <a href={normalizeInternalHref('/work/forzabuilt')} class="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-[var(--gold)] hover:text-[var(--gold-light)] transition-colors">
+                See ForzaBuilt case study
+                <span aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 border-t border-[var(--slate-800)] pt-8">
+            <div>
+              <p class="font-display text-[38px] text-[var(--gold)] leading-none">200+</p>
+              <p class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest mt-2">SKU migration scope</p>
+            </div>
+            <div>
+              <p class="font-display text-[38px] text-[var(--gold)] leading-none">99%</p>
+              <p class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest mt-2">Technical SEO health</p>
+            </div>
+            <div>
+              <p class="font-display text-[38px] text-[var(--gold)] leading-none">0 &rarr; 28</p>
+              <p class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest mt-2">MQLs in 4 months</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[var(--obsidian)] py-16 md:py-24 border-t border-[var(--slate-800)]">
+      <div class="section-container">
+        <div class="max-w-3xl mb-10">
+          <Eyebrow class="mb-6">ADJACENT EXPERIENCE //</Eyebrow>
+          <h2 class="font-display text-[32px] md:text-[44px] text-[var(--warm-white)] leading-tight mb-4 reveal">
+            Additional sectors we support when scope aligns.
+          </h2>
+          <p class="font-body text-[16px] text-[var(--slate-400)] leading-relaxed reveal" style="--i: 1;">
+            Manufacturing remains the primary specialization. We also take selective projects in adjacent verticals where execution needs match our model.
+          </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {adjacentIndustries.map((industry, i) => (
+            <a href={normalizeInternalHref(`/industries/${industry.id}`)} class="group block border border-[var(--slate-800)] p-8 hover:border-[var(--gold)]/40 transition-colors reveal" style={`--i: ${i + 2};`}>
+              <span class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest block mb-4">{industry.name}</span>
+              <h3 class="font-display text-[28px] text-[var(--warm-white)] mb-4 group-hover:text-[var(--gold)] transition-colors">
+                {industry.headline}
+              </h3>
               <p class="font-body text-[15px] text-[var(--slate-400)] leading-relaxed mb-6">
-                {industry.subhead}
+                {adjacentIndustryCopy[industry.id]?.subhead ?? industry.subhead}
               </p>
               <span class="font-mono text-[11px] text-[var(--gold)] group-hover:translate-x-2 transition-transform inline-block">
-                {industry.ctaLabel} &rarr;
+                {adjacentIndustryCopy[industry.id]?.cta ?? 'Explore sector'} &rarr;
               </span>
             </a>
           ))}
         </div>
-      </div>
-    </section>
-
-    <section class="bg-[var(--cream)] py-24 md:py-32 text-[var(--obsidian)]">
-      <div class="section-container">
-        <div class="max-w-3xl">
-          <Eyebrow class="mb-8">THE APPROACH //</Eyebrow>
-          <h2 class="font-display text-[36px] md:text-[56px] leading-[1.15] font-light mb-12 reveal">
-            Same rigor, different context.
-          </h2>
-          <p class="font-body text-[17px] leading-relaxed text-[var(--slate-600)] reveal" style="--i: 1;">
-            Whether you're a manufacturer with complex catalogs, an ecommerce brand chasing organic traffic, or a professional services firm selling expertise — we apply the same operating system: technical foundations, content architecture, and conversion paths built for your buyers.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section class="bg-[var(--obsidian)] py-24 md:py-32 border-t border-[var(--slate-800)]">
-      <div class="section-container text-center">
-        <h2 class="font-display text-[40px] md:text-[56px] text-[var(--warm-white)] leading-[1.1] mb-8 reveal">
-          Not sure where to start?
-        </h2>
-        <p class="text-[var(--slate-400)] text-[17px] mb-12 max-w-xl mx-auto reveal" style="--i: 1;">
-          Tell us about your industry and goals. We'll map a 90-day plan.
-        </p>
-        <a href="/contact" class="inline-block font-mono text-[13px] text-[var(--gold)] border border-[var(--gold)] px-8 py-4 hover:bg-[var(--gold)] hover:text-[var(--obsidian)] transition-colors reveal" style="--i: 2;">
-          Start a project &rarr;
-        </a>
       </div>
     </section>
   </main>

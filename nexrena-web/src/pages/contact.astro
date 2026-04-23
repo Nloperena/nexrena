@@ -24,8 +24,8 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
   <main>
     <PageHero 
       eyebrow="CONTACT US //" 
-      title={"Let's build something."}
-      subtitle="Tell us about your project. We'll map a 90-day growth plan."
+      title={"Get your 90-day growth plan."}
+      subtitle="Tell us where you are today. We'll map the first 90 days — audit, roadmap, and the fastest path to lead growth."
       variant="short"
       image={heroImages.contact}
     />
@@ -79,6 +79,17 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
 
         <!-- RIGHT: Form -->
         <div class="bg-[var(--slate-900)] p-8 md:p-12 border border-[var(--slate-800)] reveal" style="--i: 2;" data-api-url={apiUrl}>
+
+          <!-- Expectation Strip -->
+          <div class="mb-8 pb-6 border-b border-[var(--slate-800)]">
+            <p class="font-mono text-[10px] text-[var(--gold-dim)] uppercase tracking-widest mb-4">What happens next</p>
+            <ul class="flex flex-col gap-2 font-body text-[14px] text-[var(--slate-300)] leading-relaxed">
+              <li class="flex gap-3"><span class="font-mono text-[11px] text-[var(--gold)] shrink-0">01</span> We reply within one business day with next steps.</li>
+              <li class="flex gap-3"><span class="font-mono text-[11px] text-[var(--gold)] shrink-0">02</span> Short intro call to understand your goals and current setup.</li>
+              <li class="flex gap-3"><span class="font-mono text-[11px] text-[var(--gold)] shrink-0">03</span> You get a focused 90-day plan — or a clear "not the right fit".</li>
+            </ul>
+          </div>
+
           <form id="contact-form" class="flex flex-col gap-6 relative z-10">
             
             <!-- Honeypot — invisible to humans, traps bots -->
@@ -87,16 +98,10 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
               <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="form-field flex flex-col gap-2">
-                <label for="name" class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest">Name</label>
-                <input type="text" id="name" name="name" required class="contact-input bg-[var(--slate-800)] border border-[var(--slate-700)] text-[var(--warm-white)] font-body px-4 py-3 outline-none focus:border-[var(--gold)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] transition-colors" autocomplete="name" />
-                <span class="field-error font-mono text-[10px] text-red-400 hidden"></span>
-              </div>
-              <div class="form-field flex flex-col gap-2">
-                <label for="company" class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest">Company</label>
-                <input type="text" id="company" name="company" class="contact-input bg-[var(--slate-800)] border border-[var(--slate-700)] text-[var(--warm-white)] font-body px-4 py-3 outline-none focus:border-[var(--gold)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] transition-colors" autocomplete="organization" />
-              </div>
+            <div class="form-field flex flex-col gap-2">
+              <label for="name" class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest">Name</label>
+              <input type="text" id="name" name="name" required class="contact-input bg-[var(--slate-800)] border border-[var(--slate-700)] text-[var(--warm-white)] font-body px-4 py-3 outline-none focus:border-[var(--gold)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] transition-colors" autocomplete="name" />
+              <span class="field-error font-mono text-[10px] text-red-400 hidden"></span>
             </div>
 
             <div class="form-field flex flex-col gap-2">
@@ -105,42 +110,61 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
               <span class="field-error font-mono text-[10px] text-red-400 hidden"></span>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="form-field flex flex-col gap-2">
-                <label for="budget" class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest">Budget Range</label>
-                <select id="budget" name="budget" class="contact-input bg-[var(--slate-800)] border border-[var(--slate-700)] text-[var(--warm-white)] font-body px-4 py-3 outline-none focus:border-[var(--gold)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] transition-colors appearance-none cursor-pointer" aria-label="Budget range">
-                  <option value="">Select range...</option>
-                  <option value="10k-25k">$10k - $25k</option>
-                  <option value="25k-50k">$25k - $50k</option>
-                  <option value="50k+">$50k+</option>
-                </select>
-              </div>
-              <div class="form-field flex flex-col gap-2">
-                <label for="type" class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest">Project Type</label>
-                <select id="type" name="type" class="contact-input bg-[var(--slate-800)] border border-[var(--slate-700)] text-[var(--warm-white)] font-body px-4 py-3 outline-none focus:border-[var(--gold)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] transition-colors appearance-none cursor-pointer" aria-label="Project type">
-                  <option value="">Select type...</option>
-                  <option value="web-design">Web Design & Dev</option>
-                  <option value="seo">SEO & Growth</option>
-                  <option value="full-service">Full-Service</option>
-                </select>
-              </div>
-            </div>
-
             <div class="form-field flex flex-col gap-2">
               <label for="message" class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest">How can we help?</label>
               <textarea id="message" name="message" rows="4" required placeholder="Tell us about your project goals and any current challenges." class="contact-input bg-[var(--slate-800)] border border-[var(--slate-700)] text-[var(--warm-white)] font-body px-4 py-3 outline-none focus:border-[var(--gold)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] transition-colors resize-none" aria-label="Project message"></textarea>
               <span class="field-error font-mono text-[10px] text-red-400 hidden"></span>
             </div>
 
+            <!-- Optional details — progressive disclosure -->
+            <details class="form-optional group border border-[var(--slate-800)] bg-[var(--obsidian)]/40">
+              <summary class="flex items-center justify-between cursor-pointer px-4 py-3 font-mono text-[11px] text-[var(--slate-300)] uppercase tracking-widest hover:text-[var(--gold)] transition-colors">
+                <span>Add project details (optional)</span>
+                <svg class="form-optional__chevron w-4 h-4 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </summary>
+              <div class="px-4 pb-4 pt-2 flex flex-col gap-6">
+                <div class="form-field flex flex-col gap-2">
+                  <label for="company" class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest">Company</label>
+                  <input type="text" id="company" name="company" class="contact-input bg-[var(--slate-800)] border border-[var(--slate-700)] text-[var(--warm-white)] font-body px-4 py-3 outline-none focus:border-[var(--gold)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] transition-colors" autocomplete="organization" />
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="form-field flex flex-col gap-2">
+                    <label for="budget" class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest">Budget Range</label>
+                    <select id="budget" name="budget" class="contact-input bg-[var(--slate-800)] border border-[var(--slate-700)] text-[var(--warm-white)] font-body px-4 py-3 outline-none focus:border-[var(--gold)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] transition-colors appearance-none cursor-pointer" aria-label="Budget range">
+                      <option value="">Select range...</option>
+                      <option value="10k-25k">$10k - $25k</option>
+                      <option value="25k-50k">$25k - $50k</option>
+                      <option value="50k+">$50k+</option>
+                    </select>
+                  </div>
+                  <div class="form-field flex flex-col gap-2">
+                    <label for="type" class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest">Project Type</label>
+                    <select id="type" name="type" class="contact-input bg-[var(--slate-800)] border border-[var(--slate-700)] text-[var(--warm-white)] font-body px-4 py-3 outline-none focus:border-[var(--gold)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] transition-colors appearance-none cursor-pointer" aria-label="Project type">
+                      <option value="">Select type...</option>
+                      <option value="web-design">Web Design & Dev</option>
+                      <option value="seo">SEO & Growth</option>
+                      <option value="full-service">Full-Service</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </details>
+
             <!-- Error state -->
             <p id="form-error" class="font-mono text-[12px] text-red-400 hidden"></p>
 
-            <Button type="submit" variant="primary" class="w-full mt-4">
-              <span id="submit-text">Send Message</span>
+            <Button type="submit" variant="primary" class="w-full mt-2">
+              <span id="submit-text">Get My 90-Day Plan</span>
               <svg id="submit-spinner" class="hidden animate-spin ml-2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 2v4m0 12v4m-7.07-3.93l2.83-2.83m8.49-8.49l2.83-2.83M2 12h4m12 0h4m-3.93 7.07l-2.83-2.83M7.76 7.76L4.93 4.93"/>
               </svg>
             </Button>
+
+            <p class="font-mono text-[10px] text-[var(--slate-500)] text-center tracking-wide">
+              We reply within one business day. No spam, no drip sequences, no sales lists.
+            </p>
           </form>
 
           <!-- Success State -->
@@ -176,6 +200,17 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
                   track(eventName, data);
                 } catch {
                   // Ignore analytics errors.
+                }
+              };
+
+              const trackLeadConversion = (source: 'contact_form', projectType?: string) => {
+                const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
+                if (typeof gtag === 'function') {
+                  gtag('event', 'generate_lead', {
+                    source,
+                    form_id: 'contact-form',
+                    project_type: projectType ?? 'unspecified',
+                  });
                 }
               };
 
@@ -254,19 +289,30 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
                       projectType: payload.projectType ?? 'unspecified',
                       budget: payload.budget ?? 'unspecified',
                     });
+                    safeTrack('funnel_step', {
+                      step: 'form_submit_success',
+                      formId: 'contact-form',
+                      projectType: payload.projectType ?? 'unspecified',
+                      budget: payload.budget ?? 'unspecified',
+                    });
+                    trackLeadConversion('contact_form', payload.projectType);
                   } else {
                     throw new Error('Submission failed');
                   }
                 } catch {
                   safeTrack('contact_form_submit_error');
+                  safeTrack('funnel_step', {
+                    step: 'form_submit_error',
+                    formId: 'contact-form',
+                  });
                   if (errorEl) {
                     errorEl.textContent = 'Something went wrong. Please email us directly at NicholasL@Nexrena.com';
                     errorEl.classList.remove('hidden');
                   }
                 } finally {
-                  if (submitBtn) submitBtn.disabled = false;
-                  if (submitText) submitText.textContent = 'Send Message';
-                  if (submitSpinner) submitSpinner.classList.add('hidden');
+                if (submitBtn) submitBtn.disabled = false;
+                if (submitText) submitText.textContent = 'Get My 90-Day Plan';
+                if (submitSpinner) submitSpinner.classList.add('hidden');
                 }
               });
             }
@@ -280,3 +326,17 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
     </div>
   </main>
 </Layout>
+
+<style>
+  details[open] > summary .form-optional__chevron {
+    transform: rotate(180deg);
+  }
+
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details > summary {
+    list-style: none;
+  }
+</style>

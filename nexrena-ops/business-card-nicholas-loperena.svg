@@ -10,7 +10,7 @@
       .name { font-family: 'Cormorant Garamond', serif; font-size: 44px; font-weight: 400; letter-spacing: 0.02em; fill: #FDFCFA; }
       .title { font-family: 'DM Sans', sans-serif; font-size: 6.5px; font-weight: 600; letter-spacing: 0.3em; fill: #C9A96E; text-transform: uppercase; }
       
-      .whisper { font-family: 'DM Sans', sans-serif; font-size: 4.5px; font-weight: 500; letter-spacing: 0.35em; fill: #2C3444; text-transform: uppercase; }
+      .whisper { font-family: 'DM Sans', sans-serif; font-size: 5.5px; font-weight: 500; letter-spacing: 0.18em; fill: #3D4A5C; text-transform: uppercase; }
       
       .contact { font-family: 'DM Sans', sans-serif; font-size: 8px; font-weight: 400; letter-spacing: 0.04em; }
       
@@ -27,8 +27,9 @@
   <!-- Vertical line dropping from top to meet horizontal, anchoring the grid -->
   <line x1="240" y1="0" x2="240" y2="148" stroke="#C9A96E" stroke-width="0.5" opacity="0.15" />
 
-  <!-- Services: Whispering Edge Text (Breaking Convention) -->
-  <text transform="rotate(-90 14 178)" x="14" y="178" class="whisper">HARDWARE · NETWORKING · SOFTWARE · WEB · SEO</text>
+  <!-- Services: Whisper strip -->
+  <text x="36" y="18" class="whisper">HARDWARE · NETWORKING · SOFTWARE</text>
+  <text x="36" y="27" class="whisper">WEB · SEO · AI</text>
 
   <!-- Hero Name (Massive, stacked, dominating) -->
   <text x="36" y="76" class="name">NICHOLAS</text>
@@ -36,19 +37,16 @@
   
   <!-- Title (Sharp, metallic, tracking) -->
   <text x="38" y="136" class="title">TECHNOLOGY CONSULTANT</text>
+  <text x="38" y="144" class="title">SR FULL-STACK AI-NATIVE DEVELOPER</text>
 
-  <!-- Contact Grid (Minimal, piped) -->
-  <text x="36" y="164" class="contact">
-    <tspan fill="#C9A96E">407-790-5891</tspan>
-    <tspan fill="#3D4A5C" dx="10">|</tspan>
-    <tspan fill="#FDFCFA" dx="10">nicholas@nexrena.com</tspan>
-  </text>
+  <!-- Contact Grid (Aligned separators) -->
+  <text x="36" y="164" class="contact" fill="#C9A96E">407-790-5891</text>
+  <text x="128" y="164" class="contact" fill="#3D4A5C">|</text>
+  <text x="140" y="164" class="contact" fill="#FDFCFA">nicholas@nexrena.com</text>
   
-  <text x="36" y="178" class="contact">
-    <tspan fill="#C9A96E">nexrena.com</tspan>
-    <tspan fill="#3D4A5C" dx="10">|</tspan>
-    <tspan fill="#FDFCFA" dx="10">nicoloperena.com</tspan>
-  </text>
+  <text x="36" y="178" class="contact" fill="#C9A96E">nexrena.com</text>
+  <text x="128" y="178" class="contact" fill="#3D4A5C">|</text>
+  <text x="140" y="178" class="contact" fill="#7E8797">nicoloperena.com</text>
 
   <!-- Brand Top Right -->
   <text x="316" y="32" text-anchor="end" class="brand-small">
