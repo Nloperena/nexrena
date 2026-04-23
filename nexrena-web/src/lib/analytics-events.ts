@@ -61,8 +61,14 @@ function setupGlobalClickTracking(): Cleanup {
     if (!clickable) return
 
     const label = getElementLabel(clickable)
-    const zone = getUiZone(clickable)
-    const isCta = /let'?s talk|contact|book|start|get started|get quote|discovery|send message/i.test(label)
+    const htmlEl = clickable as HTMLElement
+    const ctaRoleAttr = htmlEl.dataset?.ctaRole
+    const ctaZoneAttr = htmlEl.dataset?.ctaZone
+    const zone = ctaZoneAttr || getUiZone(clickable)
+    const isCta =
+      !!ctaRoleAttr ||
+      /let'?s talk|contact|book|start|get started|get quote|discovery|send message|90-day|case studies|see results/i.test(label)
+    const path = window.location.pathname
 
     if (clickable instanceof HTMLAnchorElement) {
       const href = clickable.getAttribute('href') || ''
@@ -75,13 +81,27 @@ function setupGlobalClickTracking(): Cleanup {
         safeTrack('internal_link_click', { href, label, zone })
       }
 
-      if (isCta) safeTrack('cta_click', { href, label, zone, kind: 'link' })
+      if (isCta) {
+        const ctaRole = ctaRoleAttr || 'unspecified'
+        safeTrack('cta_click', { href, label, zone, kind: 'link', ctaRole, path })
+        if (href.includes('/contact')) {
+          safeTrack('funnel_step', {
+            step: 'cta_to_contact',
+            zone,
+            ctaRole,
+            entryPath: path,
+          })
+        }
+      }
       return
     }
 
     if (clickable instanceof HTMLButtonElement || clickable.getAttribute('role') === 'button') {
       safeTrack('button_click', { label, zone })
-      if (isCta) safeTrack('cta_click', { label, zone, kind: 'button' })
+      if (isCta) {
+        const ctaRole = ctaRoleAttr || 'unspecified'
+        safeTrack('cta_click', { label, zone, kind: 'button', ctaRole, path })
+      }
     }
   }
 
@@ -97,19 +117,21 @@ function setupGlobalFormTracking(): Cleanup {
     const form = target?.closest('form') as HTMLFormElement | null
     if (!form || startedForms.has(form)) return
     startedForms.add(form)
-    safeTrack('form_started', {
-      formId: form.id || 'anonymous-form',
-      zone: getUiZone(form),
-    })
+    const formId = form.id || 'anonymous-form'
+    safeTrack('form_started', { formId, zone: getUiZone(form) })
+    if (formId === 'contact-form') {
+      safeTrack('funnel_step', { step: 'form_start', formId })
+    }
   }
 
   const submitHandler = (event: SubmitEvent) => {
     const form = event.target as HTMLFormElement | null
     if (!form) return
-    safeTrack('form_submit_attempt', {
-      formId: form.id || 'anonymous-form',
-      zone: getUiZone(form),
-    })
+    const formId = form.id || 'anonymous-form'
+    safeTrack('form_submit_attempt', { formId, zone: getUiZone(form) })
+    if (formId === 'contact-form') {
+      safeTrack('funnel_step', { step: 'form_submit_attempt', formId })
+    }
   }
 
   document.addEventListener('focusin', focusHandler)
@@ -126,14 +148,29 @@ function setupPerPageTracking(): Cleanup {
 
   const path = window.location.pathname
   const utm = new URLSearchParams(window.location.search)
+  const referrer = document.referrer
+  const referrerHost = referrer ? new URL(referrer).hostname : 'direct'
+  const referrerPath = referrer && referrerHost === window.location.hostname
+    ? new URL(referrer).pathname
+    : null
+
   safeTrack('page_view_detailed', {
     path,
     title: document.title,
-    referrerHost: document.referrer ? new URL(document.referrer).hostname : 'direct',
+    referrerHost,
+    referrerPath: referrerPath ?? undefined,
     utmSource: utm.get('utm_source') || undefined,
     utmMedium: utm.get('utm_medium') || undefined,
     utmCampaign: utm.get('utm_campaign') || undefined,
   })
+
+  if (path.startsWith('/contact')) {
+    safeTrack('funnel_step', {
+      step: 'contact_page_view',
+      fromHomepage: referrerPath === '/',
+      referrerPath: referrerPath ?? 'external-or-direct',
+    })
+  }
 
   let maxDepth = 0
   const sentMilestones = new Set<number>()

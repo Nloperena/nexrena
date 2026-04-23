@@ -5,6 +5,7 @@ import BlogCard from '../../../../components/blog/BlogCard.astro';
 import { getCollection } from 'astro:content';
 import { heroImages } from '../../../../data/hero-images';
 import { blogCategories } from '../../../../data/blog-categories';
+import { normalizeInternalHref } from '@/lib/url';
 
 export function getStaticPaths() {
   return blogCategories.map(cat => ({
@@ -39,12 +40,12 @@ const posts = (await getCollection('blog'))
 
         <!-- Category Filter -->
         <div class="flex flex-wrap gap-3 mb-12">
-          <a href="/resources/blog" class="font-mono text-[11px] uppercase tracking-widest px-4 py-2 border border-[var(--slate-700)] text-[var(--slate-300)] hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors">
+          <a href="/resources/blog/" class="font-mono text-[11px] uppercase tracking-widest px-4 py-2 border border-[var(--slate-700)] text-[var(--slate-300)] hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors">
             All
           </a>
           {blogCategories.map(cat => (
             <a 
-              href={`/resources/blog/category/${cat.id}`} 
+              href={normalizeInternalHref(`/resources/blog/category/${cat.id}`)} 
               class:list={[
                 'font-mono text-[11px] uppercase tracking-widest px-4 py-2 border transition-colors',
                 cat.id === category.id

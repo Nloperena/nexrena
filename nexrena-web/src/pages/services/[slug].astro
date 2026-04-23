@@ -102,33 +102,6 @@ const relatedPosts = (await getCollection('blog'))
       </div>
     </section>
 
-    <section class="bg-[var(--obsidian)] py-16 border-t border-[var(--slate-800)]">
-      <div class="section-container">
-        <div class="flex items-end justify-between gap-6 mb-8">
-          <div>
-            <h3 class="font-display text-[30px] text-[var(--warm-white)]">Related guides</h3>
-            <p class="font-body text-[15px] text-[var(--slate-400)] mt-2">
-              Supporting resources for teams evaluating {serviceTitle.toLowerCase()}.
-            </p>
-          </div>
-          <a href="/resources/faq/" class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-wider hover:text-[var(--gold-light)] transition-colors">
-            Browse FAQ &rarr;
-          </a>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {relatedPosts.map((post) => (
-            <a href={`/resources/blog/${post.slug}/`} class="block p-6 border border-[var(--slate-800)] hover:border-[var(--gold)]/40 transition-colors">
-              <span class="font-mono text-[10px] uppercase tracking-wider text-[var(--gold)]">
-                {post.data.category.replace('-', ' ')}
-              </span>
-              <h4 class="font-display text-[22px] text-[var(--warm-white)] mt-3 mb-3 leading-tight">{post.data.title}</h4>
-              <p class="font-body text-[14px] text-[var(--slate-400)] line-clamp-3">{post.data.description}</p>
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-
     <!-- FAQ & Final CTA Section -->
     <section class="bg-[var(--obsidian)] py-32 border-t border-[var(--slate-800)] relative z-20">
       <div class="section-container">
@@ -169,6 +142,33 @@ const relatedPosts = (await getCollection('blog'))
             </div>
           </div>
 
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[var(--obsidian)] py-16 border-t border-[var(--slate-800)]">
+      <div class="section-container">
+        <div class="flex items-end justify-between gap-6 mb-8">
+          <div>
+            <h3 class="font-display text-[30px] text-[var(--warm-white)]">Related guides</h3>
+            <p class="font-body text-[15px] text-[var(--slate-400)] mt-2">
+              Supporting resources for teams evaluating {serviceTitle.toLowerCase()}.
+            </p>
+          </div>
+          <a href="/resources/faq/" class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-wider hover:text-[var(--gold-light)] transition-colors">
+            Browse FAQ &rarr;
+          </a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {relatedPosts.map((post) => (
+            <a href={`/resources/blog/${post.slug}/`} class="block p-6 border border-[var(--slate-800)] hover:border-[var(--gold)]/40 transition-colors">
+              <span class="font-mono text-[10px] uppercase tracking-wider text-[var(--gold)]">
+                {post.data.category.replace('-', ' ')}
+              </span>
+              <h4 class="font-display text-[22px] text-[var(--warm-white)] mt-3 mb-3 leading-tight">{post.data.title}</h4>
+              <p class="font-body text-[14px] text-[var(--slate-400)] line-clamp-3">{post.data.description}</p>
+            </a>
+          ))}
         </div>
       </div>
     </section>

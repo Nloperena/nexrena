@@ -3,7 +3,6 @@ import Layout from '../../components/layout/Layout.astro';
 import PageHero from '../../components/sections/PageHero.astro';
 import BlogCard from '../../components/blog/BlogCard.astro';
 import NewsletterCTA from '../../components/blog/NewsletterCTA.astro';
-import Button from '../../components/ui/Button.astro';
 import Eyebrow from '../../components/ui/Eyebrow.astro';
 import CTA from '../../components/sections/CTA.astro';
 import { getCollection } from 'astro:content';
@@ -13,24 +12,46 @@ import { blogCategories } from '../../data/blog-categories';
 const allPosts = (await getCollection('blog'))
   .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
 
-const featuredPosts = allPosts.slice(0, 3);
-const recentPosts = allPosts.slice(3, 9);
+const startHereCandidates = [
+  'b2b-website-redesign-checklist',
+  'technical-seo-audit-checklist',
+  'cta-placement-b2b',
+];
+
+const startHerePosts = startHereCandidates
+  .map((slug) => allPosts.find((post) => post.slug === slug))
+  .filter((post): post is NonNullable<typeof post> => Boolean(post))
+  .slice(0, 3);
+
+const latestPosts = allPosts
+  .filter((post) => !startHerePosts.some((featured) => featured.slug === post.slug))
+  .slice(0, 6);
 
 const hubs = [
-  { href: '/resources/blog/', icon: '01', label: 'Blog', title: 'Articles & Guides', desc: 'B2B website redesign checklists, SEO for manufacturers, and growth strategies that compound.', count: allPosts.length },
-  { href: '/resources/faq/', icon: '02', label: 'FAQ', title: 'Frequently Asked Questions', desc: 'Timelines, pricing, and how we work with B2B companies. Direct answers — no runaround.' },
+  {
+    href: '/resources/blog/',
+    label: 'Blog',
+    title: 'Articles & Guides',
+    desc: 'Implementation notes and playbooks you can apply directly to shipped B2B web and SEO work.',
+  },
+  {
+    href: '/resources/faq/',
+    label: 'FAQ',
+    title: 'Frequently Asked Questions',
+    desc: 'Timelines, scope, and fit expectations before you sign. Direct answers for teams evaluating a 90-day growth plan.',
+  },
 ];
 ---
 
 <Layout 
   title="Resources | Nexrena" 
-  description="Guides, insights, and practical advice on web design, SEO, and digital growth for B2B companies."
+  description="Practical B2B implementation guides, FAQs, and shipped-work insights for web, SEO, and growth systems."
 >
   <main>
     <PageHero 
       eyebrow="RESOURCES //" 
-      title="Insights for growth."
-      subtitle="Guides, checklists, and practical advice on web design, SEO, and digital strategy for mid-market companies."
+      title="Shipped-work insights."
+      subtitle="Practical implementation notes from real production engagements. Published when we ship work worth documenting."
       image={heroImages.resources}
     />
 
@@ -40,8 +61,7 @@ const hubs = [
         <div class="grid grid-cols-1 md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x divide-[var(--slate-800)]">
           {hubs.map((hub, i) => (
             <a href={hub.href} class="hub-card group block py-12 md:py-16 first:md:pr-16 last:md:pl-16 relative">
-              <div class="flex items-start justify-between mb-8">
-                <span class="font-display text-[56px] text-[var(--slate-800)] group-hover:text-[var(--gold)] transition-colors leading-none font-light">{hub.icon}</span>
+              <div class="flex items-start justify-end mb-8">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-[var(--gold)] opacity-0 group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
               </div>
               <span class="font-mono text-[10px] text-[var(--gold)] uppercase tracking-widest block mb-3">{hub.label}</span>
@@ -51,9 +71,6 @@ const hubs = [
               <p class="font-body text-[15px] text-[var(--slate-400)] leading-relaxed mb-6">
                 {hub.desc}
               </p>
-              {hub.count && (
-                <span class="font-mono text-[10px] text-[var(--slate-500)] uppercase tracking-wider">{hub.count} articles</span>
-              )}
               <div class="absolute bottom-0 left-0 w-0 h-[1px] bg-[var(--gold)] group-hover:w-full transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]" aria-hidden="true"></div>
             </a>
           ))}
@@ -61,14 +78,14 @@ const hubs = [
       </div>
     </section>
 
-    <!-- Featured Posts -->
+    <!-- Start Here -->
     <section class="bg-[var(--obsidian)] border-t border-[var(--slate-800)]">
       <div class="max-w-[1320px] mx-auto px-[5vw] py-24 md:py-32">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
           <div>
-            <Eyebrow class="mb-6">FEATURED //</Eyebrow>
+            <Eyebrow class="mb-6">START HERE //</Eyebrow>
             <h2 class="font-display text-[40px] md:text-[56px] text-[var(--warm-white)] leading-[1.05] reveal">
-              Start here.
+              Core playbooks.
             </h2>
           </div>
           <a href="/resources/blog/" class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest hover:text-[var(--gold-light)] transition-colors reveal" style="--i: 1;">
@@ -77,13 +94,13 @@ const hubs = [
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {featuredPosts.map((post, i) => (
+          {startHerePosts.map((post, i) => (
             <a href={`/resources/blog/${post.slug}/`} class="featured-card group block border border-[var(--slate-800)] hover:border-[var(--gold)]/40 transition-all relative overflow-hidden">
               <div class="absolute top-0 left-0 w-full h-[2px] bg-[var(--gold)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500" aria-hidden="true"></div>
               <div class="p-8">
                 <div class="flex items-center gap-3 mb-6">
-                  <span class="font-display text-[40px] text-[var(--slate-800)] group-hover:text-[var(--gold)]/30 transition-colors leading-none font-light">0{i + 1}</span>
-                  <div class="flex-1 h-[1px] bg-[var(--slate-800)]"></div>
+                  <span class="font-mono text-[10px] text-[var(--gold)] uppercase tracking-widest">Core guide</span>
+                  <div class="flex-1 h-[1px] bg-[var(--slate-800)] ml-2"></div>
                   <span class="font-mono text-[9px] text-[var(--slate-500)] uppercase tracking-wider">
                     {post.data.publishedAt.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                   </span>
@@ -114,12 +131,11 @@ const hubs = [
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {blogCategories.map((cat, i) => {
-            const count = allPosts.filter(p => p.data.category === cat.id).length;
             return (
               <a href={`/resources/blog/category/${cat.id}/`} class="cat-card group flex items-center justify-between p-6 border border-[var(--slate-800)] hover:border-[var(--gold)]/30 transition-all">
                 <div>
                   <h3 class="font-display text-[22px] text-[var(--warm-white)] group-hover:text-[var(--gold)] transition-colors mb-1">{cat.name}</h3>
-                  <span class="font-mono text-[10px] text-[var(--slate-500)] uppercase tracking-wider">{count} articles</span>
+                  <span class="font-mono text-[10px] text-[var(--slate-500)] uppercase tracking-wider">Browse {cat.name}</span>
                 </div>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-[var(--gold)] opacity-40 group-hover:opacity-100 group-hover:translate-x-1 transition-all"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </a>
@@ -129,15 +145,15 @@ const hubs = [
       </div>
     </section>
 
-    <!-- Recent Posts Grid -->
-    {recentPosts.length > 0 && (
+    <!-- Latest Posts Grid -->
+    {latestPosts.length > 0 && (
       <section class="bg-[var(--obsidian)] border-t border-[var(--slate-800)]">
         <div class="max-w-[1320px] mx-auto px-[5vw] py-24 md:py-32">
           <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
             <div>
-              <Eyebrow class="mb-6">RECENT //</Eyebrow>
+              <Eyebrow class="mb-6">ARTICLES //</Eyebrow>
               <h2 class="font-display text-[36px] md:text-[48px] text-[var(--warm-white)] leading-[1.1] reveal">
-                Latest thinking.
+                Recent archive.
               </h2>
             </div>
             <a href="/resources/blog/" class="font-mono text-[11px] text-[var(--gold)] uppercase tracking-widest hover:text-[var(--gold-light)] transition-colors reveal" style="--i: 1;">
@@ -145,7 +161,7 @@ const hubs = [
             </a>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recentPosts.map(post => (
+            {latestPosts.map(post => (
               <BlogCard
                 slug={post.slug}
                 title={post.data.title}

@@ -1,461 +1,123 @@
 ---
-/*
-  Hero — Premium app-style (Netflix-inspired)
-  Full-bleed cinematic background, bottom gradient overlay,
-  lower-third content, minimal UI.
-*/
 import Button from '../ui/Button.astro';
 ---
 
-<section class="hero-app relative min-h-screen flex flex-col justify-end overflow-hidden">
-  <!-- Interactive WebGL Background -->
-  <div class="absolute inset-0 z-0 bg-[var(--obsidian)]">
-    <canvas id="hero-canvas" class="absolute inset-0 w-full h-full opacity-80 mix-blend-screen"></canvas>
+<section class="hero relative isolate min-h-[100svh] overflow-hidden">
+  <img
+    src="/images/hero-growth-bar.svg"
+    alt=""
+    class="hero-bg absolute inset-0 z-0 h-full w-full object-cover object-center"
+    aria-hidden="true"
+    loading="eager"
+    fetchpriority="high"
+  />
 
-    <!-- Growth bar overlay layered above coded/WebGL effect (also acts as poster) -->
-    <img
-      src="/images/hero-growth-bar.svg"
-      alt=""
-      class="hero-growth-overlay absolute inset-0 w-full h-full object-cover pointer-events-none"
-      aria-hidden="true"
-      loading="eager"
-      fetchpriority="high"
-    />
-    
-    <!-- Netflix-style bottom gradient overlay -->
-    <div
-      class="absolute inset-0 bg-gradient-to-t from-[var(--obsidian)] via-[var(--obsidian)]/80 via-40% to-transparent pointer-events-none"
-      aria-hidden="true"
-    ></div>
-    <!-- Subtle vignette -->
-    <div
-      class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_50%,transparent_0%,rgba(12,15,18,0.6)_100%)] pointer-events-none"
-      aria-hidden="true"
-    ></div>
-  </div>
+  <div class="hero-overlay absolute inset-0 z-10" aria-hidden="true"></div>
 
-  <!-- Content: lower-third layout -->
-  <div class="hero-content relative z-10 w-full max-w-[1320px] mx-auto px-[5vw]">
-    <!-- Eyebrow -->
-    <p class="hero-eyebrow font-mono text-[10px] text-[var(--gold)] tracking-[0.2em] uppercase mb-6">
-      Digital Growth Agency · Orlando, FL
-    </p>
+  <div class="hero-inner section-container relative z-20 flex min-h-[100svh] items-center py-28">
+    <div class="hero-content max-w-[880px]">
+      <p class="hero-kicker font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--gold)]">
+        Orlando web design + SEO
+      </p>
 
-    <!-- Headline -->
-    <h1 class="hero-title font-display text-[var(--warm-white)] font-light leading-[0.95] tracking-tight max-w-4xl">
-      <span class="block text-[clamp(48px,8vw,96px)] md:text-[clamp(64px,10vw,120px)]">Growth</span>
-      <span class="block text-[clamp(48px,8vw,96px)] md:text-[clamp(64px,10vw,120px)] text-[var(--gold)]">infrastructure.</span>
-    </h1>
+      <h1 class="hero-title mt-4 font-display leading-[0.92] text-[var(--warm-white)]">
+        Websites that turn traffic into booked calls.
+      </h1>
 
-    <!-- Tagline -->
-    <p class="hero-tagline text-[var(--slate-200)] text-base md:text-lg font-light max-w-2xl mt-6 mb-8 md:mb-10">
-      Built by someone who's run it from the inside.
-    </p>
-    
-    <!-- Body -->
-    <p class="hero-body text-[var(--slate-300)] text-sm md:text-base font-light max-w-2xl mb-8 md:mb-10">
-      We don't theorize about what works for manufacturers, e-commerce brands, and real estate firms. We spent 7 years embedded inside them — building the exact systems Nexrena now deploys for clients.
-    </p>
+      <p class="hero-subtitle mt-6 max-w-[760px] font-body text-[clamp(19px,2.15vw,28px)] leading-[1.35] text-[var(--slate-100)]">
+        We build conversion-focused websites for growth-minded teams. Clear messaging, cleaner UX, and strong SEO from day one.
+      </p>
 
-    <!-- CTA row -->
-    <div class="hero-cta flex flex-wrap items-center gap-4">
-      <Button href="/contact" variant="primary" class="!rounded-full !h-12 !px-8">
-        Start a Project
-      </Button>
-      <a
-        href="/work"
-        class="hero-cta-secondary group inline-flex items-center gap-2 font-mono text-[11px] text-[var(--slate-200)] tracking-widest uppercase py-3 px-6 rounded-full border border-[var(--slate-600)] hover:border-[var(--gold)] hover:text-[var(--gold)] transition-all duration-300"
-      >
-        View Our Work →
-        <span class="transition-transform group-hover:translate-x-1">→</span>
-      </a>
-    </div>
+      <p class="hero-proof mt-6 max-w-[660px] font-body text-[16px] leading-[1.65] text-[var(--slate-300)]">
+        Built by an operator with 7+ years in-house experience across manufacturing, ecommerce, and real estate.
+      </p>
 
-    <!-- Stats bar (subtle, app-style) -->
-    <div class="hero-stats flex flex-wrap items-center gap-x-8 gap-y-4 mt-12 pt-6 md:mt-14 md:pt-8 border-t border-[var(--slate-800)]/60">
-      <div class="flex items-baseline gap-2">
-        <span class="font-display text-[28px] text-[var(--gold)] font-light hero-counter" data-target="4" data-prefix="0">0</span>
-        <span class="font-mono text-[10px] text-[var(--slate-500)] uppercase tracking-wider">Projects</span>
+      <div class="hero-cta mt-10 flex flex-wrap items-center gap-4">
+        <Button href="/contact/" variant="primary" class="!h-14 !px-10 !text-[12px]" data-cta-zone="hero" data-cta-role="primary">
+          Get Your 90-Day Growth Plan
+        </Button>
+        <a
+          href="/work/"
+          class="inline-flex h-14 items-center justify-center rounded-full border border-[var(--slate-500)] px-8 font-mono text-[12px] uppercase tracking-widest text-[var(--warm-white)] transition-colors hover:border-[var(--gold)] hover:text-[var(--gold)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)]"
+          data-cta-zone="hero"
+          data-cta-role="secondary"
+        >
+          See Case Studies
+        </a>
       </div>
-      <div class="w-px h-6 bg-[var(--slate-700)]"></div>
-      <div class="flex items-baseline gap-2">
-        <span class="font-display text-[28px] text-[var(--gold)] font-light hero-counter" data-target="3">0</span>
-        <span class="font-mono text-[10px] text-[var(--slate-500)] uppercase tracking-wider">Verticals</span>
-      </div>
-      <div class="w-px h-6 bg-[var(--slate-700)]"></div>
-      <div class="flex items-baseline gap-2">
-        <span class="font-display text-[28px] text-[var(--gold)] font-light hero-counter" data-target="100" data-suffix="%">0</span>
-        <span class="font-mono text-[10px] text-[var(--slate-500)] uppercase tracking-wider">Retention</span>
-      </div>
-    </div>
-  </div>
 
-  <!-- Scroll hint -->
-  <div class="hero-scroll absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 opacity-60">
-    <span class="font-mono text-[9px] text-[var(--slate-400)] tracking-widest uppercase">Scroll</span>
-    <div class="w-px h-8 bg-[var(--slate-600)] rounded-full overflow-hidden">
-      <div class="w-full h-1/2 bg-[var(--gold)]/60 animate-scroll-pulse rounded-full"></div>
+      <ul class="hero-signals mt-10 flex flex-wrap gap-x-8 gap-y-3">
+        <li class="font-mono text-[10px] uppercase tracking-widest text-[var(--slate-300)]">No templates</li>
+        <li class="font-mono text-[10px] uppercase tracking-widest text-[var(--slate-300)]">No fluff copy</li>
+        <li class="font-mono text-[10px] uppercase tracking-widest text-[var(--slate-300)]">Built to convert</li>
+      </ul>
     </div>
   </div>
 </section>
 
 <style>
-  .hero-app {
-    background-color: var(--obsidian);
+  .hero {
+    background: var(--obsidian);
+  }
+
+  .hero-bg {
+    opacity: 0.58;
+  }
+
+  .hero-overlay {
+    background:
+      radial-gradient(circle at 72% 34%, rgba(201, 169, 110, 0.12), transparent 42%),
+      linear-gradient(180deg, rgba(12, 15, 18, 0.34) 0%, rgba(12, 15, 18, 0.74) 56%, rgba(12, 15, 18, 0.92) 100%);
+  }
+
+  .hero-title {
+    font-size: clamp(52px, 8vw, 126px);
+    letter-spacing: -0.03em;
+    text-wrap: balance;
   }
 
   .hero-content {
-    padding-top: clamp(104px, 18vh, 156px);
-    padding-bottom: clamp(72px, 12vh, 112px);
-  }
-
-  .hero-growth-overlay {
-    opacity: 0.42;
-    mix-blend-mode: screen;
-  }
-
-  /* Elements start hidden; .is-active triggers staggered entrance */
-  .hero-eyebrow {
     opacity: 0;
-    transform: translateY(10px);
-  }
-  .hero-title {
-    opacity: 0;
-    clip-path: inset(0 0 100% 0);
-    transform: translateY(40px);
-  }
-  .hero-tagline {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  .hero-body {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  .hero-cta {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  .hero-stats {
-    opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(22px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
   }
 
-  .hero-content.is-active .hero-eyebrow {
-    animation: heroEyebrow 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-  .hero-content.is-active .hero-title {
-    animation: heroTitleReveal 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
-  }
-  .hero-content.is-active .hero-tagline {
-    animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
-  }
-  .hero-content.is-active .hero-body {
-    animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
-  }
-  .hero-content.is-active .hero-cta {
-    animation: heroFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.75s forwards;
-  }
-  .hero-content.is-active .hero-stats {
-    animation: heroFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
-  }
-
-  @keyframes heroEyebrow {
-    from { opacity: 0; transform: translateY(10px); letter-spacing: 0.4em; }
-    to   { opacity: 1; transform: translateY(0); letter-spacing: 0.2em; }
-  }
-
-  @keyframes heroTitleReveal {
-    from { opacity: 0; clip-path: inset(0 0 100% 0); transform: translateY(40px); }
-    to   { opacity: 1; clip-path: inset(0 0 0% 0); transform: translateY(0); }
-  }
-
-  @keyframes heroFadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes scrollPulse {
-    0%, 100% {
-      transform: translateY(-100%);
-      opacity: 0.5;
-    }
-    50% {
-      transform: translateY(100%);
-      opacity: 1;
-    }
-  }
-  .animate-scroll-pulse {
-    animation: scrollPulse 2s ease-in-out infinite;
-  }
-
-  @media (max-height: 760px) {
-    .hero-content {
-      padding-top: 96px;
-      padding-bottom: 56px;
-    }
-
-    .hero-scroll {
-      display: none;
-    }
+  .hero-content.is-active {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   @media (max-width: 767px) {
-    .hero-content {
-      padding-top: 104px;
-      padding-bottom: 64px;
+    .hero-inner {
+      padding-top: 120px;
+      padding-bottom: 72px;
+      align-items: flex-end;
     }
 
-    .hero-growth-overlay {
-      opacity: 0.34;
+    .hero-bg {
+      opacity: 0.5;
+    }
+
+    .hero-title {
+      font-size: clamp(44px, 15vw, 70px);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .hero-eyebrow,
-    .hero-title,
-    .hero-tagline,
-    .hero-body,
-    .hero-cta,
-    .hero-stats {
-      animation: none !important;
-      opacity: 1 !important;
-      transform: none !important;
-      clip-path: none !important;
-    }
-    .animate-scroll-pulse {
-      animation: none;
+    .hero-content {
+      opacity: 1;
+      transform: none;
+      transition: none;
     }
   }
 </style>
 
 <script>
-  // WebGL Fluid/Aurora Shader Background
-  const vertexShaderSource = `
-    attribute vec2 position;
-    varying vec2 vUv;
-    void main() {
-      vUv = position * 0.5 + 0.5;
-      gl_Position = vec4(position, 0.0, 1.0);
-    }
-  `;
-
-  const fragmentShaderSource = `
-    precision highp float;
-    varying vec2 vUv;
-    uniform float u_time;
-    uniform vec2 u_resolution;
-    uniform vec2 u_mouse;
-
-    // Simplex 2D noise
-    vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
-    float snoise(vec2 v){
-      const vec4 C = vec4(0.211324865405187, 0.366025403784439,
-               -0.577350269189626, 0.024390243902439);
-      vec2 i  = floor(v + dot(v, C.yy) );
-      vec2 x0 = v -   i + dot(i, C.xx);
-      vec2 i1;
-      i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-      vec4 x12 = x0.xyxy + C.xxzz;
-      x12.xy -= i1;
-      i = mod(i, 289.0);
-      vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
-      + i.x + vec3(0.0, i1.x, 1.0 ));
-      vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy),
-        dot(x12.zw,x12.zw)), 0.0);
-      m = m*m ;
-      m = m*m ;
-      vec3 x = 2.0 * fract(p * C.www) - 1.0;
-      vec3 h = abs(x) - 0.5;
-      vec3 ox = floor(x + 0.5);
-      vec3 a0 = x - ox;
-      m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
-      vec3 g;
-      g.x  = a0.x  * x0.x  + h.x  * x0.y;
-      g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-      return 130.0 * dot(m, g);
-    }
-
-    void main() {
-      vec2 st = gl_FragCoord.xy / u_resolution.xy;
-      st.x *= u_resolution.x / u_resolution.y;
-
-      // Mouse interaction
-      vec2 mouse = u_mouse / u_resolution;
-      float dist = distance(st, mouse);
-      vec2 pos = st + mouse * 0.2;
-
-      // Layered noise
-      float n1 = snoise(pos * 1.5 + u_time * 0.1);
-      float n2 = snoise(pos * 3.0 - u_time * 0.15 + n1);
-      float n3 = snoise(pos * 1.5 + u_time * 0.05 + n2);
-
-      // Colors matching brand palette
-      // Obsidian: 12, 15, 18
-      // Ink: 26, 30, 38
-      // Gold: 201, 169, 110
-      vec3 color1 = vec3(12.0/255.0, 15.0/255.0, 18.0/255.0); // Obsidian
-      vec3 color2 = vec3(26.0/255.0, 30.0/255.0, 38.0/255.0); // Ink
-      vec3 color3 = vec3(201.0/255.0, 169.0/255.0, 110.0/255.0); // Gold
-
-      // Blend based on noise
-      float mix1 = smoothstep(-1.0, 1.0, n1);
-      float mix2 = smoothstep(-1.0, 1.0, n3);
-      
-      // Add dynamic mouse glow
-      float glow = exp(-dist * 2.5) * 0.5;
-
-      vec3 finalColor = mix(color1, color2, mix1);
-      finalColor = mix(finalColor, color3 * 0.8, mix2 * 0.5); // Subtle gold
-      finalColor += color3 * glow * 0.3; // Mouse interaction
-
-      gl_FragColor = vec4(finalColor, 1.0);
-    }
-  `;
-
-  import { canUseWebGL } from '@/lib/perf';
-
-  let cleanupHero: (() => void) | null = null;
-
-  function initWebGLHero() {
-    // Always clean up previous instance first
-    cleanupHero?.();
-    cleanupHero = null;
-
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !canUseWebGL()) return;
-
-    const canvas = document.getElementById('hero-canvas') as HTMLCanvasElement;
-    if (!canvas) return;
-
-    const gl = canvas.getContext('webgl');
-    if (!gl) return;
-
-    function createShader(glCtx: WebGLRenderingContext, type: number, source: string) {
-      const shader = glCtx.createShader(type);
-      if (!shader) return null;
-      glCtx.shaderSource(shader, source);
-      glCtx.compileShader(shader);
-      if (!glCtx.getShaderParameter(shader, glCtx.COMPILE_STATUS)) {
-        glCtx.deleteShader(shader);
-        return null;
-      }
-      return shader;
-    }
-
-    const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
-    const program = gl.createProgram();
-    if (!program || !vertexShader || !fragmentShader) return;
-
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-    gl.linkProgram(program);
-    gl.useProgram(program);
-
-    const vertices = new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]);
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-    const positionLoc = gl.getAttribLocation(program, 'position');
-    gl.enableVertexAttribArray(positionLoc);
-    gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
-
-    const timeLoc = gl.getUniformLocation(program, 'u_time');
-    const resLoc = gl.getUniformLocation(program, 'u_resolution');
-    const mouseLoc = gl.getUniformLocation(program, 'u_mouse');
-
-    let mouseX = 0, mouseY = 0, targetMouseX = 0, targetMouseY = 0;
-    let startTime = performance.now();
-    let animationFrameId = 0;
-    let isVisible = true;
-    let destroyed = false;
-
-    const onResize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = canvas.clientWidth * dpr;
-      canvas.height = canvas.clientHeight * dpr;
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.uniform2f(resLoc, canvas.width, canvas.height);
-    };
-
-    const onMouseMove = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      targetMouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
-      targetMouseY = canvas.height - (e.clientY - rect.top) * (canvas.height / rect.height);
-    };
-
-    window.addEventListener('resize', onResize);
-    window.addEventListener('mousemove', onMouseMove);
-    onResize();
-
-    function render(time: number) {
-      if (destroyed || !isVisible) return;
-      const elapsed = (time - startTime) * 0.001;
-      mouseX += (targetMouseX - mouseX) * 0.05;
-      mouseY += (targetMouseY - mouseY) * 0.05;
-      gl!.uniform1f(timeLoc, elapsed);
-      gl!.uniform2f(mouseLoc, mouseX, mouseY);
-      gl!.drawArrays(gl!.TRIANGLES, 0, 6);
-      animationFrameId = requestAnimationFrame(render);
-    }
-
-    let visObs: IntersectionObserver | null = null;
-    const heroSection = canvas.closest('section');
-    if (heroSection) {
-      visObs = new IntersectionObserver(([entry]) => {
-        isVisible = entry.isIntersecting;
-        if (isVisible && !destroyed) render(performance.now());
-        else cancelAnimationFrame(animationFrameId);
-      }, { threshold: 0.05 });
-      visObs.observe(heroSection);
-    }
-
-    render(startTime);
-
-    cleanupHero = () => {
-      destroyed = true;
-      cancelAnimationFrame(animationFrameId);
-      visObs?.disconnect();
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('mousemove', onMouseMove);
-      gl.deleteProgram(program);
-    };
-  }
-
-  function activateHeroContent() {
+  function initHero() {
     const content = document.querySelector('.hero-content');
-    if (content) requestAnimationFrame(() => content.classList.add('is-active'));
+    if (!content) return;
+    requestAnimationFrame(() => content.classList.add('is-active'));
   }
 
-  document.addEventListener('astro:page-load', () => { initWebGLHero(); activateHeroContent(); });
-  document.addEventListener('astro:before-swap', () => { cleanupHero?.(); cleanupHero = null; });
-
-  function animateCounters() {
-    const counters = document.querySelectorAll('.hero-counter');
-    counters.forEach((el) => {
-      const target = parseInt((el as HTMLElement).dataset.target || '0', 10);
-      const prefix = (el as HTMLElement).dataset.prefix || '';
-      const suffix = (el as HTMLElement).dataset.suffix || '';
-      let current = 0;
-      const duration = 1800;
-      const start = performance.now();
-
-      function step(now: number) {
-        const elapsed = now - start;
-        const progress = Math.min(elapsed / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        current = Math.round(eased * target);
-        el.textContent = prefix + current + suffix;
-        if (progress < 1) requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
-    });
-  }
-
-  function scheduleCounters() {
-    const stats = document.querySelector('.hero-stats');
-    if (!stats) return;
-    setTimeout(animateCounters, 1300);
-  }
-  document.addEventListener('astro:page-load', scheduleCounters);
+  document.addEventListener('astro:page-load', initHero);
 </script>

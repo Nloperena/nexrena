@@ -10,37 +10,43 @@ import { webPageSchema } from '../lib/schema';
 const site = 'https://nexrena.com';
 const schema = webPageSchema({
   name: 'About | Nexrena',
-  description: 'Nexrena — digital growth agency. We build websites and SEO systems that capture leads and compound in value. Based in Orlando metro.',
+  description: 'A senior-operator consultancy for B2B companies serious about growth. Websites, SEO systems, and engineering that compound.',
   url: `${site}/about`,
 });
 
 const values = [
-  { num: '01', title: 'Infrastructure Over Aesthetics', body: 'Pretty sites that don\'t convert are expensive art. We build systems that generate revenue — and happen to look exceptional.' },
-  { num: '02', title: 'Radical Transparency', body: 'No black boxes. You see progress weekly, understand every decision, and own every deliverable. No lock-in, no gatekeeping.' },
-  { num: '03', title: 'Compounding Returns', body: 'Every sprint makes the next one more valuable. SEO compounds. Design systems scale. Analytics sharpen targeting. Growth accelerates.' },
-];
-
-const timeline = [
-  { year: '2023', label: 'First client project', desc: 'Built a full-stack B2B platform that generated +42% leads in the first quarter.' },
-  { year: '2024', label: 'Expanded to full-service', desc: 'Fused web engineering, SEO, and conversion strategy into a single delivery model.' },
-  { year: '2025', label: 'Nexrena founded', desc: 'Incorporated as a focused B2B growth infrastructure partner. 100% client retention.' },
+  {
+    num: '01',
+    title: 'Infrastructure Over Aesthetics',
+    body: "Pretty sites that don't convert are expensive art. Every build is measured against commercial outcomes first: qualified leads, sales cycle velocity, and organic visibility.",
+  },
+  {
+    num: '02',
+    title: 'Written Handoff, Not Dependency',
+    body: 'The goal of an engagement is a system your team can operate without us. Clean components, documented workflows, and handoff-ready tooling — no lock-in by design.',
+  },
+  {
+    num: '03',
+    title: 'Selective by Default',
+    body: "We don't pitch every prospect. If the scope is not a fit, we will say so. If it is a fit, you'll get a clear 90-day growth plan before any long engagement.",
+  },
 ];
 ---
 
 <Layout 
   title="About | Nexrena" 
-  description="Nexrena — digital growth agency. We build websites and SEO systems that capture leads and compound in value. Based in Orlando metro."
+  description="A senior-operator consultancy for B2B companies serious about growth. Websites, SEO systems, and engineering that compound."
   schema={schema}
 >
   <main>
     <PageHero 
       eyebrow="ABOUT NEXRENA //" 
-      title="Built for companies that are serious about growth."
-      subtitle="We build the digital engine. You run the business."
+      title="A senior-operator consultancy for B2B companies that are serious about growth."
+      subtitle="Nexrena builds digital infrastructure — websites, SEO systems, and the engineering that makes them compound — for companies that need the work shipped, not managed."
       image={heroImages.about}
     />
 
-    <!-- Origin Story -->
+    <!-- Who I Am -->
     <section class="bg-[var(--obsidian)] border-b border-[var(--slate-800)]">
       <div class="max-w-[1320px] mx-auto px-[5vw] pt-16 pb-32">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 relative z-10 items-center">
@@ -61,22 +67,25 @@ const timeline = [
               <div class="absolute bottom-0 right-0 w-[1px] h-8 bg-[var(--gold)] z-20"></div>
             </div>
             <div class="absolute -right-8 bottom-16 bg-[var(--gold)] text-[var(--obsidian)] px-6 py-3 font-mono text-[11px] uppercase tracking-widest hidden md:block">
-              Established &mdash; 2025
+              Full-stack, Florida-based
             </div>
           </div>
 
           <!-- RIGHT: Bio -->
           <div class="lg:col-span-7 flex flex-col items-start reveal" style="--i: 2;">
-            <Eyebrow class="mb-6">THE ORIGIN //</Eyebrow>
+            <Eyebrow class="mb-6">WHY NEXRENA EXISTS //</Eyebrow>
             <h2 class="font-display text-[36px] md:text-[48px] text-[var(--warm-white)] leading-[1.1] mb-8">
-              Born from frustration with the status quo.
+              Why multi-vendor B2B stacks stall.
             </h2>
             <div class="font-body text-[17px] leading-loose text-[var(--slate-300)] flex flex-col gap-6 mb-12">
               <p>
-                Nexrena was founded after years of watching B2B companies burn capital on fragmented agencies, unreadable codebases, and marketing strategies that lacked technical foundation.
+                Nexrena was founded after years of watching B2B companies burn capital on the same pattern: multiple vendors, each owning a slice, none owning the outcome.
               </p>
               <p>
-                We aren't a traditional agency. We are an infrastructure partner. A website shouldn't be a digital brochure — it should be an engineered system designed to capture leads, accelerate sales cycles, and compound in value over time.
+                The SEO agency blames development for slow pages. Development blames design for complexity. Content recommendations never make it to production. Budget disappears into coordination overhead instead of shipped improvements.
+              </p>
+              <p>
+                Led by Nicholas Loperena. Six years building production B2B systems across web engineering, SEO, and conversion architecture. Most recently the full-stack operator behind ForzaBuilt's rebrand, Astro rebuild, and post-launch SEO recovery — a 200+ SKU migration that shipped at 99% Lighthouse desktop and drove 0 &rarr; 28 MQLs in 4 months.
               </p>
             </div>
             <div class="flex flex-wrap gap-4 pt-8 border-t border-[var(--slate-800)] w-full">
@@ -88,32 +97,13 @@ const timeline = [
       </div>
     </section>
 
-    <!-- Manifesto -->
-    <section class="relative w-full min-h-[70vh] overflow-hidden flex items-center justify-center bg-[var(--obsidian)]">
-      <img src={heroImages.services} alt="" class="absolute inset-0 w-full h-full object-cover opacity-25" aria-hidden="true" loading="lazy" />
-      <div class="absolute inset-0 bg-gradient-to-b from-[var(--obsidian)] via-transparent to-[var(--obsidian)]"></div>
-      <div class="absolute inset-0 bg-[radial-gradient(ellipse_70%_70%_at_50%_50%,transparent_0%,rgba(12,15,18,0.7)_100%)]"></div>
-      <div class="relative z-10 w-full max-w-[1320px] mx-auto px-[5vw] text-center py-24">
-        <p class="font-mono text-[10px] text-[var(--gold)] tracking-[0.3em] uppercase mb-10 reveal">Our Mission</p>
-        <h2 class="font-display italic text-[clamp(32px,5vw,72px)] text-[var(--warm-white)] leading-[1.1] tracking-tight max-w-4xl mx-auto mb-8 reveal" style="--i: 1;">
-          We exist to make digital growth<br/>
-          <span class="text-[var(--gold)]">predictable, measurable,</span><br/>
-          and compounding.
-        </h2>
-        <div class="w-16 h-[1px] bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent mx-auto mb-8 reveal" style="--i: 2;"></div>
-        <p class="font-body text-[18px] text-[var(--slate-400)] max-w-lg mx-auto leading-relaxed reveal" style="--i: 3;">
-          Every project is measured against one metric: your revenue. Not our portfolio.
-        </p>
-      </div>
-    </section>
-
-    <!-- Values -->
+    <!-- How We Work -->
     <section class="bg-[var(--slate-900)] border-b border-[var(--slate-800)]">
       <div class="max-w-[1320px] mx-auto px-[5vw] py-32">
         <div class="max-w-3xl mb-20">
-          <Eyebrow class="mb-6">WHAT WE BELIEVE //</Eyebrow>
+          <Eyebrow class="mb-6">HOW WE WORK //</Eyebrow>
           <h2 class="font-display text-[40px] md:text-[64px] text-[var(--warm-white)] leading-[1.05] reveal">
-            Principles, not platitudes.
+            What we actually do differently.
           </h2>
         </div>
 
@@ -129,38 +119,8 @@ const timeline = [
       </div>
     </section>
 
-    <!-- Timeline -->
+    <!-- Straight Talk + Proof -->
     <section class="bg-[var(--obsidian)] border-b border-[var(--slate-800)]">
-      <div class="max-w-[1320px] mx-auto px-[5vw] py-32">
-        <div class="max-w-3xl mb-20">
-          <Eyebrow class="mb-6">THE JOURNEY //</Eyebrow>
-          <h2 class="font-display text-[40px] md:text-[56px] text-[var(--warm-white)] leading-[1.05] reveal">
-            Young and relentless.
-          </h2>
-        </div>
-
-        <div class="relative">
-          <div class="hidden md:block absolute left-[100px] top-0 bottom-0 w-[1px] bg-gradient-to-b from-[var(--gold)]/40 via-[var(--gold)]/20 to-transparent timeline-line" aria-hidden="true"></div>
-          <div class="flex flex-col gap-16">
-            {timeline.map((t, i) => (
-              <div class="tl-row grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-start reveal" style={`--i: ${i + 1};`}>
-                <div class="md:col-span-2 relative">
-                  <span class="font-display text-[48px] md:text-[56px] text-[var(--gold)] font-light leading-none">{t.year}</span>
-                  <div class="hidden md:block absolute right-[-18px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[var(--gold)] border-2 border-[var(--obsidian)] z-10"></div>
-                </div>
-                <div class="md:col-span-10 md:pl-12 border-l border-[var(--slate-800)] md:border-l-0 pl-6 md:pl-12">
-                  <h3 class="font-display text-[24px] md:text-[28px] text-[var(--warm-white)] leading-tight mb-3">{t.label}</h3>
-                  <p class="font-body text-[16px] text-[var(--slate-400)] leading-relaxed max-w-xl">{t.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- What We're Not + Testimonial -->
-    <section class="bg-[var(--obsidian)]">
       <div class="max-w-[1320px] mx-auto px-[5vw] py-32">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
           <div class="reveal">
@@ -169,10 +129,10 @@ const timeline = [
               We're not for everyone.
             </h2>
             <p class="font-body text-[17px] text-[var(--slate-400)] leading-relaxed mb-6">
-              If you want a pretty brochure site with no measurable outcomes, we're not your partner. If you want the cheapest option, we're not it.
+              If you want a brochure site with no measurable outcomes, we're not your partner. If you want the cheapest vendor in the market, we're not it.
             </p>
             <p class="font-body text-[17px] text-[var(--slate-300)] leading-relaxed">
-              We work best with companies that are serious about growth, ready to invest in infrastructure, and want a partner — not a vendor.
+              We work best with companies that are serious about growth, ready to invest in infrastructure, and want senior execution — not a coordination layer.
             </p>
           </div>
 
@@ -180,15 +140,29 @@ const timeline = [
             <div class="bg-[var(--slate-900)] border border-[var(--slate-800)] p-10 md:p-14 relative overflow-hidden">
               <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[var(--gold)] to-transparent"></div>
               <svg class="absolute top-6 right-6 opacity-10" width="48" height="48" viewBox="0 0 24 24" fill="var(--gold)"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
-              <h3 class="font-display italic text-[28px] text-[var(--gold)] mb-8 leading-tight relative z-10">
-                "The best agency relationship we've ever had."
+              <p class="font-mono text-[10px] text-[var(--gold)] uppercase tracking-[0.2em] mb-6 relative z-10">Proof</p>
+              <h3 class="font-display text-[28px] text-[var(--warm-white)] mb-6 leading-tight relative z-10">
+                ForzaBuilt: rebrand, Astro rebuild, and SEO recovery across a 200+ SKU migration.
               </h3>
-              <div class="flex items-center gap-4 relative z-10">
-                <div class="w-px h-10 bg-[var(--gold)]"></div>
+              <p class="font-body text-[15px] text-[var(--slate-400)] leading-relaxed mb-6 relative z-10">
+                Engagement scope ran from rebrand launch through post-launch SEO hardening, with implementation and validation handled inside one accountable workflow.
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-10 mb-8">
                 <div>
-                  <p class="font-mono text-[11px] text-[var(--slate-200)] uppercase tracking-wider">Forzabuilt Leadership</p>
-                  <p class="font-body text-[13px] text-[var(--slate-400)]">Industrial Adhesives Manufacturer</p>
+                  <p class="font-display text-[34px] text-[var(--gold)] leading-none">99%</p>
+                  <p class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest mt-2">SEO Health</p>
                 </div>
+                <div>
+                  <p class="font-display text-[34px] text-[var(--gold)] leading-none">99%</p>
+                  <p class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest mt-2">Lighthouse Desktop</p>
+                </div>
+                <div>
+                  <p class="font-display text-[34px] text-[var(--gold)] leading-none">0→28</p>
+                  <p class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest mt-2">MQLs / 4 months</p>
+                </div>
+              </div>
+              <div class="relative z-10">
+                <Button href="/work/forzabuilt/" variant="outline">See the ForzaBuilt case study &rarr;</Button>
               </div>
             </div>
           </div>
