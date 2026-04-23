@@ -9,9 +9,16 @@ interface Feature {
 interface Props {
   features: Feature[];
   outcomes: Array<{ metric: string; detail: string }>;
+  heading?: string;
+  outcomesHeading?: string;
 }
 
-const { features, outcomes } = Astro.props;
+const {
+  features,
+  outcomes,
+  heading = 'Engineered for performance.',
+  outcomesHeading = 'EXPECTED OUTCOMES',
+} = Astro.props;
 ---
 
 <section class="bg-[var(--obsidian)] py-32 border-t border-[var(--slate-800)] relative z-20">
@@ -21,7 +28,7 @@ const { features, outcomes } = Astro.props;
       <div class="max-w-2xl">
         <Eyebrow class="mb-6 text-[var(--gold-dim)]">CAPABILITIES //</Eyebrow>
         <h2 class="font-display text-[48px] md:text-[64px] text-[var(--warm-white)] font-light leading-[1.1]">
-          Engineered for performance.
+          {heading}
         </h2>
       </div>
     </div>
@@ -45,7 +52,7 @@ const { features, outcomes } = Astro.props;
 
     <!-- Outcomes Large Cards -->
     <div class="reveal">
-      <Eyebrow class="mb-12 text-[var(--gold-dim)] text-center">EXPECTED OUTCOMES</Eyebrow>
+      <Eyebrow class="mb-12 text-[var(--gold-dim)] text-center">{outcomesHeading}</Eyebrow>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         {outcomes.map((outcome, i) => (
           <div class="bg-[var(--slate-900)] p-10 border border-[var(--slate-800)] reveal" style={`--i: ${i};`}>

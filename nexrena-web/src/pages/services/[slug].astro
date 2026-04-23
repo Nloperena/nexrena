@@ -62,6 +62,10 @@ const relatedPosts = (await getCollection('blog'))
       <StickyScroll 
         statement={service.problem.statement}
         agitation={service.problem.agitation}
+        statusQuoTitle={service.problem.statusQuoTitle}
+        shiftTitle={service.problem.shiftTitle}
+        statusQuoItems={service.problem.statusQuoItems}
+        shiftItems={service.problem.shiftItems}
       />
     )}
 
@@ -69,11 +73,17 @@ const relatedPosts = (await getCollection('blog'))
       <FeatureGrid 
         features={service.features}
         outcomes={service.outcomes}
+        heading={service.featureHeading}
+        outcomesHeading={service.outcomesHeading}
       />
     )}
 
     {service.process && (
-      <ProcessTimeline process={service.process} />
+      <ProcessTimeline
+        process={service.process}
+        heading={service.processHeading}
+        description={service.processDescription}
+      />
     )}
 
     <!-- Industry focus: internal links -->
@@ -85,9 +95,6 @@ const relatedPosts = (await getCollection('blog'))
             <div class="flex flex-col gap-2">
               <a href={`/industries/${industry.id}/`} class="font-body text-[15px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors font-medium">
                 {industry.name}
-              </a>
-              <a href={`/services/${service.id}/${industry.id}/`} class="font-mono text-[11px] text-[var(--slate-400)] hover:text-[var(--gold)] transition-colors">
-                {serviceTitle} for {industry.name} →
               </a>
             </div>
           ))}
@@ -150,10 +157,10 @@ const relatedPosts = (await getCollection('blog'))
           <!-- CTA -->
           <div class="bg-[var(--slate-900)] p-12 lg:p-16 border border-[var(--slate-800)] flex flex-col justify-center reveal" style="--i: 1;">
             <h3 class="font-display text-[48px] text-[var(--warm-white)] leading-[1.1] mb-6">
-              Ready to start your {serviceTitle.toLowerCase()}?
+              Is this a fit for your team?
             </h3>
             <p class="font-body text-[16px] text-[var(--slate-400)] mb-12">
-              {service.cta.helper} Let's build something that drives measurable growth.
+              {service.cta.helper}
             </p>
             <div class="flex flex-col sm:flex-row gap-6">
               <Button href="/contact" variant="primary">

@@ -41,37 +41,39 @@ export const projects: Project[] = [
     id: 'forzabuilt',
     name: 'Forzabuilt',
     category: 'Industrial / B2B',
-    year: '2024',
-    stack: ['Next.js', 'TypeScript', 'Contentful', 'Vercel'],
-    tagline: 'B2B adhesives manufacturer — full catalog rebuild',
+    year: '2026',
+    stack: ['Astro', 'React Islands', 'Tailwind', 'Vercel'],
+    tagline: 'Rebrand, Astro rebuild, and the SEO architecture that turned a cold site into a qualified-lead channel.',
     url: 'https://forzabuilt.com',
     testimonial: 'Best single website contact in company history.',
     challenge:
-      'Their previous site was slow, fragmented, and failed to answer technical buyer questions early in the journey. Sales time was spent handling repetitive qualification instead of closing.',
+      'ForzaBuilt rebranded, rebuilt a media-heavy 200+ SKU industrial catalog, and migrated from legacy WordPress URL patterns to Astro in one transition. B2B migrations often trigger visibility loss when URL structures change, redirect coverage slips, and crawl/index signals degrade after launch.',
     solution:
-      'We rebuilt the platform with a headless architecture, restructured product and documentation taxonomy, and implemented conversion paths designed for procurement and operations stakeholders.',
+      'I ran build and SEO architecture as one program: Astro with React islands, Tailwind, and Vercel delivery; canonical route structure replacing legacy URL sprawl; layered redirect continuity across middleware and edge rules; hardened canonicals and sitemaps; Product and FAQ schema across the catalog; and IA rebuilt around procurement intent (application, substrate, specification).',
     outcome:
-      'The new platform became a lead qualification layer: buyers arrived with context, confidence, and clearer project intent.',
+      'The site launched with strong technical quality and then completed staged post-launch remediation (forensic audit, prioritized fixes, release validation, and repeatable audit workflow), resulting in a handoff-ready SEO operating system and a clear qualified inbound lift.',
     proofPoints: [
-      { metric: '3x faster page loads', context: 'Across core catalog and service pages' },
-      { metric: '+42% inbound leads', context: 'Measured after launch stabilization window' },
-      { metric: '96+ Lighthouse', context: 'Sustained performance baseline on production pages' }
+      { metric: '99% SEO health', context: 'Post-remediation technical audit score' },
+      { metric: '99% Lighthouse', context: 'Desktop score on a media-heavy website' },
+      { metric: '0 -> 28 MQLs', context: 'Qualified inbound in first four months post-launch (26 unique contacts)' }
     ],
     stackNotes: [
-      'Contentful model supports marketing-led publishing without engineering bottlenecks',
-      'Vercel deployment + edge caching reduced latency across key geographies',
-      'TypeScript component system standardized reusable conversion blocks'
+      'Migration architecture under constraint: shipped a full platform transition on a 200+ SKU catalog without the indexing collapse common in B2B rebuilds',
+      'Layered redirect strategy: middleware + edge rules preserved equity on high-impact legacy paths across changed URL patterns',
+      'B2B-native information architecture: catalog rebuilt around procurement intent, not marketing taxonomy',
+      'Production-grade performance: sustained 99% Lighthouse desktop on a media-heavy site with selective hydration and delivery optimization',
+      'Repeatable SEO release workflow: stage-based audit outputs that gave the internal team durable guardrails for future updates'
     ],
-    nextProjectId: 'rugged-red',
+    nextProjectId: 'furniture-packages-usa',
     ctaLabel: 'Review Forzabuilt',
     abstract: {
       type: 'css',
       description: 'Large "F" letterform + diagonal grid lines, gold/obsidian'
     },
     background: 'Forzabuilt is a B2B industrial adhesives manufacturer serving the Florida and Southeast construction market.',
-    metaDescription: 'Forzabuilt case study: B2B adhesives manufacturer. Headless rebuild, 3x faster loads, +42% inbound leads. Full catalog and technical SEO.',
-    approach: 'We rebuilt the site on Next.js with a headless CMS, implementing structured data for product categories, a gated technical specification library for qualified buyers, and a full technical SEO foundation from day one.',
-    results: 'Within 90 days of launch, organic inbound lead volume increased by 140%. The site now consistently scores 96+ on Lighthouse across all pages. The sales team reports that inbound leads arrive more informed.',
+    metaDescription: 'ForzaBuilt case study: rebrand, Astro rebuild, and SEO architecture. 99% SEO health, 99% Lighthouse desktop, and 0 to 28 qualified MQL submissions in four months.',
+    approach: 'I led the transition as a unified architecture program, combining platform rebuild decisions with SEO-critical controls (URL continuity, crawl/index hardening, structured data, and release validation) so the migration could ship fast without sacrificing long-term search resilience.',
+    results: 'Final outcomes at handoff: 99% technical SEO health, 99% Lighthouse desktop on a media-heavy catalog, and qualified inbound growth from effectively zero baseline to 28 estimated MQL submissions (26 unique contacts) in the first four months post-launch.',
     thumbnail: 'https://forzabuilt.com/images/homepage-heroes/eagle-hero.webp',
     video: 'https://forzabuilt.com/videos/backgrounds/WebOptimized/WebM/Eagle%20Header%20Video_Optimized.webm',
     embedSite: true,
@@ -86,26 +88,27 @@ export const projects: Project[] = [
     id: 'rugged-red',
     name: 'Rugged Red',
     category: 'E-Commerce / Headless',
-    year: '2024',
+    year: '2025',
     stack: ['React', 'AWS', 'Stripe', 'Headless'],
-    tagline: 'Headless commerce for a premium outdoor brand',
-    url: '#',
+    tagline: "Launching ForzaBuilt's cleaning division as a clear standalone digital brand",
+    url: 'https://www.ruggedred.com',
     testimonial: 'Nexrena built the ecommerce foundation we needed to scale seasonal demand.',
     challenge:
-      'Rugged Red had strong product demand but a brittle storefront that struggled during seasonal traffic spikes and underperformed on conversion.',
+      'ForzaBuilt needed to launch Rugged Red as a credible standalone cleaning division while keeping it operationally aligned with the parent platform and existing product systems.',
     solution:
-      'We replatformed to a headless commerce stack, rebuilt product detail architecture, and introduced performance and checkout optimizations tuned for mobile-heavy sessions.',
+      'I implemented Rugged Red as a first-class product family in the website architecture: dedicated category routing, focused cleaners experience, and clear division-level positioning that still fits inside shared operational workflows.',
     outcome:
-      'The brand gained a stable, scalable storefront that supported campaigns without sacrificing speed or conversion quality.',
+      'The business launched a cleaner-specific digital presence without fragmenting systems, giving sales and marketing a focused division experience that can scale with future product expansion.',
     proofPoints: [
-      { metric: '+31% checkout completion', context: 'After reducing friction in mobile checkout flow' },
-      { metric: '-47% bounce rate', context: 'On high-intent collection and PDP traffic' },
-      { metric: '99.95% uptime', context: 'Through peak campaign periods' }
+      { metric: 'Division-first navigation', context: 'Cleaners made discoverable from primary website pathways' },
+      { metric: 'Dedicated cleaners route', context: 'Rugged Red product experience separated from adhesive workflows' },
+      { metric: 'Shared ops backbone', context: 'Both brands managed without duplicating systems or content operations' }
     ],
     stackNotes: [
-      'Headless storefront separated merchandising velocity from backend constraints',
-      'AWS edge services improved resiliency for traffic bursts',
-      'Stripe checkout instrumentation improved attribution clarity'
+      'Clear division positioning: Rugged Red established as a first-class cleaning product family under the ForzaBuilt umbrella',
+      'Dedicated product architecture: cleaners routing and content pathways support focused user intent',
+      'Operational continuity: shared data and routing logic preserved maintainability across related brands',
+      'Scalable foundation: structure supports future cleaning-division expansion without platform fragmentation'
     ],
     nextProjectId: 'vito-fryfilter',
     ctaLabel: 'Review Rugged Red',
@@ -114,16 +117,16 @@ export const projects: Project[] = [
       description: 'Horizontal lines with a red accent stripe'
     },
     background: 'Rugged Red is a premium outdoor equipment brand known for its high-performance gear designed for extreme conditions.',
-    metaDescription: 'Rugged Red case study: Headless commerce for outdoor brand. +31% checkout completion, -47% bounce rate. React, AWS, Stripe.',
-    approach: 'We replatformed the entire storefront to a headless commerce architecture using React and AWS. This decoupled the frontend from the backend, allowing for sub-second page transitions and a custom, streamlined checkout flow.',
-    results: 'The transition to headless architecture resulted in a 31% increase in checkout completion. Bounce rates dropped by 47% as mobile users experienced a significantly faster and more intuitive shopping journey.',
+    metaDescription: "Rugged Red case study: launched ForzaBuilt's cleaning division as a dedicated digital brand with clear category architecture and scalable shared operations.",
+    approach: 'I delivered a launch-ready division architecture that balanced differentiation and integration: branded cleaners pathways, dedicated category experience, and shared platform logic for maintainable multi-brand operations.',
+    results: 'Rugged Red launched with a focused customer-facing identity and cleaner product discovery flow, while the internal team retained one scalable operating system for content, products, and updates across both brands.',
     thumbnail: 'https://ruggedred.com/images/RRMascot+Type-smaller.png',
     video: 'https://videos.ctfassets.net/hdznx4p7ef81/1OG5dyWb0f3mWf05Dwjh0k/fbafd351797af80200e19a2cb6ef6e2c/housekeeping-products-hero-video.mp4?q=70&fm=mp4&w=1280',
     seoHighlights: [
-      { title: 'Product Page SEO at Scale', description: 'Dynamically generated meta titles, descriptions, and Open Graph tags for every SKU — ensuring each product page competes in organic search.' },
-      { title: 'Category Architecture for Crawlers', description: 'Designed a flat, logical category taxonomy that search engines could crawl efficiently while supporting faceted navigation without duplicate content.' },
-      { title: 'Mobile-First Indexing', description: 'Optimized the entire storefront for mobile-first indexing with responsive images, touch-optimized UI, and sub-2-second mobile load times.' },
-      { title: 'Seasonal Traffic Resilience', description: 'AWS edge infrastructure tuned for traffic bursts during peak campaign periods, maintaining 99.95% uptime and fast TTFB globally.' },
+      { title: 'Division-Level Discoverability', description: 'Introduced Rugged Red as a dedicated cleaners branch in core navigation and product pathways so search engines and users can discover the division directly.' },
+      { title: 'Category Separation Without Fragmentation', description: 'Structured cleaners routes and content to remain distinct from adhesive flows while preserving shared operational logic and consistent crawl behavior.' },
+      { title: 'Scalable Multi-Brand URL Logic', description: 'Implemented routing patterns that support ongoing Rugged Red growth without forcing a separate website stack or duplicate content systems.' },
+      { title: 'Foundation-First SEO Hygiene', description: 'Maintained canonical and indexability consistency while expanding product families, reducing long-term crawl risk as the division scales.' },
     ]
   },
   {
@@ -151,7 +154,7 @@ export const projects: Project[] = [
       'Global CDN improved product page response time in priority markets',
       'SEO and localization layers supported regional discovery'
     ],
-    nextProjectId: 'furniture-packages-usa',
+    nextProjectId: 'forzabuilt',
     ctaLabel: 'Review VITO Fryfilter',
     abstract: {
       type: 'css',
@@ -173,10 +176,10 @@ export const projects: Project[] = [
     id: 'furniture-packages-usa',
     name: 'Furniture Packages USA',
     category: 'Real Estate / B2B Procurement',
-    year: '2024',
+    year: '2026',
     stack: ['Next.js', 'PostgreSQL', 'Stripe', 'Vercel'],
     tagline: 'Complex B2B procurement portal for furnishings',
-    url: '#',
+    url: 'https://furniturepackagesusa.com',
     testimonial: 'The new procurement flow removed constant back-and-forth and accelerated quote velocity.',
     challenge:
       'A high-touch procurement model was being handled through generic website flows that obscured buying paths for investors and property managers.',
@@ -194,7 +197,7 @@ export const projects: Project[] = [
       'PostgreSQL-backed quoting logic improved response precision',
       'Analytics framework exposed high-value pages and drop-off zones'
     ],
-    nextProjectId: 'forzabuilt',
+    nextProjectId: 'rugged-red',
     ctaLabel: 'Review Furniture Packages USA',
     abstract: {
       type: 'css',

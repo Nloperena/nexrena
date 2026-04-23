@@ -5,13 +5,19 @@ import { projects } from '../../data/projects';
 import { services } from '../../data/services';
 import { industries } from '../../data/industries';
 import Eyebrow from '../../components/ui/Eyebrow.astro';
+import Button from '../../components/ui/Button.astro';
 import { heroImages } from '../../data/hero-images';
 import { itemListSchema } from '../../lib/schema';
+import { normalizeInternalHref } from '@/lib/url';
 
 const site = 'https://nexrena.com';
-const projectItems = projects.map((p) => ({
+const projectPriority = ['forzabuilt', 'furniture-packages-usa', 'rugged-red', 'vito-fryfilter'];
+const orderedProjects = [...projects].sort(
+  (a, b) => projectPriority.indexOf(a.id) - projectPriority.indexOf(b.id)
+);
+const projectItems = orderedProjects.map((p) => ({
   name: p.name,
-  url: `${site}/work/${p.id}`,
+  url: `${site}/work/${p.id}/`,
 }));
 ---
 
@@ -41,17 +47,48 @@ const projectItems = projects.map((p) => ({
 
       <!-- Table Rows -->
       <div class="flex flex-col relative" id="work-list">
-        {projects.map((project, i) => (
-          <a href={`/work/${project.id}`} class="work-row group grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-start md:items-center py-8 border-b border-[var(--slate-700)] transition-colors hover:bg-[var(--slate-800)] md:-mx-4 md:px-4" data-index={i} data-thumbnail={project.thumbnail || heroImages[`project/${project.id}` as keyof typeof heroImages] || ''}>
-            <div class="md:col-span-1 font-display text-[24px] text-[var(--slate-400)] font-light hidden md:block">0{i + 1}</div>
-            <div class="md:col-span-4 font-display text-[32px] md:text-[28px] text-[var(--warm-white)] group-hover:text-[var(--gold)] transition-colors leading-none mb-2 md:mb-0">{project.name}</div>
-            <div class="md:col-span-2 font-body text-[14px] text-[var(--slate-400)]">{project.category}</div>
-            <div class="md:col-span-3 font-mono text-[11px] text-[var(--slate-300)] opacity-70 group-hover:opacity-100 transition-opacity bg-[var(--slate-900)] px-2 py-1 inline-block w-max border border-[var(--slate-700)]">{project.proofPoints?.[0]?.metric || 'View Results'}</div>
-            <div class="md:col-span-1 font-mono text-[11px] text-[var(--slate-400)]">{project.year}</div>
-            <div class="md:col-span-1 md:text-right font-mono text-[11px] text-[var(--gold)] group-hover:translate-x-2 transition-transform mt-4 md:mt-0">View &rarr;</div>
+        {orderedProjects.map((project, i) => (
+          <a href={normalizeInternalHref(`/work/${project.id}`)} class="work-row group grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-start md:items-center py-8 border-b border-[var(--slate-700)] transition-colors md:-mx-4 md:px-4" data-index={i}>
+            <div class="work-row__bg" aria-hidden="true">
+              <img
+                src={project.thumbnail || heroImages[`project/${project.id}` as keyof typeof heroImages] || heroImages.work}
+                alt=""
+                class="work-row__bg-image"
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="work-row__bg-scrim"></div>
+            </div>
+            <div class="md:col-span-1 font-display text-[24px] text-[var(--slate-400)] font-light hidden md:block relative z-10">0{i + 1}</div>
+            <div class="md:col-span-4 mb-2 md:mb-0 relative z-10">
+              <div class="font-display text-[32px] md:text-[28px] text-[var(--warm-white)] group-hover:text-[var(--gold)] transition-colors leading-none">{project.name}</div>
+              <div class="font-body text-[13px] text-[var(--slate-400)] mt-2 max-w-md">{project.tagline}</div>
+            </div>
+            <div class="md:col-span-2 font-body text-[14px] text-[var(--slate-300)] relative z-10">{project.category}</div>
+            <div class="md:col-span-3 relative z-10">
+              <div class="font-mono text-[11px] text-[var(--slate-200)] opacity-80 group-hover:opacity-100 transition-opacity bg-[var(--obsidian)]/70 backdrop-blur-[2px] px-2 py-1 inline-block w-max border border-[var(--slate-600)]">
+                {project.proofPoints?.[0]?.metric || 'View Results'}
+              </div>
+            </div>
+            <div class="md:col-span-1 font-mono text-[11px] text-[var(--slate-300)] relative z-10">{project.year}</div>
+            <div class="md:col-span-1 md:text-right font-mono text-[11px] text-[var(--gold)] group-hover:translate-x-2 transition-transform mt-4 md:mt-0 relative z-10">View &rarr;</div>
           </a>
         ))}
       </div>
+
+      <section class="mt-16 md:mt-20 border border-[var(--slate-700)] bg-[var(--slate-900)]/40 p-8 md:p-12">
+        <Eyebrow class="mb-5">READY TO BUILD //</Eyebrow>
+        <h2 class="font-display text-[clamp(30px,4vw,56px)] text-[var(--warm-white)] leading-tight max-w-4xl mb-4">
+          Want your project to be the next featured case study?
+        </h2>
+        <p class="font-body text-[16px] text-[var(--slate-300)] max-w-2xl mb-8">
+          We build high-performance websites and growth systems that turn traffic into qualified pipeline.
+        </p>
+        <div class="flex flex-wrap items-center gap-4">
+          <Button href="/contact" variant="primary">Start your project</Button>
+          <Button href="/services" variant="outline">Explore services</Button>
+        </div>
+      </section>
     </div>
 
     <!-- Internal links: services and industries -->
@@ -61,7 +98,7 @@ const projectItems = projects.map((p) => ({
           <h3 class="font-mono text-[11px] text-[var(--gold-dim)] uppercase tracking-widest mb-4">Services</h3>
           <div class="flex flex-wrap gap-4">
             {services.map((s) => (
-              <a href={`/services/${s.id}`} class="font-body text-[14px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">
+              <a href={normalizeInternalHref(`/services/${s.id}`)} class="font-body text-[14px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">
                 {s.title.replace(/\n/g, ' ')}
               </a>
             ))}
@@ -71,7 +108,7 @@ const projectItems = projects.map((p) => ({
           <h3 class="font-mono text-[11px] text-[var(--gold-dim)] uppercase tracking-widest mb-4">Industries</h3>
           <div class="flex flex-wrap gap-4">
             {industries.map((i) => (
-              <a href={`/industries/${i.id}`} class="font-body text-[14px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">
+              <a href={normalizeInternalHref(`/industries/${i.id}`)} class="font-body text-[14px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">
                 {i.name}
               </a>
             ))}
@@ -81,10 +118,66 @@ const projectItems = projects.map((p) => ({
     </section>
   </main>
 
-  <!-- Hover Preview Floating Div -->
-  <div id="hover-preview" class="fixed w-[360px] h-[260px] rounded-lg bg-[var(--obsidian)] border border-[var(--slate-700)] pointer-events-none z-50 overflow-hidden hidden md:flex items-center justify-center" style="opacity: 0; right: 60px; top: 50%;">
-    <img id="hover-preview-img" src="" alt="" class="w-full h-full object-cover" />
-  </div>
+  <style>
+    .work-row {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+    }
+
+    .work-row__bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .work-row__bg-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.26;
+      transform: scale(1.02);
+      filter: saturate(0.85);
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease, filter 0.5s ease;
+    }
+
+    .work-row__bg-scrim {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        100deg,
+        rgba(12, 15, 18, 0.82) 10%,
+        rgba(12, 15, 18, 0.7) 40%,
+        rgba(12, 15, 18, 0.55) 72%,
+        rgba(12, 15, 18, 0.82) 100%
+      );
+      transition: background 0.5s ease;
+    }
+
+    .work-row:hover .work-row__bg-image {
+      opacity: 0.42;
+      transform: scale(1.06);
+      filter: saturate(1.05);
+    }
+
+    .work-row:hover .work-row__bg-scrim {
+      background: linear-gradient(
+        100deg,
+        rgba(12, 15, 18, 0.72) 10%,
+        rgba(12, 15, 18, 0.56) 40%,
+        rgba(12, 15, 18, 0.42) 72%,
+        rgba(12, 15, 18, 0.72) 100%
+      );
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .work-row__bg-image,
+      .work-row__bg-scrim {
+        transition: none;
+      }
+    }
+  </style>
 
   <script>
     import gsap from 'gsap';
@@ -108,48 +201,5 @@ const projectItems = projects.map((p) => ({
     }
 
     document.addEventListener('astro:page-load', initWorkListAnimations);
-
-    function setupHoverPreview() {
-      const rows = document.querySelectorAll('.work-row');
-      const preview = document.getElementById('hover-preview');
-      const previewImg = document.getElementById('hover-preview-img') as HTMLImageElement | null;
-      if (!preview || !previewImg || window.innerWidth < 768) return;
-
-      let targetY = 0;
-      let currentY = 0;
-      let isVisible = false;
-      let rafId = 0;
-
-      function lerp() {
-        currentY += (targetY - currentY) * 0.12;
-        preview!.style.top = `${currentY}px`;
-        preview!.style.transform = `translateY(-50%)`;
-        if (isVisible) rafId = requestAnimationFrame(lerp);
-      }
-
-      rows.forEach((row) => {
-        const thumbnail = (row as HTMLElement).dataset.thumbnail;
-
-        row.addEventListener('mouseenter', () => {
-          if (!thumbnail) return;
-          previewImg.src = thumbnail;
-          isVisible = true;
-          gsap.to(preview, { opacity: 1, scale: 1, duration: 0.4, ease: 'power3.out' });
-          lerp();
-        });
-
-        row.addEventListener('mouseleave', () => {
-          isVisible = false;
-          cancelAnimationFrame(rafId);
-          gsap.to(preview, { opacity: 0, scale: 0.95, duration: 0.3, ease: 'power2.in' });
-        });
-
-        row.addEventListener('mousemove', (e) => {
-          targetY = (e as MouseEvent).clientY;
-        });
-      });
-    }
-
-    document.addEventListener('astro:page-load', setupHoverPreview);
   </script>
 </Layout>
