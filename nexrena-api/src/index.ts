@@ -17,6 +17,8 @@ import proposalRoutes from './routes/proposals'
 import expenseRoutes from './routes/expenses'
 import subscriptionRoutes from './routes/subscriptions'
 import portalRoutes from './routes/portal'
+import serviceRequestRoutes from './routes/service-requests'
+import stripeWebhookRoutes from './routes/stripe-webhook'
 import { runDueBilling } from './lib/billing'
 
 const app = express()
@@ -58,6 +60,9 @@ app.use(cors({
   credentials: true,
 }))
 
+// Stripe webhook needs raw body — mount before express.json()
+app.use('/api/stripe/webhook', express.raw({ type: 'application/json' }), stripeWebhookRoutes)
+
 app.use(express.json({ limit: '1mb' }))
 
 // ── Rate limit on public lead endpoint ───────────────────────────────────
@@ -80,6 +85,7 @@ app.all(
 
 app.use('/api/leads', leadLimiter, leadRoutes)           // POST is public, GET is auth-guarded inside
 app.use('/api/portal', portalAuthLimiter, portalRoutes) // register/login public; rest portal-auth inside
+app.use('/api/service-requests', requireAuth, serviceRequestRoutes)
 app.use('/api/contacts', requireAuth, contactRoutes)
 app.use('/api/projects', requireAuth, projectRoutes)
 app.use('/api/invoices', requireAuth, invoiceRoutes)

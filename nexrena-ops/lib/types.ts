@@ -97,6 +97,16 @@ export interface Lead {
   createdAt: string
 }
 
+export interface PortalAccount {
+  id: string
+  email: string
+  name: string
+  company?: string | null
+  contactId: string
+  createdAt: string
+  updatedAt: string
+}
+
 // ── Time Entries ─────────────────────────────────────────────────────────
 
 export interface TimeEntry {
@@ -177,4 +187,36 @@ export interface Expense {
   vendor?: string
   notes?: string
   createdAt: string
+}
+
+// ── Portal service requests ──────────────────────────────────────────────
+
+export type ServiceRequestStatus = 'new' | 'reviewing' | 'quoted' | 'accepted' | 'declined' | 'closed'
+
+export interface PortalAssetRecord {
+  id: string
+  filename: string
+  contentType: string
+  sizeBytes: number
+  blobUrl: string
+  pathname: string
+  createdAt: string
+}
+
+export interface ServiceRequest {
+  id: string
+  contactId: string
+  contactName?: string
+  contactCompany?: string
+  contactEmail?: string
+  portalAccountId?: string | null
+  projectType: string
+  description: string
+  budget?: string | null
+  timeline?: string | null
+  status: ServiceRequestStatus
+  source: string
+  createdAt: string
+  updatedAt: string
+  assets?: PortalAssetRecord[]
 }

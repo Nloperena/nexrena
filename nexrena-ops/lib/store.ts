@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { Contact, Project, Invoice, Lead, TimeEntry, Proposal, Expense, Subscription } from './types'
+import { Contact, Project, Invoice, Lead, PortalAccount, TimeEntry, Proposal, Expense, Subscription, ServiceRequest } from './types'
 import { api } from './api'
 
 // ── hooks ────────────────────────────────────────────────────────────────
@@ -115,6 +115,16 @@ export function useLeads() {
   }, [])
 
   return { leads, updateStatus, remove }
+}
+
+export function usePortalAccounts() {
+  const [accounts, setAccounts] = useState<PortalAccount[]>([])
+
+  useEffect(() => {
+    api.get<PortalAccount[]>('/portal/accounts').then(setAccounts).catch(console.error)
+  }, [])
+
+  return { accounts }
 }
 
 export function useTimeEntries() {
@@ -246,6 +256,22 @@ export function useSubscriptions() {
   }, [])
 
   return { subscriptions, add, edit, remove, runBilling }
+}
+
+export function useServiceRequests() {
+  const [requests, setRequests] = useState<ServiceRequest[]>([])
+
+  useEffect(() => {
+    api.get<ServiceRequest[]>('/service-requests').then(setRequests).catch(console.error)
+  }, [])
+
+  const updateStatus = useCallback(async (id: string, status: ServiceRequest['status']) => {
+    setRequests(prev => prev.map(x => x.id === id ? { ...x, status } : x))
+    try { await api.patch(`/service-requests/${id}`, { status }) }
+    catch (e) { console.error(e) }
+  }, [])
+
+  return { requests, updateStatus }
 }
 
 // ── utils ────────────────────────────────────────────────────────────────

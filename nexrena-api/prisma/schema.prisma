@@ -19,6 +19,7 @@ model Contact {
   stage          String
   value          Float   @default(0)
   notes          String?
+  stripeCustomerId String? @unique @map("stripe_customer_id")
   createdAt      String  @map("created_at")
   updatedAt      String  @map("updated_at")
 
@@ -62,6 +63,9 @@ model Invoice {
   taxRate       Float?  @map("tax_rate")
   paidDate      String? @map("paid_date")
   notes         String?
+  stripeInvoiceId       String? @map("stripe_invoice_id")
+  stripePaymentIntentId String? @map("stripe_payment_intent_id")
+  paidVia               String? @map("paid_via")
   createdAt     String  @map("created_at")
 
   @@map("invoices")
@@ -79,6 +83,42 @@ model PortalAccount {
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   @@map("portal_accounts")
+}
+
+// ── Client service requests ───────────────────────────────────────────────
+model ServiceRequest {
+  id              String   @id @default(cuid())
+  contactId       String   @map("contact_id")
+  portalAccountId String?  @map("portal_account_id")
+  projectType     String   @map("project_type")
+  description     String
+  budget          String?
+  timeline        String?
+  status          String   @default("new")
+  source          String   @default("portal")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  assets PortalAsset[]
+
+  @@map("service_requests")
+}
+
+model PortalAsset {
+  id               String   @id @default(cuid())
+  contactId        String   @map("contact_id")
+  serviceRequestId String?  @map("service_request_id")
+  projectId        String?  @map("project_id")
+  filename         String
+  contentType      String   @map("content_type")
+  sizeBytes        Int      @map("size_bytes")
+  blobUrl          String   @map("blob_url")
+  pathname         String
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  serviceRequest ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: SetNull)
+
+  @@map("portal_assets")
 }
 
 // ── Website Leads ────────────────────────────────────────────────────────
@@ -146,6 +186,8 @@ model Subscription {
   skipNext        Boolean @default(false) @map("skip_next")
   netTerms        String? @map("net_terms")
   notes           String?
+  stripeSubscriptionId String? @unique @map("stripe_subscription_id")
+  stripePriceId        String? @map("stripe_price_id")
   createdAt       String  @map("created_at")
 
   @@map("subscriptions")

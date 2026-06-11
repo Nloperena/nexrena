@@ -7,6 +7,8 @@ const PRIMARY_NAV = [
   { href: '/subscriptions',  label: 'Subscriptions', icon: '↻' },
   { href: '/proposals',      label: 'Proposals',     icon: '◇' },
   { href: '/leads',          label: 'Leads',         icon: '◉' },
+  { href: '/service-requests', label: 'Requests',  icon: '✦' },
+  { href: '/portal-accounts', label: 'Portal',      icon: '◈' },
   { href: '/projects',       label: 'Projects',      icon: '▦' },
 ]
 

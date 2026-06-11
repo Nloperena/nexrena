@@ -127,6 +127,56 @@ async function seed() {
     },
   })
 
+  const warrenInvoiceCount = await prisma.invoice.count({ where: { contactId: WARREN_CONTACT_ID } })
+  if (warrenInvoiceCount === 0) {
+    const existing = await prisma.invoice.findMany({ select: { number: true } })
+    const numbers = existing.map((i) => i.number)
+    const nextNum = (year) => {
+      const prefix = `NXR-${year}-`
+      const nums = numbers.filter((n) => n.startsWith(prefix)).map((n) => parseInt(n.replace(prefix, ''), 10)).filter((n) => !isNaN(n))
+      const next = nums.length > 0 ? Math.max(...nums) + 1 : 1
+      const num = `${prefix}${String(next).padStart(3, '0')}`
+      numbers.push(num)
+      return num
+    }
+    const addDays = (dateStr, days) => {
+      const d = new Date(dateStr)
+      d.setDate(d.getDate() + days)
+      return d.toISOString().slice(0, 10)
+    }
+    const client = {
+      clientName: 'Warren Daughtridge',
+      clientCompany: 'The Two Azalea Group, LLC',
+      clientEmail: WARREN_PORTAL_EMAIL,
+      clientAddress: '117 Manchester Ct, Rocky Mount, NC 27803-5907',
+      contactId: WARREN_CONTACT_ID,
+    }
+    const samples = [
+      { number: nextNum(2025), projectName: 'Astro static one-pager website', status: 'paid', rate: 400, issueDate: '2025-12-18', paidDate: '2025-12-18', createdAt: '2025-12-18T12:00:00.000Z' },
+      { number: nextNum(2026), projectName: 'Website Hosting', status: 'paid', rate: 20, issueDate: '2026-01-18', paidDate: '2026-01-18', createdAt: '2026-01-18T12:00:00.000Z' },
+      { number: nextNum(2026), projectName: 'Website Hosting', status: 'sent', rate: 20, issueDate: '2026-02-18', paidDate: null, createdAt: '2026-02-18T12:00:00.000Z' },
+    ]
+    for (const s of samples) {
+      await prisma.invoice.create({
+        data: {
+          ...client,
+          id: require('crypto').randomUUID(),
+          number: s.number,
+          projectName: s.projectName,
+          status: s.status,
+          lineItems: [{ id: require('crypto').randomUUID(), description: s.projectName, quantity: 1, rate: s.rate }],
+          issueDate: s.issueDate,
+          dueDate: addDays(s.issueDate, 30),
+          netTerms: 'net30',
+          paidDate: s.paidDate,
+          notes: s.projectName,
+          createdAt: s.createdAt,
+        },
+      })
+    }
+    console.log(`Seed: added ${samples.length} Warren demo invoices`)
+  }
+
   console.log('Seed complete: Warren Daughtridge + Joe Loperena contacts; Warren hosting subscription + portal account')
 }
 

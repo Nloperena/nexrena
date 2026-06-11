@@ -143,16 +143,24 @@ export function InvoiceForm({ initial, onSave, onClose, nextNumber, contacts }: 
     }))
   }
 
+  const resolveContactId = () => {
+    if (form.contactId) return form.contactId
+    const email = form.clientEmail?.trim().toLowerCase()
+    if (!email) return undefined
+    return contacts.find(c => c.email.trim().toLowerCase() === email)?.id
+  }
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
+    const contactId = resolveContactId()
     onSave({
       id: form.id ?? genId(),
       number: form.number!,
       clientName: form.clientName ?? '',
       clientCompany: form.clientCompany,
-      clientEmail: form.clientEmail,
+      clientEmail: form.clientEmail?.trim() || undefined,
       clientAddress: form.clientAddress,
-      contactId: form.contactId,
+      contactId,
       projectId: form.projectId,
       projectName: form.projectName,
       status: form.status ?? 'draft',

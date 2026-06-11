@@ -5,8 +5,16 @@ import { signPortalToken } from '../lib/portal-token'
 import { requirePortalAuth } from '../middleware/portal-auth'
 import { requireAuth } from '../middleware/auth'
 import { notifyNewLead } from '../lib/notify'
+import { invoiceTotal, parseLineItems, portalInvoiceWhere } from '../lib/invoice-utils'
+import portalServiceRequestRoutes from './portal-service-requests'
+import portalAssetRoutes from './portal-assets'
+import portalBillingRoutes from './portal-billing'
 
 const router = Router()
+
+router.use('/service-requests', portalServiceRequestRoutes)
+router.use('/assets', portalAssetRoutes)
+router.use('/billing', portalBillingRoutes)
 
 function genContactId() {
   return Math.random().toString(36).slice(2, 10)
@@ -201,16 +209,60 @@ router.get('/projects', requirePortalAuth, async (req, res) => {
   res.json(projects)
 })
 
+function serializePortalInvoice(invoice: {
+  id: string
+  number: string
+  clientName: string
+  status: string
+  issueDate: string
+  dueDate: string
+  projectName: string | null
+  lineItems: unknown
+  taxRate: number | null
+  paidDate: string | null
+  notes: string | null
+}) {
+  const lineItems = parseLineItems(invoice.lineItems)
+  return {
+    id: invoice.id,
+    number: invoice.number,
+    clientName: invoice.clientName,
+    status: invoice.status,
+    issueDate: invoice.issueDate,
+    dueDate: invoice.dueDate,
+    projectName: invoice.projectName,
+    lineItems,
+    taxRate: invoice.taxRate,
+    paidDate: invoice.paidDate,
+    notes: invoice.notes,
+    total: invoiceTotal(lineItems, invoice.taxRate),
+  }
+}
+
 /** GET /api/portal/invoices */
 router.get('/invoices', requirePortalAuth, async (req, res) => {
   const { contactId, email } = req.portalUser!
   const invoices = await prisma.invoice.findMany({
-    where: {
-      OR: [{ contactId }, { clientEmail: email }],
-    },
+    where: portalInvoiceWhere(contactId, email),
     orderBy: { createdAt: 'desc' },
   })
-  res.json(invoices)
+  res.json(invoices.map(serializePortalInvoice))
+})
+
+/** GET /api/portal/invoices/:id */
+router.get('/invoices/:id', requirePortalAuth, async (req, res) => {
+  const { contactId, email } = req.portalUser!
+  const invoice = await prisma.invoice.findFirst({
+    where: {
+      id: req.params.id,
+      ...portalInvoiceWhere(contactId, email),
+    },
+  })
+  if (!invoice) {
+    res.status(404).json({ error: 'Invoice not found' })
+    return
+  }
+  res.json(serializePortalInvoice(invoice))
 })
 
 /** GET /api/portal/proposals */

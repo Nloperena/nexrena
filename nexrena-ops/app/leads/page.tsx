@@ -37,6 +37,7 @@ export default function LeadsPage() {
 
   const newCount = leads.filter(l => l.status === 'new' || !l.status).length
   const filteredLeads = filter === 'all' ? leads : leads.filter(l => l.status === filter)
+  const portalSignups = leads.filter(l => l.source === 'portal-signup').length
 
   const cycleStatus = (lead: Lead) => {
     const currentIdx = STATUS_ORDER.indexOf(lead.status || 'new')
@@ -69,7 +70,7 @@ export default function LeadsPage() {
         <StatCard label="Total Leads" value={String(leads.length)} />
         <StatCard label="Needs Response" value={String(newCount)} gold />
         <StatCard label="This Month" value={String(thisMonth.length)} />
-        <StatCard label="Sources" value="Website" sub="nexrena.com/contact" />
+        <StatCard label="Sources" value={String(new Set(leads.map(l => l.source || 'website')).size)} sub={`${portalSignups} portal signups`} />
       </div>
 
       <div className="flex gap-2 mb-4">
