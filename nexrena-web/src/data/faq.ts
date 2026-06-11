@@ -36,7 +36,13 @@ export const faqItems = [
     id: 'project-pricing-model',
     question: 'How do you charge for projects?',
     answer:
-      'We quote fixed-scope projects (website redesigns, audits) and retainer arrangements for ongoing work (SEO, content, paid media). We’ll propose a structure that fits your needs.',
+      'One-time builds typically run $10k–$50k+ depending on scope. Website as a Service (WaaS) starts at $3,000/mo with a 3-month minimum. See pricing on our contact page or submit the form for a scoped recommendation.',
+  },
+  {
+    id: 'waas-pricing',
+    question: 'What is Website as a Service (WaaS)?',
+    answer:
+      'WaaS is a monthly partnership: your site, hosting, updates, analytics, and ongoing growth work under one retainer. Essentials is $3,000/mo, Growth is $5,000/mo, and Strategic is $8,000/mo — all with a 3-month minimum.',
   },
   {
     id: 'ongoing-support-after-launch',

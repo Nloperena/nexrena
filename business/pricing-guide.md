@@ -32,6 +32,20 @@
 
 **Minimum commitment:** 3 months. Discount at 6 or 12.
 
+### Website as a Service (WaaS)
+
+Public-facing source of truth: `nexrena-web/src/data/pricing.ts`
+
+WaaS uses the same monthly tiers as retainers above. Position WaaS on the website and contact form when buyers want ongoing partnership instead of a one-time build.
+
+| Tier | Monthly | Best for |
+|------|---------|----------|
+| Essentials | $3,000/mo | Stable site + light ongoing updates |
+| Growth | $5,000/mo | SEO + optimization + quarterly roadmap |
+| Strategic | $8,000/mo | Senior ownership across web + growth |
+
+**Minimum commitment:** 3 months.
+
 ## How to Quote
 
 1. **Listen first.** Understand their problem before talking price.

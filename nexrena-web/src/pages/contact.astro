@@ -1,7 +1,8 @@
 ---
 import Layout from '../components/layout/Layout.astro';
 import PageHero from '../components/sections/PageHero.astro';
-import Button from '../components/ui/Button.astro';
+import PricingOverview from '../components/sections/PricingOverview.astro';
+import { ProjectIntakeForm } from '../components/ProjectIntakeForm';
 import { heroImages } from '../data/hero-images';
 import { webPageSchema } from '../lib/schema';
 import { projectIntakeCta } from '../data/cta';
@@ -9,17 +10,14 @@ import { projectIntakeCta } from '../data/cta';
 const site = 'https://nexrena.com';
 const schema = webPageSchema({
   name: 'Contact | Nexrena',
-  description: 'Contact Nexrena for web design, SEO, and digital growth. Based in Kissimmee, FL (Orlando metro). Start your project with a scoped roadmap.',
+  description: 'Contact Nexrena for web design, SEO, WaaS, and digital growth. Based in Kissimmee, FL (Orlando metro). Transparent project and monthly pricing.',
   url: `${site}/contact`,
 });
-
-// API URL for contact form - accessed at build time
-const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa9f.herokuapp.com';
 ---
 
 <Layout 
   title="Contact | Nexrena" 
-  description="Contact Nexrena for web design, SEO, and digital growth. Based in Kissimmee, FL (Orlando metro). Start your project with a scoped roadmap."
+  description="Contact Nexrena for web design, SEO, WaaS, and digital growth. Based in Kissimmee, FL (Orlando metro). Transparent project and monthly pricing."
   schema={schema}
 >
   <main>
@@ -30,12 +28,12 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
       variant="short"
       image={heroImages.contact}
     />
+
+    <PricingOverview showCta={false} />
+
     <div class="section-container pt-16 pb-24">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
-        
-        <!-- LEFT: Context -->
         <div class="flex flex-col justify-center reveal">
-          
           <div class="flex flex-col gap-8">
             <div class="flex flex-col gap-2">
               <span class="font-mono text-[10px] text-[var(--gold-dim)] uppercase tracking-widest">Email</span>
@@ -59,7 +57,6 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
               <span class="font-body text-[18px] text-[var(--slate-200)]">Mon–Fri, 9am–6pm ET</span>
             </div>
 
-            <!-- Schedule a call -->
             <div class="pt-8 border-t border-[var(--slate-800)]">
               <span class="font-mono text-[10px] text-[var(--gold-dim)] uppercase tracking-widest block mb-3">Prefer to talk?</span>
               <a 
@@ -75,7 +72,6 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
               </a>
             </div>
 
-            <!-- Trust signal -->
             <div class="bg-[var(--slate-900)] border border-[var(--slate-800)] p-6 mt-4">
               <p class="font-display italic text-[20px] text-[var(--slate-200)] leading-snug mb-3">
                 "Literally the best single website contact in the history of the company."
@@ -85,10 +81,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
           </div>
         </div>
 
-        <!-- RIGHT: Form -->
-        <div class="bg-[var(--slate-900)] p-8 md:p-12 border border-[var(--slate-800)] reveal" style="--i: 2;" data-api-url={apiUrl} data-submit-label={projectIntakeCta.submit}>
-
-          <!-- Expectation Strip -->
+        <div class="bg-[var(--slate-900)] p-8 md:p-12 border border-[var(--slate-800)] reveal" style="--i: 2;">
           <div class="mb-8 pb-6 border-b border-[var(--slate-800)]">
             <p class="font-mono text-[10px] text-[var(--gold-dim)] uppercase tracking-widest mb-4">What happens next</p>
             <ul class="flex flex-col gap-2 font-body text-[14px] text-[var(--slate-300)] leading-relaxed">
@@ -98,254 +91,9 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
             </ul>
           </div>
 
-          <form id="contact-form" class="flex flex-col gap-6 relative z-10">
-            
-            <!-- Honeypot — invisible to humans, traps bots -->
-            <div class="absolute -left-[9999px]" aria-hidden="true">
-              <label for="website">Website</label>
-              <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
-            </div>
-
-            <div class="form-field flex flex-col gap-2">
-              <label for="name" class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest">Name</label>
-              <input type="text" id="name" name="name" required class="contact-input bg-[var(--slate-800)] border border-[var(--slate-700)] text-[var(--warm-white)] font-body px-4 py-3 outline-none focus:border-[var(--gold)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] transition-colors" autocomplete="name" />
-              <span class="field-error font-mono text-[10px] text-red-400 hidden"></span>
-            </div>
-
-            <div class="form-field flex flex-col gap-2">
-              <label for="email" class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest">Email</label>
-              <input type="email" id="email" name="email" required class="contact-input bg-[var(--slate-800)] border border-[var(--slate-700)] text-[var(--warm-white)] font-body px-4 py-3 outline-none focus:border-[var(--gold)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] transition-colors" autocomplete="email" />
-              <span class="field-error font-mono text-[10px] text-red-400 hidden"></span>
-            </div>
-
-            <div class="form-field flex flex-col gap-2">
-              <label for="message" class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest">How can we help?</label>
-              <textarea id="message" name="message" rows="4" required placeholder="Tell us about your project goals and any current challenges." class="contact-input bg-[var(--slate-800)] border border-[var(--slate-700)] text-[var(--warm-white)] font-body px-4 py-3 outline-none focus:border-[var(--gold)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] transition-colors resize-none" aria-label="Project message"></textarea>
-              <span class="field-error font-mono text-[10px] text-red-400 hidden"></span>
-            </div>
-
-            <!-- Optional details — progressive disclosure -->
-            <details class="form-optional group border border-[var(--slate-800)] bg-[var(--obsidian)]/40">
-              <summary class="flex items-center justify-between cursor-pointer px-4 py-3 font-mono text-[11px] text-[var(--slate-300)] uppercase tracking-widest hover:text-[var(--gold)] transition-colors">
-                <span>Add project details (optional)</span>
-                <svg class="form-optional__chevron w-4 h-4 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M6 9l6 6 6-6"/>
-                </svg>
-              </summary>
-              <div class="px-4 pb-4 pt-2 flex flex-col gap-6">
-                <div class="form-field flex flex-col gap-2">
-                  <label for="company" class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest">Company</label>
-                  <input type="text" id="company" name="company" class="contact-input bg-[var(--slate-800)] border border-[var(--slate-700)] text-[var(--warm-white)] font-body px-4 py-3 outline-none focus:border-[var(--gold)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] transition-colors" autocomplete="organization" />
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div class="form-field flex flex-col gap-2">
-                    <label for="budget" class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest">Budget Range</label>
-                    <select id="budget" name="budget" class="contact-input bg-[var(--slate-800)] border border-[var(--slate-700)] text-[var(--warm-white)] font-body px-4 py-3 outline-none focus:border-[var(--gold)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] transition-colors appearance-none cursor-pointer" aria-label="Budget range">
-                      <option value="">Select range...</option>
-                      <option value="10k-25k">$10k - $25k</option>
-                      <option value="25k-50k">$25k - $50k</option>
-                      <option value="50k+">$50k+</option>
-                    </select>
-                  </div>
-                  <div class="form-field flex flex-col gap-2">
-                    <label for="type" class="font-mono text-[10px] text-[var(--slate-400)] uppercase tracking-widest">Project Type</label>
-                    <select id="type" name="type" class="contact-input bg-[var(--slate-800)] border border-[var(--slate-700)] text-[var(--warm-white)] font-body px-4 py-3 outline-none focus:border-[var(--gold)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] transition-colors appearance-none cursor-pointer" aria-label="Project type">
-                      <option value="">Select type...</option>
-                      <option value="web-design">Web Design & Dev</option>
-                      <option value="seo">SEO & Growth</option>
-                      <option value="full-service">Full-Service</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </details>
-
-            <!-- Error state -->
-            <p id="form-error" class="font-mono text-[12px] text-red-400 hidden"></p>
-
-            <Button type="submit" variant="primary" class="w-full mt-2">
-              <span id="submit-text">{projectIntakeCta.submit}</span>
-              <svg id="submit-spinner" class="hidden animate-spin ml-2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2v4m0 12v4m-7.07-3.93l2.83-2.83m8.49-8.49l2.83-2.83M2 12h4m12 0h4m-3.93 7.07l-2.83-2.83M7.76 7.76L4.93 4.93"/>
-              </svg>
-            </Button>
-
-            <p class="font-mono text-[10px] text-[var(--slate-500)] text-center tracking-wide">
-              We reply within one business day. No spam, no drip sequences, no sales lists.
-            </p>
-          </form>
-
-          <!-- Success State -->
-          <div id="success-state" class="hidden flex-col items-center justify-center text-center py-16 animate-fade-in">
-            <div class="w-16 h-16 rounded-full border border-[var(--gold)] text-[var(--gold)] flex items-center justify-center mb-8">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </div>
-            <h3 class="font-display italic text-[32px] text-[var(--warm-white)] mb-4">Message received.</h3>
-            <p class="font-body text-[15px] text-[var(--slate-400)] max-w-sm">
-              We'll be in touch within 24 hours to discuss your project.
-            </p>
-          </div>
-
-          <script>
-            import { track } from '@vercel/analytics';
-
-            function initContactForm() {
-              const formWrapper = document.querySelector('[data-api-url]') as HTMLElement | null;
-              const form = document.getElementById('contact-form') as HTMLFormElement | null;
-              const success = document.getElementById('success-state');
-              const errorEl = document.getElementById('form-error');
-              const submitText = document.getElementById('submit-text');
-              const submitSpinner = document.getElementById('submit-spinner');
-              if (!form || !success || !formWrapper) return;
-
-              const NEXRENA_API = formWrapper.dataset.apiUrl || 'https://nexrena-api-5dc54effaa9f.herokuapp.com';
-              const submitLabel = formWrapper.dataset.submitLabel || 'Send request';
-              let hasTrackedContactStart = false;
-
-              const safeTrack = (eventName: string, data: Record<string, unknown> = {}) => {
-                try {
-                  track(eventName, data);
-                } catch {
-                  // Ignore analytics errors.
-                }
-              };
-
-              const trackLeadConversion = (source: 'contact_form', projectType?: string) => {
-                const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
-                if (typeof gtag === 'function') {
-                  gtag('event', 'generate_lead', {
-                    source,
-                    form_id: 'contact-form',
-                    project_type: projectType ?? 'unspecified',
-                  });
-                }
-              };
-
-              // Inline validation on blur
-              form.querySelectorAll('.contact-input[required]').forEach((input) => {
-                input.addEventListener('focus', () => {
-                  if (hasTrackedContactStart) return;
-                  hasTrackedContactStart = true;
-                  safeTrack('contact_form_started');
-                });
-                input.addEventListener('blur', () => {
-                  const el = input as HTMLInputElement;
-                  const errorSpan = el.closest('.form-field')?.querySelector('.field-error') as HTMLElement | null;
-                  if (!el.validity.valid && el.value.length > 0) {
-                    el.style.borderColor = '#f87171';
-                    if (errorSpan) {
-                      errorSpan.textContent = el.type === 'email' ? 'Please enter a valid email' : 'This field is required';
-                      errorSpan.classList.remove('hidden');
-                    }
-                  } else {
-                    el.style.borderColor = '';
-                    if (errorSpan) errorSpan.classList.add('hidden');
-                  }
-                });
-                input.addEventListener('input', () => {
-                  const el = input as HTMLInputElement;
-                  if (el.validity.valid) {
-                    el.style.borderColor = '';
-                    const errorSpan = el.closest('.form-field')?.querySelector('.field-error') as HTMLElement | null;
-                    if (errorSpan) errorSpan.classList.add('hidden');
-                  }
-                });
-              });
-
-              form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                if (errorEl) { errorEl.classList.add('hidden'); errorEl.textContent = ''; }
-
-                const fd = Object.fromEntries(new FormData(form));
-
-                // Honeypot check
-                if (fd.website) return;
-
-                // Show loading state
-                const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
-                if (submitBtn) submitBtn.disabled = true;
-                if (submitText) submitText.textContent = 'Sending...';
-                if (submitSpinner) submitSpinner.classList.remove('hidden');
-
-                const payload = {
-                  name: fd.name,
-                  company: fd.company || undefined,
-                  email: fd.email,
-                  budget: fd.budget || undefined,
-                  projectType: fd.type || undefined,
-                  message: fd.message,
-                };
-
-                safeTrack('contact_form_submit_attempt', {
-                  projectType: payload.projectType ?? 'unspecified',
-                  budget: payload.budget ?? 'unspecified',
-                });
-
-                try {
-                  const res = await fetch(`${NEXRENA_API}/api/leads`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
-                  });
-
-                  if (res.ok) {
-                    form.classList.add('hidden');
-                    success.classList.remove('hidden');
-                    success.style.display = 'flex';
-                    safeTrack('contact_form_submit_success', {
-                      projectType: payload.projectType ?? 'unspecified',
-                      budget: payload.budget ?? 'unspecified',
-                    });
-                    safeTrack('funnel_step', {
-                      step: 'form_submit_success',
-                      formId: 'contact-form',
-                      projectType: payload.projectType ?? 'unspecified',
-                      budget: payload.budget ?? 'unspecified',
-                    });
-                    trackLeadConversion('contact_form', payload.projectType);
-                  } else {
-                    throw new Error('Submission failed');
-                  }
-                } catch {
-                  safeTrack('contact_form_submit_error');
-                  safeTrack('funnel_step', {
-                    step: 'form_submit_error',
-                    formId: 'contact-form',
-                  });
-                  if (errorEl) {
-                    errorEl.textContent = 'Something went wrong. Please email us directly at NicholasL@Nexrena.com';
-                    errorEl.classList.remove('hidden');
-                  }
-                } finally {
-                if (submitBtn) submitBtn.disabled = false;
-                if (submitText) submitText.textContent = submitLabel;
-                if (submitSpinner) submitSpinner.classList.add('hidden');
-                }
-              });
-            }
-
-            document.addEventListener('astro:page-load', initContactForm);
-          </script>
-
+          <ProjectIntakeForm client:load source="contact-page" />
         </div>
-
       </div>
     </div>
   </main>
 </Layout>
-
-<style>
-  details[open] > summary .form-optional__chevron {
-    transform: rotate(180deg);
-  }
-
-  details > summary::-webkit-details-marker {
-    display: none;
-  }
-
-  details > summary {
-    list-style: none;
-  }
-</style>

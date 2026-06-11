@@ -53,7 +53,7 @@ export default function LeadsPage() {
       email: lead.email,
       industry: 'other',
       stage: 'lead',
-      value: budgetToValue(lead.budget),
+      value: budgetToValue(lead.budget, lead.projectType),
       notes: `Converted from website lead.\n\nOriginal message: ${lead.message}${lead.projectType ? `\nProject type: ${lead.projectType}` : ''}${lead.budget ? `\nBudget: ${lead.budget}` : ''}`,
       createdAt: now,
       updatedAt: now,
@@ -138,7 +138,13 @@ export default function LeadsPage() {
   )
 }
 
-function budgetToValue(budget?: string): number {
+function budgetToValue(budget?: string, projectType?: string): number {
+  if (projectType?.startsWith('waas-')) {
+    if (budget?.startsWith('8000')) return 8000
+    if (budget?.startsWith('5000')) return 5000
+    if (budget?.startsWith('3000')) return 3000
+    return 3000
+  }
   if (!budget) return 0
   if (budget.includes('50k')) return 50000
   if (budget.includes('25k-50k')) return 37500
