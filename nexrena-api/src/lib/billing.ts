@@ -31,7 +31,11 @@ export async function runDueBilling(): Promise<BillingResult> {
   const result: BillingResult = { generated: 0, skipped: 0, errors: [] }
 
   const dueSubs = await prisma.subscription.findMany({
-    where: { status: 'active', nextBillingDate: { lte: today } },
+    where: {
+      status: 'active',
+      nextBillingDate: { lte: today },
+      stripeSubscriptionId: null,
+    },
   })
 
   if (dueSubs.length === 0) return result
@@ -50,11 +54,27 @@ export async function runDueBilling(): Promise<BillingResult> {
     }
 
     try {
+      const existingForCycle = await prisma.invoice.findFirst({
+        where: {
+          contactId: sub.contactId,
+          issueDate: sub.nextBillingDate,
+          notes: { contains: sub.id },
+        },
+      })
+      if (existingForCycle) {
+        await prisma.subscription.update({
+          where: { id: sub.id },
+          data: { nextBillingDate: advanceDate(sub.nextBillingDate, sub.interval) },
+        })
+        result.skipped++
+        continue
+      }
+
       const contact = await prisma.contact.findUnique({ where: { id: sub.contactId } })
       const invoiceNumber = nextInvoiceNumber(existingNumbers)
       existingNumbers.push(invoiceNumber)
 
-      const issueDate = today
+      const issueDate = sub.nextBillingDate
       const daysMap: Record<string, number> = { net15: 15, net30: 30 }
       const days = sub.netTerms ? (daysMap[sub.netTerms] ?? 15) : 15
       const dueD = new Date(issueDate)
@@ -70,12 +90,12 @@ export async function runDueBilling(): Promise<BillingResult> {
           clientEmail: contact?.email ?? undefined,
           clientAddress: contact?.billingAddress ?? undefined,
           contactId: sub.contactId,
-          status: 'draft',
+          status: 'sent',
           lineItems: [{ id: randomUUID(), description: sub.description, quantity: 1, rate: sub.amount }],
           issueDate,
           dueDate,
           netTerms: sub.netTerms ?? 'net15',
-          notes: `Auto-generated from subscription: ${sub.description}`,
+          notes: `Auto-generated from subscription ${sub.id}: ${sub.description}`,
           createdAt: new Date().toISOString(),
         },
       })

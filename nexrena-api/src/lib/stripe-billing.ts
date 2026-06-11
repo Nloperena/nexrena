@@ -79,6 +79,20 @@ export async function createInvoiceCheckoutSession(params: {
   return { url: session.url, sessionId: session.id }
 }
 
+export async function cancelStripeSubscription(
+  stripeSubscriptionId: string,
+  atPeriodEnd: boolean,
+): Promise<void> {
+  const stripe = getStripe()
+  if (!stripe) throw new Error('Stripe is not configured. Set STRIPE_SECRET_KEY on the API.')
+
+  if (atPeriodEnd) {
+    await stripe.subscriptions.update(stripeSubscriptionId, { cancel_at_period_end: true })
+  } else {
+    await stripe.subscriptions.cancel(stripeSubscriptionId)
+  }
+}
+
 export async function handleStripeWebhookEvent(event: { type: string; data: { object: unknown } }) {
   switch (event.type) {
     case 'checkout.session.completed':

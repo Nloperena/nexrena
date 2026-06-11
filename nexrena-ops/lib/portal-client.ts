@@ -134,6 +134,20 @@ export function fetchPortalBillingStatus() {
   return portalFetch<{ stripeEnabled: boolean; portalUrl: string | null }>('/api/portal/billing/status')
 }
 
+export function fetchPortalSubscriptions() {
+  return portalFetch<import('./portal-types').PortalSubscription[]>('/api/portal/billing/subscriptions')
+}
+
+export function cancelPortalSubscription(id: string, atPeriodEnd = true) {
+  return portalFetch<import('./portal-types').PortalSubscription>(
+    `/api/portal/billing/subscriptions/${id}/cancel`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ atPeriodEnd }),
+    },
+  )
+}
+
 export function createPortalCheckout(invoiceId: string) {
   return portalFetch<{ url: string | null; sessionId: string }>('/api/portal/billing/checkout', {
     method: 'POST',

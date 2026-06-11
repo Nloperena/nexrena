@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from 'react'
 import type { PortalAccount } from '@/lib/portal-types'
 import { changePortalPassword, updatePortalProfile } from '@/lib/portal-client'
+import { PortalSubscriptionsSection } from '@/components/portal-subscriptions-section'
 import { Btn, Field, Modal, inputCls } from '@/components/ui'
 
 type Props = {
@@ -104,6 +105,8 @@ export function AccountSettingsModal({ account, onClose, onUpdated }: Props) {
           <Btn type="submit" variant="ghost" disabled={passwordSaving}>{passwordSaving ? 'Updating…' : 'Update password'}</Btn>
         </div>
       </form>
+
+      <PortalSubscriptionsSection onError={setError} onMessage={setMessage} />
     </Modal>
   )
 }

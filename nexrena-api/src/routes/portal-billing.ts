@@ -1,8 +1,8 @@
 import { Router } from 'express'
 import { prisma } from '../lib/prisma'
 import { requirePortalAuth } from '../middleware/portal-auth'
-import { createInvoiceCheckoutSession } from '../lib/stripe-billing'
-import { isStripeConfigured, portalReturnUrl } from '../lib/stripe'
+import { cancelStripeSubscription, createInvoiceCheckoutSession } from '../lib/stripe-billing'
+import { getStripe, isStripeConfigured, portalReturnUrl } from '../lib/stripe'
 import { portalInvoiceWhere } from '../lib/invoice-utils'
 
 const router = Router()
@@ -19,10 +19,62 @@ router.get('/status', requirePortalAuth, async (_req, res) => {
 router.get('/subscriptions', requirePortalAuth, async (req, res) => {
   const contactId = req.portalUser!.contactId
   const subs = await prisma.subscription.findMany({
-    where: { contactId },
+    where: { contactId, status: { in: ['active', 'paused'] } },
     orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      contactId: true,
+      description: true,
+      amount: true,
+      interval: true,
+      status: true,
+      nextBillingDate: true,
+      stripeSubscriptionId: true,
+    },
   })
   res.json(subs)
+})
+
+/** POST /api/portal/billing/subscriptions/:id/cancel */
+router.post('/subscriptions/:id/cancel', requirePortalAuth, async (req, res) => {
+  const contactId = req.portalUser!.contactId
+  const { atPeriodEnd = true } = req.body as { atPeriodEnd?: boolean }
+
+  const sub = await prisma.subscription.findFirst({
+    where: { id: req.params.id, contactId },
+  })
+  if (!sub) {
+    res.status(404).json({ error: 'Subscription not found' })
+    return
+  }
+  if (sub.status === 'cancelled') {
+    res.status(400).json({ error: 'Subscription is already cancelled' })
+    return
+  }
+
+  try {
+    if (sub.stripeSubscriptionId) {
+      if (!getStripe()) {
+        res.status(503).json({ error: 'Online billing is not configured. Contact Nexrena to cancel.' })
+        return
+      }
+      await cancelStripeSubscription(sub.stripeSubscriptionId, atPeriodEnd)
+      const updated = await prisma.subscription.update({
+        where: { id: sub.id },
+        data: atPeriodEnd ? { status: 'active' } : { status: 'cancelled' },
+      })
+      res.json(updated)
+      return
+    }
+
+    const updated = await prisma.subscription.update({
+      where: { id: sub.id },
+      data: { status: 'cancelled' },
+    })
+    res.json(updated)
+  } catch (err) {
+    res.status(400).json({ error: err instanceof Error ? err.message : 'Could not cancel subscription' })
+  }
 })
 
 /** POST /api/portal/billing/checkout — pay an invoice via Stripe Checkout */
