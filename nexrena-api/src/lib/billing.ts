@@ -85,6 +85,7 @@ export async function runDueBilling(): Promise<BillingResult> {
           issueDate,
           dueDate,
           netTerms: sub.netTerms ?? 'net15',
+          invoicePhase: 'subscription',
           notes: `Auto-generated from subscription ${sub.id}: ${sub.description}`,
           createdAt: new Date().toISOString(),
         },

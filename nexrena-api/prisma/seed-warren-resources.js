@@ -27,7 +27,8 @@ const WARREN_RESOURCES = [
     type: 'github',
     title: 'Website Upgrade (Astro rebuild)',
     url: ASTRO_REBUILD_REPO,
-    description: 'Astro static one-pager delivered Dec 2025 — source in the LoperenaPortfolio2026 astro-rebuild folder.',    linkUpgradeInvoice: true,
+    description: 'Astro static one-pager delivered Dec 2025 — source in the LoperenaPortfolio2026 astro-rebuild folder.',
+    linkUpgradeInvoice: true,
   },
 ]
 

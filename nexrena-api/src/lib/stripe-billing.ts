@@ -1,29 +1,15 @@
 import { prisma } from './prisma'
 import { checkoutProductName } from './invoice-utils'
 import { getStripe } from './stripe'
+import { ensureStripeCustomer } from './stripe-customer'
+import {
+  cancelStripeSubscriptionItem,
+  linkSubscriptionsFromCheckout,
+  recordStripeSubscriptionInvoicePaid,
+  syncLocalSubscriptionsFromStripe,
+} from './stripe-subscription'
 
-export async function ensureStripeCustomer(contactId: string): Promise<string | null> {
-  const stripe = getStripe()
-  if (!stripe) return null
-
-  const contact = await prisma.contact.findUnique({ where: { id: contactId } })
-  if (!contact) return null
-  if (contact.stripeCustomerId) return contact.stripeCustomerId
-
-  const customer = await stripe.customers.create({
-    email: contact.email,
-    name: contact.name,
-    metadata: { contactId: contact.id, company: contact.company },
-  })
-
-  await prisma.contact.update({
-    where: { id: contact.id },
-    data: { stripeCustomerId: customer.id },
-  })
-
-  return customer.id
-}
-
+export { ensureStripeCustomer } from './stripe-customer'
 export async function createInvoiceCheckoutSession(params: {
   contactId: string
   invoiceId: string
@@ -81,19 +67,11 @@ export async function createInvoiceCheckoutSession(params: {
 }
 
 export async function cancelStripeSubscription(
-  stripeSubscriptionId: string,
+  sub: import('@prisma/client').Subscription,
   atPeriodEnd: boolean,
 ): Promise<void> {
-  const stripe = getStripe()
-  if (!stripe) throw new Error('Stripe is not configured. Set STRIPE_SECRET_KEY on the API.')
-
-  if (atPeriodEnd) {
-    await stripe.subscriptions.update(stripeSubscriptionId, { cancel_at_period_end: true })
-  } else {
-    await stripe.subscriptions.cancel(stripeSubscriptionId)
-  }
+  await cancelStripeSubscriptionItem(sub, atPeriodEnd)
 }
-
 export async function handleStripeWebhookEvent(event: { type: string; data: { object: unknown } }) {
   switch (event.type) {
     case 'checkout.session.completed':
@@ -117,6 +95,13 @@ function asRecord(value: unknown): Record<string, unknown> {
 
 async function onCheckoutCompleted(session: Record<string, unknown>) {
   const metadata = session.metadata as Record<string, string> | undefined
+  const mode = typeof session.mode === 'string' ? session.mode : undefined
+
+  if (metadata?.checkoutType === 'subscription' || mode === 'subscription') {
+    await linkSubscriptionsFromCheckout(session)
+    return
+  }
+
   const invoiceId = metadata?.invoiceId
   if (!invoiceId) return
 
@@ -137,40 +122,24 @@ async function onCheckoutCompleted(session: Record<string, unknown>) {
 async function onStripeInvoicePaid(stripeInvoice: Record<string, unknown>) {
   const metadata = stripeInvoice.metadata as Record<string, string> | undefined
   const invoiceId = metadata?.invoiceId
-  if (!invoiceId) return
 
-  const today = new Date().toISOString().slice(0, 10)
-  await prisma.invoice.updateMany({
-    where: { id: invoiceId },
-    data: {
-      status: 'paid',
-      paidDate: today,
-      paidVia: 'stripe',
-      stripeInvoiceId: typeof stripeInvoice.id === 'string' ? stripeInvoice.id : undefined,
-    },
-  })
+  if (invoiceId) {
+    const today = new Date().toISOString().slice(0, 10)
+    await prisma.invoice.updateMany({
+      where: { id: invoiceId },
+      data: {
+        status: 'paid',
+        paidDate: today,
+        paidVia: 'stripe',
+        stripeInvoiceId: typeof stripeInvoice.id === 'string' ? stripeInvoice.id : undefined,
+      },
+    })
+    return
+  }
+
+  await recordStripeSubscriptionInvoicePaid(stripeInvoice)
 }
 
 async function onStripeSubscriptionChange(stripeSub: Record<string, unknown>) {
-  const metadata = stripeSub.metadata as Record<string, string> | undefined
-  const localId = metadata?.subscriptionId
-  if (!localId) return
-
-  const statusMap: Record<string, string> = {
-    active: 'active',
-    paused: 'paused',
-    canceled: 'cancelled',
-    unpaid: 'paused',
-    past_due: 'active',
-  }
-  const rawStatus = typeof stripeSub.status === 'string' ? stripeSub.status : 'active'
-  const status = statusMap[rawStatus] ?? 'active'
-
-  await prisma.subscription.updateMany({
-    where: { id: localId },
-    data: {
-      status,
-      stripeSubscriptionId: typeof stripeSub.id === 'string' ? stripeSub.id : undefined,
-    },
-  })
+  await syncLocalSubscriptionsFromStripe(stripeSub)
 }

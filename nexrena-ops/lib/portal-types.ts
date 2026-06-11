@@ -138,6 +138,7 @@ export type PortalSubscription = {
   interval: string
   status: string
   nextBillingDate: string
+  autopay: boolean
 }
 
 export type PortalFormSubmission = {

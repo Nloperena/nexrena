@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { prisma } from '../lib/prisma'
 import { requirePortalAuth } from '../middleware/portal-auth'
 import { cancelStripeSubscription, createInvoiceCheckoutSession } from '../lib/stripe-billing'
+import { createSubscriptionCheckoutSession } from '../lib/stripe-subscription'
 import { getStripe, isStripeConfigured, portalReturnUrl } from '../lib/stripe'
 import { portalInvoiceWhere } from '../lib/invoice-utils'
 
@@ -30,9 +31,15 @@ router.get('/subscriptions', requirePortalAuth, async (req, res) => {
       status: true,
       nextBillingDate: true,
       stripeSubscriptionId: true,
+      stripeSubscriptionItemId: true,
     },
   })
-  res.json(subs)
+  res.json(
+    subs.map(({ stripeSubscriptionId, stripeSubscriptionItemId, ...rest }) => ({
+      ...rest,
+      autopay: Boolean(stripeSubscriptionId),
+    })),
+  )
 })
 
 /** POST /api/portal/billing/subscriptions/:id/cancel */
@@ -58,7 +65,7 @@ router.post('/subscriptions/:id/cancel', requirePortalAuth, async (req, res) => 
         res.status(503).json({ error: 'Online billing is not configured. Contact Nexrena to cancel.' })
         return
       }
-      await cancelStripeSubscription(sub.stripeSubscriptionId, atPeriodEnd)
+      await cancelStripeSubscription(sub, atPeriodEnd)
       const updated = await prisma.subscription.update({
         where: { id: sub.id },
         data: atPeriodEnd ? { status: 'active' } : { status: 'cancelled' },
@@ -103,6 +110,31 @@ router.post('/checkout', requirePortalAuth, async (req, res) => {
     res.json(session)
   } catch (err) {
     res.status(400).json({ error: err instanceof Error ? err.message : 'Checkout failed' })
+  }
+})
+
+/** POST /api/portal/billing/subscriptions/checkout — Stripe subscription autopay setup */
+router.post('/subscriptions/checkout', requirePortalAuth, async (req, res) => {
+  const { subscriptionIds } = req.body as { subscriptionIds?: string[] }
+
+  if (!isStripeConfigured()) {
+    res.status(503).json({
+      error: 'Online autopay is not available yet. Contact Nexrena to set up billing.',
+      stripeEnabled: false,
+    })
+    return
+  }
+
+  try {
+    const session = await createSubscriptionCheckoutSession({
+      contactId: req.portalUser!.contactId,
+      subscriptionIds,
+      successUrl: `${portalReturnUrl('/?tab=sign-in')}&subscribed=1`,
+      cancelUrl: `${portalReturnUrl('/?tab=sign-in')}&subscribed=0`,
+    })
+    res.json(session)
+  } catch (err) {
+    res.status(400).json({ error: err instanceof Error ? err.message : 'Subscription checkout failed' })
   }
 })
 

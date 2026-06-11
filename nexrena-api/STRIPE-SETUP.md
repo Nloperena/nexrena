@@ -14,6 +14,9 @@ Online invoice payments use **Stripe Checkout**. The API never stores bank detai
 2. Create a **restricted key** (`rk_...`) with permissions:
    - Checkout Sessions — Write
    - Customers — Write
+   - Subscriptions — Write
+   - Products — Write
+   - Prices — Write
    - Webhooks — Read (for verifying signatures)
 3. Copy the restricted key — you will set it as `STRIPE_SECRET_KEY`.
 
@@ -26,6 +29,8 @@ Prefer restricted keys over full secret keys (`sk_...`). See [Stripe restricted 
 3. Events to listen for:
    - `checkout.session.completed`
    - `invoice.paid`
+   - `customer.subscription.updated`
+   - `customer.subscription.deleted`
 4. Copy the **Signing secret** (`whsec_...`) → `STRIPE_WEBHOOK_SECRET`
 
 ## 4. Heroku config
@@ -37,6 +42,26 @@ heroku config:set PORTAL_URL=https://nexrena-ops.vercel.app -a nexrena-api-5dc54
 ```
 
 Use live keys (`rk_live_...`, live webhook secret) only after test payments succeed.
+
+## 6. Subscription autopay (recurring hosting & add-ons)
+
+Clients with active **Subscriptions** in Ops can enable autopay from the portal (**Billing** or **Settings**):
+
+1. Portal → **Set up autopay** opens Stripe Checkout in **subscription** mode.
+2. One Checkout can cover multiple services (e.g. hosting + analytics) on a single monthly charge.
+3. After checkout, local subscriptions are linked to Stripe; **Run billing** skips them (`stripeSubscriptionId` set).
+4. Stripe renewals fire `invoice.paid` → API records a paid local invoice for portal/Ops history.
+
+Add webhook events: `customer.subscription.updated`, `customer.subscription.deleted`.
+
+Restricted key also needs **Subscriptions**, **Products**, and **Prices** — Write.
+
+## Warren autopay test
+
+1. Ops → Subscriptions: confirm hosting ($20) + analytics ($20) for Warren.
+2. Warren portal → **Billing** → **Set up autopay — $40/mo**.
+3. Test card `4242…` → confirm both subs show **Autopay on**.
+4. Stripe Dashboard → Subscriptions: one active sub, $40/mo.
 
 ## 5. Test a payment
 

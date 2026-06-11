@@ -182,6 +182,16 @@ export function cancelPortalSubscription(id: string, atPeriodEnd = true) {
   )
 }
 
+export function createPortalSubscriptionCheckout(subscriptionIds?: string[]) {
+  return portalFetch<{ url: string | null; sessionId: string; subscriptionIds: string[] }>(
+    '/api/portal/billing/subscriptions/checkout',
+    {
+      method: 'POST',
+      body: JSON.stringify(subscriptionIds?.length ? { subscriptionIds } : {}),
+    },
+  )
+}
+
 export function createPortalCheckout(invoiceId: string) {
   return portalFetch<{ url: string | null; sessionId: string }>('/api/portal/billing/checkout', {
     method: 'POST',

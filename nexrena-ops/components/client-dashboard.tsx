@@ -22,6 +22,7 @@ import { formatDate } from '@/lib/store'
 import { InvoicePrint } from '@/components/invoice-print'
 import { ClientDashboardStats } from '@/components/client-dashboard-stats'
 import { ClientBillingSection } from '@/components/client-billing-section'
+import { PortalSubscriptionsSection } from '@/components/portal-subscriptions-section'
 import { ClientWorkStatusSection } from '@/components/client-work-status-section'
 import { ClientRequestModal } from '@/components/client-request-modal'
 import { ClientActionCards } from '@/components/client-action-cards'
@@ -249,6 +250,13 @@ export function ClientDashboard({ onSignOut }: Props) {
               onMessageNico={() => setActiveView('messages')}
               mode="summary"
             />
+            <div className={card}>
+              <PortalSubscriptionsSection
+                stripeEnabled={stripeEnabled}
+                onError={setPaymentError}
+                onMessage={() => {}}
+              />
+            </div>
             <ClientBillingSection
               invoices={invoices}
               stripeEnabled={stripeEnabled}
