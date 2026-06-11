@@ -89,7 +89,12 @@ const imageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, site).t
       <slot />
     </div>
     <Footer />
-    <GrowthPlanPortal client:load transition:persist="growth-plan-portal" />
+    <GrowthPlanPortal client:only="react" />
+
+    <script>
+      import { bindGrowthPlanPortalTriggers } from '@/lib/growth-plan-portal';
+      bindGrowthPlanPortalTriggers();
+    </script>
     <Analytics />
 
     <script>

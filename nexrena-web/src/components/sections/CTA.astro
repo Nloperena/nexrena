@@ -3,6 +3,7 @@
   CTA Takeover — Dramatic curtain effect
   Creates a massive sticky footer experience that pulls up from the bottom.
 */
+import { projectIntakeCta } from '../../data/cta';
 ---
 
 <section id="cta-takeover" class="relative w-full bg-[var(--gold)] flex flex-col justify-between" style="min-height: 100vh; color: var(--obsidian);">
@@ -21,14 +22,14 @@
       </p>
       
       <div class="flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-12 mt-12 md:mt-16">
-        <a href="/contact/" data-growth-plan-portal class="group relative inline-flex items-center gap-6 font-display text-[28px] md:text-[44px] text-[var(--obsidian)] hover:opacity-70 transition-opacity" data-cta-zone="footer-cta" data-cta-role="primary">
-          Get Your 90-Day Growth Plan
+        <button type="button" data-growth-plan-portal class="group relative inline-flex items-center gap-6 font-display text-[28px] md:text-[44px] text-[var(--obsidian)] hover:opacity-70 transition-opacity" data-cta-zone="footer-cta" data-cta-role="primary">
+          {projectIntakeCta.button}
           <div class="w-14 h-14 md:w-16 md:h-16 rounded-full border-2 border-[var(--obsidian)] flex items-center justify-center group-hover:bg-[var(--obsidian)] group-hover:text-[var(--gold)] transition-colors duration-300">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
           </div>
-        </a>
+        </button>
 
         <div class="w-px h-16 bg-[var(--obsidian)] opacity-20 hidden md:block"></div>
 

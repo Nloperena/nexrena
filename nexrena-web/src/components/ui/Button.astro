@@ -12,6 +12,7 @@ interface Props {
 }
 
 import { normalizeInternalHref } from '@/lib/url';
+import { projectIntakeCta } from '@/data/cta';
 
 const {
   href,
@@ -33,15 +34,15 @@ const variants = {
   ghost: "text-[var(--gold)] hover:text-[var(--gold-light)] focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--obsidian)] rounded-sm"
 };
 
-const Tag = href ? 'a' : 'button';
+const Tag = growthPlanPortal ? 'button' : href ? 'a' : 'button';
 ---
 
 <Tag
-  href={normalizedHref}
+  href={growthPlanPortal ? undefined : normalizedHref}
   class={`${baseClass} ${variants[variant]} ${className}`}
-  type={href ? undefined : type}
-  target={target}
-  rel={rel}
+  type={Tag === 'button' ? type : undefined}
+  target={growthPlanPortal ? undefined : target}
+  rel={growthPlanPortal ? undefined : rel}
   data-growth-plan-portal={growthPlanPortal ? '' : undefined}
   data-cta-zone={ctaZone}
   data-cta-role={ctaRole}

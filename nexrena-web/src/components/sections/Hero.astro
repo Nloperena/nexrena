@@ -1,5 +1,6 @@
 ---
 import Button from '../ui/Button.astro';
+import { projectIntakeCta } from '../../data/cta';
 ---
 
 <section class="hero relative isolate min-h-[100svh] overflow-hidden">
@@ -33,8 +34,8 @@ import Button from '../ui/Button.astro';
       </p>
 
       <div class="hero-cta mt-10 flex flex-wrap items-center gap-4">
-        <Button href="/contact/" variant="primary" class="!h-14 !px-10 !text-[12px]" growthPlanPortal data-cta-zone="hero" data-cta-role="primary">
-          Get Your 90-Day Growth Plan
+        <Button variant="primary" class="!h-14 !px-10 !text-[12px]" growthPlanPortal data-cta-zone="hero" data-cta-role="primary">
+          {projectIntakeCta.button}
         </Button>
         <a
           href="/work/"

@@ -1,6 +1,7 @@
 ---
 import Logo from '../ui/Logo.astro';
 import { normalizeInternalHref } from '@/lib/url';
+import { projectIntakeCta } from '@/data/cta';
 
 const currentPath = normalizeInternalHref(Astro.url.pathname) ?? '/';
 const navLinks = [
@@ -31,7 +32,7 @@ const navLinks = [
     </nav>
 
     <div class="site-nav__actions">
-      <a href="/contact/" data-growth-plan-portal class="site-nav__cta" data-cta-zone="nav" data-cta-role="primary">Get Your 90-Day Growth Plan</a>
+      <button type="button" data-growth-plan-portal class="site-nav__cta" data-cta-zone="nav" data-cta-role="primary">{projectIntakeCta.button}</button>
       <button class="site-nav__toggle" type="button" aria-expanded="false" aria-label="Toggle menu">
         <div class="hamburger">
           <span class="line line-1"></span>
@@ -54,9 +55,9 @@ const navLinks = [
           </a>
         );
       })}
-      <a href="/contact/" data-growth-plan-portal class="mobile-menu__link mobile-menu__link--cta" style={`--delay: ${navLinks.length * 0.05}s`} data-cta-zone="nav" data-cta-role="primary">
-        Get Your 90-Day Growth Plan
-      </a>
+      <button type="button" data-growth-plan-portal class="mobile-menu__link mobile-menu__link--cta" style={`--delay: ${navLinks.length * 0.05}s`} data-cta-zone="nav" data-cta-role="primary">
+        {projectIntakeCta.button}
+      </button>
     </nav>
   </div>
 </div>
@@ -176,6 +177,7 @@ const navLinks = [
     justify-content: center;
     padding: 0 20px;
     border-radius: 999px;
+    border: none;
     background: var(--gold);
     color: var(--obsidian);
     font-family: var(--font-mono);
@@ -184,6 +186,7 @@ const navLinks = [
     letter-spacing: 0.12em;
     text-transform: uppercase;
     text-decoration: none;
+    cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
@@ -313,6 +316,8 @@ const navLinks = [
     border: 1px solid var(--gold);
     padding: 14px 36px;
     border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
   }
 
   .mobile-menu[aria-hidden="false"] .mobile-menu__link {

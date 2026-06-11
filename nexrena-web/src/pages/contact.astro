@@ -4,11 +4,12 @@ import PageHero from '../components/sections/PageHero.astro';
 import Button from '../components/ui/Button.astro';
 import { heroImages } from '../data/hero-images';
 import { webPageSchema } from '../lib/schema';
+import { projectIntakeCta } from '../data/cta';
 
 const site = 'https://nexrena.com';
 const schema = webPageSchema({
   name: 'Contact | Nexrena',
-  description: 'Contact Nexrena for web design, SEO, and digital growth. Based in Kissimmee, FL (Orlando metro). Start your 90-day growth plan.',
+  description: 'Contact Nexrena for web design, SEO, and digital growth. Based in Kissimmee, FL (Orlando metro). Start your project with a scoped roadmap.',
   url: `${site}/contact`,
 });
 
@@ -18,14 +19,14 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
 
 <Layout 
   title="Contact | Nexrena" 
-  description="Contact Nexrena for web design, SEO, and digital growth. Based in Kissimmee, FL (Orlando metro). Start your 90-day growth plan."
+  description="Contact Nexrena for web design, SEO, and digital growth. Based in Kissimmee, FL (Orlando metro). Start your project with a scoped roadmap."
   schema={schema}
 >
   <main>
     <PageHero 
       eyebrow="CONTACT US //" 
-      title={"Get your 90-day growth plan."}
-      subtitle="Tell us where you are today. We'll map the first 90 days — audit, roadmap, and the fastest path to lead growth."
+      title={projectIntakeCta.portalTitle}
+      subtitle={projectIntakeCta.portalSubtitle}
       variant="short"
       image={heroImages.contact}
     />
@@ -85,7 +86,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
         </div>
 
         <!-- RIGHT: Form -->
-        <div class="bg-[var(--slate-900)] p-8 md:p-12 border border-[var(--slate-800)] reveal" style="--i: 2;" data-api-url={apiUrl}>
+        <div class="bg-[var(--slate-900)] p-8 md:p-12 border border-[var(--slate-800)] reveal" style="--i: 2;" data-api-url={apiUrl} data-submit-label={projectIntakeCta.submit}>
 
           <!-- Expectation Strip -->
           <div class="mb-8 pb-6 border-b border-[var(--slate-800)]">
@@ -93,7 +94,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
             <ul class="flex flex-col gap-2 font-body text-[14px] text-[var(--slate-300)] leading-relaxed">
               <li class="flex gap-3"><span class="font-mono text-[11px] text-[var(--gold)] shrink-0">01</span> We reply within one business day with next steps.</li>
               <li class="flex gap-3"><span class="font-mono text-[11px] text-[var(--gold)] shrink-0">02</span> Short intro call to understand your goals and current setup.</li>
-              <li class="flex gap-3"><span class="font-mono text-[11px] text-[var(--gold)] shrink-0">03</span> You get a focused 90-day plan — or a clear "not the right fit".</li>
+              <li class="flex gap-3"><span class="font-mono text-[11px] text-[var(--gold)] shrink-0">03</span> You get a focused roadmap — or a clear "not the right fit".</li>
             </ul>
           </div>
 
@@ -163,7 +164,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
             <p id="form-error" class="font-mono text-[12px] text-red-400 hidden"></p>
 
             <Button type="submit" variant="primary" class="w-full mt-2">
-              <span id="submit-text">Get My 90-Day Plan</span>
+              <span id="submit-text">{projectIntakeCta.submit}</span>
               <svg id="submit-spinner" class="hidden animate-spin ml-2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 2v4m0 12v4m-7.07-3.93l2.83-2.83m8.49-8.49l2.83-2.83M2 12h4m12 0h4m-3.93 7.07l-2.83-2.83M7.76 7.76L4.93 4.93"/>
               </svg>
@@ -200,6 +201,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
               if (!form || !success || !formWrapper) return;
 
               const NEXRENA_API = formWrapper.dataset.apiUrl || 'https://nexrena-api-5dc54effaa9f.herokuapp.com';
+              const submitLabel = formWrapper.dataset.submitLabel || 'Send request';
               let hasTrackedContactStart = false;
 
               const safeTrack = (eventName: string, data: Record<string, unknown> = {}) => {
@@ -318,7 +320,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa
                   }
                 } finally {
                 if (submitBtn) submitBtn.disabled = false;
-                if (submitText) submitText.textContent = 'Get My 90-Day Plan';
+                if (submitText) submitText.textContent = submitLabel;
                 if (submitSpinner) submitSpinner.classList.add('hidden');
                 }
               });

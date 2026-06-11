@@ -1,12 +1,9 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { createPortal } from 'react-dom';
 import { track } from '@vercel/analytics';
+import { projectIntakeCta, GROWTH_PORTAL_EVENT } from '@/data/cta';
 import { submitLead } from '@/lib/contact-api';
-
-declare global {
-  interface Window {
-    openGrowthPlanPortal?: (source?: string) => void;
-  }
-}
+import type { GrowthPortalDetail } from '@/lib/growth-plan-portal';
 
 const inputClass =
   'w-full bg-[var(--slate-800)] border border-[var(--slate-700)] text-[var(--warm-white)] font-body px-4 py-3 outline-none focus:border-[var(--gold)] transition-colors';
@@ -20,13 +17,27 @@ function safeTrack(eventName: string, data: Record<string, unknown> = {}) {
 }
 
 export function GrowthPlanPortal() {
+  const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [source, setSource] = useState('unknown');
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
 
+  const close = useCallback(() => {
+    safeTrack('growth_plan_portal_close', { source });
+    setIsOpen(false);
+    setStatus('idle');
+    setError(null);
+  }, [source]);
+
   useEffect(() => {
-    window.openGrowthPlanPortal = (nextSource = 'unknown') => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const open = (event: Event) => {
+      const detail = (event as CustomEvent<GrowthPortalDetail>).detail;
+      const nextSource = detail?.source ?? 'unknown';
       setSource(nextSource);
       setIsOpen(true);
       setStatus('idle');
@@ -34,22 +45,8 @@ export function GrowthPlanPortal() {
       safeTrack('growth_plan_portal_open', { source: nextSource });
     };
 
-    const onClick = (event: MouseEvent) => {
-      const trigger = (event.target as HTMLElement | null)?.closest('[data-growth-plan-portal]');
-      if (!trigger) return;
-      event.preventDefault();
-      const zone =
-        (trigger as HTMLElement).dataset.ctaZone ||
-        (trigger as HTMLElement).dataset.ctaRole ||
-        'unknown';
-      window.openGrowthPlanPortal?.(zone);
-    };
-
-    document.addEventListener('click', onClick);
-    return () => {
-      delete window.openGrowthPlanPortal;
-      document.removeEventListener('click', onClick);
-    };
+    window.addEventListener(GROWTH_PORTAL_EVENT, open);
+    return () => window.removeEventListener(GROWTH_PORTAL_EVENT, open);
   }, []);
 
   useEffect(() => {
@@ -66,14 +63,7 @@ export function GrowthPlanPortal() {
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [isOpen, source]);
-
-  const close = () => {
-    safeTrack('growth_plan_portal_close', { source });
-    setIsOpen(false);
-    setStatus('idle');
-    setError(null);
-  };
+  }, [isOpen, close]);
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -113,14 +103,14 @@ export function GrowthPlanPortal() {
     }
   };
 
-  if (!isOpen) return null;
+  if (!mounted || !isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-[4000] flex" role="dialog" aria-modal="true" aria-labelledby="growth-plan-title">
+  return createPortal(
+    <div className="fixed inset-0 z-[5000] flex" role="dialog" aria-modal="true" aria-labelledby="growth-plan-title">
       <button
         type="button"
         className="absolute inset-0 bg-[rgba(8,10,13,0.88)] backdrop-blur-sm"
-        aria-label="Close growth plan form"
+        aria-label="Close project intake form"
         onClick={close}
       />
 
@@ -136,12 +126,14 @@ export function GrowthPlanPortal() {
 
         <div className="relative flex items-start justify-between gap-6 border-b border-[var(--slate-800)] px-6 py-6 md:px-10 md:py-8">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--gold-dim)]">90-day growth plan</p>
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--gold-dim)]">
+              {projectIntakeCta.portalEyebrow}
+            </p>
             <h2 id="growth-plan-title" className="mt-3 font-display text-[clamp(2rem,5vw,3rem)] leading-tight text-[var(--warm-white)]">
-              Tell us where you are today.
+              {projectIntakeCta.portalTitle}
             </h2>
             <p className="mt-3 max-w-md font-body text-[15px] leading-relaxed text-[var(--slate-400)]">
-              Audit, roadmap, and first sprint — scoped to your business. Reply within one business day.
+              {projectIntakeCta.portalSubtitle}
             </p>
           </div>
           <button
@@ -159,10 +151,8 @@ export function GrowthPlanPortal() {
               <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-[var(--gold)] text-[var(--gold)]">
                 ✓
               </div>
-              <h3 className="font-display text-3xl italic text-[var(--warm-white)]">Message received.</h3>
-              <p className="mt-4 max-w-sm font-body text-[15px] text-[var(--slate-400)]">
-                We&apos;ll be in touch within one business day to discuss your 90-day plan.
-              </p>
+              <h3 className="font-display text-3xl italic text-[var(--warm-white)]">{projectIntakeCta.successTitle}</h3>
+              <p className="mt-4 max-w-sm font-body text-[15px] text-[var(--slate-400)]">{projectIntakeCta.successBody}</p>
             </div>
           ) : (
             <form className="flex flex-col gap-5" onSubmit={onSubmit}>
@@ -231,7 +221,7 @@ export function GrowthPlanPortal() {
                 disabled={status === 'sending'}
                 className="mt-2 inline-flex h-14 items-center justify-center bg-[var(--gold)] px-8 font-mono text-[12px] uppercase tracking-widest text-[var(--obsidian)] transition-colors hover:bg-[var(--gold-light)] disabled:opacity-60"
               >
-                {status === 'sending' ? 'Sending...' : 'Get My 90-Day Plan'}
+                {status === 'sending' ? projectIntakeCta.submitSending : projectIntakeCta.submit}
               </button>
 
               <p className="text-center font-mono text-[10px] tracking-wide text-[var(--slate-500)]">
@@ -241,6 +231,7 @@ export function GrowthPlanPortal() {
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
