@@ -152,9 +152,7 @@ export function AuthGate({ children }: Props) {
   if (role === 'client') {
     return (
       <AuthContext.Provider value={authValue}>
-        <div className="min-h-screen px-6 py-10">
-          <ClientDashboard onSignOut={signOut} />
-        </div>
+        <ClientDashboard onSignOut={signOut} />
       </AuthContext.Provider>
     )
   }

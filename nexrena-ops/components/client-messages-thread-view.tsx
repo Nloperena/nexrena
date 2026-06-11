@@ -13,7 +13,13 @@ import { formatDate } from '@/lib/store'
 
 const card = 'glass-panel rounded-xl border border-slate-800/60 p-5'
 
-export function ClientMessagesThreadView() {
+type Props = {
+  variant?: 'embedded' | 'full'
+  onUnreadChange?: (count: number) => void
+}
+
+export function ClientMessagesThreadView({ variant = 'embedded', onUnreadChange }: Props) {
+  const isFull = variant === 'full'
   const [threads, setThreads] = useState<PortalMessageThread[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null)
@@ -31,13 +37,14 @@ export function ClientMessagesThreadView() {
       const data = await fetchPortalMessageThreads()
       setThreads(data.threads)
       setUnreadCount(data.unreadCount)
+      onUnreadChange?.(data.unreadCount)
       setActiveThreadId((current) => current ?? data.threads[0]?.threadId ?? null)
     } catch {
       setError('Could not load messages.')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [onUnreadChange])
 
   useEffect(() => { load() }, [load])
 
@@ -62,7 +69,11 @@ export function ClientMessagesThreadView() {
             : t,
         ),
       )
-      setUnreadCount((c) => Math.max(0, c - (thread.unreadByClient ?? 0)))
+      setUnreadCount((c) => {
+        const next = Math.max(0, c - (thread.unreadByClient ?? 0))
+        onUnreadChange?.(next)
+        return next
+      })
     }
   }
 
@@ -113,12 +124,12 @@ export function ClientMessagesThreadView() {
   }
 
   return (
-    <section className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <section className={`space-y-4 ${isFull ? 'flex flex-col min-h-[calc(100vh-10rem)] md:min-h-[calc(100vh-8rem)]' : ''}`}>
+      <div className="flex flex-wrap items-center justify-between gap-3 shrink-0">
         <div>
-          <h2 className={portalSectionTitleClass}>Messages</h2>
-          <p className="text-sm text-slate-400 mt-1">
-            Conversation with Nico — replies appear here.
+          {!isFull && <h2 className={portalSectionTitleClass}>Messages</h2>}
+          <p className={`text-sm text-slate-400 ${isFull ? '' : 'mt-1'}`}>
+            {isFull ? 'Chat with Nico — replies show up here.' : 'Conversation with Nico — replies appear here.'}
             {unreadCount > 0 && (
               <span className="ml-2 inline-flex items-center rounded-full bg-gold/20 text-gold px-2 py-0.5 text-xs">
                 {unreadCount} new
@@ -152,8 +163,8 @@ export function ClientMessagesThreadView() {
           </Btn>
         </form>
       ) : (
-        <div className="grid md:grid-cols-[220px_1fr] gap-4">
-          <div className={`${card} p-3 space-y-1 max-h-[420px] overflow-y-auto`}>
+        <div className={`grid md:grid-cols-[220px_1fr] gap-4 ${isFull ? 'flex-1 min-h-0' : ''}`}>
+          <div className={`${card} p-3 space-y-1 overflow-y-auto ${isFull ? 'max-h-none md:max-h-[calc(100vh-14rem)]' : 'max-h-[420px]'}`}>
             {loading ? (
               <p className="text-sm text-slate-500 animate-pulse">Loading…</p>
             ) : threads.length === 0 ? (
@@ -178,13 +189,13 @@ export function ClientMessagesThreadView() {
             )}
           </div>
 
-          <div className={`${card} flex flex-col min-h-[320px]`}>
+          <div className={`${card} flex flex-col ${isFull ? 'min-h-[360px] md:min-h-[calc(100vh-14rem)]' : 'min-h-[320px]'}`}>
             {!activeThread ? (
-              <p className="text-sm text-slate-500">Select a conversation.</p>
+              <p className="text-sm text-slate-500">Select a conversation or start a new message.</p>
             ) : (
               <>
                 <h3 className="text-white font-medium mb-4">{activeThread.subject}</h3>
-                <div className="flex-1 space-y-3 overflow-y-auto max-h-[280px] pr-1">
+                <div className={`flex-1 space-y-3 overflow-y-auto pr-1 ${isFull ? 'min-h-[200px]' : 'max-h-[280px]'}`}>
                   {activeThread.messages.map((msg) => (
                     <MessageBubble key={msg.id} message={msg} />
                   ))}

@@ -1,7 +1,7 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { PortalAccount, PortalInvoice, PortalProject, PortalProposal, PortalAsset, PortalServiceRequest, PortalMessageThread } from '@/lib/portal-types'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import type { PortalAccount, PortalInvoice, PortalProject, PortalProposal, PortalServiceRequest, PortalMessageThread } from '@/lib/portal-types'
 import {
   fetchPortalInvoice,
   fetchPortalInvoices,
@@ -10,7 +10,6 @@ import {
   fetchPortalProjects,
   fetchPortalProposals,
   fetchPortalServiceRequests,
-  fetchPortalAssets,
   fetchPortalBillingStatus,
   fetchPortalResources,
   createPortalCheckout,
@@ -20,20 +19,19 @@ import { computePortalStats } from '@/lib/portal-dashboard-utils'
 import { buildPortalActivity } from '@/lib/activity-utils'
 import { formatDate } from '@/lib/store'
 import { InvoicePrint } from '@/components/invoice-print'
-import { UserMenu } from '@/components/user-menu'
-import { AccountSettingsModal } from '@/components/account-settings-modal'
 import { ClientDashboardStats } from '@/components/client-dashboard-stats'
 import { ClientBillingSection } from '@/components/client-billing-section'
 import { ClientWorkStatusSection } from '@/components/client-work-status-section'
 import { ClientRequestModal } from '@/components/client-request-modal'
-import { ClientMessageModal, type MessageCategoryId } from '@/components/client-message-modal'
 import { ClientActionCards } from '@/components/client-action-cards'
 import { ClientActivityFeed } from '@/components/client-activity-feed'
-import { ClientCollapsibleSection } from '@/components/client-collapsible-section'
 import { UploadFilesModal } from '@/components/upload-files-modal'
-import { PortalAssetsManager } from '@/components/portal-assets-manager'
+import { ClientFilesView } from '@/components/client-files-view'
 import { ClientMessagesThreadView } from '@/components/client-messages-thread-view'
 import { ClientWebsitesSection } from '@/components/client-websites-section'
+import { ClientSettingsView } from '@/components/client-settings-view'
+import { ClientPortalShell } from '@/components/client-portal-shell'
+import type { ClientPortalView } from '@/components/client-nav'
 import type { PortalResource } from '@/lib/client-resource-utils'
 import { StatusChip, proposalStatusChip } from '@/components/status-chip'
 import type { Invoice, InvoiceStatus } from '@/lib/types'
@@ -67,13 +65,12 @@ function toPrintInvoice(inv: PortalInvoice): Invoice {
 }
 
 export function ClientDashboard({ onSignOut }: Props) {
-  const billingRef = useRef<HTMLDivElement>(null)
+  const [activeView, setActiveView] = useState<ClientPortalView>('home')
   const [account, setAccount] = useState<PortalAccount | null>(null)
   const [projects, setProjects] = useState<PortalProject[]>([])
   const [invoices, setInvoices] = useState<PortalInvoice[]>([])
   const [proposals, setProposals] = useState<PortalProposal[]>([])
   const [serviceRequests, setServiceRequests] = useState<PortalServiceRequest[]>([])
-  const [assets, setAssets] = useState<PortalAsset[]>([])
   const [resources, setResources] = useState<PortalResource[]>([])
   const [messageThreads, setMessageThreads] = useState<PortalMessageThread[]>([])
   const [messageUnread, setMessageUnread] = useState(0)
@@ -82,12 +79,8 @@ export function ClientDashboard({ onSignOut }: Props) {
   const [paymentError, setPaymentError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [settingsOpen, setSettingsOpen] = useState(false)
   const [requestOpen, setRequestOpen] = useState(false)
-  const [messageOpen, setMessageOpen] = useState(false)
   const [uploadOpen, setUploadOpen] = useState(false)
-  const [messageDefaultSubject, setMessageDefaultSubject] = useState('')
-  const [messageDefaultCategory, setMessageDefaultCategory] = useState<MessageCategoryId | undefined>()
   const [viewInvoice, setViewInvoice] = useState<PortalInvoice | null>(null)
   const [viewLoading, setViewLoading] = useState(false)
 
@@ -95,13 +88,12 @@ export function ClientDashboard({ onSignOut }: Props) {
     setLoading(true)
     setError(null)
     try {
-      const [me, projectRows, invoiceRows, proposalRows, requestRows, assetRows, resourceRows, billing, messages] = await Promise.all([
+      const [me, projectRows, invoiceRows, proposalRows, requestRows, resourceRows, billing, messages] = await Promise.all([
         fetchPortalMe(),
         fetchPortalProjects(),
         fetchPortalInvoices(),
         fetchPortalProposals(),
         fetchPortalServiceRequests(),
-        fetchPortalAssets(),
         fetchPortalResources(),
         fetchPortalBillingStatus(),
         fetchPortalMessageThreads().catch(() => ({ threads: [], unreadCount: 0 })),
@@ -111,7 +103,6 @@ export function ClientDashboard({ onSignOut }: Props) {
       setInvoices(invoiceRows)
       setProposals(proposalRows)
       setServiceRequests(requestRows)
-      setAssets(assetRows)
       setResources(resourceRows)
       setStripeEnabled(billing.stripeEnabled)
       setMessageThreads(messages.threads)
@@ -148,12 +139,6 @@ export function ClientDashboard({ onSignOut }: Props) {
     () => projects.filter((p) => !['delivered', 'on_hold', 'not_started'].includes(p.status)),
     [projects],
   )
-
-  const pendingProposals = useMemo(() => {
-    const now = new Date()
-    return proposals.filter((p) => p.status === 'sent' && new Date(p.validUntil) >= now)
-  }, [proposals])
-
 
   const openInvoice = async (id: string) => {
     setViewLoading(true)
@@ -192,248 +177,71 @@ export function ClientDashboard({ onSignOut }: Props) {
     }
   }
 
-  const openMessage = (opts?: { subject?: string; category?: MessageCategoryId }) => {
-    setMessageDefaultSubject(opts?.subject ?? '')
-    setMessageDefaultCategory(opts?.category)
-    setMessageOpen(true)
-  }
-
-  const scrollToBilling = () => {
-    billingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
-
   if (viewInvoice) {
     return (
-      <div className="max-w-6xl mx-auto flex flex-col gap-6 py-4">
-        <div className="flex items-center justify-between gap-4">
-          <Btn size="sm" variant="ghost" onClick={() => setViewInvoice(null)}>← Back</Btn>
-          <Btn size="sm" onClick={() => window.print()}>Print / PDF</Btn>
-        </div>
-        <div className="rounded-xl overflow-hidden shadow-2xl shadow-black/40">
-          <InvoicePrint invoice={toPrintInvoice(viewInvoice)} />
+      <div className="min-h-screen bg-[#111418] px-4 md:px-8 py-6">
+        <div className="max-w-5xl mx-auto flex flex-col gap-6">
+          <div className="flex items-center justify-between gap-4">
+            <Btn size="sm" variant="ghost" onClick={() => setViewInvoice(null)}>← Back</Btn>
+            <Btn size="sm" onClick={() => window.print()}>Print / PDF</Btn>
+          </div>
+          <div className="rounded-xl overflow-hidden shadow-2xl shadow-black/40">
+            <InvoicePrint invoice={toPrintInvoice(viewInvoice)} />
+          </div>
         </div>
       </div>
     )
   }
 
   if (loading) {
-    return <p className="text-sm text-slate-400 animate-pulse">Loading your workspace…</p>
-  }
-
-  if (error && !account) {
     return (
-      <div className="space-y-4">
-        <p className="text-sm text-red-400">{error}</p>
-        <Btn size="sm" variant="ghost" onClick={handleSignOut}>Sign in again</Btn>
+      <div className="min-h-screen bg-[#111418] flex items-center justify-center">
+        <p className="text-sm text-slate-400 animate-pulse">Loading your workspace…</p>
       </div>
     )
   }
 
-  return (
-    <div className="max-w-6xl mx-auto flex flex-col gap-10 py-4 pb-24 md:pb-8">
-      {/* Header */}
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="font-serif text-3xl text-white">Your workspace</h1>
-          {account && (
-            <p className="text-sm text-slate-400 mt-2">Welcome back, {account.name}</p>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="hidden md:inline-flex">
-            <Btn size="sm" onClick={() => openMessage({ category: 'other' })}>
-              Message Nico{messageUnread > 0 ? ` (${messageUnread})` : ''}
-            </Btn>
-          </span>
-          {account && (
-            <UserMenu
-              name={account.name}
-              subtitle={account.company ?? account.email}
-              onOpenSettings={() => setSettingsOpen(true)}
-              onSignOut={handleSignOut}
-            />
-          )}
+  if (error && !account) {
+    return (
+      <div className="min-h-screen bg-[#111418] flex items-center justify-center px-6">
+        <div className="space-y-4 text-center">
+          <p className="text-sm text-red-400">{error}</p>
+          <Btn size="sm" variant="ghost" onClick={handleSignOut}>Sign in again</Btn>
         </div>
       </div>
+    )
+  }
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
-
-      {/* Overview — always visible */}
-      <div className="space-y-10">
-        <ClientDashboardStats stats={stats} />
-
-        <ClientActionCards
-          onMessage={() => openMessage({ category: 'other' })}
-          onStartRequest={() => setRequestOpen(true)}
-          onUpload={() => setUploadOpen(true)}
-          onViewBilling={scrollToBilling}
-        />
-
-        <ClientActivityFeed items={activity} />
-      </div>
-
-      {/* Billing summary — open by default */}
-      <div ref={billingRef}>
-        <ClientBillingSection
-          invoices={invoices}
-          stripeEnabled={stripeEnabled}
-          payingId={payingId}
-          viewLoading={viewLoading}
-          paymentError={paymentError}
-          onPay={payInvoice}
-          onView={openInvoice}
-          onMessageNico={() => openMessage({ category: 'billing' })}
-          mode="summary"
-        />
-      </div>
-
-      {/* Collapsible sections */}
-      <div className="space-y-4">
-        <ClientCollapsibleSection
-          id="websites"
-          title="Your websites"
-          defaultOpen={resources.length > 0}
-          summary={
-            resources.length > 0
-              ? `${resources.length} website link${resources.length === 1 ? '' : 's'} available`
-              : 'Your website code and live site links'
-          }
-        >
-          {resources.length > 0 ? (
-            <ClientWebsitesSection resources={resources} />
-          ) : (
-            <p className={`${card} text-sm text-slate-500 pt-4`}>
-              No website links yet — your Nexrena team can add GitHub and live site links here.
-            </p>
-          )}
-        </ClientCollapsibleSection>
-
-        <ClientCollapsibleSection
-          id="business-assets"
-          title="Business assets"
-          defaultOpen
-          summary={
-            assets.length > 0
-              ? `${assets.length} file${assets.length === 1 ? '' : 's'} — organize in folders`
-              : 'Upload logos, photos, or documents anytime'
-          }
-        >
-          <PortalAssetsManager />
-        </ClientCollapsibleSection>
-
-        <ClientCollapsibleSection
-          id="messages"
-          title="Messages"
-          defaultOpen={messageUnread > 0}
-          summary={
-            messageUnread > 0
-              ? `${messageUnread} new repl${messageUnread === 1 ? 'y' : 'ies'} from Nico`
-              : messageThreads.length > 0
-                ? `${messageThreads.length} conversation${messageThreads.length === 1 ? '' : 's'}`
-                : 'Start a conversation with Nico'
-          }
-        >
-          <ClientMessagesThreadView />
-        </ClientCollapsibleSection>
-
-        <ClientCollapsibleSection
-          id="work-status"
-          title="Projects & work status"
-          defaultOpen={false}
-          summary={
-            activeProjects.length > 0
-              ? `${activeProjects.length} active project${activeProjects.length === 1 ? '' : 's'}`
-              : 'No active projects'
-          }
-        >
-          <div className="pt-4">
-            <ClientWorkStatusSection
-              activeProjects={activeProjects}
-              serviceRequests={serviceRequests}
+  const renderView = () => {
+    switch (activeView) {
+      case 'home':
+        return (
+          <div className="space-y-8">
+            <ClientDashboardStats stats={stats} />
+            <ClientActionCards
+              onMessage={() => setActiveView('messages')}
               onStartRequest={() => setRequestOpen(true)}
-              variant="projects"
+              onUpload={() => setUploadOpen(true)}
+              onViewBilling={() => setActiveView('billing')}
             />
+            <ClientActivityFeed items={activity} />
           </div>
-        </ClientCollapsibleSection>
+        )
 
-        <ClientCollapsibleSection
-          id="requests"
-          title="Requests"
-          defaultOpen={false}
-          summary={
-            serviceRequests.length > 0
-              ? `${serviceRequests.length} request${serviceRequests.length === 1 ? '' : 's'} on file`
-              : 'No recent requests'
-          }
-        >
-          <div className="pt-4">
-            <ClientWorkStatusSection
-              activeProjects={activeProjects}
-              serviceRequests={serviceRequests}
-              onStartRequest={() => setRequestOpen(true)}
-              variant="requests"
+      case 'billing':
+        return (
+          <div className="space-y-8">
+            <ClientBillingSection
+              invoices={invoices}
+              stripeEnabled={stripeEnabled}
+              payingId={payingId}
+              viewLoading={viewLoading}
+              paymentError={paymentError}
+              onPay={payInvoice}
+              onView={openInvoice}
+              onMessageNico={() => setActiveView('messages')}
+              mode="summary"
             />
-          </div>
-        </ClientCollapsibleSection>
-
-        <ClientCollapsibleSection
-          id="estimates"
-          title="Estimates & approvals"
-          defaultOpen={false}
-          summary={
-            pendingProposals.length > 0
-              ? `${pendingProposals.length} awaiting your approval`
-              : proposals.length > 0 ? `${proposals.length} estimate${proposals.length === 1 ? '' : 's'}` : 'No estimates yet'
-          }
-        >
-          <div className="pt-4">
-            {proposals.length === 0 ? (
-              <p className={`${card} text-sm text-slate-500`}>No estimates yet.</p>
-            ) : (
-              <ul className="space-y-3">
-                {proposals.map((p) => {
-                  const chip = proposalStatusChip(p.status, p.validUntil)
-                  return (
-                    <li key={p.id} className={card}>
-                      <div className="flex flex-wrap justify-between gap-3">
-                        <div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <p className="font-serif text-lg text-white">{p.title}</p>
-                            {chip && <StatusChip variant={chip} />}
-                          </div>
-                          <p className="text-sm text-slate-400 mt-1">
-                            Valid until {formatDate(p.validUntil)}
-                          </p>
-                        </div>
-                        {p.status === 'sent' && new Date(p.validUntil) >= new Date() && (
-                          <Btn
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => openMessage({ subject: `Approve estimate: ${p.title}`, category: 'other' })}
-                          >
-                            Approve proposal
-                          </Btn>
-                        )}
-                      </div>
-                    </li>
-                  )
-                })}
-              </ul>
-            )}
-          </div>
-        </ClientCollapsibleSection>
-
-        <ClientCollapsibleSection
-          id="invoice-history"
-          title="Invoice history"
-          defaultOpen={false}
-          summary={
-            invoices.length > 0
-              ? `${invoices.length} invoice${invoices.length === 1 ? '' : 's'} on file`
-              : 'No invoices yet'
-          }
-        >
-          <div className="pt-4">
             <ClientBillingSection
               invoices={invoices}
               stripeEnabled={stripeEnabled}
@@ -444,38 +252,112 @@ export function ClientDashboard({ onSignOut }: Props) {
               mode="history"
             />
           </div>
-        </ClientCollapsibleSection>
-      </div>
+        )
 
-      {/* Mobile sticky help bar */}
-      <div className="fixed bottom-0 inset-x-0 z-40 md:hidden p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-gradient-to-t from-[#111418] via-[#111418]/95 to-transparent pointer-events-none">
-        <button
-          type="button"
-          onClick={() => openMessage({ category: 'other' })}
-          className="pointer-events-auto w-full rounded-xl bg-gold text-obsidian font-semibold py-3.5 px-4 text-sm shadow-lg shadow-black/30 active:scale-[0.98] transition-transform"
-        >
-          Need help? Message Nico
-        </button>
-      </div>
+      case 'messages':
+        return (
+          <ClientMessagesThreadView
+            variant="full"
+            onUnreadChange={setMessageUnread}
+          />
+        )
 
-      {messageOpen && (
-        <ClientMessageModal
-          open={messageOpen}
-          defaultSubject={messageDefaultSubject}
-          defaultCategory={messageDefaultCategory}
-          onClose={() => {
-            setMessageOpen(false)
-            setMessageDefaultSubject('')
-            setMessageDefaultCategory(undefined)
-          }}
-        />
-      )}
+      case 'files':
+        return <ClientFilesView />
+
+      case 'websites':
+        return resources.length > 0 ? (
+          <ClientWebsitesSection resources={resources} />
+        ) : (
+          <p className={`${card} text-sm text-slate-500`}>
+            No website links yet — your Nexrena team can add GitHub and live site links here.
+          </p>
+        )
+
+      case 'requests':
+        return (
+          <div className="space-y-8">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm text-slate-400">Track project work and service requests.</p>
+              <Btn size="sm" onClick={() => setRequestOpen(true)}>Start a request</Btn>
+            </div>
+            <ClientWorkStatusSection
+              activeProjects={activeProjects}
+              serviceRequests={serviceRequests}
+              onStartRequest={() => setRequestOpen(true)}
+              variant="projects"
+            />
+            <ClientWorkStatusSection
+              activeProjects={activeProjects}
+              serviceRequests={serviceRequests}
+              onStartRequest={() => setRequestOpen(true)}
+              variant="requests"
+            />
+            {proposals.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="text-sm uppercase tracking-widest text-slate-400 font-medium">Estimates & approvals</h3>
+                <ul className="space-y-3">
+                  {proposals.map((p) => {
+                    const chip = proposalStatusChip(p.status, p.validUntil)
+                    return (
+                      <li key={p.id} className={card}>
+                        <div className="flex flex-wrap justify-between gap-3">
+                          <div>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <p className="font-serif text-lg text-white">{p.title}</p>
+                              {chip && <StatusChip variant={chip} />}
+                            </div>
+                            <p className="text-sm text-slate-400 mt-1">
+                              Valid until {formatDate(p.validUntil)}
+                            </p>
+                          </div>
+                          {p.status === 'sent' && new Date(p.validUntil) >= new Date() && (
+                            <Btn
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setActiveView('messages')}
+                            >
+                              Approve via message
+                            </Btn>
+                          )}
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            )}
+          </div>
+        )
+
+      case 'settings':
+        return account ? (
+          <ClientSettingsView account={account} onUpdated={setAccount} />
+        ) : null
+
+      default:
+        return null
+    }
+  }
+
+  return (
+    <ClientPortalShell
+      activeView={activeView}
+      onNavigate={setActiveView}
+      messageUnread={messageUnread}
+      account={account}
+      onSignOut={handleSignOut}
+    >
+      {error && <p className="text-sm text-red-400 mb-4">{error}</p>}
+      {renderView()}
 
       {uploadOpen && (
         <UploadFilesModal
           open={uploadOpen}
           onClose={() => setUploadOpen(false)}
-          onUploaded={(asset) => setAssets((prev) => [asset, ...prev])}
+          onUploaded={() => {
+            setActiveView('files')
+          }}
         />
       )}
 
@@ -483,17 +365,12 @@ export function ClientDashboard({ onSignOut }: Props) {
         <ClientRequestModal
           open={requestOpen}
           onClose={() => setRequestOpen(false)}
-          onCreated={(row) => setServiceRequests((prev) => [row, ...prev])}
+          onCreated={(row) => {
+            setServiceRequests((prev) => [row, ...prev])
+            setActiveView('requests')
+          }}
         />
       )}
-
-      {settingsOpen && account && (
-        <AccountSettingsModal
-          account={account}
-          onClose={() => setSettingsOpen(false)}
-          onUpdated={(updated) => setAccount(updated)}
-        />
-      )}
-    </div>
+    </ClientPortalShell>
   )
 }
