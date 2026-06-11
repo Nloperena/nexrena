@@ -6,6 +6,8 @@ import { services } from '../../data/services';
 import { industries } from '../../data/industries';
 import Eyebrow from '../../components/ui/Eyebrow.astro';
 import CTA from '../../components/sections/CTA.astro';
+import Button from '../../components/ui/Button.astro';
+import { founder } from '../../data/founder';
 import HeaderConceptBg from '../../components/ui/HeaderConceptBg.astro';
 import { heroImages } from '../../data/hero-images';
 import { absoluteUrl, breadcrumbSchema, caseStudySchema } from '../../lib/schema';
@@ -52,7 +54,7 @@ const executionSummary = compactText(project.approach || project.solution, 220);
 const outcomeSummary = compactText(project.results || project.outcome, 240);
 ---
 
-<Layout title={`${project.name} | Nexrena`} description={description} schema={schema}>
+<Layout title={`${project.name} | Nexrena`} description={description} ogImage={project.thumbnail ?? heroImages.work} schema={schema}>
   <main>
 
     <!-- ═══ CINEMATIC HERO ═══ -->
@@ -253,6 +255,23 @@ const outcomeSummary = compactText(project.results || project.outcome, 240);
             <blockquote class="impact-quote">{compactText(project.testimonial, 120)}</blockquote>
           )}
         </div>
+      </div>
+    </section>
+
+    <section class="bg-[var(--slate-900)] py-16 border-t border-[var(--slate-800)]">
+      <div class="max-w-[1320px] mx-auto px-[5vw] flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+        <div class="max-w-2xl">
+          <Eyebrow class="mb-4">Technical depth</Eyebrow>
+          <h2 class="font-display text-[28px] md:text-[36px] text-[var(--warm-white)] leading-tight">
+            Engineering notes on the portfolio
+          </h2>
+          <p class="mt-4 font-body text-[16px] text-[var(--slate-400)] leading-relaxed">
+            Business outcomes here; stack ownership and delivery context for recruiters lives on Nicholas Loperena&apos;s technical portfolio.
+          </p>
+        </div>
+        <Button href={`${founder.portfolioUrl}/work/`} variant="outline" target="_blank" rel="noopener noreferrer">
+          View technical portfolio ↗
+        </Button>
       </div>
     </section>
 

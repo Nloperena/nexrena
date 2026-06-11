@@ -9,6 +9,7 @@ import Button from '../../components/ui/Button.astro';
 import { services } from '../../data/services';
 import { industries } from '../../data/industries';
 import { heroImages } from '../../data/hero-images';
+import { serviceSeoById } from '../../data/service-seo';
 import { absoluteUrl, serviceSchema, breadcrumbSchema } from '../../lib/schema';
 import { getCollection } from 'astro:content';
 import { getPreferredBlogCategoriesForService } from '../../data/seo-internal-links';
@@ -24,6 +25,9 @@ const { service } = Astro.props;
 const serviceTitle = service.title.replace(/\n/g, ' ');
 const serviceImage = heroImages[`services/${service.id}` as keyof typeof heroImages] ?? heroImages.services;
 const serviceUrl = absoluteUrl(`/services/${service.id}`);
+const seo = serviceSeoById[service.id];
+const pageTitle = seo?.title ?? `${serviceTitle} | Nexrena`;
+const pageDescription = seo?.description ?? service.metaDescription ?? `${service.body} ${service.intro}`;
 const schema = [
   serviceSchema(service),
   breadcrumbSchema([
@@ -39,8 +43,9 @@ const relatedPosts = (await getCollection('blog'))
 ---
 
 <Layout 
-  title={`${serviceTitle} | Nexrena`} 
-  description={service.metaDescription || `${service.body} ${service.intro}`}
+  title={pageTitle}
+  description={pageDescription}
+  ogImage={serviceImage}
   schema={schema}
 >
   <main>
@@ -101,6 +106,19 @@ const relatedPosts = (await getCollection('blog'))
         </div>
       </div>
     </section>
+
+    {service.id === 'web-design' && (
+      <section class="bg-[var(--obsidian)] border-t border-[var(--slate-800)] py-12">
+        <div class="section-container flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <p class="font-body text-[16px] text-[var(--slate-400)] max-w-2xl">
+            Evaluating agencies in Central Florida? Read our guide to choosing a B2B web design partner in Orlando.
+          </p>
+          <a href="/resources/blog/web-design-orlando/" class="font-mono text-[11px] uppercase tracking-widest text-[var(--gold)] hover:text-[var(--gold-light)] transition-colors shrink-0">
+            Orlando web design guide →
+          </a>
+        </div>
+      </section>
+    )}
 
     <!-- FAQ & Final CTA Section -->
     <section class="bg-[var(--obsidian)] py-32 border-t border-[var(--slate-800)] relative z-20">

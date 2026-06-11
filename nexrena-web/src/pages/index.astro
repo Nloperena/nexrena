@@ -11,11 +11,13 @@ import ProcessSticky from '../components/sections/ProcessSticky.astro';
 import Testimonials from '../components/sections/Testimonials.astro';
 import CTA from '../components/sections/CTA.astro';
 import { organizationSchema } from '../lib/schema';
+import { heroImages } from '../data/hero-images';
 ---
 
 <Layout
   title="Nexrena | Orlando & Kissimmee Web Design + SEO for B2B Teams"
   description="Orlando and Kissimmee web design, SEO, and full-service digital growth for B2B teams. Conversion-focused builds, technical SEO, and case studies with measured pipeline impact."
+  ogImage={heroImages.home}
   schema={organizationSchema()}
 >
   <main>

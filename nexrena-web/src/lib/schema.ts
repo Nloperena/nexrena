@@ -152,6 +152,7 @@ export function articleSchema(article: {
   dateModified?: string;
   url: string;
 }) {
+  const personAuthor = founderPersonSchema();
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -160,18 +161,27 @@ export function articleSchema(article: {
     datePublished: article.datePublished,
     dateModified: article.dateModified ?? article.datePublished,
     url: article.url,
-    author: {
-      '@type': 'Organization',
-      name: 'Nexrena',
-      url: absoluteUrl('/'),
-    },
+    author: [
+      {
+        '@type': 'Person',
+        '@id': personAuthor['@id'],
+        name: founder.legalName,
+        url: founder.portfolioUrl,
+        image: personAuthor.image,
+      },
+      {
+        '@type': 'Organization',
+        name: 'Nexrena',
+        url: absoluteUrl('/'),
+      },
+    ],
     publisher: {
       '@type': 'Organization',
       name: 'Nexrena',
       url: absoluteUrl('/'),
       logo: {
         '@type': 'ImageObject',
-        url: absoluteUrl('/favicon.svg'),
+        url: absoluteUrl('/og-default.png'),
       },
     },
   };

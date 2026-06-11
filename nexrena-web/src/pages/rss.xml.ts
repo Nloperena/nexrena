@@ -16,9 +16,11 @@ export const GET: APIRoute = async () => {
     (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
   );
 
+  const channelUrl = `${SITE}/resources/blog/`;
+
   const items = posts
     .map((post) => {
-      const url = `${SITE}/resources/blog/${post.slug}`;
+      const url = `${SITE}/resources/blog/${post.slug}/`;
       const updatedAt = post.data.updatedAt ?? post.data.publishedAt;
       return `
     <item>
@@ -37,7 +39,7 @@ export const GET: APIRoute = async () => {
   <channel>
     <title>Nexrena Blog</title>
     <description>B2B web design, SEO, and digital growth insights.</description>
-    <link>${SITE}/resources/blog</link>
+    <link>${channelUrl}</link>
     <atom:link href="${SITE}/rss.xml" rel="self" type="application/rss+xml" />
     ${items}
   </channel>
