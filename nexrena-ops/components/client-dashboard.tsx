@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { PortalAccount, PortalInvoice, PortalProject, PortalProposal, PortalAsset, PortalServiceRequest } from '@/lib/portal-types'
 import {
   fetchPortalInvoice,
@@ -14,21 +14,22 @@ import {
   createPortalCheckout,
   logoutPortal,
 } from '@/lib/portal-client'
-import { formatCurrency, formatDate } from '@/lib/store'
+import { computePortalStats } from '@/lib/portal-dashboard-utils'
+import { formatDate } from '@/lib/store'
 import { InvoicePrint } from '@/components/invoice-print'
-import { ServiceRequestSection } from '@/components/service-request-section'
 import { PortalUploadsSection } from '@/components/portal-uploads-section'
 import { UserMenu } from '@/components/user-menu'
 import { AccountSettingsModal } from '@/components/account-settings-modal'
+import { ClientDashboardStats } from '@/components/client-dashboard-stats'
+import { ClientBillingSection } from '@/components/client-billing-section'
+import { ClientRequestModal } from '@/components/client-request-modal'
 import type { Invoice, InvoiceStatus } from '@/lib/types'
 import { Btn } from '@/components/ui'
 
 type Props = { onSignOut: () => void }
 
-function effectiveStatus(inv: PortalInvoice): InvoiceStatus {
-  if (inv.status === 'sent' && new Date(inv.dueDate) < new Date()) return 'overdue'
-  return inv.status as InvoiceStatus
-}
+const card = 'glass-panel rounded-xl border border-slate-800/60 p-5'
+const MESSAGE_NICO_EMAIL = 'nicholas@nexrena.com'
 
 function toPrintInvoice(inv: PortalInvoice): Invoice {
   return {
@@ -53,6 +54,10 @@ function toPrintInvoice(inv: PortalInvoice): Invoice {
   }
 }
 
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return <h3 className="text-[10px] uppercase tracking-widest text-slate-500 mb-3">{children}</h3>
+}
+
 export function ClientDashboard({ onSignOut }: Props) {
   const [account, setAccount] = useState<PortalAccount | null>(null)
   const [projects, setProjects] = useState<PortalProject[]>([])
@@ -65,8 +70,10 @@ export function ClientDashboard({ onSignOut }: Props) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [requestOpen, setRequestOpen] = useState(false)
   const [viewInvoice, setViewInvoice] = useState<PortalInvoice | null>(null)
   const [viewLoading, setViewLoading] = useState(false)
+  const uploadsRef = useRef<HTMLDivElement>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -96,6 +103,21 @@ export function ClientDashboard({ onSignOut }: Props) {
   }, [])
 
   useEffect(() => { load() }, [load])
+
+  const stats = useMemo(
+    () => computePortalStats(invoices, projects, proposals),
+    [invoices, projects, proposals],
+  )
+
+  const activeProjects = useMemo(
+    () => projects.filter((p) => !['delivered', 'on_hold', 'not_started'].includes(p.status)),
+    [projects],
+  )
+
+  const pendingProposals = useMemo(() => {
+    const now = new Date()
+    return proposals.filter((p) => p.status === 'sent' && new Date(p.validUntil) >= now)
+  }, [proposals])
 
   const openInvoice = async (id: string) => {
     setViewLoading(true)
@@ -127,11 +149,13 @@ export function ClientDashboard({ onSignOut }: Props) {
     }
   }
 
-  const card = 'glass-panel rounded-xl border border-slate-800/60 p-5'
+  const scrollToUploads = () => {
+    uploadsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   if (viewInvoice) {
     return (
-      <div className="max-w-3xl mx-auto flex flex-col gap-6 py-4">
+      <div className="max-w-5xl mx-auto flex flex-col gap-6 py-4">
         <div className="flex items-center justify-between gap-4">
           <Btn size="sm" variant="ghost" onClick={() => setViewInvoice(null)}>← Back</Btn>
           <Btn size="sm" onClick={() => window.print()}>Print / PDF</Btn>
@@ -157,12 +181,14 @@ export function ClientDashboard({ onSignOut }: Props) {
   }
 
   return (
-    <div className="max-w-3xl mx-auto flex flex-col gap-8 py-4">
+    <div className="max-w-5xl mx-auto flex flex-col gap-8 py-4">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-[10px] text-gold tracking-[0.2em] uppercase">Client portal</p>
           <h1 className="font-serif text-3xl text-white mt-2">Your workspace</h1>
-          <p className="text-sm text-slate-400 mt-1">Projects, proposals, and invoices in one place.</p>
+          {account && (
+            <p className="text-sm text-slate-400 mt-1">Welcome back, {account.name}</p>
+          )}
         </div>
         {account && (
           <UserMenu
@@ -176,81 +202,126 @@ export function ClientDashboard({ onSignOut }: Props) {
 
       {error && <p className="text-sm text-red-400">{error}</p>}
 
-      {account && (
-        <div className={card}>
-          <p className="text-[10px] uppercase tracking-widest text-slate-500">Welcome back</p>
-          <h2 className="font-serif text-2xl text-white mt-2">{account.name}</h2>
-          {account.company && <p className="text-sm text-slate-400 mt-0.5">{account.company}</p>}
+      <ClientDashboardStats stats={stats} />
+
+      <section>
+        <SectionTitle>Need something?</SectionTitle>
+        <div className={`${card} space-y-4`}>
+          <div>
+            <p className="font-serif text-lg text-white">Need something new?</p>
+            <p className="text-sm text-slate-400 mt-1">
+              Website updates, landing pages, SEO sprints, or ongoing maintenance — start a request and we&apos;ll scope it together.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Btn size="sm" onClick={() => setRequestOpen(true)}>Start a new request</Btn>
+            <Btn size="sm" variant="ghost" onClick={scrollToUploads}>Upload files</Btn>
+            <Btn
+              size="sm"
+              variant="ghost"
+              onClick={() => { window.location.href = `mailto:${MESSAGE_NICO_EMAIL}` }}
+            >
+              Message Nico
+            </Btn>
+          </div>
         </div>
-      )}
+      </section>
 
-      <ServiceRequestSection onCreated={(row) => setServiceRequests((prev) => [row, ...prev])} />
+      <section>
+        <SectionTitle>Active Projects</SectionTitle>
+        {activeProjects.length === 0 ? (
+          <p className={`${card} text-sm text-slate-500`}>
+            No active projects yet. Start a request and we&apos;ll scope your first sprint after intake.
+          </p>
+        ) : (
+          <ul className="space-y-3">
+            {activeProjects.map((p) => (
+              <li key={p.id} className={card}>
+                <div className="flex justify-between gap-4">
+                  <div>
+                    <p className="font-serif text-lg text-white">{p.name}</p>
+                    <p className="text-sm text-slate-400">{p.type} · {p.status.replace('_', ' ')}</p>
+                  </div>
+                  <span className="text-[10px] uppercase tracking-wider text-gold shrink-0">{p.status.replace('_', ' ')}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
-      <PortalUploadsSection
-        assets={assets}
-        serviceRequests={serviceRequests}
-        onUploaded={(asset) => setAssets((prev) => [asset, ...prev])}
+      <section>
+        <SectionTitle>Recent Requests</SectionTitle>
+        {serviceRequests.length === 0 ? (
+          <p className={`${card} text-sm text-slate-500`}>No service requests yet.</p>
+        ) : (
+          <ul className="space-y-3">
+            {serviceRequests.slice(0, 5).map((r) => (
+              <li key={r.id} className={card}>
+                <p className="font-serif text-lg text-white capitalize">{r.projectType}</p>
+                <p className="text-sm text-slate-400 mt-1 line-clamp-2">{r.description}</p>
+                <p className="text-xs text-slate-500 mt-2">{r.status}{r.budget ? ` · ${r.budget}` : ''}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <ClientBillingSection
+        invoices={invoices}
+        stripeEnabled={stripeEnabled}
+        payingId={payingId}
+        viewLoading={viewLoading}
+        onPay={payInvoice}
+        onView={openInvoice}
       />
 
-      <ListSection title="Your requests" empty="No service requests yet." items={serviceRequests}>
-        {(r) => (
-          <>
-            <p className="font-serif text-lg text-white capitalize">{r.projectType}</p>
-            <p className="text-sm text-slate-400 mt-1 line-clamp-2">{r.description}</p>
-            <p className="text-xs text-slate-500 mt-2">{r.status}{r.budget ? ` · ${r.budget}` : ''}</p>
-          </>
-        )}
-      </ListSection>
+      <div ref={uploadsRef}>
+        <PortalUploadsSection
+          compact
+          assets={assets}
+          serviceRequests={serviceRequests}
+          onUploaded={(asset) => setAssets((prev) => [asset, ...prev])}
+        />
+      </div>
 
-      <ListSection title="Projects" empty="No active projects yet. We'll scope your first sprint after intake." items={projects}>
-        {(p) => (
-          <div className="flex justify-between gap-4">
-            <div>
-              <p className="font-serif text-lg text-white">{p.name}</p>
-              <p className="text-sm text-slate-400">{p.type} · {p.status}</p>
-            </div>
-            <span className="text-[10px] uppercase tracking-wider text-gold">{p.status}</span>
-          </div>
+      <section>
+        <SectionTitle>Estimates &amp; Approvals</SectionTitle>
+        {pendingProposals.length === 0 && proposals.length === 0 ? (
+          <p className={`${card} text-sm text-slate-500`}>No estimates yet.</p>
+        ) : (
+          <ul className="space-y-3">
+            {(pendingProposals.length > 0 ? pendingProposals : proposals).slice(0, 3).map((p) => (
+              <li key={p.id} className={card}>
+                <div className="flex flex-wrap justify-between gap-3">
+                  <div>
+                    <p className="font-serif text-lg text-white">{p.title}</p>
+                    <p className="text-sm text-slate-400 mt-1">
+                      {p.status === 'sent' ? 'Awaiting your approval' : p.status} · valid until {formatDate(p.validUntil)}
+                    </p>
+                  </div>
+                  {p.status === 'sent' && new Date(p.validUntil) >= new Date() && (
+                    <Btn
+                      size="sm"
+                      onClick={() => { window.location.href = `mailto:${MESSAGE_NICO_EMAIL}?subject=${encodeURIComponent(`Approve estimate: ${p.title}`)}` }}
+                    >
+                      Approve proposal
+                    </Btn>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
         )}
-      </ListSection>
+      </section>
 
-      <ListSection title="Proposals" empty="No proposals yet." items={proposals}>
-        {(p) => (
-          <>
-            <p className="font-serif text-lg text-white">{p.title}</p>
-            <p className="text-sm text-slate-400 mt-1">{p.status} · valid until {formatDate(p.validUntil)}</p>
-          </>
-        )}
-      </ListSection>
-
-      <ListSection title="Invoices" empty="No invoices yet." items={invoices}>
-        {(inv) => {
-          const status = effectiveStatus(inv)
-          return (
-            <div className="flex justify-between gap-4 items-start">
-              <div>
-                <p className="font-serif text-lg text-white">{inv.number}</p>
-                {inv.projectName && <p className="text-sm text-slate-500 mt-0.5">{inv.projectName}</p>}
-                <p className="text-sm text-slate-400 mt-1">
-                  Issued {formatDate(inv.issueDate)} · Due {formatDate(inv.dueDate)}
-                </p>
-                <p className="text-base text-white font-medium mt-2 tabular-nums">{formatCurrency(inv.total)}</p>
-              </div>
-              <div className="flex flex-col items-end gap-2 shrink-0">
-                <span className={`text-[10px] uppercase tracking-wider ${status === 'overdue' ? 'text-red-400' : 'text-gold'}`}>
-                  {status}
-                </span>
-                <Btn size="sm" variant="ghost" disabled={viewLoading} onClick={() => openInvoice(inv.id)}>View</Btn>
-                {stripeEnabled && (status === 'sent' || status === 'overdue') && (
-                  <Btn size="sm" disabled={payingId === inv.id} onClick={() => payInvoice(inv.id)}>
-                    {payingId === inv.id ? '…' : 'Pay'}
-                  </Btn>
-                )}
-              </div>
-            </div>
-          )
-        }}
-      </ListSection>
+      {requestOpen && (
+        <ClientRequestModal
+          open={requestOpen}
+          onClose={() => setRequestOpen(false)}
+          onCreated={(row) => setServiceRequests((prev) => [row, ...prev])}
+        />
+      )}
 
       {settingsOpen && account && (
         <AccountSettingsModal
@@ -260,30 +331,5 @@ export function ClientDashboard({ onSignOut }: Props) {
         />
       )}
     </div>
-  )
-}
-
-function ListSection<T extends { id: string }>({
-  title, empty, items, children,
-}: {
-  title: string
-  empty: string
-  items: T[]
-  children: (item: T) => React.ReactNode
-}) {
-  const card = 'glass-panel rounded-xl border border-slate-800/60 p-5'
-  return (
-    <section>
-      <h3 className="text-[10px] uppercase tracking-widest text-slate-500 mb-3">{title}</h3>
-      {items.length === 0 ? (
-        <p className={`${card} text-sm text-slate-500`}>{empty}</p>
-      ) : (
-        <ul className="space-y-3">
-          {items.map((item) => (
-            <li key={item.id} className={card}>{children(item)}</li>
-          ))}
-        </ul>
-      )}
-    </section>
   )
 }
