@@ -31,6 +31,24 @@ export function resourceBrowseUrl(url: string, type: ClientResourceType): string
   return url
 }
 
+/** e.g. github.com/org/repo/tree/main/fpusa-astro-production → repo/fpusa-astro-production */
+export function resourceRepoFolderPath(url: string): string | null {
+  try {
+    const parts = new URL(url).pathname.split('/').filter(Boolean)
+    if (parts.length >= 5 && parts[2] === 'tree') {
+      const repo = parts[1]
+      const folder = parts.slice(4).join('/')
+      return folder ? `${repo}/${folder}` : repo
+    }
+    if (parts.length >= 2 && parts[0] && parts[1]) {
+      return parts[1]
+    }
+  } catch {
+    /* ignore */
+  }
+  return null
+}
+
 export function resourceEmbedUrl(url: string): string {
   try {
     const parsed = new URL(url)

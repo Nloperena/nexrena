@@ -56,7 +56,7 @@ export function ClientWebsitesSection({ resources }: Props) {
     [resources],
   )
   const other = useMemo(
-    () => resources.filter((r) => !isEmbeddableResource(r.type)),
+    () => resources.filter((r) => !isEmbeddableResource(r.type) && r.type !== 'github'),
     [resources],
   )
 
