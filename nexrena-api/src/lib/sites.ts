@@ -13,6 +13,8 @@ export const SITES: Record<string, SiteConfig> = {
     label: 'TTAG',
     origins: [
       'https://ttag-fawn.vercel.app',
+      'https://www.thetwoazaleagroup.com',
+      'https://thetwoazaleagroup.com',
       'https://www.twoazaleagroup.com',
       'https://twoazaleagroup.com',
     ],

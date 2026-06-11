@@ -2,24 +2,15 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 const WARREN_CONTACT_ID = 'warren-daughtridge-ttag'
-const TTAG_REPO = 'https://github.com/Nloperena/TTAG.git'
-const TTAG_LIVE = 'https://ttag-fawn.vercel.app'
+const TTAG_LIVE = 'https://www.thetwoazaleagroup.com'
 const ASTRO_REBUILD_REPO = 'https://github.com/Nloperena/LoperenaPortfolio2026/tree/main/astro-rebuild'
 const WARREN_RESOURCES = [
   {
-    id: 'res-warren-ttag-github',
-    type: 'github',
-    title: 'TTAG Live Website',
-    url: TTAG_REPO,
-    description: 'Your live Two Azalea Group website code — Astro site deployed to Vercel.',
-    linkUpgradeInvoice: false,
-  },
-  {
     id: 'res-warren-ttag-live',
     type: 'live_site',
-    title: 'TTAG Live Site',
+    title: 'Two Azalea Group Website',
     url: TTAG_LIVE,
-    description: 'Your public website at ttag-fawn.vercel.app.',
+    description: 'Your public website at thetwoazaleagroup.com.',
     linkUpgradeInvoice: false,
   },
   {
@@ -33,6 +24,8 @@ const WARREN_RESOURCES = [
 ]
 
 async function seed() {
+  await prisma.clientResource.deleteMany({ where: { id: 'res-warren-ttag-github' } })
+
   const upgradeInvoice = await prisma.invoice.findFirst({
     where: {
       contactId: WARREN_CONTACT_ID,

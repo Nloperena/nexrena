@@ -7,7 +7,7 @@ import {
   createPortalSubscriptionCheckout,
   fetchPortalSubscriptions,
 } from '@/lib/portal-client'
-import { formatCurrency } from '@/lib/store'
+import { formatCurrency, formatDate } from '@/lib/store'
 import { Btn } from '@/components/ui'
 
 function intervalSuffix(interval: string): string {
@@ -43,6 +43,10 @@ export function PortalSubscriptionsSection({ stripeEnabled = true, onError, onMe
   const needsAutopay = activeSubs.filter((s) => !s.autopay)
   const autopayTotal = needsAutopay.reduce((sum, s) => sum + s.amount, 0)
   const confirmSub = activeSubs.find((s) => s.id === confirmId)
+  const earliestAutopayRenewal = needsAutopay.reduce<string | null>((earliest, sub) => {
+    if (!earliest || sub.nextBillingDate < earliest) return sub.nextBillingDate
+    return earliest
+  }, null)
 
   const handleSubscribe = async () => {
     if (needsAutopay.length === 0) return
@@ -61,12 +65,17 @@ export function PortalSubscriptionsSection({ stripeEnabled = true, onError, onMe
 
   const handleCancel = async () => {
     if (!confirmId) return
+    const sub = activeSubs.find((s) => s.id === confirmId)
     setCancellingId(confirmId)
     onError(null)
     try {
       await cancelPortalSubscription(confirmId)
       await load()
-      onMessage('Subscription cancelled.')
+      onMessage(
+        sub
+          ? `Cancellation scheduled. ${sub.description} stays active through ${formatDate(sub.nextBillingDate)}.`
+          : 'Cancellation scheduled.',
+      )
       setConfirmId(null)
     } catch (err) {
       onError(err instanceof Error ? err.message : 'Could not cancel subscription.')
@@ -87,13 +96,19 @@ export function PortalSubscriptionsSection({ stripeEnabled = true, onError, onMe
     <>
       <div className="my-6 border-t border-slate-800/60" />
       <p className="text-[10px] uppercase tracking-widest text-slate-500">Active subscriptions</p>
+      <p className="mt-2 text-xs text-slate-500 leading-relaxed">
+        Each subscription renews on its billing date. You must complete the current billing cycle —
+        if you cancel, service continues through your renewal date and ends at the start of the next
+        cycle.
+      </p>
 
       {needsAutopay.length > 0 && stripeEnabled && (
         <div className="mt-3 rounded-lg border border-gold/20 bg-gold/5 p-4 space-y-3">
           <p className="text-sm text-slate-300">
             Enable autopay for {needsAutopay.length} service{needsAutopay.length > 1 ? 's' : ''} (
-            {formatCurrency(autopayTotal)}/mo total). Your card will be charged automatically each
-            billing cycle.
+            {formatCurrency(autopayTotal)}/mo total). Pay any open invoices for this billing period
+            first. Recurring card charges start on your next renewal date
+            {earliestAutopayRenewal ? ` (${formatDate(earliestAutopayRenewal)})` : ''}.
           </p>
           <Btn type="button" size="sm" disabled={subscribing} onClick={handleSubscribe}>
             {subscribing ? 'Redirecting…' : `Set up autopay — ${formatCurrency(autopayTotal)}/mo`}
@@ -103,23 +118,28 @@ export function PortalSubscriptionsSection({ stripeEnabled = true, onError, onMe
 
       <div className="space-y-3 mt-3">
         {activeSubs.map((sub) => (
-          <div key={sub.id} className="flex flex-wrap items-baseline justify-between gap-2">
-            <p className="text-sm text-slate-400">
-              {sub.description}{' '}
-              <span className="text-slate-500 tabular-nums">
-                ({formatCurrency(sub.amount)}
-                {intervalSuffix(sub.interval)})
-              </span>
-              {sub.autopay ? (
-                <span className="ml-2 text-[10px] uppercase tracking-wider text-emerald-400/90">
-                  Autopay on
+          <div key={sub.id} className="flex flex-wrap items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-sm text-slate-400">
+                {sub.description}{' '}
+                <span className="text-slate-500 tabular-nums">
+                  ({formatCurrency(sub.amount)}
+                  {intervalSuffix(sub.interval)})
                 </span>
-              ) : (
-                <span className="ml-2 text-[10px] uppercase tracking-wider text-amber-400/90">
-                  Manual billing
-                </span>
-              )}
-            </p>
+                {sub.autopay ? (
+                  <span className="ml-2 text-[10px] uppercase tracking-wider text-emerald-400/90">
+                    Autopay on
+                  </span>
+                ) : (
+                  <span className="ml-2 text-[10px] uppercase tracking-wider text-amber-400/90">
+                    Manual billing
+                  </span>
+                )}
+              </p>
+              <p className="mt-1 text-xs text-slate-500">
+                Renews {formatDate(sub.nextBillingDate)}
+              </p>
+            </div>
             <button
               type="button"
               onClick={() => setConfirmId(sub.id)}
@@ -137,9 +157,11 @@ export function PortalSubscriptionsSection({ stripeEnabled = true, onError, onMe
               {intervalSuffix(confirmSub.interval)})?
             </p>
             <p className="text-xs text-slate-500">
+              Your subscription stays active through {formatDate(confirmSub.nextBillingDate)}. It
+              ends at the start of the next billing cycle — you must finish this billing period.
               {confirmSub.autopay
-                ? 'Stripe will stop future automatic charges for this service.'
-                : 'Future invoices for this service will stop. Contact Nexrena if you need help.'}
+                ? ' Stripe will not charge again after that date.'
+                : ' No further invoices will be issued after that date.'}
             </p>
             <div className="flex justify-end gap-2">
               <Btn type="button" size="sm" variant="ghost" onClick={() => setConfirmId(null)}>
