@@ -17,6 +17,16 @@ export function isBlobConfigured(): boolean {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN)
 }
 
+export function blobUploadErrorMessage(err: unknown): string {
+  if (err instanceof Error) {
+    if (/BLOB_READ_WRITE_TOKEN|token|unauthorized|forbidden|credentials/i.test(err.message)) {
+      return 'File uploads are not configured (BLOB_READ_WRITE_TOKEN missing or invalid).'
+    }
+    return err.message
+  }
+  return 'Upload failed'
+}
+
 export function validateUpload(file: { mimetype: string; size: number; originalname: string }) {
   if (!isBlobConfigured()) {
     return 'File uploads are not configured (BLOB_READ_WRITE_TOKEN missing).'

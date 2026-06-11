@@ -17,9 +17,9 @@ export function ClientFilesView({ assets, onUpload }: Props) {
     <section className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className={portalSectionTitleClass}>Your files</h2>
+          <h2 className={portalSectionTitleClass}>Business assets</h2>
           <p className="text-sm text-slate-400 mt-1">
-            Everything you&apos;ve shared with us — logos, photos, documents, and more.
+            Everything you&apos;ve shared with us — always available to upload or download.
           </p>
         </div>
         <Btn size="sm" onClick={onUpload}>Upload files</Btn>

@@ -31,8 +31,8 @@ const ACTIONS: {
   },
   {
     id: 'upload',
-    title: 'Upload files',
-    subtitle: 'Logos, photos, copy, or PDFs',
+    title: 'Business assets',
+    subtitle: 'Upload or access logos, photos, copy, and PDFs',
     icon: '📁',
   },
   {

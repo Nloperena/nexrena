@@ -142,7 +142,6 @@ export function ClientDashboard({ onSignOut }: Props) {
     return proposals.filter((p) => p.status === 'sent' && new Date(p.validUntil) >= now)
   }, [proposals])
 
-  const recentAssets = useMemo(() => assets.slice(0, 5), [assets])
 
   const openInvoice = async (id: string) => {
     setViewLoading(true)
@@ -298,20 +297,24 @@ export function ClientDashboard({ onSignOut }: Props) {
         </ClientCollapsibleSection>
 
         <ClientCollapsibleSection
-          id="files"
-          title="Files"
-          defaultOpen={false}
-          summary={assets.length > 0 ? `${assets.length} file${assets.length === 1 ? '' : 's'} shared` : 'Upload logos, photos, or documents'}
+          id="business-assets"
+          title="Business assets"
+          defaultOpen
+          summary={
+            assets.length > 0
+              ? `${assets.length} file${assets.length === 1 ? '' : 's'} — upload or download anytime`
+              : 'Upload logos, photos, or documents anytime'
+          }
         >
           <div className="space-y-4 pt-4">
+            <p className="text-sm text-slate-400">
+              Your logos, photos, copy, and documents — always here when you need them.
+            </p>
             <Btn size="sm" onClick={() => setUploadOpen(true)}>Upload files</Btn>
             <PortalFileList
-              assets={recentAssets.length > 0 ? recentAssets : assets}
+              assets={assets}
               emptyMessage="No files yet — upload logos, photos, or documents anytime."
             />
-            {assets.length > 5 && (
-              <p className="text-xs text-slate-500">Showing 5 most recent of {assets.length} files.</p>
-            )}
           </div>
         </ClientCollapsibleSection>
 

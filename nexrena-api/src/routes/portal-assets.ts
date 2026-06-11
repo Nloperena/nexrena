@@ -2,7 +2,7 @@ import { Router } from 'express'
 import multer from 'multer'
 import { prisma } from '../lib/prisma'
 import { requirePortalAuth } from '../middleware/portal-auth'
-import { uploadPortalAsset, validateUpload } from '../lib/blob-upload'
+import { blobUploadErrorMessage, uploadPortalAsset, validateUpload } from '../lib/blob-upload'
 
 const router = Router()
 const upload = multer({
@@ -102,7 +102,9 @@ router.post('/', requirePortalAuth, upload.single('file'), async (req, res) => {
     res.status(201).json(serializeAsset(row))
   } catch (err) {
     console.error('[portal assets upload]', err)
-    res.status(500).json({ error: 'Upload failed' })
+    const message = blobUploadErrorMessage(err)
+    const status = /not configured/i.test(message) ? 503 : 500
+    res.status(status).json({ error: message })
   }
 })
 

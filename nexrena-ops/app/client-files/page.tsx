@@ -18,8 +18,8 @@ export default function ClientFilesPage() {
   return (
     <div>
       <PageHeader
-        title="Client files"
-        sub={`${assets.length} uploads from portal clients`}
+        title="Business assets"
+        sub={`${assets.length} client uploads — logos, photos, documents, and more`}
       />
 
       <div className="mb-6 max-w-xs">
