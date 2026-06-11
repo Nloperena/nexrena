@@ -18,6 +18,7 @@ import expenseRoutes from './routes/expenses'
 import subscriptionRoutes from './routes/subscriptions'
 import portalRoutes from './routes/portal'
 import serviceRequestRoutes from './routes/service-requests'
+import portalAssetsOpsRoutes from './routes/portal-assets-ops'
 import messageRoutes from './routes/messages'
 import stripeWebhookRoutes from './routes/stripe-webhook'
 import { runDueBilling } from './lib/billing'
@@ -87,6 +88,7 @@ app.all(
 app.use('/api/leads', leadLimiter, leadRoutes)           // POST is public, GET is auth-guarded inside
 app.use('/api/portal', portalAuthLimiter, portalRoutes) // register/login public; rest portal-auth inside
 app.use('/api/service-requests', requireAuth, serviceRequestRoutes)
+app.use('/api/portal-assets', requireAuth, portalAssetsOpsRoutes)
 app.use('/api/messages', requireAuth, messageRoutes)
 app.use('/api/contacts', requireAuth, contactRoutes)
 app.use('/api/projects', requireAuth, projectRoutes)

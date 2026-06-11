@@ -114,6 +114,8 @@ model PortalAsset {
   sizeBytes        Int      @map("size_bytes")
   blobUrl          String   @map("blob_url")
   pathname         String
+  category         String?
+  note             String?
   createdAt        DateTime @default(now()) @map("created_at")
 
   serviceRequest ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: SetNull)

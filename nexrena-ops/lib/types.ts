@@ -195,11 +195,18 @@ export type ServiceRequestStatus = 'new' | 'reviewing' | 'quoted' | 'accepted' |
 
 export interface PortalAssetRecord {
   id: string
+  contactId: string
+  contactName?: string
+  contactCompany?: string
+  contactEmail?: string
+  serviceRequestId?: string | null
   filename: string
   contentType: string
   sizeBytes: number
   blobUrl: string
   pathname: string
+  category?: string | null
+  note?: string | null
   createdAt: string
 }
 

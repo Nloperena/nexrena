@@ -10,6 +10,8 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024, files: 1 },
 })
 
+const ASSET_CATEGORIES = new Set(['logo', 'photos', 'documents', 'other'])
+
 function serializeAsset(row: {
   id: string
   contactId: string
@@ -20,6 +22,8 @@ function serializeAsset(row: {
   sizeBytes: number
   blobUrl: string
   pathname: string
+  category: string | null
+  note: string | null
   createdAt: Date
 }) {
   return {
@@ -32,6 +36,8 @@ function serializeAsset(row: {
     sizeBytes: row.sizeBytes,
     blobUrl: row.blobUrl,
     pathname: row.pathname,
+    category: row.category,
+    note: row.note,
     createdAt: row.createdAt.toISOString(),
   }
 }
@@ -67,6 +73,9 @@ router.post('/', requirePortalAuth, upload.single('file'), async (req, res) => {
   const projectId = typeof req.body.projectId === 'string'
     ? req.body.projectId.trim() || undefined
     : undefined
+  const rawCategory = typeof req.body.category === 'string' ? req.body.category.trim().toLowerCase() : ''
+  const category = ASSET_CATEGORIES.has(rawCategory) ? rawCategory : null
+  const note = typeof req.body.note === 'string' ? req.body.note.trim().slice(0, 500) || null : null
 
   if (serviceRequestId) {
     const request = await prisma.serviceRequest.findFirst({
@@ -85,6 +94,8 @@ router.post('/', requirePortalAuth, upload.single('file'), async (req, res) => {
         contactId,
         serviceRequestId: serviceRequestId ?? null,
         projectId: projectId ?? null,
+        category,
+        note,
         ...uploaded,
       },
     })

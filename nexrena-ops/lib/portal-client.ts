@@ -108,11 +108,16 @@ export function fetchPortalAssets() {
   return portalFetch<import('./portal-types').PortalAsset[]>('/api/portal/assets')
 }
 
-export async function uploadPortalAsset(file: File, serviceRequestId?: string) {
+export async function uploadPortalAsset(
+  file: File,
+  options?: { serviceRequestId?: string; category?: string; note?: string },
+) {
   const token = getPortalToken()
   const form = new FormData()
   form.append('file', file)
-  if (serviceRequestId) form.append('serviceRequestId', serviceRequestId)
+  if (options?.serviceRequestId) form.append('serviceRequestId', options.serviceRequestId)
+  if (options?.category) form.append('category', options.category)
+  if (options?.note) form.append('note', options.note)
 
   const headers = new Headers()
   if (token) headers.set('Authorization', `Bearer ${token}`)

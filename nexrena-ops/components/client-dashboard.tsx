@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { PortalAccount, PortalInvoice, PortalProject, PortalProposal, PortalAsset, PortalServiceRequest } from '@/lib/portal-types'
 import {
   fetchPortalInvoice,
@@ -17,7 +17,6 @@ import {
 import { computePortalStats, portalSectionTitleClass } from '@/lib/portal-dashboard-utils'
 import { formatDate } from '@/lib/store'
 import { InvoicePrint } from '@/components/invoice-print'
-import { PortalUploadsSection } from '@/components/portal-uploads-section'
 import { UserMenu } from '@/components/user-menu'
 import { AccountSettingsModal } from '@/components/account-settings-modal'
 import { ClientDashboardStats } from '@/components/client-dashboard-stats'
@@ -25,6 +24,12 @@ import { ClientBillingSection } from '@/components/client-billing-section'
 import { ClientWorkStatusSection } from '@/components/client-work-status-section'
 import { ClientRequestModal } from '@/components/client-request-modal'
 import { ClientMessageModal } from '@/components/client-message-modal'
+import { ClientPortalNav, type ClientPortalTab } from '@/components/client-portal-nav'
+import { ClientPortalQuickActions } from '@/components/client-portal-quick-actions'
+import { ClientFilesView } from '@/components/client-files-view'
+import { ClientMessagesView } from '@/components/client-messages-view'
+import { UploadFilesModal } from '@/components/upload-files-modal'
+import { PortalFileList } from '@/components/portal-file-list'
 import type { Invoice, InvoiceStatus } from '@/lib/types'
 import { Btn } from '@/components/ui'
 
@@ -60,6 +65,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 export function ClientDashboard({ onSignOut }: Props) {
+  const [tab, setTab] = useState<ClientPortalTab>('home')
   const [account, setAccount] = useState<PortalAccount | null>(null)
   const [projects, setProjects] = useState<PortalProject[]>([])
   const [invoices, setInvoices] = useState<PortalInvoice[]>([])
@@ -74,10 +80,10 @@ export function ClientDashboard({ onSignOut }: Props) {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [requestOpen, setRequestOpen] = useState(false)
   const [messageOpen, setMessageOpen] = useState(false)
+  const [uploadOpen, setUploadOpen] = useState(false)
   const [messageDefaultSubject, setMessageDefaultSubject] = useState('')
   const [viewInvoice, setViewInvoice] = useState<PortalInvoice | null>(null)
   const [viewLoading, setViewLoading] = useState(false)
-  const uploadsRef = useRef<HTMLDivElement>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -123,6 +129,8 @@ export function ClientDashboard({ onSignOut }: Props) {
     return proposals.filter((p) => p.status === 'sent' && new Date(p.validUntil) >= now)
   }, [proposals])
 
+  const recentAssets = useMemo(() => assets.slice(0, 3), [assets])
+
   const openInvoice = async (id: string) => {
     setViewLoading(true)
     try {
@@ -160,8 +168,10 @@ export function ClientDashboard({ onSignOut }: Props) {
     }
   }
 
-  const scrollToUploads = () => {
-    uploadsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  const openMessage = (subject = '') => {
+    setMessageDefaultSubject(subject)
+    setTab('messages')
+    setMessageOpen(false)
   }
 
   if (viewInvoice) {
@@ -192,7 +202,7 @@ export function ClientDashboard({ onSignOut }: Props) {
   }
 
   return (
-    <div className="max-w-5xl mx-auto flex flex-col gap-10 py-4">
+    <div className="max-w-5xl mx-auto flex flex-col gap-8 py-4">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-[10px] text-gold tracking-[0.2em] uppercase">Client portal</p>
@@ -211,97 +221,92 @@ export function ClientDashboard({ onSignOut }: Props) {
         )}
       </div>
 
+      <ClientPortalNav active={tab} onChange={setTab} />
+
+      <ClientPortalQuickActions
+        onStartRequest={() => setRequestOpen(true)}
+        onUpload={() => setUploadOpen(true)}
+        onMessage={() => openMessage()}
+      />
+
       {error && <p className="text-sm text-red-400">{error}</p>}
 
-      <ClientDashboardStats stats={stats} />
+      {tab === 'home' && (
+        <>
+          <ClientDashboardStats stats={stats} />
 
-      <section>
-        <SectionTitle>Need something?</SectionTitle>
-        <div className={`${card} space-y-4`}>
-          <div>
-            <p className="font-serif text-lg text-white">Need something new?</p>
-            <p className="text-sm text-slate-400 mt-1">
-              Website updates, landing pages, SEO sprints, or ongoing maintenance — start a request and we&apos;ll scope it together.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Btn size="sm" onClick={() => setRequestOpen(true)}>Start a new request</Btn>
-            <Btn size="sm" onClick={scrollToUploads}>Upload files</Btn>
-            <Btn
-              size="sm"
-              variant="ghost"
-              onClick={() => {
-                setMessageDefaultSubject('')
-                setMessageOpen(true)
-              }}
-            >
-              Message Nico
-            </Btn>
-          </div>
-        </div>
-      </section>
+          <section>
+            <SectionTitle>Your files</SectionTitle>
+            <div className={`${card} space-y-4`}>
+              <PortalFileList
+                assets={recentAssets}
+                emptyMessage="No files yet — upload logos, photos, or documents anytime."
+              />
+              <div className="flex flex-wrap gap-2 pt-2">
+                <Btn size="sm" onClick={() => setUploadOpen(true)}>Upload files</Btn>
+                {assets.length > 3 && (
+                  <Btn size="sm" variant="ghost" onClick={() => setTab('files')}>View all files</Btn>
+                )}
+              </div>
+            </div>
+          </section>
 
-      <div ref={uploadsRef}>
-        <PortalUploadsSection
-          compact
-          assets={assets}
-          serviceRequests={serviceRequests}
-          onUploaded={(asset) => setAssets((prev) => [asset, ...prev])}
+          <ClientWorkStatusSection
+            activeProjects={activeProjects}
+            serviceRequests={serviceRequests}
+            onStartRequest={() => setRequestOpen(true)}
+          />
+
+          <section>
+            <SectionTitle>Estimates &amp; Approvals</SectionTitle>
+            {pendingProposals.length === 0 && proposals.length === 0 ? (
+              <p className={`${card} text-sm text-slate-500`}>No estimates yet.</p>
+            ) : (
+              <ul className="space-y-3">
+                {(pendingProposals.length > 0 ? pendingProposals : proposals).slice(0, 3).map((p) => (
+                  <li key={p.id} className={card}>
+                    <div className="flex flex-wrap justify-between gap-3">
+                      <div>
+                        <p className="font-serif text-lg text-white">{p.title}</p>
+                        <p className="text-sm text-slate-400 mt-1">
+                          {p.status === 'sent' ? 'Awaiting your approval' : p.status} · valid until {formatDate(p.validUntil)}
+                        </p>
+                      </div>
+                      {p.status === 'sent' && new Date(p.validUntil) >= new Date() && (
+                        <Btn
+                          size="sm"
+                          onClick={() => openMessage(`Approve estimate: ${p.title}`)}
+                        >
+                          Approve proposal
+                        </Btn>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </>
+      )}
+
+      {tab === 'files' && (
+        <ClientFilesView assets={assets} onUpload={() => setUploadOpen(true)} />
+      )}
+
+      {tab === 'billing' && (
+        <ClientBillingSection
+          invoices={invoices}
+          stripeEnabled={stripeEnabled}
+          payingId={payingId}
+          viewLoading={viewLoading}
+          paymentError={paymentError}
+          onPay={payInvoice}
+          onView={openInvoice}
+          onMessageNico={() => openMessage('Billing question')}
         />
-      </div>
+      )}
 
-      <ClientWorkStatusSection
-        activeProjects={activeProjects}
-        serviceRequests={serviceRequests}
-        onStartRequest={() => setRequestOpen(true)}
-      />
-
-      <ClientBillingSection
-        invoices={invoices}
-        stripeEnabled={stripeEnabled}
-        payingId={payingId}
-        viewLoading={viewLoading}
-        paymentError={paymentError}
-        onPay={payInvoice}
-        onView={openInvoice}
-        onMessageNico={() => {
-          setMessageDefaultSubject('Billing question')
-          setMessageOpen(true)
-        }}
-      />
-
-      <section>
-        <SectionTitle>Estimates &amp; Approvals</SectionTitle>
-        {pendingProposals.length === 0 && proposals.length === 0 ? (
-          <p className={`${card} text-sm text-slate-500`}>No estimates yet.</p>
-        ) : (
-          <ul className="space-y-3">
-            {(pendingProposals.length > 0 ? pendingProposals : proposals).slice(0, 3).map((p) => (
-              <li key={p.id} className={card}>
-                <div className="flex flex-wrap justify-between gap-3">
-                  <div>
-                    <p className="font-serif text-lg text-white">{p.title}</p>
-                    <p className="text-sm text-slate-400 mt-1">
-                      {p.status === 'sent' ? 'Awaiting your approval' : p.status} · valid until {formatDate(p.validUntil)}
-                    </p>
-                  </div>
-                  {p.status === 'sent' && new Date(p.validUntil) >= new Date() && (
-                    <Btn
-                      size="sm"
-                      onClick={() => {
-                        setMessageDefaultSubject(`Approve estimate: ${p.title}`)
-                        setMessageOpen(true)
-                      }}
-                    >
-                      Approve proposal
-                    </Btn>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      {tab === 'messages' && <ClientMessagesView />}
 
       {messageOpen && (
         <ClientMessageModal
@@ -311,6 +316,14 @@ export function ClientDashboard({ onSignOut }: Props) {
             setMessageOpen(false)
             setMessageDefaultSubject('')
           }}
+        />
+      )}
+
+      {uploadOpen && (
+        <UploadFilesModal
+          open={uploadOpen}
+          onClose={() => setUploadOpen(false)}
+          onUploaded={(asset) => setAssets((prev) => [asset, ...prev])}
         />
       )}
 

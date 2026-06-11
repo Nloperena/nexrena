@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { Contact, Project, Invoice, Lead, PortalAccount, TimeEntry, Proposal, Expense, Subscription, ServiceRequest, ClientMessage } from './types'
+import { Contact, Project, Invoice, Lead, PortalAccount, TimeEntry, Proposal, Expense, Subscription, ServiceRequest, ClientMessage, PortalAssetRecord } from './types'
 import { api } from './api'
 
 // ── hooks ────────────────────────────────────────────────────────────────
@@ -272,6 +272,17 @@ export function useServiceRequests() {
   }, [])
 
   return { requests, updateStatus }
+}
+
+export function usePortalAssets(contactId?: string) {
+  const [assets, setAssets] = useState<PortalAssetRecord[]>([])
+
+  useEffect(() => {
+    const path = contactId ? `/portal-assets?contactId=${encodeURIComponent(contactId)}` : '/portal-assets'
+    api.get<PortalAssetRecord[]>(path).then(setAssets).catch(console.error)
+  }, [contactId])
+
+  return { assets }
 }
 
 export function useMessages() {

@@ -51,6 +51,8 @@ export type PortalProposal = {
 
 export type ServiceRequestStatus = 'new' | 'reviewing' | 'quoted' | 'accepted' | 'declined' | 'closed'
 
+export type PortalAssetCategory = 'logo' | 'photos' | 'documents' | 'other'
+
 export type PortalAsset = {
   id: string
   contactId: string
@@ -61,6 +63,8 @@ export type PortalAsset = {
   sizeBytes: number
   blobUrl: string
   pathname: string
+  category?: PortalAssetCategory | string | null
+  note?: string | null
   createdAt: string
 }
 

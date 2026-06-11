@@ -9,6 +9,7 @@ const PRIMARY_NAV = [
   { href: '/proposals',      label: 'Proposals',     icon: '◇' },
   { href: '/leads',          label: 'Leads',         icon: '◉' },
   { href: '/messages',       label: 'Messages',      icon: '✉', badge: true },
+  { href: '/client-files',   label: 'Client files',  icon: '📁' },
   { href: '/service-requests', label: 'Requests',  icon: '✦' },
   { href: '/portal-accounts', label: 'Portal',      icon: '◈' },
   { href: '/projects',       label: 'Projects',      icon: '▦' },
