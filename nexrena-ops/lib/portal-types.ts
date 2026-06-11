@@ -77,6 +77,16 @@ export type PortalFolder = {
   createdAt: string
 }
 
+export type MessageAttachment = {
+  id: string
+  messageId: string
+  filename: string
+  mimeType: string
+  sizeBytes: number
+  pathname: string
+  createdAt: string
+}
+
 export type PortalMessage = {
   id: string
   subject: string
@@ -88,12 +98,14 @@ export type PortalMessage = {
   readByClient: boolean
   readByAdmin: boolean
   createdAt: string
+  attachments?: MessageAttachment[]
 }
 
 export type PortalMessageThread = {
   threadId: string
   subject: string
   updatedAt: string
+  lastMessagePreview?: string
   unreadByClient: number
   unreadByAdmin: number
   messages: PortalMessage[]
@@ -121,4 +133,16 @@ export type PortalSubscription = {
   interval: string
   status: string
   nextBillingDate: string
+}
+
+export type PortalFormSubmission = {
+  id: string
+  siteKey: string
+  formName: string
+  submitterName: string
+  submitterEmail: string
+  fields: Record<string, unknown>
+  pageUrl?: string | null
+  status: string
+  createdAt: string
 }

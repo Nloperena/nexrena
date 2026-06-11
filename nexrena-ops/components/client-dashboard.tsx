@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import type { PortalAccount, PortalInvoice, PortalProject, PortalProposal, PortalServiceRequest, PortalMessageThread } from '@/lib/portal-types'
+import type { PortalAccount, PortalInvoice, PortalProject, PortalProposal, PortalServiceRequest, PortalMessageThread, PortalFormSubmission } from '@/lib/portal-types'
 import {
   fetchPortalInvoice,
   fetchPortalInvoices,
@@ -12,6 +12,7 @@ import {
   fetchPortalServiceRequests,
   fetchPortalBillingStatus,
   fetchPortalResources,
+  fetchPortalFormSubmissions,
   createPortalCheckout,
   logoutPortal,
 } from '@/lib/portal-client'
@@ -29,6 +30,7 @@ import { UploadFilesModal } from '@/components/upload-files-modal'
 import { ClientFilesView } from '@/components/client-files-view'
 import { ClientMessagesThreadView } from '@/components/client-messages-thread-view'
 import { ClientWebsitesSection } from '@/components/client-websites-section'
+import { ClientFormHistorySection } from '@/components/client-form-history-section'
 import { ClientSettingsView } from '@/components/client-settings-view'
 import { ClientPortalShell } from '@/components/client-portal-shell'
 import type { ClientPortalView } from '@/components/client-nav'
@@ -72,6 +74,7 @@ export function ClientDashboard({ onSignOut }: Props) {
   const [proposals, setProposals] = useState<PortalProposal[]>([])
   const [serviceRequests, setServiceRequests] = useState<PortalServiceRequest[]>([])
   const [resources, setResources] = useState<PortalResource[]>([])
+  const [formSubmissions, setFormSubmissions] = useState<PortalFormSubmission[]>([])
   const [messageThreads, setMessageThreads] = useState<PortalMessageThread[]>([])
   const [messageUnread, setMessageUnread] = useState(0)
   const [stripeEnabled, setStripeEnabled] = useState(false)
@@ -88,13 +91,14 @@ export function ClientDashboard({ onSignOut }: Props) {
     setLoading(true)
     setError(null)
     try {
-      const [me, projectRows, invoiceRows, proposalRows, requestRows, resourceRows, billing, messages] = await Promise.all([
+      const [me, projectRows, invoiceRows, proposalRows, requestRows, resourceRows, formRows, billing, messages] = await Promise.all([
         fetchPortalMe(),
         fetchPortalProjects(),
         fetchPortalInvoices(),
         fetchPortalProposals(),
         fetchPortalServiceRequests(),
         fetchPortalResources(),
+        fetchPortalFormSubmissions().catch(() => []),
         fetchPortalBillingStatus(),
         fetchPortalMessageThreads().catch(() => ({ threads: [], unreadCount: 0 })),
       ])
@@ -104,6 +108,7 @@ export function ClientDashboard({ onSignOut }: Props) {
       setProposals(proposalRows)
       setServiceRequests(requestRows)
       setResources(resourceRows)
+      setFormSubmissions(formRows)
       setStripeEnabled(billing.stripeEnabled)
       setMessageThreads(messages.threads)
       setMessageUnread(messages.unreadCount)
@@ -327,6 +332,7 @@ export function ClientDashboard({ onSignOut }: Props) {
                 </ul>
               </div>
             )}
+            <ClientFormHistorySection submissions={formSubmissions} />
           </div>
         )
 

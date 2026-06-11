@@ -117,6 +117,28 @@ export function useLeads() {
   return { leads, updateStatus, remove }
 }
 
+export function useFormSubmissions() {
+  const [submissions, setSubmissions] = useState<import('./types').FormSubmission[]>([])
+
+  useEffect(() => {
+    api.get<import('./types').FormSubmission[]>('/forms/submissions').then(setSubmissions).catch(console.error)
+  }, [])
+
+  const updateStatus = useCallback(async (id: string, status: import('./types').FormSubmissionStatus) => {
+    setSubmissions(prev => prev.map(x => x.id === id ? { ...x, status } : x))
+    try { await api.patch(`/forms/submissions/${id}`, { status }) }
+    catch (e) { console.error(e) }
+  }, [])
+
+  const remove = useCallback(async (id: string) => {
+    setSubmissions(prev => prev.filter(x => x.id !== id))
+    try { await api.del(`/forms/submissions/${id}`) }
+    catch (e) { console.error(e) }
+  }, [])
+
+  return { submissions, updateStatus, remove }
+}
+
 export function usePortalAccounts() {
   const [accounts, setAccounts] = useState<PortalAccount[]>([])
 

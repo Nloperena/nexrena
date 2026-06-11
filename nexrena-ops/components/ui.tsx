@@ -8,6 +8,7 @@ const PRIMARY_NAV = [
   { href: '/subscriptions',  label: 'Subscriptions', icon: '↻' },
   { href: '/proposals',      label: 'Proposals',     icon: '◇' },
   { href: '/leads',          label: 'Leads',         icon: '◉' },
+  { href: '/form-submissions', label: 'Form submissions', icon: '▣' },
   { href: '/messages',       label: 'Messages',      icon: '✉', badge: true },
   { href: '/client-files',   label: 'Business assets',  icon: '📁' },
   { href: '/client-resources', label: 'Client websites', icon: '⌘' },

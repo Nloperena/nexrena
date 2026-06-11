@@ -244,6 +244,16 @@ export interface ServiceRequest {
 
 export type ClientMessageStatus = 'unread' | 'read'
 
+export interface MessageAttachmentRecord {
+  id: string
+  messageId: string
+  filename: string
+  mimeType: string
+  sizeBytes: number
+  pathname: string
+  createdAt: string
+}
+
 export interface ClientMessage {
   id: string
   portalAccountId?: string | null
@@ -260,6 +270,7 @@ export interface ClientMessage {
   readByClient: boolean
   readByAdmin: boolean
   createdAt: string
+  attachments?: MessageAttachmentRecord[]
 }
 
 export interface MessageThread {
@@ -270,9 +281,27 @@ export interface MessageThread {
   companyName?: string | null
   contactId?: string | null
   updatedAt: string
+  lastMessagePreview?: string
   unreadByClient: number
   unreadByAdmin: number
   messages: ClientMessage[]
+}
+
+// ── Client website form submissions ────────────────────────────────────────
+
+export type FormSubmissionStatus = 'new' | 'read'
+
+export interface FormSubmission {
+  id: string
+  contactId: string
+  siteKey: string
+  formName: string
+  submitterName: string
+  submitterEmail: string
+  fields: Record<string, unknown>
+  pageUrl?: string | null
+  status: FormSubmissionStatus
+  createdAt: string
 }
 
 // ── Client portal resources ────────────────────────────────────────────────

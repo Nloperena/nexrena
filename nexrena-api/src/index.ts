@@ -22,7 +22,10 @@ import portalAssetsOpsRoutes from './routes/portal-assets-ops'
 import messageRoutes from './routes/messages'
 import resourceRoutes from './routes/resources'
 import stripeWebhookRoutes from './routes/stripe-webhook'
+import formRoutes from './routes/forms'
+import portalFormSubmissionRoutes from './routes/portal-form-submissions'
 import { runDueBilling } from './lib/billing'
+import { allSiteOrigins } from './lib/sites'
 
 const app = express()
 const PORT = process.env.PORT || 4000
@@ -38,10 +41,10 @@ if (isProduction) {
 }
 
 // ── CORS ─────────────────────────────────────────────────────────────────
-const allowedOrigins = (process.env.CORS_ORIGINS || '')
-  .split(',')
-  .map(o => o.trim())
-  .filter(Boolean)
+const allowedOrigins = [
+  ...(process.env.CORS_ORIGINS || '').split(',').map(o => o.trim()).filter(Boolean),
+  ...allSiteOrigins(),
+]
 
 // Also allow all Vercel preview deployments for nexrena projects
 const VERCEL_PREVIEW_RE = /^https:\/\/nexrena[\w-]*\.vercel\.app$/
@@ -87,6 +90,7 @@ app.all(
 )
 
 app.use('/api/leads', leadLimiter, leadRoutes)           // POST is public, GET is auth-guarded inside
+app.use('/api/forms', leadLimiter, formRoutes)           // POST /submit public; GET/PATCH auth inside
 app.use('/api/portal', portalAuthLimiter, portalRoutes) // register/login public; rest portal-auth inside
 app.use('/api/service-requests', requireAuth, serviceRequestRoutes)
 app.use('/api/portal-assets', requireAuth, portalAssetsOpsRoutes)

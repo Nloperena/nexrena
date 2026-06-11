@@ -12,10 +12,12 @@ import portalFolderRoutes from './portal-folders'
 import portalBillingRoutes from './portal-billing'
 import portalMessageRoutes from './portal-messages'
 import portalResourceRoutes from './portal-resources'
+import portalFormSubmissionRoutes from './portal-form-submissions'
 
 const router = Router()
 
 router.use('/service-requests', portalServiceRequestRoutes)
+router.use('/form-submissions', portalFormSubmissionRoutes)
 router.use('/assets', portalAssetRoutes)
 router.use('/folders', portalFolderRoutes)
 router.use('/billing', portalBillingRoutes)

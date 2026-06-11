@@ -171,7 +171,42 @@ model ClientMessage {
   readByAdmin      Boolean  @default(false) @map("read_by_admin")
   createdAt        DateTime @default(now()) @map("created_at")
 
+  attachments MessageAttachment[]
+
   @@map("client_messages")
+}
+
+model MessageAttachment {
+  id        String   @id @default(cuid())
+  messageId String   @map("message_id")
+  blobUrl   String   @map("blob_url")
+  pathname  String
+  filename  String
+  mimeType  String   @map("mime_type")
+  sizeBytes Int      @map("size_bytes")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  message ClientMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@map("message_attachments")
+}
+
+// ── Client website form submissions ─────────────────────────────────────
+model FormSubmission {
+  id             String   @id @default(cuid())
+  contactId      String   @map("contact_id")
+  siteKey        String   @map("site_key")
+  formName       String   @default("contact") @map("form_name")
+  submitterName  String   @map("submitter_name")
+  submitterEmail String   @map("submitter_email")
+  fields         Json
+  pageUrl        String?  @map("page_url")
+  status         String   @default("new")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@index([contactId, createdAt(sort: Desc)])
+  @@index([siteKey, createdAt(sort: Desc)])
+  @@map("form_submissions")
 }
 
 // ── Website Leads ────────────────────────────────────────────────────────

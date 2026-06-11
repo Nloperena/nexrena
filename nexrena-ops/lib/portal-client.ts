@@ -189,7 +189,31 @@ export function createPortalCheckout(invoiceId: string) {
   })
 }
 
-export function sendPortalMessage(payload: { subject?: string; message: string; threadId?: string }) {
+export async function sendPortalMessage(payload: {
+  subject?: string
+  message: string
+  threadId?: string
+  files?: File[]
+}) {
+  if (payload.files?.length) {
+    const token = getPortalToken()
+    const form = new FormData()
+    if (payload.message) form.append('message', payload.message)
+    if (payload.subject) form.append('subject', payload.subject)
+    if (payload.threadId) form.append('threadId', payload.threadId)
+    for (const file of payload.files) form.append('files', file)
+
+    const headers = new Headers()
+    if (token) headers.set('Authorization', `Bearer ${token}`)
+
+    const res = await fetch(`${API_BASE}/api/portal/messages`, { method: 'POST', headers, body: form })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) {
+      throw new Error(typeof data.error === 'string' ? data.error : 'Request failed')
+    }
+    return data as import('./portal-types').PortalMessage
+  }
+
   return portalFetch<import('./portal-types').PortalMessage>('/api/portal/messages', {
     method: 'POST',
     body: JSON.stringify(payload),
@@ -216,6 +240,10 @@ export function fetchPortalMessages() {
 
 export function fetchPortalResources() {
   return portalFetch<import('./client-resource-utils').PortalResource[]>('/api/portal/resources')
+}
+
+export function fetchPortalFormSubmissions() {
+  return portalFetch<import('./portal-types').PortalFormSubmission[]>('/api/portal/form-submissions')
 }
 
 export function logoutPortal() {

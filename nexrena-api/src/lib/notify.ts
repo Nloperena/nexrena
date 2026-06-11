@@ -33,6 +33,93 @@ interface LeadData {
   message: string
 }
 
+interface FormSubmissionData {
+  siteLabel: string
+  siteKey: string
+  formName: string
+  name: string
+  email: string
+  message: string
+  fields: Record<string, string>
+  pageUrl?: string | null
+}
+
+export async function notifyFormSubmission(data: FormSubmissionData): Promise<void> {
+  if (!transporter) {
+    console.log('[notify] SMTP not configured — skipping form submission notification')
+    return
+  }
+
+  const subject = `${data.siteLabel} form: ${data.name} (${data.formName})`
+  const opsFormsUrl = `${OPS_URL}/form-submissions`
+  const extraLines = Object.entries(data.fields)
+    .filter(([k]) => k !== 'message')
+    .map(([k, v]) => `${k}: ${v}`)
+
+  const text = [
+    `New form submission on ${data.siteLabel} (${data.siteKey}):`,
+    ``,
+    `Form: ${data.formName}`,
+    `Name: ${data.name}`,
+    `Email: ${data.email}`,
+    ...extraLines,
+    data.pageUrl ? `Page: ${data.pageUrl}` : null,
+    ``,
+    `Message:`,
+    data.message,
+    ``,
+    `---`,
+    `View in Nexrena Ops: ${opsFormsUrl}`,
+  ]
+    .filter((line): line is string => line !== null)
+    .join('\n')
+
+  const safeName = escapeHtml(data.name)
+  const safeEmail = escapeHtml(data.email)
+  const safeMessage = escapeHtml(data.message)
+  const safeSite = escapeHtml(data.siteLabel)
+  const fieldRows = Object.entries(data.fields)
+    .filter(([k]) => k !== 'message')
+    .map(
+      ([k, v]) =>
+        `<tr><td style="padding: 8px 0; color: #7A8A9E;">${escapeHtml(k)}</td><td style="color: #FDFCFA;">${escapeHtml(v)}</td></tr>`,
+    )
+    .join('')
+
+  const html = `
+    <div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background: #0C0F12; padding: 24px 32px; border-bottom: 2px solid #C9A96E;">
+        <h1 style="color: #FDFCFA; font-size: 20px; margin: 0; font-weight: 400;">
+          ${safeSite} Form <span style="color: #C9A96E;">→</span> ${safeName}
+        </h1>
+      </div>
+      <div style="padding: 24px 32px; background: #141820; color: #A8B5C4;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+          <tr><td style="padding: 8px 0; color: #7A8A9E; width: 110px;">Site</td><td style="color: #FDFCFA;">${safeSite}</td></tr>
+          <tr><td style="padding: 8px 0; color: #7A8A9E;">Form</td><td style="color: #FDFCFA;">${escapeHtml(data.formName)}</td></tr>
+          <tr><td style="padding: 8px 0; color: #7A8A9E;">Name</td><td style="color: #FDFCFA;">${safeName}</td></tr>
+          <tr><td style="padding: 8px 0; color: #7A8A9E;">Email</td><td><a href="mailto:${safeEmail}" style="color: #C9A96E;">${safeEmail}</a></td></tr>
+          ${fieldRows}
+        </table>
+        <div style="margin-top: 20px; padding: 16px; background: #1E2530; border-left: 3px solid #C9A96E; border-radius: 4px;">
+          <p style="margin: 0; color: #7A8A9E; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">Message</p>
+          <p style="margin: 0; color: #D4DCE6; white-space: pre-wrap; line-height: 1.6;">${safeMessage}</p>
+        </div>
+        <p style="margin-top: 24px; font-size: 12px; color: #3D4A5C;">
+          <a href="${opsFormsUrl}" style="color: #C9A96E;">View form submissions in Nexrena Ops</a>
+        </p>
+      </div>
+    </div>
+  `
+
+  try {
+    await transporter.sendMail({ from: NOTIFY_FROM, to: NOTIFY_TO, subject, text, html })
+    console.log(`[notify] Form submission notification sent for ${data.email} (${data.siteKey})`)
+  } catch (err) {
+    console.error('[notify] Failed to send form submission notification:', err)
+  }
+}
+
 export async function notifyNewLead(lead: LeadData): Promise<void> {
   if (!transporter) {
     console.log('[notify] SMTP not configured — skipping email notification')
