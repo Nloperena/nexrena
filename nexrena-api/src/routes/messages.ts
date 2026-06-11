@@ -1,11 +1,20 @@
 import { Router } from 'express'
+import multer from 'multer'
 import { prisma } from '../lib/prisma'
 import { requireAuth } from '../middleware/auth'
 import { notifyAdminReply } from '../lib/notify'
 import { stripHtml } from '../lib/sanitize'
 import {
+  blobUploadErrorMessage,
+  MESSAGE_ATTACHMENT_LIMITS,
+  uploadMessageAttachment,
+  validateMessageAttachment,
+} from '../lib/blob-upload'
+import { createPrivateBlobSignedUrl } from '../lib/blob-signed-url'
+import {
   effectiveThreadId,
   groupThreads,
+  messageSelect,
   serializeMessage,
   type MessageRow,
 } from '../lib/message-serialize'
@@ -13,23 +22,13 @@ import {
 const router = Router()
 const MESSAGE_MAX = 5000
 
-const messageSelect = {
-  id: true,
-  portalAccountId: true,
-  contactId: true,
-  clientName: true,
-  clientEmail: true,
-  companyName: true,
-  subject: true,
-  message: true,
-  status: true,
-  threadId: true,
-  replyToMessageId: true,
-  direction: true,
-  readByClient: true,
-  readByAdmin: true,
-  createdAt: true,
-} as const
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: MESSAGE_ATTACHMENT_LIMITS.videoMaxBytes,
+    files: MESSAGE_ATTACHMENT_LIMITS.maxFiles,
+  },
+})
 
 /** GET /api/messages */
 router.get('/', requireAuth, async (_req, res) => {
@@ -52,6 +51,25 @@ router.get('/threads', requireAuth, async (_req, res) => {
   res.json({ threads, unreadCount })
 })
 
+/** GET /api/messages/attachments/:id/url — signed URL for ops */
+router.get('/attachments/:id/url', requireAuth, async (req, res) => {
+  const attachment = await prisma.messageAttachment.findUnique({
+    where: { id: req.params.id },
+  })
+  if (!attachment) {
+    res.status(404).json({ error: 'Attachment not found' })
+    return
+  }
+
+  try {
+    const signed = await createPrivateBlobSignedUrl(attachment.pathname)
+    res.json(signed)
+  } catch (err) {
+    console.error('[ops message attachment url]', err)
+    res.status(500).json({ error: blobUploadErrorMessage(err) })
+  }
+})
+
 /** PATCH /api/messages/threads/:threadId/read */
 router.patch('/threads/:threadId/read', requireAuth, async (req, res) => {
   await prisma.clientMessage.updateMany({
@@ -65,18 +83,27 @@ router.patch('/threads/:threadId/read', requireAuth, async (req, res) => {
   res.json({ ok: true })
 })
 
-/** POST /api/messages/:id/reply */
-router.post('/:id/reply', requireAuth, async (req, res) => {
+/** POST /api/messages/:id/reply — multipart reply with optional attachments */
+router.post('/:id/reply', requireAuth, upload.array('files', MESSAGE_ATTACHMENT_LIMITS.maxFiles), async (req, res) => {
   const rawMessage = typeof req.body.message === 'string' ? req.body.message : ''
   const message = stripHtml(rawMessage)
+  const files = req.files as Express.Multer.File[] | undefined
 
-  if (!message) {
-    res.status(400).json({ error: 'message is required' })
+  if (!message && (!files || files.length === 0)) {
+    res.status(400).json({ error: 'message or attachment is required' })
     return
   }
   if (message.length > MESSAGE_MAX) {
     res.status(400).json({ error: `message must be at most ${MESSAGE_MAX} characters` })
     return
+  }
+
+  for (const file of files ?? []) {
+    const validationError = validateMessageAttachment(file)
+    if (validationError) {
+      res.status(400).json({ error: validationError })
+      return
+    }
   }
 
   const parent = await prisma.clientMessage.findUnique({
@@ -88,36 +115,66 @@ router.post('/:id/reply', requireAuth, async (req, res) => {
     return
   }
 
-  const threadId = effectiveThreadId(parent as MessageRow)
-  const row = await prisma.clientMessage.create({
-    data: {
-      portalAccountId: parent.portalAccountId,
-      contactId: parent.contactId,
-      clientName: parent.clientName,
-      clientEmail: parent.clientEmail,
-      companyName: parent.companyName,
-      subject: parent.subject,
-      message,
-      status: 'read',
-      threadId,
-      replyToMessageId: parent.id,
-      direction: 'admin',
-      readByClient: false,
-      readByAdmin: true,
-    },
-    select: messageSelect,
-  })
-
-  if (parent.clientEmail && parent.clientName) {
-    notifyAdminReply({
-      clientName: parent.clientName,
-      clientEmail: parent.clientEmail,
-      subject: parent.subject,
-      message,
-    }).catch(() => {})
+  const contactId = parent.contactId
+  if (!contactId) {
+    res.status(400).json({ error: 'Parent message has no contact' })
+    return
   }
 
-  res.status(201).json(serializeMessage(row as MessageRow))
+  try {
+    const uploadedAttachments = []
+    for (const file of files ?? []) {
+      const uploaded = await uploadMessageAttachment(contactId, file)
+      uploadedAttachments.push(uploaded)
+    }
+
+    const threadId = effectiveThreadId(parent as MessageRow)
+    const row = await prisma.clientMessage.create({
+      data: {
+        portalAccountId: parent.portalAccountId,
+        contactId: parent.contactId,
+        clientName: parent.clientName,
+        clientEmail: parent.clientEmail,
+        companyName: parent.companyName,
+        subject: parent.subject,
+        message,
+        status: 'read',
+        threadId,
+        replyToMessageId: parent.id,
+        direction: 'admin',
+        readByClient: false,
+        readByAdmin: true,
+        attachments: uploadedAttachments.length
+          ? {
+              create: uploadedAttachments.map((a) => ({
+                blobUrl: a.blobUrl,
+                pathname: a.pathname,
+                filename: a.filename,
+                mimeType: a.mimeType,
+                sizeBytes: a.sizeBytes,
+              })),
+            }
+          : undefined,
+      },
+      select: messageSelect,
+    })
+
+    if (parent.clientEmail && parent.clientName) {
+      notifyAdminReply({
+        clientName: parent.clientName,
+        clientEmail: parent.clientEmail,
+        subject: parent.subject,
+        message: message || 'Sent an attachment',
+      }).catch(() => {})
+    }
+
+    res.status(201).json(serializeMessage(row as MessageRow))
+  } catch (err) {
+    console.error('[ops message reply upload]', err)
+    const messageText = blobUploadErrorMessage(err)
+    const status = /not configured/i.test(messageText) ? 503 : 500
+    res.status(status).json({ error: messageText })
+  }
 })
 
 /** PATCH /api/messages/:id/read */

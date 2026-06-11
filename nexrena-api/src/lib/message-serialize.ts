@@ -1,3 +1,14 @@
+export type MessageAttachmentRow = {
+  id: string
+  messageId: string
+  blobUrl: string
+  pathname: string
+  filename: string
+  mimeType: string
+  sizeBytes: number
+  createdAt: Date
+}
+
 export type MessageRow = {
   id: string
   portalAccountId: string | null
@@ -14,6 +25,19 @@ export type MessageRow = {
   readByClient: boolean
   readByAdmin: boolean
   createdAt: Date
+  attachments?: MessageAttachmentRow[]
+}
+
+export function serializeAttachment(row: MessageAttachmentRow) {
+  return {
+    id: row.id,
+    messageId: row.messageId,
+    filename: row.filename,
+    mimeType: row.mimeType,
+    sizeBytes: row.sizeBytes,
+    pathname: row.pathname,
+    createdAt: row.createdAt.toISOString(),
+  }
 }
 
 export function effectiveThreadId(row: MessageRow): string {
@@ -37,6 +61,7 @@ export function serializeMessage(row: MessageRow) {
     readByClient: row.readByClient,
     readByAdmin: row.readByAdmin,
     createdAt: row.createdAt.toISOString(),
+    attachments: (row.attachments ?? []).map(serializeAttachment),
   }
 }
 
@@ -52,6 +77,7 @@ export function serializePortalMessage(row: MessageRow) {
     readByClient: row.readByClient,
     readByAdmin: row.readByAdmin,
     createdAt: row.createdAt.toISOString(),
+    attachments: (row.attachments ?? []).map(serializeAttachment),
   }
 }
 
@@ -62,6 +88,7 @@ export function groupThreads<T extends {
   readByClient: boolean
   readByAdmin: boolean
   subject: string
+  message: string
   clientName?: string | null
   clientEmail?: string | null
   companyName?: string | null
@@ -80,6 +107,7 @@ export function groupThreads<T extends {
         (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
       )
       const root = sorted[0]
+      const last = sorted[sorted.length - 1]
       const unreadByClient = sorted.filter((m) => m.direction === 'admin' && !m.readByClient).length
       const unreadByAdmin = sorted.filter((m) => m.direction === 'client' && !m.readByAdmin).length
       return {
@@ -89,7 +117,8 @@ export function groupThreads<T extends {
         clientEmail: root.clientEmail ?? null,
         companyName: root.companyName ?? null,
         contactId: root.contactId ?? null,
-        updatedAt: sorted[sorted.length - 1].createdAt,
+        updatedAt: last.createdAt,
+        lastMessagePreview: last.message.trim() || 'Attachment',
         unreadByClient,
         unreadByAdmin,
         messages: sorted,
@@ -97,3 +126,58 @@ export function groupThreads<T extends {
     })
     .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
 }
+
+export const messageSelect = {
+  id: true,
+  portalAccountId: true,
+  contactId: true,
+  clientName: true,
+  clientEmail: true,
+  companyName: true,
+  subject: true,
+  message: true,
+  status: true,
+  threadId: true,
+  replyToMessageId: true,
+  direction: true,
+  readByClient: true,
+  readByAdmin: true,
+  createdAt: true,
+  attachments: {
+    select: {
+      id: true,
+      messageId: true,
+      blobUrl: true,
+      pathname: true,
+      filename: true,
+      mimeType: true,
+      sizeBytes: true,
+      createdAt: true,
+    },
+  },
+} as const
+
+export const portalMessageSelect = {
+  id: true,
+  subject: true,
+  message: true,
+  status: true,
+  threadId: true,
+  replyToMessageId: true,
+  direction: true,
+  readByClient: true,
+  readByAdmin: true,
+  createdAt: true,
+  attachments: {
+    select: {
+      id: true,
+      messageId: true,
+      blobUrl: true,
+      pathname: true,
+      filename: true,
+      mimeType: true,
+      sizeBytes: true,
+      createdAt: true,
+    },
+  },
+} as const

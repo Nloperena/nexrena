@@ -4,6 +4,7 @@ import { formatDate } from '@/lib/store'
 import { categoryLabel, formatFileBytes, isImageAsset } from '@/lib/portal-file-utils'
 import type { PortalAsset } from '@/lib/portal-types'
 import type { ReactNode } from 'react'
+import { SignedAssetLink, SignedAssetThumb } from '@/components/signed-asset-thumb'
 
 type Props = {
   assets: PortalAsset[]
@@ -25,8 +26,12 @@ export function PortalFileList({ assets, emptyMessage = 'No files yet.', renderA
         >
           <div className="w-12 h-12 shrink-0 rounded-md overflow-hidden bg-slate-800/60 flex items-center justify-center">
             {isImageAsset(asset) ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={asset.blobUrl} alt="" className="w-full h-full object-cover" />
+              <SignedAssetThumb
+                assetId={asset.id}
+                variant="portal"
+                alt=""
+                className="w-full h-full object-cover"
+              />
             ) : (
               <span className="text-lg text-slate-500">📄</span>
             )}
@@ -40,14 +45,13 @@ export function PortalFileList({ assets, emptyMessage = 'No files yet.', renderA
             {asset.note && <p className="text-xs text-slate-400 mt-1 line-clamp-2">{asset.note}</p>}
           </div>
           <div className="flex flex-col items-end gap-2 shrink-0">
-            <a
-              href={asset.blobUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            <SignedAssetLink
+              assetId={asset.id}
+              variant="portal"
               className="text-xs text-gold hover:underline pt-1"
             >
               Open
-            </a>
+            </SignedAssetLink>
             {renderActions?.(asset)}
           </div>
         </li>

@@ -1,12 +1,21 @@
 import { Router } from 'express'
 import rateLimit from 'express-rate-limit'
+import multer from 'multer'
 import { prisma } from '../lib/prisma'
 import { requirePortalAuth } from '../middleware/portal-auth'
 import { notifyClientMessage } from '../lib/notify'
 import { stripHtml } from '../lib/sanitize'
 import {
+  blobUploadErrorMessage,
+  MESSAGE_ATTACHMENT_LIMITS,
+  uploadMessageAttachment,
+  validateMessageAttachment,
+} from '../lib/blob-upload'
+import { createPrivateBlobSignedUrl } from '../lib/blob-signed-url'
+import {
   effectiveThreadId,
   groupThreads,
+  portalMessageSelect,
   serializePortalMessage,
   type MessageRow,
 } from '../lib/message-serialize'
@@ -17,18 +26,13 @@ const SUBJECT_MAX = 200
 const MESSAGE_MAX = 5000
 const DEFAULT_SUBJECT = 'Message from client portal'
 
-const messageSelect = {
-  id: true,
-  subject: true,
-  message: true,
-  status: true,
-  threadId: true,
-  replyToMessageId: true,
-  direction: true,
-  readByClient: true,
-  readByAdmin: true,
-  createdAt: true,
-} as const
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: MESSAGE_ATTACHMENT_LIMITS.videoMaxBytes,
+    files: MESSAGE_ATTACHMENT_LIMITS.maxFiles,
+  },
+})
 
 const messageLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -41,7 +45,7 @@ async function accountMessages(accountId: string) {
   return prisma.clientMessage.findMany({
     where: { portalAccountId: accountId },
     orderBy: { createdAt: 'asc' },
-    select: messageSelect,
+    select: portalMessageSelect,
   }) as Promise<MessageRow[]>
 }
 
@@ -55,17 +59,41 @@ router.get('/', requirePortalAuth, async (req, res) => {
   res.json({ threads, unreadCount })
 })
 
-/** POST /api/portal/messages */
-router.post('/', requirePortalAuth, messageLimiter, async (req, res) => {
+/** GET /api/portal/messages/attachments/:id/url — signed URL for attachment */
+router.get('/attachments/:id/url', requirePortalAuth, async (req, res) => {
+  const accountId = req.portalUser!.accountId
+  const attachment = await prisma.messageAttachment.findFirst({
+    where: {
+      id: req.params.id,
+      message: { portalAccountId: accountId },
+    },
+  })
+  if (!attachment) {
+    res.status(404).json({ error: 'Attachment not found' })
+    return
+  }
+
+  try {
+    const signed = await createPrivateBlobSignedUrl(attachment.pathname)
+    res.json(signed)
+  } catch (err) {
+    console.error('[portal message attachment url]', err)
+    res.status(500).json({ error: blobUploadErrorMessage(err) })
+  }
+})
+
+/** POST /api/portal/messages — multipart text + optional attachments */
+router.post('/', requirePortalAuth, messageLimiter, upload.array('files', MESSAGE_ATTACHMENT_LIMITS.maxFiles), async (req, res) => {
   const rawSubject = typeof req.body.subject === 'string' ? req.body.subject.trim() : ''
   const rawMessage = typeof req.body.message === 'string' ? req.body.message : ''
   const rawThreadId = typeof req.body.threadId === 'string' ? req.body.threadId.trim() : ''
+  const files = req.files as Express.Multer.File[] | undefined
 
   const subject = stripHtml(rawSubject || DEFAULT_SUBJECT)
   const message = stripHtml(rawMessage)
 
-  if (!message) {
-    res.status(400).json({ error: 'message is required' })
+  if (!message && (!files || files.length === 0)) {
+    res.status(400).json({ error: 'message or attachment is required' })
     return
   }
   if (subject.length > SUBJECT_MAX) {
@@ -75,6 +103,14 @@ router.post('/', requirePortalAuth, messageLimiter, async (req, res) => {
   if (message.length > MESSAGE_MAX) {
     res.status(400).json({ error: `message must be at most ${MESSAGE_MAX} characters` })
     return
+  }
+
+  for (const file of files ?? []) {
+    const validationError = validateMessageAttachment(file)
+    if (validationError) {
+      res.status(400).json({ error: validationError })
+      return
+    }
   }
 
   const account = await prisma.portalAccount.findUnique({
@@ -106,44 +142,68 @@ router.post('/', requirePortalAuth, messageLimiter, async (req, res) => {
     resolvedSubject = threadRoot.subject
   }
 
-  const row = await prisma.clientMessage.create({
-    data: {
-      portalAccountId: account.id,
-      contactId: account.contactId,
-      clientName: account.name,
-      clientEmail: account.email,
-      companyName: account.company,
-      subject: resolvedSubject,
-      message,
-      status: 'unread',
-      threadId,
-      replyToMessageId,
-      direction: 'client',
-      readByClient: true,
-      readByAdmin: false,
-    },
-    select: messageSelect,
-  })
+  try {
+    const uploadedAttachments = []
+    for (const file of files ?? []) {
+      const uploaded = await uploadMessageAttachment(account.contactId, file)
+      uploadedAttachments.push(uploaded)
+    }
 
-  const threadKey = threadId ?? row.id
-  if (!threadId) {
-    await prisma.clientMessage.update({
-      where: { id: row.id },
-      data: { threadId: threadKey },
+    const row = await prisma.clientMessage.create({
+      data: {
+        portalAccountId: account.id,
+        contactId: account.contactId,
+        clientName: account.name,
+        clientEmail: account.email,
+        companyName: account.company,
+        subject: resolvedSubject,
+        message,
+        status: 'unread',
+        threadId,
+        replyToMessageId,
+        direction: 'client',
+        readByClient: true,
+        readByAdmin: false,
+        attachments: uploadedAttachments.length
+          ? {
+              create: uploadedAttachments.map((a) => ({
+                blobUrl: a.blobUrl,
+                pathname: a.pathname,
+                filename: a.filename,
+                mimeType: a.mimeType,
+                sizeBytes: a.sizeBytes,
+              })),
+            }
+          : undefined,
+      },
+      select: portalMessageSelect,
     })
-  }
 
-  if (!rawThreadId) {
-    notifyClientMessage({
-      clientName: account.name,
-      clientEmail: account.email,
-      companyName: account.company,
-      subject: resolvedSubject,
-      message,
-    }).catch(() => {})
-  }
+    const threadKey = threadId ?? row.id
+    if (!threadId) {
+      await prisma.clientMessage.update({
+        where: { id: row.id },
+        data: { threadId: threadKey },
+      })
+    }
 
-  res.status(201).json(serializePortalMessage({ ...row, threadId: threadKey } as MessageRow))
+    if (!rawThreadId) {
+      notifyClientMessage({
+        clientName: account.name,
+        clientEmail: account.email,
+        companyName: account.company,
+        subject: resolvedSubject,
+        message: message || 'Sent an attachment',
+      }).catch(() => {})
+    }
+
+    res.status(201).json(serializePortalMessage({ ...row, threadId: threadKey } as MessageRow))
+  } catch (err) {
+    console.error('[portal messages upload]', err)
+    const messageText = blobUploadErrorMessage(err)
+    const status = /not configured/i.test(messageText) ? 503 : 500
+    res.status(status).json({ error: messageText })
+  }
 })
 
 /** PATCH /api/portal/messages/threads/:threadId/read */
@@ -175,7 +235,7 @@ router.patch('/:id/read', requirePortalAuth, async (req, res) => {
   const row = await prisma.clientMessage.update({
     where: { id: req.params.id },
     data: { readByClient: true },
-    select: messageSelect,
+    select: portalMessageSelect,
   })
   res.json(serializePortalMessage(row as MessageRow))
 })

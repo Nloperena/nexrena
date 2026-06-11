@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import { useContacts, usePortalAssets, formatDate } from '@/lib/store'
 import { categoryLabel, formatFileBytes, isImageAsset } from '@/lib/portal-file-utils'
+import { SignedAssetLink, SignedAssetThumb } from '@/components/signed-asset-thumb'
 import { PageHeader, SectionCard, EmptyState, selectCls } from '@/components/ui'
 import type { PortalFolderRecord } from '@/lib/types'
 
@@ -98,9 +99,9 @@ export default function ClientFilesPage() {
                 <td>
                   <div className="flex items-center gap-3">
                     {isImageAsset(asset) ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={asset.blobUrl}
+                      <SignedAssetThumb
+                        assetId={asset.id}
+                        variant="ops"
                         alt=""
                         className="w-10 h-10 rounded object-cover bg-slate-800"
                       />
@@ -115,14 +116,13 @@ export default function ClientFilesPage() {
                 <td className="text-slate-400 text-xs tabular-nums">{formatFileBytes(asset.sizeBytes)}</td>
                 <td className="text-slate-400 text-xs">{formatDate(asset.createdAt)}</td>
                 <td>
-                  <a
-                    href={asset.blobUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <SignedAssetLink
+                    assetId={asset.id}
+                    variant="ops"
                     className="text-xs text-gold hover:underline"
                   >
                     Open
-                  </a>
+                  </SignedAssetLink>
                 </td>
               </tr>
             ))}
