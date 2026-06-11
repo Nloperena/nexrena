@@ -1,5 +1,7 @@
 const SITE = 'https://nexrena.com';
 
+import { founder } from '../data/founder';
+
 export function absoluteUrl(path: string) {
   const normalized = path === '/' || /\.[a-z0-9]+$/i.test(path)
     ? path
@@ -22,10 +24,8 @@ export function organizationSchema() {
     description: 'Premium B2B digital agency — web design, SEO, full-service growth for mid-size companies.',
     email: 'NicholasL@Nexrena.com',
     foundingDate: '2025',
-    founder: {
-      '@type': 'Person',
-      name: 'Nico Loperena',
-    },
+    founder: founderPersonSchema(),
+    employee: [founderPersonSchema()],
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Kissimmee',
@@ -46,8 +46,43 @@ export function organizationSchema() {
     },
     priceRange: '$$$',
     openingHours: 'Mo-Fr 09:00-18:00',
-    sameAs: ['https://www.linkedin.com/company/nexrena'],
+    sameAs: ['https://www.linkedin.com/company/nexrena', founder.portfolioUrl],
     knowsAbout: ['Web Design', 'SEO', 'B2B Marketing', 'Headless CMS', 'E-Commerce'],
+  };
+}
+
+export function founderPersonSchema() {
+  return {
+    '@type': 'Person',
+    '@id': `${founder.portfolioUrl}/#person`,
+    name: founder.legalName,
+    alternateName: founder.name,
+    jobTitle: founder.title,
+    url: founder.portfolioUrl,
+    image: founder.photoUrl,
+    email: 'NicholasL@Nexrena.com',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Kissimmee',
+      addressRegion: 'FL',
+      addressCountry: 'US',
+    },
+    worksFor: {
+      '@type': 'Organization',
+      name: 'Nexrena',
+      url: absoluteUrl('/'),
+    },
+    sameAs: [founder.linkedInUrl, founder.githubUrl, founder.portfolioUrl],
+    knowsAbout: [
+      'Full-Stack Engineering',
+      'React',
+      'Next.js',
+      'Astro',
+      'Node.js',
+      'PostgreSQL',
+      'Technical SEO',
+      'B2B Web Design',
+    ],
   };
 }
 

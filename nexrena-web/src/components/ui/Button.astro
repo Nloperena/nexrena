@@ -4,11 +4,20 @@ interface Props {
   variant?: 'primary' | 'outline' | 'ghost';
   class?: string;
   type?: 'button' | 'submit';
+  target?: string;
+  rel?: string;
 }
 
 import { normalizeInternalHref } from '@/lib/url';
 
-const { href, variant = 'primary', class: className = '', type = 'button' } = Astro.props;
+const {
+  href,
+  variant = 'primary',
+  class: className = '',
+  type = 'button',
+  target,
+  rel,
+} = Astro.props;
 const normalizedHref = normalizeInternalHref(href);
 
 const baseClass = "magnetic-btn inline-flex items-center justify-center font-mono uppercase tracking-widest text-[11px] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] relative overflow-hidden";
@@ -21,7 +30,13 @@ const variants = {
 const Tag = href ? 'a' : 'button';
 ---
 
-<Tag href={normalizedHref} class={`${baseClass} ${variants[variant]} ${className}`} type={href ? undefined : type}>
+<Tag
+  href={normalizedHref}
+  class={`${baseClass} ${variants[variant]} ${className}`}
+  type={href ? undefined : type}
+  target={target}
+  rel={rel}
+>
   <span class="magnetic-content pointer-events-none flex items-center gap-2">
     <slot />
   </span>

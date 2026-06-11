@@ -1,6 +1,6 @@
 ---
 import { services } from '../../data/services';
-import { industries } from '../../data/industries';
+import { founder } from '../../data/founder';
 import Logo from '../ui/Logo.astro';
 import { normalizeInternalHref } from '@/lib/url';
 ---
@@ -23,6 +23,7 @@ import { normalizeInternalHref } from '@/lib/url';
           <a href="/industries/" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Industries</a>
           <a href="/resources/" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Resources</a>
           <a href="/about/" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">About</a>
+          <a href="/about/leadership/" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Leadership</a>
           <a href="/contact/" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Contact</a>
         </div>
         <div class="footer-col flex flex-col gap-6">
@@ -33,6 +34,7 @@ import { normalizeInternalHref } from '@/lib/url';
         </div>
         <div class="footer-col flex flex-col gap-6">
           <p class="font-mono text-[11px] text-[var(--slate-500)] tracking-widest uppercase mb-2">Connect</p>
+          <a href={founder.portfolioUrl} target="_blank" rel="noopener noreferrer" class="font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">Nico Loperena (Portfolio)</a>
           <a href="https://www.linkedin.com/company/nexrena" target="_blank" rel="noopener noreferrer" class="font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">LinkedIn</a>
           <a href="mailto:NicholasL@Nexrena.com" class="font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors">Email</a>
         </div>
