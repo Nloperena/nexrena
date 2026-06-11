@@ -157,6 +157,10 @@ export function fetchPortalMessages() {
   )
 }
 
+export function fetchPortalResources() {
+  return portalFetch<import('./client-resource-utils').PortalResource[]>('/api/portal/resources')
+}
+
 export function logoutPortal() {
   clearPortalToken()
 }

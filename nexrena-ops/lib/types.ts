@@ -244,3 +244,21 @@ export interface ClientMessage {
   status: ClientMessageStatus
   createdAt: string
 }
+
+// ── Client portal resources ────────────────────────────────────────────────
+
+export type ClientResourceType = 'github' | 'live_site' | 'staging'
+
+export interface ClientResourceRecord {
+  id: string
+  contactId: string
+  type: ClientResourceType
+  title: string
+  url: string
+  description?: string | null
+  relatedInvoiceId?: string | null
+  createdAt: string
+  contactName?: string
+  contactCompany?: string
+  contactEmail?: string
+}

@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { Contact, Project, Invoice, Lead, PortalAccount, TimeEntry, Proposal, Expense, Subscription, ServiceRequest, ClientMessage, PortalAssetRecord } from './types'
+import { Contact, Project, Invoice, Lead, PortalAccount, TimeEntry, Proposal, Expense, Subscription, ServiceRequest, ClientMessage, PortalAssetRecord, ClientResourceRecord } from './types'
 import { api } from './api'
 
 // ── hooks ────────────────────────────────────────────────────────────────
@@ -283,6 +283,47 @@ export function usePortalAssets(contactId?: string) {
   }, [contactId])
 
   return { assets }
+}
+
+export function useClientResources(contactId?: string) {
+  const [resources, setResources] = useState<ClientResourceRecord[]>([])
+
+  const reload = useCallback(() => {
+    const path = contactId ? `/resources?contactId=${encodeURIComponent(contactId)}` : '/resources'
+    api.get<ClientResourceRecord[]>(path).then(setResources).catch(console.error)
+  }, [contactId])
+
+  useEffect(() => { reload() }, [reload])
+
+  const add = useCallback(async (row: ClientResourceRecord) => {
+    try {
+      const { id: _id, createdAt: _c, contactName: _n, contactCompany: _co, contactEmail: _e, ...payload } = row
+      const created = await api.post<ClientResourceRecord>('/resources', payload)
+      setResources((prev) => [...prev, created])
+    } catch (e) {
+      console.error(e)
+      reload()
+    }
+  }, [reload])
+
+  const edit = useCallback(async (row: ClientResourceRecord) => {
+    try {
+      const { contactName: _n, contactCompany: _co, contactEmail: _e, contactId: _cid, createdAt: _c, ...payload } = row
+      await api.patch(`/resources/${row.id}`, payload)
+      reload()
+    } catch (e) {
+      console.error(e)
+      reload()
+    }
+  }, [reload])
+
+  const remove = useCallback(async (id: string) => {
+    setResources((prev) => prev.filter((x) => x.id !== id))
+    try { await api.del(`/resources/${id}`) }
+    catch (e) { console.error(e); reload() }
+  }, [reload])
+
+  return { resources, add, edit, remove, reload }
 }
 
 export function useMessages() {

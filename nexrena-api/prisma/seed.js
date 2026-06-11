@@ -177,6 +177,37 @@ async function seed() {
     console.log(`Seed: added ${samples.length} Warren demo invoices`)
   }
 
+  const upgradeInvoice = await prisma.invoice.findFirst({
+    where: { contactId: WARREN_CONTACT_ID, projectName: 'Astro static one-pager website' },
+    orderBy: { issueDate: 'desc' },
+  })
+  const warrenResources = [
+    { id: 'res-warren-ttag-github', type: 'github', title: 'TTAG Live Website', url: 'https://github.com/Nloperena/TTAG.git', description: 'Your live Two Azalea Group website code — Astro site deployed to Vercel.', linkUpgrade: false },
+    { id: 'res-warren-ttag-live', type: 'live_site', title: 'TTAG Live Site', url: 'https://ttag-fawn.vercel.app', description: 'Your public website at ttag-fawn.vercel.app.', linkUpgrade: false },
+    { id: 'res-warren-ttag-upgrade', type: 'github', title: 'Website Upgrade (Astro rebuild)', url: 'https://github.com/Nloperena/TTAG.git', description: 'Astro static one-pager delivered Dec 2025 — same codebase as your live site.', linkUpgrade: true },
+  ]
+  for (const r of warrenResources) {
+    await prisma.clientResource.upsert({
+      where: { id: r.id },
+      create: {
+        id: r.id,
+        contactId: WARREN_CONTACT_ID,
+        type: r.type,
+        title: r.title,
+        url: r.url,
+        description: r.description,
+        relatedInvoiceId: r.linkUpgrade ? upgradeInvoice?.id ?? null : null,
+      },
+      update: {
+        type: r.type,
+        title: r.title,
+        url: r.url,
+        description: r.description,
+        relatedInvoiceId: r.linkUpgrade ? upgradeInvoice?.id ?? null : null,
+      },
+    })
+  }
+
   console.log('Seed complete: Warren Daughtridge + Joe Loperena contacts; Warren hosting subscription + portal account')
 }
 

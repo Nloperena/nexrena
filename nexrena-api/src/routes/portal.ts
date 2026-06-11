@@ -10,6 +10,7 @@ import portalServiceRequestRoutes from './portal-service-requests'
 import portalAssetRoutes from './portal-assets'
 import portalBillingRoutes from './portal-billing'
 import portalMessageRoutes from './portal-messages'
+import portalResourceRoutes from './portal-resources'
 
 const router = Router()
 
@@ -17,6 +18,7 @@ router.use('/service-requests', portalServiceRequestRoutes)
 router.use('/assets', portalAssetRoutes)
 router.use('/billing', portalBillingRoutes)
 router.use('/messages', portalMessageRoutes)
+router.use('/resources', portalResourceRoutes)
 
 function genContactId() {
   return Math.random().toString(36).slice(2, 10)

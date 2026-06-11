@@ -123,6 +123,20 @@ model PortalAsset {
   @@map("portal_assets")
 }
 
+// ── Client portal resources (repos, live sites) ─────────────────────────────
+model ClientResource {
+  id              String   @id @default(cuid())
+  contactId       String   @map("contact_id")
+  type            String   // "github" | "live_site" | "staging"
+  title           String
+  url             String
+  description     String?
+  relatedInvoiceId String? @map("related_invoice_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@map("client_resources")
+}
+
 // ── Client portal messages ────────────────────────────────────────────────
 model ClientMessage {
   id              String   @id @default(cuid())

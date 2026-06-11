@@ -12,6 +12,7 @@ import {
   fetchPortalServiceRequests,
   fetchPortalAssets,
   fetchPortalBillingStatus,
+  fetchPortalResources,
   createPortalCheckout,
   logoutPortal,
 } from '@/lib/portal-client'
@@ -31,6 +32,8 @@ import { ClientActivityFeed } from '@/components/client-activity-feed'
 import { ClientCollapsibleSection } from '@/components/client-collapsible-section'
 import { UploadFilesModal } from '@/components/upload-files-modal'
 import { PortalFileList } from '@/components/portal-file-list'
+import { ClientWebsitesSection } from '@/components/client-websites-section'
+import type { PortalResource } from '@/lib/client-resource-utils'
 import { StatusChip, proposalStatusChip } from '@/components/status-chip'
 import type { Invoice, InvoiceStatus } from '@/lib/types'
 import { Btn } from '@/components/ui'
@@ -70,6 +73,7 @@ export function ClientDashboard({ onSignOut }: Props) {
   const [proposals, setProposals] = useState<PortalProposal[]>([])
   const [serviceRequests, setServiceRequests] = useState<PortalServiceRequest[]>([])
   const [assets, setAssets] = useState<PortalAsset[]>([])
+  const [resources, setResources] = useState<PortalResource[]>([])
   const [portalMessages, setPortalMessages] = useState<{ id: string; subject: string; createdAt: string }[]>([])
   const [stripeEnabled, setStripeEnabled] = useState(false)
   const [payingId, setPayingId] = useState<string | null>(null)
@@ -89,13 +93,14 @@ export function ClientDashboard({ onSignOut }: Props) {
     setLoading(true)
     setError(null)
     try {
-      const [me, projectRows, invoiceRows, proposalRows, requestRows, assetRows, billing, messages] = await Promise.all([
+      const [me, projectRows, invoiceRows, proposalRows, requestRows, assetRows, resourceRows, billing, messages] = await Promise.all([
         fetchPortalMe(),
         fetchPortalProjects(),
         fetchPortalInvoices(),
         fetchPortalProposals(),
         fetchPortalServiceRequests(),
         fetchPortalAssets(),
+        fetchPortalResources(),
         fetchPortalBillingStatus(),
         fetchPortalMessages().catch(() => []),
       ])
@@ -105,6 +110,7 @@ export function ClientDashboard({ onSignOut }: Props) {
       setProposals(proposalRows)
       setServiceRequests(requestRows)
       setAssets(assetRows)
+      setResources(resourceRows)
       setStripeEnabled(billing.stripeEnabled)
       setPortalMessages(messages)
     } catch (err) {
@@ -272,6 +278,25 @@ export function ClientDashboard({ onSignOut }: Props) {
 
       {/* Collapsible sections */}
       <div className="space-y-4">
+        <ClientCollapsibleSection
+          id="websites"
+          title="Your websites"
+          defaultOpen={resources.length > 0}
+          summary={
+            resources.length > 0
+              ? `${resources.length} website link${resources.length === 1 ? '' : 's'} available`
+              : 'Your website code and live site links'
+          }
+        >
+          {resources.length > 0 ? (
+            <ClientWebsitesSection resources={resources} />
+          ) : (
+            <p className={`${card} text-sm text-slate-500 pt-4`}>
+              No website links yet — your Nexrena team can add GitHub and live site links here.
+            </p>
+          )}
+        </ClientCollapsibleSection>
+
         <ClientCollapsibleSection
           id="files"
           title="Files"
