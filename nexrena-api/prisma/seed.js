@@ -1,9 +1,18 @@
 const { PrismaClient } = require('@prisma/client')
+const { randomBytes, scryptSync } = require('crypto')
 const prisma = new PrismaClient()
 
 const WARREN_CONTACT_ID = 'warren-daughtridge-ttag'
 const WARREN_SUBSCRIPTION_ID = 'sub-warren-website-hosting'
+const WARREN_PORTAL_EMAIL = 'warren@twoazaleagroup.com'
+const WARREN_PORTAL_PASSWORD = 'WarrenDemo2026!'
 const JOE_CONTACT_ID = 'joe-loperena-furniture-packages'
+
+function hashPassword(password) {
+  const salt = randomBytes(16).toString('hex')
+  const hash = scryptSync(password, salt, 64).toString('hex')
+  return `${salt}:${hash}`
+}
 
 function firstOfNextMonth() {
   const d = new Date()
@@ -101,7 +110,24 @@ async function seed() {
     },
   })
 
-  console.log('Seed complete: Warren Daughtridge + Joe Loperena contacts; Warren hosting subscription')
+  await prisma.portalAccount.upsert({
+    where: { email: WARREN_PORTAL_EMAIL },
+    create: {
+      email: WARREN_PORTAL_EMAIL,
+      passwordHash: hashPassword(WARREN_PORTAL_PASSWORD),
+      name: 'Warren Daughtridge',
+      company: 'The Two Azalea Group, LLC',
+      contactId: WARREN_CONTACT_ID,
+    },
+    update: {
+      passwordHash: hashPassword(WARREN_PORTAL_PASSWORD),
+      name: 'Warren Daughtridge',
+      company: 'The Two Azalea Group, LLC',
+      contactId: WARREN_CONTACT_ID,
+    },
+  })
+
+  console.log('Seed complete: Warren Daughtridge + Joe Loperena contacts; Warren hosting subscription + portal account')
 }
 
 seed()

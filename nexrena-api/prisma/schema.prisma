@@ -67,6 +67,20 @@ model Invoice {
   @@map("invoices")
 }
 
+// ── Client portal accounts ───────────────────────────────────────────────
+model PortalAccount {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String
+  company      String?
+  contactId    String   @unique @map("contact_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("portal_accounts")
+}
+
 // ── Website Leads ────────────────────────────────────────────────────────
 model Lead {
   id          String   @id @default(cuid())

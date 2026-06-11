@@ -16,6 +16,7 @@ import timeEntryRoutes from './routes/time-entries'
 import proposalRoutes from './routes/proposals'
 import expenseRoutes from './routes/expenses'
 import subscriptionRoutes from './routes/subscriptions'
+import portalRoutes from './routes/portal'
 import { runDueBilling } from './lib/billing'
 
 const app = express()
@@ -61,6 +62,7 @@ app.use(express.json({ limit: '1mb' }))
 
 // ── Rate limit on public lead endpoint ───────────────────────────────────
 const leadLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, message: { error: 'Too many submissions, try again later.' } })
+const portalAuthLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 30, message: { error: 'Too many attempts, try again later.' } })
 const graphqlLimiter = rateLimit({ windowMs: 60 * 1000, max: 60, message: { error: 'Too many GraphQL requests, try again later.' } })
 
 // ── Routes ───────────────────────────────────────────────────────────────
@@ -77,6 +79,7 @@ app.all(
 )
 
 app.use('/api/leads', leadLimiter, leadRoutes)           // POST is public, GET is auth-guarded inside
+app.use('/api/portal', portalAuthLimiter, portalRoutes) // register/login public; rest portal-auth inside
 app.use('/api/contacts', requireAuth, contactRoutes)
 app.use('/api/projects', requireAuth, projectRoutes)
 app.use('/api/invoices', requireAuth, invoiceRoutes)

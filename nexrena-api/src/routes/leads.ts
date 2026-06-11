@@ -7,13 +7,22 @@ const router = Router()
 
 /** POST /api/leads — PUBLIC endpoint for website contact form */
 router.post('/', async (req, res) => {
-  const { name, email, message, company, budget, projectType } = req.body
+  const { name, email, message, company, budget, projectType, source } = req.body
   if (!name || !email || !message) {
     res.status(400).json({ error: 'name, email, and message are required' })
     return
   }
   const lead = await prisma.lead.create({
-    data: { name, email, message, company: company || null, budget: budget || null, projectType: projectType || null, status: 'new' },
+    data: {
+      name,
+      email,
+      message,
+      company: company || null,
+      budget: budget || null,
+      projectType: projectType || null,
+      source: typeof source === 'string' && source.trim() ? source.trim() : 'website',
+      status: 'new',
+    },
   })
 
   notifyNewLead({ name, email, message, company, budget, projectType }).catch(() => {})
