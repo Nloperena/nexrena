@@ -19,7 +19,7 @@ export function organizationSchema() {
     name: 'Nexrena',
     legalName: 'Nexrena LLC',
     url: absoluteUrl('/'),
-    logo: absoluteUrl('/favicon.svg'),
+    logo: absoluteUrl('/og-default.png'),
     image: absoluteUrl('/og-default.png'),
     description: 'Premium B2B digital agency — web design, SEO, full-service growth for mid-size companies.',
     email: 'NicholasL@Nexrena.com',
@@ -30,7 +30,13 @@ export function organizationSchema() {
       '@type': 'PostalAddress',
       addressLocality: 'Kissimmee',
       addressRegion: 'FL',
+      postalCode: '34741',
       addressCountry: 'US',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 28.2919,
+      longitude: -81.4076,
     },
     areaServed: [
       { '@type': 'City', name: 'Orlando' },
@@ -59,7 +65,7 @@ export function founderPersonSchema() {
     alternateName: founder.name,
     jobTitle: founder.title,
     url: founder.portfolioUrl,
-    image: founder.photoUrl,
+    image: founder.photoUrl.startsWith('http') ? founder.photoUrl : absoluteUrl(founder.photoUrl),
     email: 'NicholasL@Nexrena.com',
     address: {
       '@type': 'PostalAddress',

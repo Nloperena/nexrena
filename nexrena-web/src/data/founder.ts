@@ -10,7 +10,7 @@ export const founder = {
   blogUrl: 'https://www.nicoloperena.com/blog',
   linkedInUrl: 'https://www.linkedin.com/in/nicholas-loperena/',
   githubUrl: 'https://github.com/NLoperena',
-  photoUrl: 'https://www.nicoloperena.com/professional-photo.webp',
+  photoUrl: '/images/founder-nico-loperena.webp',
   summary:
     'Senior full-stack engineer who founded Nexrena after years shipping production B2B systems — web engineering, SEO architecture, and conversion-focused delivery under one accountable operator.',
   credentials: [

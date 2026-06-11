@@ -17,7 +17,7 @@ const serviceByBlogCategory: Record<string, ResourceLink> = {
   },
   ecommerce: {
     title: 'Full-Service Growth for Ecommerce',
-    href: '/services/full-service/ecommerce/',
+    href: '/industries/ecommerce/',
     description: 'Unify design, development, and growth for ecommerce.',
   },
   strategy: {
@@ -32,7 +32,7 @@ const serviceByBlogCategory: Record<string, ResourceLink> = {
   },
   'professional-services': {
     title: 'SEO for Professional Services',
-    href: '/services/seo-growth/professional-services/',
+    href: '/industries/professional-services/',
     description: 'Capture high-intent service and local searches.',
   },
 };

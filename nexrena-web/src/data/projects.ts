@@ -49,7 +49,7 @@ export const projects: Project[] = [
     challenge:
       'ForzaBuilt rebranded, rebuilt a media-heavy 200+ SKU industrial catalog, and migrated from legacy WordPress URL patterns to Astro in one transition. B2B migrations often trigger visibility loss when URL structures change, redirect coverage slips, and crawl/index signals degrade after launch.',
     solution:
-      'I ran build and SEO architecture as one program: Astro with React islands, Tailwind, and Vercel delivery; canonical route structure replacing legacy URL sprawl; layered redirect continuity across middleware and edge rules; hardened canonicals and sitemaps; Product and FAQ schema across the catalog; and IA rebuilt around procurement intent (application, substrate, specification).',
+      'Nexrena ran build and SEO architecture as one program: Astro with React islands, Tailwind, and Vercel delivery; canonical route structure replacing legacy URL sprawl; layered redirect continuity across middleware and edge rules; hardened canonicals and sitemaps; Product and FAQ schema across the catalog; and IA rebuilt around procurement intent (application, substrate, specification).',
     outcome:
       'The site launched with strong technical quality and then completed staged post-launch remediation (forensic audit, prioritized fixes, release validation, and repeatable audit workflow), resulting in a handoff-ready SEO operating system and a clear qualified inbound lift.',
     proofPoints: [
@@ -72,7 +72,7 @@ export const projects: Project[] = [
     },
     background: 'Forzabuilt is a B2B industrial adhesives manufacturer serving the Florida and Southeast construction market.',
     metaDescription: 'ForzaBuilt case study: rebrand, Astro rebuild, and SEO architecture. 99% SEO health, 99% Lighthouse desktop, and 0 to 28 qualified MQL submissions in four months.',
-    approach: 'I led the transition as a unified architecture program, combining platform rebuild decisions with SEO-critical controls (URL continuity, crawl/index hardening, structured data, and release validation) so the migration could ship fast without sacrificing long-term search resilience.',
+    approach: 'Nexrena led the transition as a unified architecture program, combining platform rebuild decisions with SEO-critical controls (URL continuity, crawl/index hardening, structured data, and release validation) so the migration could ship fast without sacrificing long-term search resilience.',
     results: 'Final outcomes at handoff: 99% technical SEO health, 99% Lighthouse desktop on a media-heavy catalog, and qualified inbound growth from effectively zero baseline to 28 estimated MQL submissions (26 unique contacts) in the first four months post-launch.',
     thumbnail: 'https://forzabuilt.com/images/homepage-heroes/eagle-hero.webp',
     video: 'https://forzabuilt.com/videos/backgrounds/WebOptimized/WebM/Eagle%20Header%20Video_Optimized.webm',
@@ -96,7 +96,7 @@ export const projects: Project[] = [
     challenge:
       'ForzaBuilt needed to launch Rugged Red as a credible standalone cleaning division while keeping it operationally aligned with the parent platform and existing product systems.',
     solution:
-      'I implemented Rugged Red as a first-class product family in the website architecture: dedicated category routing, focused cleaners experience, and clear division-level positioning that still fits inside shared operational workflows.',
+      'The team implemented Rugged Red as a first-class product family in the website architecture: dedicated category routing, focused cleaners experience, and clear division-level positioning that still fits inside shared operational workflows.',
     outcome:
       'The business launched a cleaner-specific digital presence without fragmenting systems, giving sales and marketing a focused division experience that can scale with future product expansion.',
     proofPoints: [
@@ -118,7 +118,7 @@ export const projects: Project[] = [
     },
     background: 'Rugged Red is a premium outdoor equipment brand known for its high-performance gear designed for extreme conditions.',
     metaDescription: "Rugged Red case study: launched ForzaBuilt's cleaning division as a dedicated digital brand with clear category architecture and scalable shared operations.",
-    approach: 'I delivered a launch-ready division architecture that balanced differentiation and integration: branded cleaners pathways, dedicated category experience, and shared platform logic for maintainable multi-brand operations.',
+    approach: 'Nexrena delivered a launch-ready division architecture that balanced differentiation and integration: branded cleaners pathways, dedicated category experience, and shared platform logic for maintainable multi-brand operations.',
     results: 'Rugged Red launched with a focused customer-facing identity and cleaner product discovery flow, while the internal team retained one scalable operating system for content, products, and updates across both brands.',
     thumbnail: 'https://ruggedred.com/images/RRMascot+Type-smaller.png',
     video: 'https://videos.ctfassets.net/hdznx4p7ef81/1OG5dyWb0f3mWf05Dwjh0k/fbafd351797af80200e19a2cb6ef6e2c/housekeeping-products-hero-video.mp4?q=70&fm=mp4&w=1280',
@@ -164,7 +164,7 @@ export const projects: Project[] = [
     metaDescription: 'VITO Fryfilter case study: Global DTC expansion. +38% conversion, +85% international revenue. Shopify, React, commercial buyer intent.',
     approach: 'We restructured the Shopify architecture to support market-specific landing pages, implemented hreflang correctly across all international variants, and rebuilt the product pages around the commercial kitchen buyer persona.',
     results: 'International revenue increased 85% year-over-year within the first two quarters post-launch. Conversion rate across all markets lifted 38%, with the largest gains in EU markets.',
-    thumbnail: 'https://www.nicoloperena.com/VITOShop.webp',
+    thumbnail: '/images/vito-shop.webp',
     seoHighlights: [
       { title: 'International SEO & Hreflang', description: 'Implemented correct hreflang tags across all international storefronts, eliminating duplicate content issues and ensuring regional search visibility.' },
       { title: 'Market-Specific Landing Pages', description: 'Created geo-targeted landing pages optimized for local search intent in priority EU and North American markets.' },
