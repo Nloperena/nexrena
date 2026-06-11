@@ -26,6 +26,8 @@ export type PortalInvoiceLineItem = {
   taxable?: boolean
 }
 
+export type InvoicePhase = 'deposit' | 'balance' | 'full' | 'subscription'
+
 export type PortalInvoice = {
   id: string
   number: string
@@ -34,10 +36,13 @@ export type PortalInvoice = {
   issueDate: string
   dueDate: string
   projectName?: string | null
+  projectId?: string | null
   lineItems: PortalInvoiceLineItem[]
   taxRate?: number | null
   paidDate?: string | null
   notes?: string | null
+  invoicePhase?: InvoicePhase | string | null
+  depositOfInvoiceId?: string | null
   total: number
 }
 

@@ -48,6 +48,7 @@ export interface Project {
 }
 
 export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
+export type InvoicePhase = 'deposit' | 'balance' | 'full' | 'subscription'
 
 export interface InvoiceLineItem {
   id: string
@@ -77,6 +78,8 @@ export interface Invoice {
   taxRate?: number
   paidDate?: string
   notes?: string
+  invoicePhase?: InvoicePhase
+  depositOfInvoiceId?: string
   createdAt: string
 }
 

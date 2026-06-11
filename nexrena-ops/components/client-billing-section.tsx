@@ -6,6 +6,7 @@ import {
   countInvoicesByStatus,
   effectiveInvoiceStatus,
   getOldestUnpaidInvoice,
+  invoicePhaseLabel,
   sortInvoicesNewestFirst,
 } from '@/lib/portal-dashboard-utils'
 import { formatCurrency, formatDate } from '@/lib/store'
@@ -43,6 +44,7 @@ function InvoiceRow({
 }) {
   const status = effectiveInvoiceStatus(inv)
   const chip = invoiceStatusChip(status, inv.dueDate)
+  const phaseLabel = invoicePhaseLabel(inv.invoicePhase)
   const canPay = stripeEnabled && (status === 'sent' || status === 'overdue')
   const isPaying = payingId === inv.id
 
@@ -54,8 +56,13 @@ function InvoiceRow({
             <p className="font-serif text-lg text-white">{inv.number}</p>
             {chip && <StatusChip variant={chip} />}
           </div>
-          {inv.projectName && (
+          {phaseLabel ? (
+            <p className="text-sm text-gold/90 mt-0.5">{phaseLabel}</p>
+          ) : inv.projectName ? (
             <p className="text-sm text-slate-400 mt-0.5 truncate">{inv.projectName}</p>
+          ) : null}
+          {phaseLabel && inv.projectName && (
+            <p className="text-xs text-slate-500 mt-0.5 truncate">{inv.projectName}</p>
           )}
           <p className="text-base text-white font-medium mt-2 tabular-nums">{formatCurrency(inv.total)}</p>
           {status === 'overdue' && (
@@ -203,7 +210,7 @@ export function ClientBillingSection({
 
         {!stripeEnabled && outstanding > 0 && (
           <p className="text-xs text-slate-500">
-            Online payment is not configured — contact us to settle your balance.
+            Online payment is coming soon — contact us to settle your balance in the meantime.
           </p>
         )}
 

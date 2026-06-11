@@ -4,6 +4,7 @@ export type ClientPortalView =
   | 'home'
   | 'billing'
   | 'messages'
+  | 'schedule'
   | 'files'
   | 'websites'
   | 'requests'
@@ -18,8 +19,9 @@ type NavItem = {
 
 export const CLIENT_NAV_ITEMS: NavItem[] = [
   { id: 'home', label: 'Home', icon: '⌂' },
-  { id: 'billing', label: 'Billing', icon: '▤' },
   { id: 'messages', label: 'Messages', icon: '✉', badge: true },
+  { id: 'schedule', label: 'Book a call', icon: '📅' },
+  { id: 'billing', label: 'Billing', icon: '▤' },
   { id: 'files', label: 'Files', icon: '📁' },
   { id: 'websites', label: 'Websites', icon: '◈' },
   { id: 'requests', label: 'Requests', icon: '✦' },

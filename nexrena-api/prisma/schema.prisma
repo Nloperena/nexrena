@@ -66,6 +66,8 @@ model Invoice {
   stripeInvoiceId       String? @map("stripe_invoice_id")
   stripePaymentIntentId String? @map("stripe_payment_intent_id")
   paidVia               String? @map("paid_via")
+  invoicePhase          String? @map("invoice_phase") // deposit | balance | full | subscription
+  depositOfInvoiceId    String? @map("deposit_of_invoice_id")
   createdAt     String  @map("created_at")
 
   @@map("invoices")

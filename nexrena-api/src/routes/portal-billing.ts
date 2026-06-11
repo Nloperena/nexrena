@@ -87,7 +87,7 @@ router.post('/checkout', requirePortalAuth, async (req, res) => {
 
   if (!isStripeConfigured()) {
     res.status(503).json({
-      error: 'Online payments are not configured yet. Contact Nexrena to pay this invoice.',
+      error: 'Online payment is coming soon. Contact Nexrena to pay this invoice in the meantime.',
       stripeEnabled: false,
     })
     return
@@ -121,8 +121,11 @@ router.get('/invoices', requirePortalAuth, async (req, res) => {
       status: true,
       dueDate: true,
       projectName: true,
+      projectId: true,
       lineItems: true,
       taxRate: true,
+      invoicePhase: true,
+      depositOfInvoiceId: true,
     },
   })
   res.json(invoices)

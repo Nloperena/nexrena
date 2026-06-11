@@ -1,5 +1,43 @@
 type LineItem = { quantity: number; rate: number; taxable?: boolean }
 
+export type InvoicePhase = 'deposit' | 'balance' | 'full' | 'subscription'
+
+export function nextInvoiceNumber(existing: string[]): string {
+  const year = new Date().getFullYear()
+  const prefix = `NXR-${year}-`
+  const nums = existing
+    .filter((n) => n.startsWith(prefix))
+    .map((n) => parseInt(n.replace(prefix, ''), 10))
+    .filter((n) => !isNaN(n))
+  const next = nums.length > 0 ? Math.max(...nums) + 1 : 1
+  return `${prefix}${String(next).padStart(3, '0')}`
+}
+
+export function invoicePhaseLabel(phase: InvoicePhase | string | null | undefined): string | null {
+  switch (phase) {
+    case 'deposit':
+      return 'Project deposit (50%)'
+    case 'balance':
+      return 'Final payment (50%) — due on completion'
+    case 'subscription':
+      return 'Subscription'
+    case 'full':
+      return null
+    default:
+      return null
+  }
+}
+
+export function checkoutProductName(invoice: {
+  number: string
+  invoicePhase?: string | null
+  projectName?: string | null
+}): string {
+  const phaseLabel = invoicePhaseLabel(invoice.invoicePhase)
+  if (phaseLabel) return phaseLabel
+  return `Invoice ${invoice.number}`
+}
+
 export function invoiceSubtotal(lineItems: LineItem[]): number {
   return lineItems.reduce((sum, item) => sum + item.quantity * item.rate, 0)
 }

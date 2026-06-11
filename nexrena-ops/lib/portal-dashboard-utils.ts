@@ -1,5 +1,40 @@
-import type { PortalInvoice, PortalProject, PortalProposal } from './portal-types'
+import type { InvoicePhase, PortalInvoice, PortalProject, PortalProposal } from './portal-types'
 import type { InvoiceStatus } from './types'
+
+export function invoicePhaseLabel(phase: InvoicePhase | string | null | undefined): string | null {
+  switch (phase) {
+    case 'deposit':
+      return 'Project deposit (50%)'
+    case 'balance':
+      return 'Final payment (50%) — due on completion'
+    case 'subscription':
+      return 'Subscription'
+    default:
+      return null
+  }
+}
+
+export function getProjectPaymentStatus(
+  projectId: string,
+  invoices: PortalInvoice[],
+): string | null {
+  const projectInvoices = invoices.filter((i) => i.projectId === projectId)
+  const deposit = projectInvoices.find((i) => i.invoicePhase === 'deposit')
+  const balance = projectInvoices.find((i) => i.invoicePhase === 'balance')
+
+  if (!deposit && !balance) return null
+
+  const depositPaid = deposit?.status === 'paid'
+  const balancePaid = balance?.status === 'paid'
+
+  if (depositPaid && balancePaid) return 'Fully paid ✓'
+  if (depositPaid && balance && balance.status !== 'paid') {
+    if (balance.status === 'draft') return 'Deposit paid ✓ · Balance due on delivery'
+    return 'Deposit paid ✓ · Balance due'
+  }
+  if (deposit && deposit.status !== 'paid') return 'Deposit due'
+  return null
+}
 
 const INACTIVE_PROJECT_STATUSES = new Set(['delivered', 'on_hold', 'not_started'])
 

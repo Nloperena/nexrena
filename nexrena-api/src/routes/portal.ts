@@ -267,10 +267,13 @@ function serializePortalInvoice(invoice: {
   issueDate: string
   dueDate: string
   projectName: string | null
+  projectId: string | null
   lineItems: unknown
   taxRate: number | null
   paidDate: string | null
   notes: string | null
+  invoicePhase: string | null
+  depositOfInvoiceId: string | null
 }) {
   const lineItems = parseLineItems(invoice.lineItems)
   return {
@@ -281,10 +284,13 @@ function serializePortalInvoice(invoice: {
     issueDate: invoice.issueDate,
     dueDate: invoice.dueDate,
     projectName: invoice.projectName,
+    projectId: invoice.projectId,
     lineItems,
     taxRate: invoice.taxRate,
     paidDate: invoice.paidDate,
     notes: invoice.notes,
+    invoicePhase: invoice.invoicePhase,
+    depositOfInvoiceId: invoice.depositOfInvoiceId,
     total: invoiceTotal(lineItems, invoice.taxRate),
   }
 }

@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { Invoice, InvoiceStatus, InvoiceLineItem, NetTerms, Contact } from '@/lib/types'
+import { Invoice, InvoiceStatus, InvoiceLineItem, NetTerms, Contact, Project } from '@/lib/types'
 import { genId, formatCurrency } from '@/lib/store'
 import { NEXRENA_SERVICES, DEFAULT_PAYMENT_TERMS, NET_TERMS_OPTIONS } from '@/lib/constants'
 import { Btn, Field, inputCls, selectCls } from '@/components/ui'
@@ -87,13 +87,32 @@ function computeDueDate(issueDate: string, terms: NetTerms): string {
 interface InvoiceFormProps {
   initial?: Partial<Invoice>
   onSave: (i: Invoice) => void
+  onSplitDeposit?: (payload: {
+    total: number
+    projectId: string
+    contactId: string
+    description?: string
+    taxRate?: number
+    netTerms?: string
+  }) => Promise<unknown>
   onClose: () => void
   nextNumber: string
   contacts: Contact[]
+  projects?: Project[]
 }
 
-export function InvoiceForm({ initial, onSave, onClose, nextNumber, contacts }: InvoiceFormProps) {
+export function InvoiceForm({
+  initial,
+  onSave,
+  onSplitDeposit,
+  onClose,
+  nextNumber,
+  contacts,
+  projects = [],
+}: InvoiceFormProps) {
   const isEdit = !!initial?.id
+  const [split5050, setSplit5050] = useState(false)
+  const [splitting, setSplitting] = useState(false)
   const [form, setForm] = useState<Partial<Invoice>>(initial ?? {
     status: 'draft',
     number: nextNumber,
@@ -150,9 +169,42 @@ export function InvoiceForm({ initial, onSave, onClose, nextNumber, contacts }: 
     return contacts.find(c => c.email.trim().toLowerCase() === email)?.id
   }
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     const contactId = resolveContactId()
+
+    if (split5050 && onSplitDeposit && !isEdit) {
+      if (!contactId) {
+        alert('Select a client before creating a 50/50 split.')
+        return
+      }
+      if (!form.projectId) {
+        alert('Select a project for the 50/50 split.')
+        return
+      }
+      setSplitting(true)
+      try {
+        const description = (form.lineItems ?? [])
+          .map((l) => l.description)
+          .filter(Boolean)
+          .join('; ') || form.projectName || undefined
+        await onSplitDeposit({
+          total,
+          projectId: form.projectId,
+          contactId,
+          description,
+          taxRate: form.taxRate,
+          netTerms: form.netTerms,
+        })
+        onClose()
+      } catch (err) {
+        alert(err instanceof Error ? err.message : 'Could not create split invoices.')
+      } finally {
+        setSplitting(false)
+      }
+      return
+    }
+
     onSave({
       id: form.id ?? genId(),
       number: form.number!,
@@ -222,8 +274,28 @@ export function InvoiceForm({ initial, onSave, onClose, nextNumber, contacts }: 
         <Field label="Client Email">
           <input type="email" className={inputCls} value={form.clientEmail ?? ''} onChange={e => set('clientEmail', e.target.value)} placeholder="billing@acme.com" />
         </Field>
-        <Field label="Project Name / Reference">
-          <input className={inputCls} value={form.projectName ?? ''} onChange={e => set('projectName', e.target.value)} placeholder="Website Rebuild Phase 1" />
+        <Field label="Project">
+          {projects.length > 0 ? (
+            <select
+              className={selectCls}
+              value={form.projectId ?? ''}
+              onChange={(e) => {
+                const project = projects.find((p) => p.id === e.target.value)
+                setForm((f) => ({
+                  ...f,
+                  projectId: e.target.value || undefined,
+                  projectName: project?.name ?? f.projectName,
+                }))
+              }}
+            >
+              <option value="">Select project (optional)…</option>
+              {projects.map((p) => (
+                <option key={p.id} value={p.id}>{p.name} — {p.clientName}</option>
+              ))}
+            </select>
+          ) : (
+            <input className={inputCls} value={form.projectName ?? ''} onChange={e => set('projectName', e.target.value)} placeholder="Website Rebuild Phase 1" />
+          )}
         </Field>
       </div>
 
@@ -297,6 +369,23 @@ export function InvoiceForm({ initial, onSave, onClose, nextNumber, contacts }: 
         </div>
       </div>
 
+      {!isEdit && onSplitDeposit && (
+        <label className="flex items-start gap-3 rounded-lg border border-slate-800/60 bg-slate-900/40 p-4 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={split5050}
+            onChange={(e) => setSplit5050(e.target.checked)}
+            className="mt-1"
+          />
+          <span>
+            <span className="text-sm text-white font-medium">Split 50/50</span>
+            <span className="block text-xs text-slate-400 mt-1">
+              Creates a deposit invoice (50%, sent now) and a balance invoice (50%, draft until project delivery).
+            </span>
+          </span>
+        </label>
+      )}
+
       <Field label="Notes / Payment Terms">
         <textarea rows={3} className={inputCls} value={form.notes ?? ''} onChange={e => set('notes', e.target.value)}
           placeholder="Payment via ACH, Stripe, or wire transfer. Late payments subject to 1.5% monthly fee." />
@@ -304,7 +393,9 @@ export function InvoiceForm({ initial, onSave, onClose, nextNumber, contacts }: 
 
       <div className="flex justify-end gap-2 pt-2">
         <Btn variant="ghost" onClick={onClose}>Cancel</Btn>
-        <Btn type="submit">{isEdit ? 'Update Invoice' : 'Create Invoice'}</Btn>
+        <Btn type="submit" disabled={splitting}>
+          {splitting ? 'Creating…' : split5050 && !isEdit ? 'Create 50/50 invoices' : isEdit ? 'Update Invoice' : 'Create Invoice'}
+        </Btn>
       </div>
     </form>
   )

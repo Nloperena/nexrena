@@ -1,4 +1,5 @@
 import { prisma } from './prisma'
+import { checkoutProductName } from './invoice-utils'
 import { getStripe } from './stripe'
 
 export async function ensureStripeCustomer(contactId: string): Promise<string | null> {
@@ -61,7 +62,7 @@ export async function createInvoiceCheckoutSession(params: {
           currency: 'usd',
           unit_amount: amountCents,
           product_data: {
-            name: `Invoice ${invoice.number}`,
+            name: checkoutProductName(invoice),
             description: invoice.projectName ?? invoice.notes ?? undefined,
           },
         },

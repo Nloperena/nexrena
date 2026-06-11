@@ -83,9 +83,22 @@ function TaskRow({ task, onToggle }: { task: Task; onToggle: () => void }) {
 }
 
 export default function ProjectsPage() {
-  const { projects, add, edit, remove } = useProjects()
+  const { projects, add, edit, remove, deliver } = useProjects()
   const [modal, setModal] = useState<null | 'add' | Project>(null)
   const [expanded, setExpanded] = useState<string | null>(null)
+  const [deliveringId, setDeliveringId] = useState<string | null>(null)
+
+  const handleDeliver = async (projectId: string) => {
+    if (!confirm('Mark project delivered and send the balance invoice to the client?')) return
+    setDeliveringId(projectId)
+    try {
+      await deliver(projectId)
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Could not deliver project.')
+    } finally {
+      setDeliveringId(null)
+    }
+  }
 
   const toggleTask = (projectId: string, phaseId: string, taskId: string) => {
     const project = projects.find(p => p.id === projectId)!
@@ -154,6 +167,16 @@ export default function ProjectsPage() {
                   <p className="text-gold font-semibold tabular-nums">{formatCurrency(project.value)}</p>
                 </div>
                 <div className="flex gap-2" onClick={e => e.stopPropagation()}>
+                  {project.status !== 'delivered' && (
+                    <Btn
+                      size="sm"
+                      variant="primary"
+                      disabled={deliveringId === project.id}
+                      onClick={() => handleDeliver(project.id)}
+                    >
+                      {deliveringId === project.id ? '…' : 'Deliver'}
+                    </Btn>
+                  )}
                   <Btn size="sm" variant="ghost" onClick={() => setModal(project)}>Edit</Btn>
                   <Btn size="sm" variant="danger" onClick={() => remove(project.id)}>Del</Btn>
                 </div>

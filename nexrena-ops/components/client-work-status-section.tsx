@@ -1,6 +1,7 @@
 'use client'
 
-import type { PortalProject, PortalServiceRequest } from '@/lib/portal-types'
+import type { PortalInvoice, PortalProject, PortalServiceRequest } from '@/lib/portal-types'
+import { getProjectPaymentStatus } from '@/lib/portal-dashboard-utils'
 import { Btn } from '@/components/ui'
 import { StatusChip, projectStatusChip, requestStatusChip } from '@/components/status-chip'
 
@@ -9,13 +10,27 @@ const card = 'glass-panel rounded-xl border border-slate-800/60 p-5'
 type Props = {
   activeProjects: PortalProject[]
   serviceRequests: PortalServiceRequest[]
+  invoices?: PortalInvoice[]
   onStartRequest: () => void
   variant?: 'projects' | 'requests' | 'all'
+}
+
+function ProjectPaymentLine({
+  project,
+  invoices,
+}: {
+  project: PortalProject
+  invoices: PortalInvoice[]
+}) {
+  const status = getProjectPaymentStatus(project.id, invoices)
+  if (!status) return null
+  return <p className="text-sm text-slate-400 mt-2">{status}</p>
 }
 
 export function ClientWorkStatusSection({
   activeProjects,
   serviceRequests,
+  invoices = [],
   onStartRequest,
   variant = 'all',
 }: Props) {
@@ -46,6 +61,7 @@ export function ClientWorkStatusSection({
                 <div>
                   <p className="font-serif text-lg text-white">{p.name}</p>
                   <p className="text-sm text-slate-400 mt-1">{p.type}</p>
+                  <ProjectPaymentLine project={p} invoices={invoices} />
                 </div>
                 {chip && <StatusChip variant={chip} />}
               </div>
@@ -114,6 +130,7 @@ export function ClientWorkStatusSection({
                   <div>
                     <p className="font-serif text-lg text-white">{p.name}</p>
                     <p className="text-sm text-slate-400 mt-1">{p.type}</p>
+                    <ProjectPaymentLine project={p} invoices={invoices} />
                   </div>
                   {chip && <StatusChip variant={chip} />}
                 </div>

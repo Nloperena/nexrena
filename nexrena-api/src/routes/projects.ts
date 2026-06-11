@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { prisma } from '../lib/prisma'
+import { deliverProjectAndSendBalance } from '../lib/split-deposit'
 
 const router = Router()
 
@@ -16,6 +17,16 @@ router.post('/', async (req, res) => {
   }
   const project = await prisma.project.create({ data })
   res.status(201).json(project)
+})
+
+/** PATCH /api/projects/:id/deliver — mark delivered and send balance invoice */
+router.patch('/:id/deliver', async (req, res) => {
+  try {
+    const result = await deliverProjectAndSendBalance(req.params.id)
+    res.json(result)
+  } catch (err) {
+    res.status(400).json({ error: err instanceof Error ? err.message : 'Could not deliver project' })
+  }
 })
 
 router.put('/:id', async (req, res) => {

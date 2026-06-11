@@ -1,5 +1,6 @@
 import { prisma } from './prisma'
 import { randomUUID } from 'crypto'
+import { nextInvoiceNumber } from './invoice-utils'
 
 type BillingResult = { generated: number; skipped: number; errors: string[] }
 
@@ -13,17 +14,6 @@ function advanceDate(dateStr: string, interval: string): string {
     d.setFullYear(d.getFullYear() + 1)
   }
   return d.toISOString().slice(0, 10)
-}
-
-function nextInvoiceNumber(existing: string[]): string {
-  const year = new Date().getFullYear()
-  const prefix = `NXR-${year}-`
-  const nums = existing
-    .filter(n => n.startsWith(prefix))
-    .map(n => parseInt(n.replace(prefix, ''), 10))
-    .filter(n => !isNaN(n))
-  const next = nums.length > 0 ? Math.max(...nums) + 1 : 1
-  return `${prefix}${String(next).padStart(3, '0')}`
 }
 
 export async function runDueBilling(): Promise<BillingResult> {

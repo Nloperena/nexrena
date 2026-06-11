@@ -10,6 +10,7 @@ import {
   ClientNavButton,
   type ClientPortalView,
 } from '@/components/client-nav'
+import { isCalendlyEnabled } from '@/lib/calendly'
 
 type Props = {
   activeView: ClientPortalView
@@ -35,7 +36,13 @@ export function ClientPortalShell({
     setDrawerOpen(false)
   }
 
-  const viewTitle = CLIENT_NAV_ITEMS.find((item) => item.id === activeView)?.label ?? 'Home'
+  const navItems = CLIENT_NAV_ITEMS.filter(
+    (item) => item.id !== 'schedule' || isCalendlyEnabled(),
+  )
+  const drawerItems = MOBILE_DRAWER_ITEMS.filter(
+    (item) => item.id !== 'schedule' || isCalendlyEnabled(),
+  )
+  const viewTitle = navItems.find((item) => item.id === activeView)?.label ?? 'Home'
 
   return (
     <div className="min-h-screen bg-[#111418] flex">
@@ -52,7 +59,7 @@ export function ClientPortalShell({
         </div>
 
         <nav className="relative flex-1 px-2 py-4 space-y-1 overflow-y-auto">
-          {CLIENT_NAV_ITEMS.map((item) => (
+          {navItems.map((item) => (
             <ClientNavButton
               key={item.id}
               item={item}
@@ -113,7 +120,7 @@ export function ClientPortalShell({
             type="button"
             onClick={() => setDrawerOpen(true)}
             className={`flex flex-col items-center gap-1 px-2 py-2 flex-1 min-w-0 rounded-xl transition-colors ${
-              MOBILE_DRAWER_ITEMS.some((item) => item.id === activeView)
+              drawerItems.some((item) => item.id === activeView)
                 ? 'text-gold'
                 : 'text-slate-500 hover:text-slate-300'
             }`}
@@ -145,7 +152,7 @@ export function ClientPortalShell({
               </button>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              {MOBILE_DRAWER_ITEMS.map((item) => (
+              {drawerItems.map((item) => (
                 <ClientNavButton
                   key={item.id}
                   item={item}

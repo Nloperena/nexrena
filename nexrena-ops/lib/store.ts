@@ -58,7 +58,16 @@ export function useProjects() {
     catch (e) { console.error(e) }
   }, [])
 
-  return { projects, add, edit, remove }
+  const deliver = useCallback(async (id: string) => {
+    const result = await api.patch<{ project: Project; balanceInvoice: Invoice | null }>(
+      `/projects/${id}/deliver`,
+      {},
+    )
+    setProjects((prev) => prev.map((x) => (x.id === id ? result.project : x)))
+    return result
+  }, [])
+
+  return { projects, add, edit, remove, deliver }
 }
 
 export function useInvoices() {
@@ -92,7 +101,20 @@ export function useInvoices() {
     catch (e) { console.error(e) }
   }, [])
 
-  return { invoices, add, edit, remove }
+  const splitDeposit = useCallback(async (payload: {
+    total: number
+    projectId: string
+    contactId: string
+    description?: string
+    taxRate?: number
+    netTerms?: string
+  }) => {
+    const result = await api.post<{ deposit: Invoice; balance: Invoice }>('/invoices/split-deposit', payload)
+    setInvoices((prev) => [...prev, result.deposit, result.balance])
+    return result
+  }, [])
+
+  return { invoices, add, edit, remove, splitDeposit }
 }
 
 export function useLeads() {

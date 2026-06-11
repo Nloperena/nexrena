@@ -32,6 +32,7 @@ import { ClientMessagesThreadView } from '@/components/client-messages-thread-vi
 import { ClientWebsitesSection } from '@/components/client-websites-section'
 import { ClientFormHistorySection } from '@/components/client-form-history-section'
 import { ClientSettingsView } from '@/components/client-settings-view'
+import { ClientScheduleView } from '@/components/client-schedule-view'
 import { ClientPortalShell } from '@/components/client-portal-shell'
 import type { ClientPortalView } from '@/components/client-nav'
 import type { PortalResource } from '@/lib/client-resource-utils'
@@ -225,6 +226,7 @@ export function ClientDashboard({ onSignOut }: Props) {
             <ClientDashboardStats stats={stats} />
             <ClientActionCards
               onMessage={() => setActiveView('messages')}
+              onSchedule={() => setActiveView('schedule')}
               onStartRequest={() => setRequestOpen(true)}
               onUpload={() => setUploadOpen(true)}
               onViewBilling={() => setActiveView('billing')}
@@ -267,6 +269,9 @@ export function ClientDashboard({ onSignOut }: Props) {
           />
         )
 
+      case 'schedule':
+        return <ClientScheduleView account={account} />
+
       case 'files':
         return <ClientFilesView />
 
@@ -289,12 +294,14 @@ export function ClientDashboard({ onSignOut }: Props) {
             <ClientWorkStatusSection
               activeProjects={activeProjects}
               serviceRequests={serviceRequests}
+              invoices={invoices}
               onStartRequest={() => setRequestOpen(true)}
               variant="projects"
             />
             <ClientWorkStatusSection
               activeProjects={activeProjects}
               serviceRequests={serviceRequests}
+              invoices={invoices}
               onStartRequest={() => setRequestOpen(true)}
               variant="requests"
             />

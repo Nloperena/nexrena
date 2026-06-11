@@ -6,6 +6,15 @@ import { ProjectIntakeForm } from '../components/ProjectIntakeForm';
 import { heroImages } from '../data/hero-images';
 import { webPageSchema } from '../lib/schema';
 import { projectIntakeCta } from '../data/cta';
+import { CalendlyBookButton } from '../components/CalendlyBookButton';
+import {
+  CALENDLY_EMBED_STYLE,
+  isCalendlyEnabled,
+  mailtoFallback,
+} from '../lib/calendly';
+
+const bookBtnClass =
+  'group inline-flex items-center gap-3 font-mono text-[13px] text-[var(--gold)] border border-[var(--gold)] px-6 py-3 hover:bg-[var(--gold)] hover:text-[var(--obsidian)] transition-colors';
 
 const site = 'https://nexrena.com';
 const schema = webPageSchema({
@@ -59,17 +68,39 @@ const schema = webPageSchema({
 
             <div class="pt-8 border-t border-[var(--slate-800)]">
               <span class="font-mono text-[10px] text-[var(--gold-dim)] uppercase tracking-widest block mb-3">Prefer to talk?</span>
-              <a 
-                href="https://cal.com/nexrena/discovery" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                class="group inline-flex items-center gap-3 font-mono text-[13px] text-[var(--gold)] border border-[var(--gold)] px-6 py-3 hover:bg-[var(--gold)] hover:text-[var(--obsidian)] transition-colors"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-                </svg>
-                Book a discovery call
-              </a>
+              {isCalendlyEnabled() ? (
+                CALENDLY_EMBED_STYLE === 'popup' ? (
+                  <CalendlyBookButton client:load className={bookBtnClass}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                    Book a call
+                  </CalendlyBookButton>
+                ) : (
+                  <a href="/schedule/" class={bookBtnClass}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                    Book a call
+                  </a>
+                )
+              ) : (
+                <a href={mailtoFallback()} class={bookBtnClass}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                  Email to book a call
+                </a>
+              )}
             </div>
 
             <div class="bg-[var(--slate-900)] border border-[var(--slate-800)] p-6 mt-4">

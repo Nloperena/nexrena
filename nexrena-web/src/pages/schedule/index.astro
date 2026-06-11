@@ -1,0 +1,74 @@
+---
+import Layout from '../../components/layout/Layout.astro';
+import PageHero from '../../components/sections/PageHero.astro';
+import { CalendlyInline } from '../../components/CalendlyInline';
+import { CalendlyBookButton } from '../../components/CalendlyBookButton';
+import { heroImages } from '../../data/hero-images';
+import { webPageSchema } from '../../lib/schema';
+import {
+  CALENDLY_EMBED_STYLE,
+  isCalendlyEnabled,
+  mailtoFallback,
+  CONTACT_EMAIL,
+} from '../../lib/calendly';
+
+const site = 'https://nexrena.com';
+const schema = webPageSchema({
+  name: 'Schedule a call | Nexrena',
+  description: 'Book a discovery call with Nexrena — Orlando and Kissimmee web design and SEO for B2B teams.',
+  url: `${site}/schedule/`,
+});
+
+const bookBtnClass =
+  'group inline-flex items-center gap-3 font-mono text-[13px] text-[var(--gold)] border border-[var(--gold)] px-6 py-3 hover:bg-[var(--gold)] hover:text-[var(--obsidian)] transition-colors';
+---
+
+<Layout
+  title="Schedule a call | Nexrena"
+  description="Book a discovery call with Nexrena. Orlando and Kissimmee web design, SEO, and digital growth for B2B teams."
+  schema={schema}
+>
+  <main>
+    <PageHero
+      eyebrow="SCHEDULE //"
+      title="Book a discovery call."
+      subtitle="30 minutes to understand your goals, current setup, and whether Nexrena is the right fit."
+      variant="short"
+      image={heroImages.contact}
+    />
+
+    <div class="section-container pt-8 pb-24">
+      {isCalendlyEnabled() ? (
+        CALENDLY_EMBED_STYLE === 'popup' ? (
+          <div class="max-w-xl mx-auto text-center border border-[var(--slate-800)] bg-[var(--slate-900)] p-10 reveal">
+            <p class="font-body text-[16px] text-[var(--slate-300)] mb-8">
+              Pick a time that works — we&apos;ll confirm by email.
+            </p>
+            <CalendlyBookButton client:load className={bookBtnClass}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+              Book a call
+            </CalendlyBookButton>
+          </div>
+        ) : (
+          <div class="reveal max-w-4xl mx-auto">
+            <CalendlyInline client:load />
+          </div>
+        )
+      ) : (
+        <div class="max-w-xl mx-auto text-center border border-[var(--slate-800)] bg-[var(--slate-900)] p-10 reveal">
+          <p class="font-body text-[16px] text-[var(--slate-300)] mb-6">
+            Scheduling is not available yet. Email us to book a call.
+          </p>
+          <a href={mailtoFallback()} class={bookBtnClass}>
+            {CONTACT_EMAIL}
+          </a>
+        </div>
+      )}
+    </div>
+  </main>
+</Layout>

@@ -1,9 +1,12 @@
 'use client'
 
-type ActionId = 'message' | 'request' | 'upload' | 'billing'
+import { isCalendlyEnabled } from '@/lib/calendly'
+
+type ActionId = 'message' | 'schedule' | 'request' | 'upload' | 'billing'
 
 type Props = {
   onMessage: () => void
+  onSchedule: () => void
   onStartRequest: () => void
   onUpload: () => void
   onViewBilling: () => void
@@ -22,6 +25,12 @@ const ACTIONS: {
     subtitle: 'Questions, updates, or quick help',
     icon: '✉',
     primary: true,
+  },
+  {
+    id: 'schedule',
+    title: 'Schedule with Nico',
+    subtitle: 'Book a discovery call',
+    icon: '📅',
   },
   {
     id: 'request',
@@ -45,16 +54,22 @@ const ACTIONS: {
 
 export function ClientActionCards({
   onMessage,
+  onSchedule,
   onStartRequest,
   onUpload,
   onViewBilling,
 }: Props) {
   const handlers: Record<ActionId, () => void> = {
     message: onMessage,
+    schedule: onSchedule,
     request: onStartRequest,
     upload: onUpload,
     billing: onViewBilling,
   }
+
+  const visibleActions = ACTIONS.filter(
+    (action) => action.id !== 'schedule' || isCalendlyEnabled(),
+  )
 
   return (
     <section>
@@ -62,7 +77,7 @@ export function ClientActionCards({
         What would you like to do?
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {ACTIONS.map((action) => (
+        {visibleActions.map((action) => (
           <button
             key={action.id}
             type="button"

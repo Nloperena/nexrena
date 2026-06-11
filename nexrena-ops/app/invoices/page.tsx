@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-import { useInvoices, useContacts, genId, formatCurrency, formatDate, nextInvoiceNumber, invoiceTotal } from '@/lib/store'
+import { useInvoices, useContacts, useProjects, genId, formatCurrency, formatDate, nextInvoiceNumber, invoiceTotal } from '@/lib/store'
 import { Invoice, InvoiceStatus } from '@/lib/types'
 import { PageHeader, Badge, Btn, Modal, StatCard, SectionCard, EmptyState } from '@/components/ui'
 import { InvoiceForm } from '@/components/invoice-form'
@@ -9,8 +9,9 @@ import { InvoiceForm } from '@/components/invoice-form'
 const STATUSES: InvoiceStatus[] = ['draft', 'sent', 'paid', 'overdue', 'cancelled']
 
 export default function InvoicesPage() {
-  const { invoices, add, edit, remove } = useInvoices()
+  const { invoices, add, edit, remove, splitDeposit } = useInvoices()
   const { contacts } = useContacts()
+  const { projects } = useProjects()
   const [modal, setModal] = useState<null | 'add' | Invoice>(null)
   const [filter, setFilter] = useState<'all' | InvoiceStatus>('all')
   const [search, setSearch] = useState('')
@@ -111,6 +112,7 @@ export default function InvoicesPage() {
                 <th>Invoice #</th>
                 <th>Client</th>
                 <th>Project</th>
+                <th>Phase</th>
                 <th>Issue Date</th>
                 <th>Due Date</th>
                 <th>Status</th>
@@ -130,6 +132,7 @@ export default function InvoicesPage() {
                       {inv.clientCompany && <p className="text-xs text-slate-400 mt-0.5">{inv.clientCompany}</p>}
                     </td>
                     <td className="text-slate-400 text-xs">{inv.projectName ?? '—'}</td>
+                    <td className="text-slate-400 text-xs capitalize">{inv.invoicePhase ?? 'full'}</td>
                     <td className="tabular-nums">{formatDate(inv.issueDate)}</td>
                     <td className={`tabular-nums ${overdue ? 'text-red-400' : ''}`}>{formatDate(inv.dueDate)}</td>
                     <td><Badge label={effectiveStatus(inv)} /></td>
@@ -151,7 +154,7 @@ export default function InvoicesPage() {
                 )
               })}
               {filtered.length === 0 && (
-                <tr><td colSpan={8}><EmptyState message="No invoices found." /></td></tr>
+                <tr><td colSpan={9}><EmptyState message="No invoices found." /></td></tr>
               )}
             </tbody>
           </table>
@@ -178,9 +181,11 @@ export default function InvoicesPage() {
           <InvoiceForm
             initial={modal === 'add' ? undefined : modal as Invoice}
             onSave={modal === 'add' ? add : edit}
+            onSplitDeposit={splitDeposit}
             onClose={() => setModal(null)}
             nextNumber={nextNum}
-            contacts={contacts} />
+            contacts={contacts}
+            projects={projects} />
         </Modal>
       )}
     </div>

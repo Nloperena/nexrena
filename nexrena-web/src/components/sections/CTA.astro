@@ -4,6 +4,7 @@
   Creates a massive sticky footer experience that pulls up from the bottom.
 */
 import { projectIntakeCta } from '../../data/cta';
+import { isCalendlyEnabled, mailtoFallback } from '../../lib/calendly';
 ---
 
 <section id="cta-takeover" class="relative w-full bg-[var(--gold)] flex flex-col justify-between" style="min-height: 100vh; color: var(--obsidian);">
@@ -36,6 +37,26 @@ import { projectIntakeCta } from '../../data/cta';
         <a href="/work/" class="font-mono text-[13px] uppercase tracking-widest hover:opacity-70 transition-opacity" data-cta-zone="footer-cta" data-cta-role="secondary">
           See Case Studies
         </a>
+
+        {isCalendlyEnabled() ? (
+          <a
+            href="/schedule/"
+            class="font-mono text-[13px] uppercase tracking-widest hover:opacity-70 transition-opacity border border-[var(--obsidian)]/30 px-5 py-2 rounded-full"
+            data-cta-zone="footer-cta"
+            data-cta-role="secondary"
+          >
+            Book a call
+          </a>
+        ) : (
+          <a
+            href={mailtoFallback()}
+            class="font-mono text-[13px] uppercase tracking-widest hover:opacity-70 transition-opacity"
+            data-cta-zone="footer-cta"
+            data-cta-role="secondary"
+          >
+            Email us
+          </a>
+        )}
       </div>
     </div>
     
