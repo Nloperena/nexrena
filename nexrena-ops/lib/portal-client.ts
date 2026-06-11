@@ -104,13 +104,46 @@ export function fetchPortalServiceRequests() {
   return portalFetch<import('./portal-types').PortalServiceRequest[]>('/api/portal/service-requests')
 }
 
-export function fetchPortalAssets() {
-  return portalFetch<import('./portal-types').PortalAsset[]>('/api/portal/assets')
+export function fetchPortalAssets(folderId?: string | null) {
+  let path = '/api/portal/assets'
+  if (typeof folderId === 'string' && folderId) {
+    path += `?folderId=${encodeURIComponent(folderId)}`
+  }
+  return portalFetch<import('./portal-types').PortalAsset[]>(path)
+}
+
+export function fetchPortalFolders() {
+  return portalFetch<import('./portal-types').PortalFolder[]>('/api/portal/folders')
+}
+
+export function createPortalFolder(name: string, parentId: string | null = null) {
+  return portalFetch<import('./portal-types').PortalFolder>('/api/portal/folders', {
+    method: 'POST',
+    body: JSON.stringify({ name, parentId }),
+  })
+}
+
+export function renamePortalFolder(id: string, name: string) {
+  return portalFetch<import('./portal-types').PortalFolder>(`/api/portal/folders/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ name }),
+  })
+}
+
+export function deletePortalFolder(id: string) {
+  return portalFetch<void>(`/api/portal/folders/${id}`, { method: 'DELETE' })
+}
+
+export function movePortalAsset(id: string, folderId: string | null) {
+  return portalFetch<import('./portal-types').PortalAsset>(`/api/portal/assets/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ folderId: folderId ?? 'root' }),
+  })
 }
 
 export async function uploadPortalAsset(
   file: File,
-  options?: { serviceRequestId?: string; category?: string; note?: string },
+  options?: { serviceRequestId?: string; category?: string; note?: string; folderId?: string | null },
 ) {
   const token = getPortalToken()
   const form = new FormData()
@@ -118,6 +151,7 @@ export async function uploadPortalAsset(
   if (options?.serviceRequestId) form.append('serviceRequestId', options.serviceRequestId)
   if (options?.category) form.append('category', options.category)
   if (options?.note) form.append('note', options.note)
+  if (options?.folderId) form.append('folderId', options.folderId)
 
   const headers = new Headers()
   if (token) headers.set('Authorization', `Bearer ${token}`)
@@ -155,20 +189,29 @@ export function createPortalCheckout(invoiceId: string) {
   })
 }
 
-export function sendPortalMessage(payload: { subject?: string; message: string }) {
-  return portalFetch<{ id: string; subject: string; message: string; status: string; createdAt: string }>(
+export function sendPortalMessage(payload: { subject?: string; message: string; threadId?: string }) {
+  return portalFetch<import('./portal-types').PortalMessage>('/api/portal/messages', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function fetchPortalMessageThreads() {
+  return portalFetch<{ threads: import('./portal-types').PortalMessageThread[]; unreadCount: number }>(
     '/api/portal/messages',
-    {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    },
   )
 }
 
+export function markPortalThreadRead(threadId: string) {
+  return portalFetch<{ ok: boolean }>(`/api/portal/messages/threads/${threadId}/read`, {
+    method: 'PATCH',
+    body: JSON.stringify({}),
+  })
+}
+
+/** @deprecated use fetchPortalMessageThreads */
 export function fetchPortalMessages() {
-  return portalFetch<{ id: string; subject: string; message: string; status: string; createdAt: string }[]>(
-    '/api/portal/messages',
-  )
+  return fetchPortalMessageThreads().then((data) => data.threads.flatMap((t) => t.messages))
 }
 
 export function fetchPortalResources() {

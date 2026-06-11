@@ -3,13 +3,15 @@
 import { formatDate } from '@/lib/store'
 import { categoryLabel, formatFileBytes, isImageAsset } from '@/lib/portal-file-utils'
 import type { PortalAsset } from '@/lib/portal-types'
+import type { ReactNode } from 'react'
 
 type Props = {
   assets: PortalAsset[]
   emptyMessage?: string
+  renderActions?: (asset: PortalAsset) => ReactNode
 }
 
-export function PortalFileList({ assets, emptyMessage = 'No files yet.' }: Props) {
+export function PortalFileList({ assets, emptyMessage = 'No files yet.', renderActions }: Props) {
   if (assets.length === 0) {
     return <p className="text-sm text-slate-500">{emptyMessage}</p>
   }
@@ -37,14 +39,17 @@ export function PortalFileList({ assets, emptyMessage = 'No files yet.' }: Props
             </p>
             {asset.note && <p className="text-xs text-slate-400 mt-1 line-clamp-2">{asset.note}</p>}
           </div>
-          <a
-            href={asset.blobUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-gold shrink-0 hover:underline pt-1"
-          >
-            Open
-          </a>
+          <div className="flex flex-col items-end gap-2 shrink-0">
+            <a
+              href={asset.blobUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-gold hover:underline pt-1"
+            >
+              Open
+            </a>
+            {renderActions?.(asset)}
+          </div>
         </li>
       ))}
     </ul>

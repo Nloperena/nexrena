@@ -58,6 +58,7 @@ export type PortalAsset = {
   contactId: string
   serviceRequestId?: string | null
   projectId?: string | null
+  folderId?: string | null
   filename: string
   contentType: string
   sizeBytes: number
@@ -66,6 +67,36 @@ export type PortalAsset = {
   category?: PortalAssetCategory | string | null
   note?: string | null
   createdAt: string
+}
+
+export type PortalFolder = {
+  id: string
+  contactId: string
+  name: string
+  parentId: string | null
+  createdAt: string
+}
+
+export type PortalMessage = {
+  id: string
+  subject: string
+  message: string
+  status: string
+  threadId: string
+  replyToMessageId?: string | null
+  direction: 'client' | 'admin'
+  readByClient: boolean
+  readByAdmin: boolean
+  createdAt: string
+}
+
+export type PortalMessageThread = {
+  threadId: string
+  subject: string
+  updatedAt: string
+  unreadByClient: number
+  unreadByAdmin: number
+  messages: PortalMessage[]
 }
 
 export type PortalServiceRequest = {

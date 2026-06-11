@@ -184,7 +184,7 @@ async function seed() {
   const warrenResources = [
     { id: 'res-warren-ttag-github', type: 'github', title: 'TTAG Live Website', url: 'https://github.com/Nloperena/TTAG.git', description: 'Your live Two Azalea Group website code — Astro site deployed to Vercel.', linkUpgrade: false },
     { id: 'res-warren-ttag-live', type: 'live_site', title: 'TTAG Live Site', url: 'https://ttag-fawn.vercel.app', description: 'Your public website at ttag-fawn.vercel.app.', linkUpgrade: false },
-    { id: 'res-warren-ttag-upgrade', type: 'github', title: 'Website Upgrade (Astro rebuild)', url: 'https://github.com/Nloperena/TTAG.git', description: 'Astro static one-pager delivered Dec 2025 — same codebase as your live site.', linkUpgrade: true },
+    { id: 'res-warren-ttag-upgrade', type: 'github', title: 'Website Upgrade (Astro rebuild)', url: 'https://github.com/Nloperena/LoperenaPortfolio2026/tree/main/astro-rebuild', description: 'Astro static one-pager delivered Dec 2025 — source in the LoperenaPortfolio2026 astro-rebuild folder.', linkUpgrade: true },
   ]
   for (const r of warrenResources) {
     await prisma.clientResource.upsert({

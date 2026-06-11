@@ -97,12 +97,12 @@ export function ClientMessageModal({
     <Modal title="Message Nico" onClose={handleClose}>
       {success ? (
         <p className="text-sm text-emerald-400 py-4">
-          Message sent. Nico has been notified by email.
+          Message sent. Check the Messages section for Nico&apos;s reply.
         </p>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-5">
           <p className="text-sm text-slate-400">
-            Pick a topic and send a note — Nico will reply by email.
+            Pick a topic and send a note — Nico will reply in your Messages section below.
           </p>
 
           <fieldset>

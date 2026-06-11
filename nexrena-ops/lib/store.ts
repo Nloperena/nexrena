@@ -276,13 +276,19 @@ export function useServiceRequests() {
 
 export function usePortalAssets(contactId?: string) {
   const [assets, setAssets] = useState<PortalAssetRecord[]>([])
+  const [folders, setFolders] = useState<import('./types').PortalFolderRecord[]>([])
 
   useEffect(() => {
     const path = contactId ? `/portal-assets?contactId=${encodeURIComponent(contactId)}` : '/portal-assets'
-    api.get<PortalAssetRecord[]>(path).then(setAssets).catch(console.error)
+    api.get<{ assets: PortalAssetRecord[]; folders: import('./types').PortalFolderRecord[] }>(path)
+      .then((data) => {
+        setAssets(data.assets ?? [])
+        setFolders(data.folders ?? [])
+      })
+      .catch(console.error)
   }, [contactId])
 
-  return { assets }
+  return { assets, folders }
 }
 
 export function useClientResources(contactId?: string) {
@@ -327,21 +333,29 @@ export function useClientResources(contactId?: string) {
 }
 
 export function useMessages() {
-  const [messages, setMessages] = useState<ClientMessage[]>([])
+  const [threads, setThreads] = useState<import('./types').MessageThread[]>([])
+  const [unreadCount, setUnreadCount] = useState(0)
 
-  useEffect(() => {
-    api.get<ClientMessage[]>('/messages').then(setMessages).catch(console.error)
+  const reload = useCallback(() => {
+    api.get<{ threads: import('./types').MessageThread[]; unreadCount: number }>('/messages/threads')
+      .then((data) => {
+        setThreads(data.threads)
+        setUnreadCount(data.unreadCount)
+      })
+      .catch(console.error)
   }, [])
+
+  useEffect(() => { reload() }, [reload])
+
+  const messages = threads.flatMap((t) => t.messages)
 
   const updateStatus = useCallback(async (id: string, status: ClientMessage['status']) => {
-    setMessages(prev => prev.map(x => x.id === id ? { ...x, status } : x))
     try { await api.patch(`/messages/${id}`, { status }) }
     catch (e) { console.error(e) }
-  }, [])
+    reload()
+  }, [reload])
 
-  const unreadCount = messages.filter(m => m.status === 'unread').length
-
-  return { messages, updateStatus, unreadCount }
+  return { messages, threads, updateStatus, unreadCount, reload }
 }
 
 // ── utils ────────────────────────────────────────────────────────────────

@@ -8,6 +8,7 @@ import { notifyNewLead } from '../lib/notify'
 import { invoiceTotal, parseLineItems, portalInvoiceWhere } from '../lib/invoice-utils'
 import portalServiceRequestRoutes from './portal-service-requests'
 import portalAssetRoutes from './portal-assets'
+import portalFolderRoutes from './portal-folders'
 import portalBillingRoutes from './portal-billing'
 import portalMessageRoutes from './portal-messages'
 import portalResourceRoutes from './portal-resources'
@@ -16,6 +17,7 @@ const router = Router()
 
 router.use('/service-requests', portalServiceRequestRoutes)
 router.use('/assets', portalAssetRoutes)
+router.use('/folders', portalFolderRoutes)
 router.use('/billing', portalBillingRoutes)
 router.use('/messages', portalMessageRoutes)
 router.use('/resources', portalResourceRoutes)

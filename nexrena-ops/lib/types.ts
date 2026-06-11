@@ -200,6 +200,7 @@ export interface PortalAssetRecord {
   contactCompany?: string
   contactEmail?: string
   serviceRequestId?: string | null
+  folderId?: string | null
   filename: string
   contentType: string
   sizeBytes: number
@@ -207,6 +208,17 @@ export interface PortalAssetRecord {
   pathname: string
   category?: string | null
   note?: string | null
+  createdAt: string
+}
+
+export interface PortalFolderRecord {
+  id: string
+  contactId: string
+  contactName?: string
+  contactCompany?: string
+  contactEmail?: string
+  name: string
+  parentId: string | null
   createdAt: string
 }
 
@@ -242,7 +254,25 @@ export interface ClientMessage {
   subject: string
   message: string
   status: ClientMessageStatus
+  threadId: string
+  replyToMessageId?: string | null
+  direction: 'client' | 'admin'
+  readByClient: boolean
+  readByAdmin: boolean
   createdAt: string
+}
+
+export interface MessageThread {
+  threadId: string
+  subject: string
+  clientName?: string | null
+  clientEmail?: string | null
+  companyName?: string | null
+  contactId?: string | null
+  updatedAt: string
+  unreadByClient: number
+  unreadByAdmin: number
+  messages: ClientMessage[]
 }
 
 // ── Client portal resources ────────────────────────────────────────────────

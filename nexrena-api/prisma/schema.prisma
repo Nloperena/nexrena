@@ -104,11 +104,26 @@ model ServiceRequest {
   @@map("service_requests")
 }
 
+model PortalFolder {
+  id        String   @id @default(cuid())
+  contactId String   @map("contact_id")
+  name      String
+  parentId  String?  @map("parent_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  parent   PortalFolder?  @relation("FolderTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children PortalFolder[] @relation("FolderTree")
+  assets   PortalAsset[]
+
+  @@map("portal_folders")
+}
+
 model PortalAsset {
   id               String   @id @default(cuid())
   contactId        String   @map("contact_id")
   serviceRequestId String?  @map("service_request_id")
   projectId        String?  @map("project_id")
+  folderId         String?  @map("folder_id")
   filename         String
   contentType      String   @map("content_type")
   sizeBytes        Int      @map("size_bytes")
@@ -119,6 +134,7 @@ model PortalAsset {
   createdAt        DateTime @default(now()) @map("created_at")
 
   serviceRequest ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: SetNull)
+  folder         PortalFolder?   @relation(fields: [folderId], references: [id], onDelete: SetNull)
 
   @@map("portal_assets")
 }
@@ -139,16 +155,21 @@ model ClientResource {
 
 // ── Client portal messages ────────────────────────────────────────────────
 model ClientMessage {
-  id              String   @id @default(cuid())
-  portalAccountId String?  @map("portal_account_id")
-  contactId       String?  @map("contact_id")
-  clientName      String?  @map("client_name")
-  clientEmail     String?  @map("client_email")
-  companyName     String?  @map("company_name")
-  subject         String
-  message         String
-  status          String   @default("unread")
-  createdAt       DateTime @default(now()) @map("created_at")
+  id               String   @id @default(cuid())
+  portalAccountId  String?  @map("portal_account_id")
+  contactId        String?  @map("contact_id")
+  clientName       String?  @map("client_name")
+  clientEmail      String?  @map("client_email")
+  companyName      String?  @map("company_name")
+  subject          String
+  message          String
+  status           String   @default("unread")
+  threadId         String?  @map("thread_id")
+  replyToMessageId String?  @map("reply_to_message_id")
+  direction        String   @default("client")
+  readByClient     Boolean  @default(true) @map("read_by_client")
+  readByAdmin      Boolean  @default(false) @map("read_by_admin")
+  createdAt        DateTime @default(now()) @map("created_at")
 
   @@map("client_messages")
 }

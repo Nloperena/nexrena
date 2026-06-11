@@ -4,15 +4,32 @@ import { useMemo, useState } from 'react'
 import { useContacts, usePortalAssets, formatDate } from '@/lib/store'
 import { categoryLabel, formatFileBytes, isImageAsset } from '@/lib/portal-file-utils'
 import { PageHeader, SectionCard, EmptyState, selectCls } from '@/components/ui'
+import type { PortalFolderRecord } from '@/lib/types'
+
+function folderPath(folders: PortalFolderRecord[], folderId: string | null): string {
+  if (!folderId) return 'Root'
+  const chain: string[] = []
+  let cursor = folders.find((f) => f.id === folderId) ?? null
+  while (cursor) {
+    chain.unshift(cursor.name)
+    cursor = cursor.parentId ? folders.find((f) => f.id === cursor!.parentId) ?? null : null
+  }
+  return chain.join(' / ') || 'Root'
+}
 
 export default function ClientFilesPage() {
   const { contacts } = useContacts()
   const [contactFilter, setContactFilter] = useState('')
-  const { assets } = usePortalAssets(contactFilter || undefined)
+  const { assets, folders } = usePortalAssets(contactFilter || undefined)
 
   const sortedContacts = useMemo(
     () => [...contacts].sort((a, b) => (a.company || a.name).localeCompare(b.company || b.name)),
     [contacts],
+  )
+
+  const clientFolders = useMemo(
+    () => folders.filter((f) => !contactFilter || f.contactId === contactFilter),
+    [folders, contactFilter],
   )
 
   return (
@@ -40,11 +57,26 @@ export default function ClientFilesPage() {
         </select>
       </div>
 
+      {clientFolders.length > 0 && (
+        <SectionCard>
+          <p className="text-[10px] uppercase tracking-widest text-slate-500 mb-3">Folder structure</p>
+          <ul className="text-sm text-slate-400 space-y-1 mb-2">
+            {clientFolders.map((folder) => (
+              <li key={folder.id}>
+                <span className="text-white">{folder.contactCompany || folder.contactName}</span>
+                {' · '}{folderPath(clientFolders, folder.id)}
+              </li>
+            ))}
+          </ul>
+        </SectionCard>
+      )}
+
       <SectionCard>
         <table className="nx-table">
           <thead>
             <tr>
               <th>Client</th>
+              <th>Folder</th>
               <th>File</th>
               <th>Category</th>
               <th>Note</th>
@@ -59,6 +91,9 @@ export default function ClientFilesPage() {
                 <td>
                   <p className="text-white font-medium">{asset.contactName ?? 'Unknown'}</p>
                   <p className="text-xs text-slate-500">{asset.contactCompany || asset.contactEmail}</p>
+                </td>
+                <td className="text-slate-400 text-sm">
+                  {folderPath(clientFolders.filter((f) => f.contactId === asset.contactId), asset.folderId ?? null)}
                 </td>
                 <td>
                   <div className="flex items-center gap-3">
@@ -93,7 +128,7 @@ export default function ClientFilesPage() {
             ))}
             {assets.length === 0 && (
               <tr>
-                <td colSpan={7}>
+                <td colSpan={8}>
                   <EmptyState message="No client uploads yet. Files appear here when clients use Upload files in the portal." />
                 </td>
               </tr>

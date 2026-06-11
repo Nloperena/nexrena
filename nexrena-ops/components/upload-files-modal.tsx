@@ -10,9 +10,10 @@ type Props = {
   open: boolean
   onClose: () => void
   onUploaded: (asset: PortalAsset) => void
+  folderId?: string | null
 }
 
-export function UploadFilesModal({ open, onClose, onUploaded }: Props) {
+export function UploadFilesModal({ open, onClose, onUploaded, folderId = null }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragOver, setDragOver] = useState(false)
   const [category, setCategory] = useState('')
@@ -43,6 +44,7 @@ export function UploadFilesModal({ open, onClose, onUploaded }: Props) {
       const asset = await uploadPortalAsset(file, {
         category: category || undefined,
         note: note || undefined,
+        folderId,
       })
       onUploaded(asset)
       setSuccess(`${file.name} uploaded`)
@@ -52,7 +54,7 @@ export function UploadFilesModal({ open, onClose, onUploaded }: Props) {
     } finally {
       setLoading(false)
     }
-  }, [category, note, onUploaded])
+  }, [category, note, folderId, onUploaded])
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]

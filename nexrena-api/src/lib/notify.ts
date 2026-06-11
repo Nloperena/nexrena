@@ -170,3 +170,67 @@ export async function notifyClientMessage(data: ClientMessageData): Promise<void
     console.error('[notify] Failed to send client message notification:', err)
   }
 }
+
+interface AdminReplyData {
+  clientName: string
+  clientEmail: string
+  subject: string
+  message: string
+}
+
+export async function notifyAdminReply(data: AdminReplyData): Promise<void> {
+  if (!transporter) {
+    console.log('[notify] SMTP not configured — skipping admin reply notification')
+    return
+  }
+
+  const portalUrl = (process.env.PORTAL_URL || 'https://nexrena-ops.vercel.app').replace(/\/$/, '')
+  const subject = `Reply from Nico: ${data.subject}`
+  const safeName = escapeHtml(data.clientName)
+  const safeSubject = escapeHtml(data.subject)
+  const safeMessage = escapeHtml(data.message)
+
+  const text = [
+    `Hi ${data.clientName},`,
+    ``,
+    `Nico replied to your portal message "${data.subject}":`,
+    ``,
+    data.message,
+    ``,
+    `---`,
+    `View the conversation: ${portalUrl}`,
+  ].join('\n')
+
+  const html = `
+    <div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background: #0C0F12; padding: 24px 32px; border-bottom: 2px solid #C9A96E;">
+        <h1 style="color: #FDFCFA; font-size: 20px; margin: 0; font-weight: 400;">
+          Reply from Nico
+        </h1>
+      </div>
+      <div style="padding: 24px 32px; background: #141820; color: #A8B5C4;">
+        <p style="margin: 0 0 16px; color: #FDFCFA;">Hi ${safeName},</p>
+        <p style="margin: 0 0 8px; color: #7A8A9E; font-size: 12px; text-transform: uppercase;">Re: ${safeSubject}</p>
+        <div style="padding: 16px; background: #1E2530; border-left: 3px solid #C9A96E; border-radius: 4px;">
+          <p style="margin: 0; color: #D4DCE6; white-space: pre-wrap; line-height: 1.6;">${safeMessage}</p>
+        </div>
+        <p style="margin-top: 24px; font-size: 12px; color: #3D4A5C;">
+          <a href="${portalUrl}" style="color: #C9A96E;">Open your client portal</a>
+        </p>
+      </div>
+    </div>
+  `
+
+  try {
+    await transporter.sendMail({
+      from: NOTIFY_FROM,
+      to: data.clientEmail,
+      subject,
+      text,
+      html,
+    })
+    console.log(`[notify] Admin reply notification sent to ${data.clientEmail}`)
+  } catch (err) {
+    console.error('[notify] Failed to send admin reply notification:', err)
+  }
+}

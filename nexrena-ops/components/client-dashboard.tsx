@@ -1,12 +1,12 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { PortalAccount, PortalInvoice, PortalProject, PortalProposal, PortalAsset, PortalServiceRequest } from '@/lib/portal-types'
+import type { PortalAccount, PortalInvoice, PortalProject, PortalProposal, PortalAsset, PortalServiceRequest, PortalMessageThread } from '@/lib/portal-types'
 import {
   fetchPortalInvoice,
   fetchPortalInvoices,
   fetchPortalMe,
-  fetchPortalMessages,
+  fetchPortalMessageThreads,
   fetchPortalProjects,
   fetchPortalProposals,
   fetchPortalServiceRequests,
@@ -31,7 +31,8 @@ import { ClientActionCards } from '@/components/client-action-cards'
 import { ClientActivityFeed } from '@/components/client-activity-feed'
 import { ClientCollapsibleSection } from '@/components/client-collapsible-section'
 import { UploadFilesModal } from '@/components/upload-files-modal'
-import { PortalFileList } from '@/components/portal-file-list'
+import { PortalAssetsManager } from '@/components/portal-assets-manager'
+import { ClientMessagesThreadView } from '@/components/client-messages-thread-view'
 import { ClientWebsitesSection } from '@/components/client-websites-section'
 import type { PortalResource } from '@/lib/client-resource-utils'
 import { StatusChip, proposalStatusChip } from '@/components/status-chip'
@@ -74,7 +75,8 @@ export function ClientDashboard({ onSignOut }: Props) {
   const [serviceRequests, setServiceRequests] = useState<PortalServiceRequest[]>([])
   const [assets, setAssets] = useState<PortalAsset[]>([])
   const [resources, setResources] = useState<PortalResource[]>([])
-  const [portalMessages, setPortalMessages] = useState<{ id: string; subject: string; createdAt: string }[]>([])
+  const [messageThreads, setMessageThreads] = useState<PortalMessageThread[]>([])
+  const [messageUnread, setMessageUnread] = useState(0)
   const [stripeEnabled, setStripeEnabled] = useState(false)
   const [payingId, setPayingId] = useState<string | null>(null)
   const [paymentError, setPaymentError] = useState<string | null>(null)
@@ -102,7 +104,7 @@ export function ClientDashboard({ onSignOut }: Props) {
         fetchPortalAssets(),
         fetchPortalResources(),
         fetchPortalBillingStatus(),
-        fetchPortalMessages().catch(() => []),
+        fetchPortalMessageThreads().catch(() => ({ threads: [], unreadCount: 0 })),
       ])
       setAccount(me)
       setProjects(projectRows)
@@ -112,7 +114,8 @@ export function ClientDashboard({ onSignOut }: Props) {
       setAssets(assetRows)
       setResources(resourceRows)
       setStripeEnabled(billing.stripeEnabled)
-      setPortalMessages(messages)
+      setMessageThreads(messages.threads)
+      setMessageUnread(messages.unreadCount)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not load your portal.')
     } finally {
@@ -125,6 +128,15 @@ export function ClientDashboard({ onSignOut }: Props) {
   const stats = useMemo(
     () => computePortalStats(invoices, projects, proposals),
     [invoices, projects, proposals],
+  )
+
+  const portalMessages = useMemo(
+    () => messageThreads.flatMap((t) =>
+      t.messages
+        .filter((m) => m.direction === 'client')
+        .map((m) => ({ id: m.id, subject: m.subject, createdAt: m.createdAt })),
+    ),
+    [messageThreads],
   )
 
   const activity = useMemo(
@@ -230,7 +242,7 @@ export function ClientDashboard({ onSignOut }: Props) {
         <div className="flex items-center gap-2">
           <span className="hidden md:inline-flex">
             <Btn size="sm" onClick={() => openMessage({ category: 'other' })}>
-              Message Nico
+              Message Nico{messageUnread > 0 ? ` (${messageUnread})` : ''}
             </Btn>
           </span>
           {account && (
@@ -302,20 +314,26 @@ export function ClientDashboard({ onSignOut }: Props) {
           defaultOpen
           summary={
             assets.length > 0
-              ? `${assets.length} file${assets.length === 1 ? '' : 's'} — upload or download anytime`
+              ? `${assets.length} file${assets.length === 1 ? '' : 's'} — organize in folders`
               : 'Upload logos, photos, or documents anytime'
           }
         >
-          <div className="space-y-4 pt-4">
-            <p className="text-sm text-slate-400">
-              Your logos, photos, copy, and documents — always here when you need them.
-            </p>
-            <Btn size="sm" onClick={() => setUploadOpen(true)}>Upload files</Btn>
-            <PortalFileList
-              assets={assets}
-              emptyMessage="No files yet — upload logos, photos, or documents anytime."
-            />
-          </div>
+          <PortalAssetsManager />
+        </ClientCollapsibleSection>
+
+        <ClientCollapsibleSection
+          id="messages"
+          title="Messages"
+          defaultOpen={messageUnread > 0}
+          summary={
+            messageUnread > 0
+              ? `${messageUnread} new repl${messageUnread === 1 ? 'y' : 'ies'} from Nico`
+              : messageThreads.length > 0
+                ? `${messageThreads.length} conversation${messageThreads.length === 1 ? '' : 's'}`
+                : 'Start a conversation with Nico'
+          }
+        >
+          <ClientMessagesThreadView />
         </ClientCollapsibleSection>
 
         <ClientCollapsibleSection
