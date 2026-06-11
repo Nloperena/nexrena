@@ -5,6 +5,6 @@
     "node": "20.x"
   },
   "scripts": {
-    "heroku-postbuild": "npm install --prefix nexrena-api && npm run build --prefix nexrena-api"
+    "heroku-postbuild": "npm install --prefix nexrena-api --include=dev && npm run build --prefix nexrena-api"
   }
 }
