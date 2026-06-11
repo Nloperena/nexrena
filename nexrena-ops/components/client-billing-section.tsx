@@ -14,12 +14,14 @@ import { formatCurrency, formatDate } from '@/lib/store'
 import { Btn } from '@/components/ui'
 
 const card = 'glass-panel rounded-xl border border-slate-800/60 p-5'
+const MESSAGE_NICO_EMAIL = 'nicholas@nexrena.com'
 
 type Props = {
   invoices: PortalInvoice[]
   stripeEnabled: boolean
   payingId: string | null
   viewLoading: boolean
+  paymentError?: string | null
   onPay: (id: string) => void
   onView: (id: string) => void
 }
@@ -41,6 +43,7 @@ function InvoiceRow({
 }) {
   const status = effectiveInvoiceStatus(inv)
   const canPay = stripeEnabled && (status === 'sent' || status === 'overdue')
+  const isPaying = payingId === inv.id
 
   return (
     <li className={card}>
@@ -64,18 +67,32 @@ function InvoiceRow({
           )}
         </div>
         <div className="flex flex-wrap items-center gap-2 shrink-0">
-          {canPay && (
-            <Btn size="sm" disabled={payingId === inv.id} onClick={() => onPay(inv.id)}>
-              {payingId === inv.id ? '…' : 'Pay now'}
-            </Btn>
-          )}
           {status === 'paid' ? (
             <Btn size="sm" variant="ghost" disabled={viewLoading} onClick={() => onView(inv.id)}>
               Receipt
             </Btn>
+          ) : status === 'overdue' ? (
+            canPay ? (
+              <Btn size="sm" disabled={isPaying} onClick={() => onPay(inv.id)}>
+                {isPaying ? '…' : 'Pay now'}
+              </Btn>
+            ) : (
+              <Btn size="sm" variant="ghost" disabled={viewLoading} onClick={() => onView(inv.id)}>
+                View invoice
+              </Btn>
+            )
+          ) : canPay ? (
+            <>
+              <Btn size="sm" disabled={isPaying} onClick={() => onPay(inv.id)}>
+                {isPaying ? '…' : 'Pay invoice'}
+              </Btn>
+              <Btn size="sm" variant="ghost" disabled={viewLoading} onClick={() => onView(inv.id)}>
+                View
+              </Btn>
+            </>
           ) : (
             <Btn size="sm" variant="ghost" disabled={viewLoading} onClick={() => onView(inv.id)}>
-              View
+              View invoice
             </Btn>
           )}
         </div>
@@ -84,11 +101,27 @@ function InvoiceRow({
   )
 }
 
+function BillingHelpLink() {
+  return (
+    <p className="text-sm text-slate-500">
+      Need help with billing?{' '}
+      <a
+        href={`mailto:${MESSAGE_NICO_EMAIL}`}
+        className="text-gold hover:text-gold-light transition-colors"
+      >
+        Message Nico
+      </a>
+      .
+    </p>
+  )
+}
+
 export function ClientBillingSection({
   invoices,
   stripeEnabled,
   payingId,
   viewLoading,
+  paymentError,
   onPay,
   onView,
 }: Props) {
@@ -98,6 +131,7 @@ export function ClientBillingSection({
   const balance = computeOutstandingBalance(invoices)
   const visible = showAll ? sorted : sorted.slice(0, 3)
   const oldestUnpaid = getOldestUnpaidInvoice(invoices)
+  const showBillingHelp = (!stripeEnabled && outstanding > 0) || Boolean(paymentError)
 
   const payBalance = () => {
     if (!oldestUnpaid) return
@@ -108,7 +142,8 @@ export function ClientBillingSection({
   return (
     <section>
       <h3 className={portalSectionTitleClass}>Billing</h3>
-      <div className="flex flex-col gap-3 mb-4">
+
+      <div className={`${card} space-y-4 mb-4`}>
         <div>
           <p className="text-base text-white font-medium tabular-nums">
             Outstanding balance: {formatCurrency(balance)}
@@ -117,6 +152,7 @@ export function ClientBillingSection({
             {outstanding} unpaid invoice{outstanding === 1 ? '' : 's'} · {paid} paid
           </p>
         </div>
+
         {sorted.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {balance > 0 && (
@@ -137,13 +173,15 @@ export function ClientBillingSection({
             </Btn>
           </div>
         )}
-      </div>
 
-      {!stripeEnabled && outstanding > 0 && (
-        <p className="text-xs text-slate-500 mb-3">
-          Online payment is not configured — contact us to settle your balance.
-        </p>
-      )}
+        {!stripeEnabled && outstanding > 0 && (
+          <p className="text-xs text-slate-500">
+            Online payment is not configured — contact us to settle your balance.
+          </p>
+        )}
+
+        {showBillingHelp && <BillingHelpLink />}
+      </div>
 
       {sorted.length === 0 ? (
         <p className={`${card} text-sm text-slate-500`}>No invoices yet.</p>

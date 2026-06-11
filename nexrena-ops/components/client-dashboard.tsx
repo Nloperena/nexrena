@@ -22,6 +22,7 @@ import { UserMenu } from '@/components/user-menu'
 import { AccountSettingsModal } from '@/components/account-settings-modal'
 import { ClientDashboardStats } from '@/components/client-dashboard-stats'
 import { ClientBillingSection } from '@/components/client-billing-section'
+import { ClientWorkStatusSection } from '@/components/client-work-status-section'
 import { ClientRequestModal } from '@/components/client-request-modal'
 import type { Invoice, InvoiceStatus } from '@/lib/types'
 import { Btn } from '@/components/ui'
@@ -67,6 +68,7 @@ export function ClientDashboard({ onSignOut }: Props) {
   const [assets, setAssets] = useState<PortalAsset[]>([])
   const [stripeEnabled, setStripeEnabled] = useState(false)
   const [payingId, setPayingId] = useState<string | null>(null)
+  const [paymentError, setPaymentError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -138,12 +140,19 @@ export function ClientDashboard({ onSignOut }: Props) {
   const payInvoice = async (id: string) => {
     setPayingId(id)
     setError(null)
+    setPaymentError(null)
     try {
       const { url } = await createPortalCheckout(id)
       if (url) window.location.href = url
-      else setError('Could not start checkout.')
+      else {
+        const message = 'Could not start checkout.'
+        setError(message)
+        setPaymentError(message)
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Payment unavailable.')
+      const message = err instanceof Error ? err.message : 'Payment unavailable.'
+      setError(message)
+      setPaymentError(message)
     } finally {
       setPayingId(null)
     }
@@ -236,51 +245,18 @@ export function ClientDashboard({ onSignOut }: Props) {
         />
       </div>
 
-      <section>
-        <SectionTitle>Active Projects</SectionTitle>
-        {activeProjects.length === 0 ? (
-          <p className={`${card} text-sm text-slate-500`}>
-            No active projects yet. Start a request and we&apos;ll scope your first sprint after intake.
-          </p>
-        ) : (
-          <ul className="space-y-3">
-            {activeProjects.map((p) => (
-              <li key={p.id} className={card}>
-                <div className="flex justify-between gap-4">
-                  <div>
-                    <p className="font-serif text-lg text-white">{p.name}</p>
-                    <p className="text-sm text-slate-400">{p.type} · {p.status.replace('_', ' ')}</p>
-                  </div>
-                  <span className="text-[10px] uppercase tracking-wider text-gold shrink-0">{p.status.replace('_', ' ')}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section>
-        <SectionTitle>Recent Requests</SectionTitle>
-        {serviceRequests.length === 0 ? (
-          <p className={`${card} text-sm text-slate-500`}>No service requests yet.</p>
-        ) : (
-          <ul className="space-y-3">
-            {serviceRequests.slice(0, 5).map((r) => (
-              <li key={r.id} className={card}>
-                <p className="font-serif text-lg text-white capitalize">{r.projectType}</p>
-                <p className="text-sm text-slate-400 mt-1 line-clamp-2">{r.description}</p>
-                <p className="text-xs text-slate-500 mt-2">{r.status}{r.budget ? ` · ${r.budget}` : ''}</p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      <ClientWorkStatusSection
+        activeProjects={activeProjects}
+        serviceRequests={serviceRequests}
+        onStartRequest={() => setRequestOpen(true)}
+      />
 
       <ClientBillingSection
         invoices={invoices}
         stripeEnabled={stripeEnabled}
         payingId={payingId}
         viewLoading={viewLoading}
+        paymentError={paymentError}
         onPay={payInvoice}
         onView={openInvoice}
       />
