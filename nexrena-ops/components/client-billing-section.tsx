@@ -14,7 +14,6 @@ import { formatCurrency, formatDate } from '@/lib/store'
 import { Btn } from '@/components/ui'
 
 const card = 'glass-panel rounded-xl border border-slate-800/60 p-5'
-const MESSAGE_NICO_EMAIL = 'nicholas@nexrena.com'
 
 type Props = {
   invoices: PortalInvoice[]
@@ -24,6 +23,7 @@ type Props = {
   paymentError?: string | null
   onPay: (id: string) => void
   onView: (id: string) => void
+  onMessageNico?: () => void
 }
 
 function InvoiceRow({
@@ -101,16 +101,21 @@ function InvoiceRow({
   )
 }
 
-function BillingHelpLink() {
+function BillingHelpLink({ onMessageNico }: { onMessageNico?: () => void }) {
   return (
     <p className="text-sm text-slate-500">
       Need help with billing?{' '}
-      <a
-        href={`mailto:${MESSAGE_NICO_EMAIL}`}
-        className="text-gold hover:text-gold-light transition-colors"
-      >
-        Message Nico
-      </a>
+      {onMessageNico ? (
+        <button
+          type="button"
+          onClick={onMessageNico}
+          className="text-gold hover:text-gold-light transition-colors"
+        >
+          Message Nico
+        </button>
+      ) : (
+        <span className="text-gold">Message Nico</span>
+      )}
       .
     </p>
   )
@@ -124,6 +129,7 @@ export function ClientBillingSection({
   paymentError,
   onPay,
   onView,
+  onMessageNico,
 }: Props) {
   const [showAll, setShowAll] = useState(false)
   const sorted = sortInvoicesNewestFirst(invoices)
@@ -180,7 +186,7 @@ export function ClientBillingSection({
           </p>
         )}
 
-        {showBillingHelp && <BillingHelpLink />}
+        {showBillingHelp && <BillingHelpLink onMessageNico={onMessageNico} />}
       </div>
 
       {sorted.length === 0 ? (

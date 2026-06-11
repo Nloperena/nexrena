@@ -136,6 +136,22 @@ export function createPortalCheckout(invoiceId: string) {
   })
 }
 
+export function sendPortalMessage(payload: { subject?: string; message: string }) {
+  return portalFetch<{ id: string; subject: string; message: string; status: string; createdAt: string }>(
+    '/api/portal/messages',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  )
+}
+
+export function fetchPortalMessages() {
+  return portalFetch<{ id: string; subject: string; message: string; status: string; createdAt: string }[]>(
+    '/api/portal/messages',
+  )
+}
+
 export function logoutPortal() {
   clearPortalToken()
 }

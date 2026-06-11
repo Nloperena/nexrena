@@ -1,12 +1,14 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useMessages } from '@/lib/store'
 
 const PRIMARY_NAV = [
   { href: '/invoices',       label: 'Invoices',      icon: '▤' },
   { href: '/subscriptions',  label: 'Subscriptions', icon: '↻' },
   { href: '/proposals',      label: 'Proposals',     icon: '◇' },
   { href: '/leads',          label: 'Leads',         icon: '◉' },
+  { href: '/messages',       label: 'Messages',      icon: '✉', badge: true },
   { href: '/service-requests', label: 'Requests',  icon: '✦' },
   { href: '/portal-accounts', label: 'Portal',      icon: '◈' },
   { href: '/projects',       label: 'Projects',      icon: '▦' },
@@ -20,6 +22,7 @@ const SECONDARY_NAV = [
 
 export function Sidebar() {
   const path = usePathname()
+  const { unreadCount } = useMessages()
   return (
     <aside className="fixed left-0 top-0 h-screen w-56 bg-obsidian/80 backdrop-blur-xl border-r border-slate-800/60 flex flex-col z-50">
       {/* Ambient glow at top */}
@@ -37,8 +40,9 @@ export function Sidebar() {
       {/* Nav */}
       <nav className="relative flex-1 px-3 py-5">
         <div className="space-y-1">
-          {PRIMARY_NAV.map(({ href, label, icon }) => {
+          {PRIMARY_NAV.map(({ href, label, icon, badge }) => {
             const active = href === '/' ? path === '/' : path.startsWith(href)
+            const showBadge = badge && unreadCount > 0
             return (
               <Link key={href} href={href}
                 className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 ${
@@ -49,7 +53,12 @@ export function Sidebar() {
                 <span className={`text-base leading-none transition-transform duration-200 group-hover:scale-110 ${active ? 'text-gold' : ''}`}>
                   {icon}
                 </span>
-                <span className="font-medium tracking-wide">{label}</span>
+                <span className="font-medium tracking-wide flex-1">{label}</span>
+                {showBadge && (
+                  <span className="min-w-[1.25rem] h-5 px-1.5 rounded-full bg-gold text-obsidian text-[10px] font-bold flex items-center justify-center tabular-nums">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
                 {active && (
                   <span className="absolute right-2 w-1 h-5 bg-gold rounded-full shadow-[0_0_8px_rgba(201,169,110,0.4)]" />
                 )}

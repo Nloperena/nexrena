@@ -24,13 +24,13 @@ import { ClientDashboardStats } from '@/components/client-dashboard-stats'
 import { ClientBillingSection } from '@/components/client-billing-section'
 import { ClientWorkStatusSection } from '@/components/client-work-status-section'
 import { ClientRequestModal } from '@/components/client-request-modal'
+import { ClientMessageModal } from '@/components/client-message-modal'
 import type { Invoice, InvoiceStatus } from '@/lib/types'
 import { Btn } from '@/components/ui'
 
 type Props = { onSignOut: () => void }
 
 const card = 'glass-panel rounded-xl border border-slate-800/60 p-5'
-const MESSAGE_NICO_EMAIL = 'nicholas@nexrena.com'
 
 function toPrintInvoice(inv: PortalInvoice): Invoice {
   return {
@@ -73,6 +73,8 @@ export function ClientDashboard({ onSignOut }: Props) {
   const [error, setError] = useState<string | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [requestOpen, setRequestOpen] = useState(false)
+  const [messageOpen, setMessageOpen] = useState(false)
+  const [messageDefaultSubject, setMessageDefaultSubject] = useState('')
   const [viewInvoice, setViewInvoice] = useState<PortalInvoice | null>(null)
   const [viewLoading, setViewLoading] = useState(false)
   const uploadsRef = useRef<HTMLDivElement>(null)
@@ -228,7 +230,10 @@ export function ClientDashboard({ onSignOut }: Props) {
             <Btn
               size="sm"
               variant="ghost"
-              onClick={() => { window.location.href = `mailto:${MESSAGE_NICO_EMAIL}` }}
+              onClick={() => {
+                setMessageDefaultSubject('')
+                setMessageOpen(true)
+              }}
             >
               Message Nico
             </Btn>
@@ -259,6 +264,10 @@ export function ClientDashboard({ onSignOut }: Props) {
         paymentError={paymentError}
         onPay={payInvoice}
         onView={openInvoice}
+        onMessageNico={() => {
+          setMessageDefaultSubject('Billing question')
+          setMessageOpen(true)
+        }}
       />
 
       <section>
@@ -279,7 +288,10 @@ export function ClientDashboard({ onSignOut }: Props) {
                   {p.status === 'sent' && new Date(p.validUntil) >= new Date() && (
                     <Btn
                       size="sm"
-                      onClick={() => { window.location.href = `mailto:${MESSAGE_NICO_EMAIL}?subject=${encodeURIComponent(`Approve estimate: ${p.title}`)}` }}
+                      onClick={() => {
+                        setMessageDefaultSubject(`Approve estimate: ${p.title}`)
+                        setMessageOpen(true)
+                      }}
                     >
                       Approve proposal
                     </Btn>
@@ -290,6 +302,17 @@ export function ClientDashboard({ onSignOut }: Props) {
           </ul>
         )}
       </section>
+
+      {messageOpen && (
+        <ClientMessageModal
+          open={messageOpen}
+          defaultSubject={messageDefaultSubject}
+          onClose={() => {
+            setMessageOpen(false)
+            setMessageDefaultSubject('')
+          }}
+        />
+      )}
 
       {requestOpen && (
         <ClientRequestModal

@@ -121,6 +121,22 @@ model PortalAsset {
   @@map("portal_assets")
 }
 
+// ── Client portal messages ────────────────────────────────────────────────
+model ClientMessage {
+  id              String   @id @default(cuid())
+  portalAccountId String?  @map("portal_account_id")
+  contactId       String?  @map("contact_id")
+  clientName      String?  @map("client_name")
+  clientEmail     String?  @map("client_email")
+  companyName     String?  @map("company_name")
+  subject         String
+  message         String
+  status          String   @default("unread")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@map("client_messages")
+}
+
 // ── Website Leads ────────────────────────────────────────────────────────
 model Lead {
   id          String   @id @default(cuid())

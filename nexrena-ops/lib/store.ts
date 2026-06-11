@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { Contact, Project, Invoice, Lead, PortalAccount, TimeEntry, Proposal, Expense, Subscription, ServiceRequest } from './types'
+import { Contact, Project, Invoice, Lead, PortalAccount, TimeEntry, Proposal, Expense, Subscription, ServiceRequest, ClientMessage } from './types'
 import { api } from './api'
 
 // ── hooks ────────────────────────────────────────────────────────────────
@@ -272,6 +272,24 @@ export function useServiceRequests() {
   }, [])
 
   return { requests, updateStatus }
+}
+
+export function useMessages() {
+  const [messages, setMessages] = useState<ClientMessage[]>([])
+
+  useEffect(() => {
+    api.get<ClientMessage[]>('/messages').then(setMessages).catch(console.error)
+  }, [])
+
+  const updateStatus = useCallback(async (id: string, status: ClientMessage['status']) => {
+    setMessages(prev => prev.map(x => x.id === id ? { ...x, status } : x))
+    try { await api.patch(`/messages/${id}`, { status }) }
+    catch (e) { console.error(e) }
+  }, [])
+
+  const unreadCount = messages.filter(m => m.status === 'unread').length
+
+  return { messages, updateStatus, unreadCount }
 }
 
 // ── utils ────────────────────────────────────────────────────────────────

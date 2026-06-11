@@ -220,3 +220,20 @@ export interface ServiceRequest {
   updatedAt: string
   assets?: PortalAssetRecord[]
 }
+
+// ── Client portal messages ───────────────────────────────────────────────
+
+export type ClientMessageStatus = 'unread' | 'read'
+
+export interface ClientMessage {
+  id: string
+  portalAccountId?: string | null
+  contactId?: string | null
+  clientName?: string | null
+  clientEmail?: string | null
+  companyName?: string | null
+  subject: string
+  message: string
+  status: ClientMessageStatus
+  createdAt: string
+}
