@@ -5,7 +5,7 @@ export function Testimonials() {
     <section className="py-32 bg-cream text-obsidian relative z-20">
       <div className="container mx-auto px-6 md:px-12 text-center max-w-4xl">
         <FadeIn>
-          <span className="font-display text-gold text-6xl md:text-8xl leading-none block mb-6">"</span>
+          <span className="font-display text-gold text-6xl md:text-8xl leading-none block mb-6">&ldquo;</span>
           <blockquote className="font-display text-3xl md:text-5xl lg:text-6xl italic leading-[1.1] tracking-tight mb-12">
             Literally the best single website contact in the history of the company.
           </blockquote>

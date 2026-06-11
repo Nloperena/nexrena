@@ -36,7 +36,7 @@ export function Services() {
             <FadeIn key={s.num} delay={i * 200} className="h-full">
               <div className="service-card h-full bg-warmWhite p-10 lg:p-14 flex flex-col group cursor-default shadow-sm hover:shadow-xl transition-shadow duration-500 border border-black/5">
                 <span className="font-mono text-xs text-gold tracking-widest mb-8 block">
-                  {s.num} //
+                  {`${s.num} //`}
                 </span>
                 <h3 className="font-display text-3xl lg:text-4xl mb-6 leading-tight">
                   {s.title}
