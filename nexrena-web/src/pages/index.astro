@@ -9,6 +9,7 @@ import ServiceStack from '../components/sections/ServiceStack.astro';
 import StorySequence from '../components/sections/StorySequence.astro';
 import ProcessSticky from '../components/sections/ProcessSticky.astro';
 import Testimonials from '../components/sections/Testimonials.astro';
+import PricingOverview from '../components/sections/PricingOverview.astro';
 import CTA from '../components/sections/CTA.astro';
 import { organizationSchema } from '../lib/schema';
 import { heroImages } from '../data/hero-images';
@@ -29,6 +30,7 @@ import { heroImages } from '../data/hero-images';
     <ProcessSticky />
     <StorySequence />
     <Testimonials />
+    <PricingOverview showCta={true} compactProjects={true} />
     <Showreel />
     <CTA />
   </main>

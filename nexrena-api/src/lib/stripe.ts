@@ -1,12 +1,14 @@
 import Stripe from 'stripe'
 
-let stripeClient: Stripe | null | undefined
+type StripeClient = InstanceType<typeof Stripe>
+
+let stripeClient: StripeClient | null | undefined
 
 export function isStripeConfigured(): boolean {
   return Boolean(process.env.STRIPE_SECRET_KEY)
 }
 
-export function getStripe(): Stripe | null {
+export function getStripe(): StripeClient | null {
   if (stripeClient !== undefined) return stripeClient
   const key = process.env.STRIPE_SECRET_KEY
   if (!key) {
@@ -14,7 +16,7 @@ export function getStripe(): Stripe | null {
     return null
   }
   stripeClient = new Stripe(key, {
-    apiVersion: '2025-04-30.basil',
+    apiVersion: '2026-05-27.dahlia',
   })
   return stripeClient
 }

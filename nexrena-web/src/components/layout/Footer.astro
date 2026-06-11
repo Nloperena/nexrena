@@ -1,6 +1,7 @@
 ---
 import { services } from '../../data/services';
 import { founder } from '../../data/founder';
+import { clientPortalUrl } from '../../data/portal';
 import Logo from '../ui/Logo.astro';
 import { normalizeInternalHref } from '@/lib/url';
 ---
@@ -22,8 +23,9 @@ import { normalizeInternalHref } from '@/lib/url';
           <a href="/services/" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Services</a>
           <a href="/industries/" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Industries</a>
           <a href="/resources/" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Resources</a>
+          <a href="/pricing/" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Pricing</a>
           <a href="/about/" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">About</a>
-          <a href="/about/leadership/" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Leadership</a>
+          <a href={clientPortalUrl} class="font-display text-[24px] text-[var(--gold)] hover:text-[var(--gold-light)] transition-colors">Client Portal</a>
           <a href="/contact/" class="font-display text-[24px] text-[var(--slate-200)] hover:text-[var(--gold)] transition-colors">Contact</a>
           <a href="/resources/blog/web-design-orlando/" class="font-body text-[15px] text-[var(--slate-300)] hover:text-[var(--gold)] transition-colors mt-2">Orlando web design guide</a>
         </div>

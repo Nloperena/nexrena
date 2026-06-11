@@ -1,0 +1,20 @@
+---
+import { clientPortalUrl } from '../../data/portal';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirecting to Nexrena Portal…</title>
+    <meta http-equiv="refresh" content={`0;url=${clientPortalUrl}`} />
+    <link rel="canonical" href={clientPortalUrl} />
+    <script is:inline define:vars={{ clientPortalUrl }}>
+      window.location.replace(clientPortalUrl);
+    </script>
+  </head>
+  <body>
+    <p>
+      Redirecting to the <a href={clientPortalUrl}>Nexrena client portal</a>…
+    </p>
+  </body>
+</html>

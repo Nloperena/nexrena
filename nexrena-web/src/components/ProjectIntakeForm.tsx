@@ -24,16 +24,17 @@ function safeTrack(eventName: string, data: Record<string, unknown> = {}) {
 type Props = {
   source?: string;
   onSuccess?: () => void;
+  onCreateAccount?: () => void;
   className?: string;
 };
 
-export function ProjectIntakeForm({ source = 'contact-page', onSuccess, className = '' }: Props) {
+export function ProjectIntakeForm({ source = 'contact-page', onSuccess, onCreateAccount, className = '' }: Props) {
   const [engagement, setEngagement] = useState<EngagementModel>('project');
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
 
   const waasOptions = useMemo(
-    () => waasTiers.map((tier) => ({ value: tier.id, label: `${tier.name} — ${tier.priceLabel}` })),
+    () => waasTiers.map((tier) => ({ value: tier.id, label: `${tier.name} — ${tier.priceLabel}${tier.priceSuffix}` })),
     [],
   );
 
@@ -72,7 +73,7 @@ export function ProjectIntakeForm({ source = 'contact-page', onSuccess, classNam
     });
 
     try {
-      await submitLead({ name, email, message, company, budget, projectType });
+      await submitLead({ name, email, message, company, budget, projectType, source });
       setStatus('success');
       form.reset();
       setEngagement('project');
@@ -87,12 +88,21 @@ export function ProjectIntakeForm({ source = 'contact-page', onSuccess, classNam
 
   if (status === 'success') {
     return (
-      <div className={`flex flex-col items-center justify-center text-center py-16 ${className}`}>
+      <div className={`flex flex-col items-center justify-center text-center py-12 ${className}`}>
         <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-[var(--gold)] text-[var(--gold)]">
           ✓
         </div>
         <h3 className="font-display text-3xl italic text-[var(--warm-white)]">{projectIntakeCta.successTitle}</h3>
         <p className="mt-4 max-w-sm font-body text-[15px] text-[var(--slate-400)]">{projectIntakeCta.successBody}</p>
+        {onCreateAccount && (
+          <button
+            type="button"
+            onClick={onCreateAccount}
+            className="mt-8 inline-flex h-12 items-center justify-center border border-[var(--gold)] px-6 font-mono text-[11px] uppercase tracking-widest text-[var(--gold)] transition-colors hover:bg-[var(--gold)] hover:text-[var(--obsidian)]"
+          >
+            Create portal account
+          </button>
+        )}
       </div>
     );
   }

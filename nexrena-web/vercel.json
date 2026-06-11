@@ -1,6 +1,26 @@
 {
   "redirects": [
     {
+      "source": "/portal",
+      "destination": "https://nexrena-ops.vercel.app",
+      "permanent": false
+    },
+    {
+      "source": "/portal/",
+      "destination": "https://nexrena-ops.vercel.app",
+      "permanent": false
+    },
+    {
+      "source": "/about/leadership",
+      "destination": "/about/#leadership",
+      "permanent": true
+    },
+    {
+      "source": "/about/leadership/",
+      "destination": "/about/#leadership",
+      "permanent": true
+    },
+    {
       "source": "/(.*)",
       "has": [
         { "type": "host", "value": "www.nexrena.com" }

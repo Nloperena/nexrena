@@ -1,0 +1,28 @@
+---
+import Layout from '../../components/layout/Layout.astro';
+import PageHero from '../../components/sections/PageHero.astro';
+import PricingOverview from '../../components/sections/PricingOverview.astro';
+import { webPageSchema } from '../../lib/schema';
+
+const site = 'https://nexrena.com';
+const schema = webPageSchema({
+  name: 'Pricing | Nexrena',
+  description: 'Transparent WaaS and project pricing for B2B web design, SEO, and growth. Monthly plans from $3,000/mo with clear scope.',
+  url: `${site}/pricing`,
+});
+---
+
+<Layout
+  title="Pricing | Nexrena — WaaS & Project Plans"
+  description="Transparent WaaS and project pricing for B2B web design, SEO, and growth. Monthly plans from $3,000/mo with clear scope."
+  schema={schema}
+>
+  <main>
+    <PageHero
+      eyebrow="PRICING //"
+      title="What it costs. What you get."
+      subtitle="Modern WaaS pricing — published monthly rates, feature lists, and project ranges. No hidden fees or surprise invoices."
+    />
+    <PricingOverview showCta={true} />
+  </main>
+</Layout>

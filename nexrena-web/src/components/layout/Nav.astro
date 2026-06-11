@@ -2,15 +2,15 @@
 import Logo from '../ui/Logo.astro';
 import { normalizeInternalHref } from '@/lib/url';
 import { projectIntakeCta } from '@/data/cta';
+import { portalCopy, clientPortalUrl } from '@/data/portal';
 
 const currentPath = normalizeInternalHref(Astro.url.pathname) ?? '/';
 const navLinks = [
   { label: 'Work', href: '/work/' },
   { label: 'Services', href: '/services/' },
-  { label: 'Industries', href: '/industries/' },
+  { label: 'Pricing', href: '/pricing/' },
   { label: 'Resources', href: '/resources/' },
   { label: 'About', href: '/about/' },
-  { label: 'Leadership', href: '/about/leadership/' },
 ];
 ---
 
@@ -22,7 +22,7 @@ const navLinks = [
 
     <nav class="site-nav__links" aria-label="Main navigation">
       {navLinks.map((link) => {
-        const isActive = currentPath === link.href || currentPath.startsWith(link.href);
+        const isActive = currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href));
         return (
           <a href={link.href} class={`site-nav__link ${isActive ? 'is-active' : ''}`} aria-current={isActive ? 'page' : undefined}>
             {link.label}
@@ -32,6 +32,7 @@ const navLinks = [
     </nav>
 
     <div class="site-nav__actions">
+      <a href={clientPortalUrl} class="site-nav__portal-btn">{portalCopy.navLabel}</a>
       <button type="button" data-growth-plan-portal class="site-nav__cta" data-cta-zone="nav" data-cta-role="primary">{projectIntakeCta.button}</button>
       <button class="site-nav__toggle" type="button" aria-expanded="false" aria-label="Toggle menu">
         <div class="hamburger">
@@ -48,13 +49,16 @@ const navLinks = [
   <div class="mobile-menu__content">
     <nav class="mobile-menu__nav">
       {navLinks.map((link, i) => {
-        const isActive = currentPath === link.href || currentPath.startsWith(link.href);
+        const isActive = currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href));
         return (
           <a href={link.href} class={`mobile-menu__link ${isActive ? 'is-active' : ''}`} style={`--delay: ${i * 0.05}s`}>
             {link.label}
           </a>
         );
       })}
+      <a href={clientPortalUrl} class="mobile-menu__link mobile-menu__link--portal" style={`--delay: ${navLinks.length * 0.05}s`}>
+        {portalCopy.navLabel}
+      </a>
       <button type="button" data-growth-plan-portal class="mobile-menu__link mobile-menu__link--cta" style={`--delay: ${navLinks.length * 0.05}s`} data-cta-zone="nav" data-cta-role="primary">
         {projectIntakeCta.button}
       </button>
@@ -82,7 +86,7 @@ const navLinks = [
   .site-nav__island {
     pointer-events: auto;
     width: 100%;
-    max-width: 1000px;
+    max-width: 1120px;
     height: 56px;
     background: rgba(12, 15, 18, 0.75);
     backdrop-filter: blur(16px) saturate(1.2);
@@ -125,7 +129,7 @@ const navLinks = [
   .site-nav__links {
     display: none;
     align-items: center;
-    gap: 32px;
+    gap: 24px;
   }
 
   .site-nav__link {
@@ -164,10 +168,40 @@ const navLinks = [
     opacity: 1;
   }
 
+  .site-nav__link--portal {
+    color: var(--gold);
+  }
+
   .site-nav__actions {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+  }
+
+  .site-nav__portal-btn {
+    display: none;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(201, 169, 110, 0.45);
+    background: transparent;
+    color: var(--gold);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .site-nav__portal-btn:hover,
+  .site-nav__portal-btn:focus-visible {
+    background: var(--gold);
+    color: var(--obsidian);
+    border-color: var(--gold);
   }
 
   .site-nav__cta {
@@ -306,6 +340,11 @@ const navLinks = [
     color: var(--gold);
   }
 
+  .mobile-menu__link--portal {
+    color: var(--gold);
+    font-size: 28px;
+  }
+
   .mobile-menu__link--cta {
     margin-top: 16px;
     font-family: var(--font-mono);
@@ -328,6 +367,7 @@ const navLinks = [
   @media (min-width: 1024px) {
     .site-nav__links { display: flex; }
     .site-nav__toggle { display: none; }
+    .site-nav__portal-btn { display: inline-flex; }
     .site-nav__cta { display: inline-flex; }
   }
 

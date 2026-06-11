@@ -45,28 +45,69 @@ export const waasTiers = [
   {
     id: 'waas-essentials',
     name: 'Essentials',
-    priceLabel: '$3,000/mo',
+    priceLabel: '$3,000',
+    priceSuffix: '/mo',
     budgetValue: '3000/mo',
+    tagline: 'Keep the site healthy and improving without hiring in-house.',
     includes: 'Maintenance, analytics, 2 content updates/mo, minor site changes',
     minimum: '3-month minimum',
+    recommended: false,
+    features: [
+      'Hosting, SSL, and uptime monitoring',
+      'Security patches & dependency updates',
+      'Monthly analytics snapshot',
+      '2 content or copy updates per month',
+      'Minor design tweaks & bug fixes',
+      'Email support · 1 business day response',
+    ],
   },
   {
     id: 'waas-growth',
     name: 'Growth',
-    priceLabel: '$5,000/mo',
+    priceLabel: '$5,000',
+    priceSuffix: '/mo',
     budgetValue: '5000/mo',
+    tagline: 'For teams that want the site to actively drive pipeline.',
     includes: 'Essentials + SEO optimization, A/B testing, quarterly roadmap',
     minimum: '3-month minimum',
+    recommended: true,
+    features: [
+      'Everything in Essentials',
+      'Technical SEO & on-page optimization',
+      'Conversion experiments (A/B tests)',
+      'Quarterly growth roadmap session',
+      'Landing page iterations',
+      'Priority support · same-day triage',
+    ],
   },
   {
     id: 'waas-strategic',
     name: 'Strategic',
-    priceLabel: '$8,000/mo',
+    priceLabel: '$8,000',
+    priceSuffix: '/mo',
     budgetValue: '8000/mo',
+    tagline: 'Senior operator embedded — new features, not just maintenance.',
     includes: 'Growth + new feature development, paid media coordination',
     minimum: '3-month minimum',
+    recommended: false,
+    features: [
+      'Everything in Growth',
+      'New features & sections shipped monthly',
+      'Paid media landing page coordination',
+      'CMS workflow & team training',
+      'Dedicated Slack channel',
+      'Monthly strategy call with founder',
+    ],
   },
 ] as const;
+
+export const pricingTransparency = {
+  headline: 'Transparent pricing. No “contact us for a quote.”',
+  subhead:
+    'Monthly WaaS plans include hosting, updates, and senior execution — billed monthly with a 3-month minimum. One-time builds are scoped before we invoice.',
+  billingNote: 'All WaaS plans billed monthly · 3-month minimum · Cancel with 30 days notice after minimum',
+  projectNote: 'One-time projects: 50% to start, 50% at launch unless otherwise scoped.',
+} as const;
 
 export const projectBudgetOptions = [
   { value: '10k-25k', label: '$10k – $25k' },
@@ -83,7 +124,7 @@ export const projectTypeOptions = [
 export function formatLeadPlanLabel(projectType?: string | null, budget?: string | null) {
   if (projectType?.startsWith('waas-')) {
     const tier = waasTiers.find((t) => t.id === projectType);
-    return tier ? `WaaS · ${tier.name} (${tier.priceLabel})` : 'WaaS';
+    return tier ? `WaaS · ${tier.name} (${tier.priceLabel}${tier.priceSuffix})` : 'WaaS';
   }
   const type = projectTypeOptions.find((t) => t.value === projectType);
   const budgetOption = projectBudgetOptions.find((b) => b.value === budget);

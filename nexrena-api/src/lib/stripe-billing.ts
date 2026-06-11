@@ -1,4 +1,3 @@
-import type Stripe from 'stripe'
 import { prisma } from './prisma'
 import { getStripe } from './stripe'
 
@@ -80,27 +79,33 @@ export async function createInvoiceCheckoutSession(params: {
   return { url: session.url, sessionId: session.id }
 }
 
-export async function handleStripeWebhookEvent(event: Stripe.Event) {
+export async function handleStripeWebhookEvent(event: { type: string; data: { object: unknown } }) {
   switch (event.type) {
     case 'checkout.session.completed':
-      await onCheckoutCompleted(event.data.object as Stripe.Checkout.Session)
+      await onCheckoutCompleted(asRecord(event.data.object))
       break
     case 'invoice.paid':
-      await onStripeInvoicePaid(event.data.object as Stripe.Invoice)
+      await onStripeInvoicePaid(asRecord(event.data.object))
       break
     case 'customer.subscription.updated':
     case 'customer.subscription.deleted':
-      await onStripeSubscriptionChange(event.data.object as Stripe.Subscription)
+      await onStripeSubscriptionChange(asRecord(event.data.object))
       break
     default:
       console.log(`[stripe] unhandled event ${event.type}`)
   }
 }
 
-async function onCheckoutCompleted(session: Stripe.Checkout.Session) {
-  const invoiceId = session.metadata?.invoiceId
+function asRecord(value: unknown): Record<string, unknown> {
+  return value as Record<string, unknown>
+}
+
+async function onCheckoutCompleted(session: Record<string, unknown>) {
+  const metadata = session.metadata as Record<string, string> | undefined
+  const invoiceId = metadata?.invoiceId
   if (!invoiceId) return
 
+  const paymentIntent = session.payment_intent
   const today = new Date().toISOString().slice(0, 10)
   await prisma.invoice.updateMany({
     where: { id: invoiceId },
@@ -108,15 +113,15 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session) {
       status: 'paid',
       paidDate: today,
       paidVia: 'stripe',
-      stripePaymentIntentId:
-        typeof session.payment_intent === 'string' ? session.payment_intent : undefined,
+      stripePaymentIntentId: typeof paymentIntent === 'string' ? paymentIntent : undefined,
     },
   })
   console.log(`[stripe] marked invoice ${invoiceId} paid via checkout`)
 }
 
-async function onStripeInvoicePaid(stripeInvoice: Stripe.Invoice) {
-  const invoiceId = stripeInvoice.metadata?.invoiceId
+async function onStripeInvoicePaid(stripeInvoice: Record<string, unknown>) {
+  const metadata = stripeInvoice.metadata as Record<string, string> | undefined
+  const invoiceId = metadata?.invoiceId
   if (!invoiceId) return
 
   const today = new Date().toISOString().slice(0, 10)
@@ -126,13 +131,14 @@ async function onStripeInvoicePaid(stripeInvoice: Stripe.Invoice) {
       status: 'paid',
       paidDate: today,
       paidVia: 'stripe',
-      stripeInvoiceId: stripeInvoice.id,
+      stripeInvoiceId: typeof stripeInvoice.id === 'string' ? stripeInvoice.id : undefined,
     },
   })
 }
 
-async function onStripeSubscriptionChange(stripeSub: Stripe.Subscription) {
-  const localId = stripeSub.metadata?.subscriptionId
+async function onStripeSubscriptionChange(stripeSub: Record<string, unknown>) {
+  const metadata = stripeSub.metadata as Record<string, string> | undefined
+  const localId = metadata?.subscriptionId
   if (!localId) return
 
   const statusMap: Record<string, string> = {
@@ -142,13 +148,14 @@ async function onStripeSubscriptionChange(stripeSub: Stripe.Subscription) {
     unpaid: 'paused',
     past_due: 'active',
   }
-  const status = statusMap[stripeSub.status] ?? 'active'
+  const rawStatus = typeof stripeSub.status === 'string' ? stripeSub.status : 'active'
+  const status = statusMap[rawStatus] ?? 'active'
 
   await prisma.subscription.updateMany({
     where: { id: localId },
     data: {
       status,
-      stripeSubscriptionId: stripeSub.id,
+      stripeSubscriptionId: typeof stripeSub.id === 'string' ? stripeSub.id : undefined,
     },
   })
 }
