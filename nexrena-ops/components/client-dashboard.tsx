@@ -1,11 +1,12 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { PortalAccount, PortalInvoice, PortalProject, PortalProposal, PortalAsset, PortalServiceRequest } from '@/lib/portal-types'
 import {
   fetchPortalInvoice,
   fetchPortalInvoices,
   fetchPortalMe,
+  fetchPortalMessages,
   fetchPortalProjects,
   fetchPortalProposals,
   fetchPortalServiceRequests,
@@ -14,7 +15,8 @@ import {
   createPortalCheckout,
   logoutPortal,
 } from '@/lib/portal-client'
-import { computePortalStats, portalSectionTitleClass } from '@/lib/portal-dashboard-utils'
+import { computePortalStats } from '@/lib/portal-dashboard-utils'
+import { buildPortalActivity } from '@/lib/activity-utils'
 import { formatDate } from '@/lib/store'
 import { InvoicePrint } from '@/components/invoice-print'
 import { UserMenu } from '@/components/user-menu'
@@ -23,13 +25,13 @@ import { ClientDashboardStats } from '@/components/client-dashboard-stats'
 import { ClientBillingSection } from '@/components/client-billing-section'
 import { ClientWorkStatusSection } from '@/components/client-work-status-section'
 import { ClientRequestModal } from '@/components/client-request-modal'
-import { ClientMessageModal } from '@/components/client-message-modal'
-import { ClientPortalNav, type ClientPortalTab } from '@/components/client-portal-nav'
-import { ClientPortalQuickActions } from '@/components/client-portal-quick-actions'
-import { ClientFilesView } from '@/components/client-files-view'
-import { ClientMessagesView } from '@/components/client-messages-view'
+import { ClientMessageModal, type MessageCategoryId } from '@/components/client-message-modal'
+import { ClientActionCards } from '@/components/client-action-cards'
+import { ClientActivityFeed } from '@/components/client-activity-feed'
+import { ClientCollapsibleSection } from '@/components/client-collapsible-section'
 import { UploadFilesModal } from '@/components/upload-files-modal'
 import { PortalFileList } from '@/components/portal-file-list'
+import { StatusChip, proposalStatusChip } from '@/components/status-chip'
 import type { Invoice, InvoiceStatus } from '@/lib/types'
 import { Btn } from '@/components/ui'
 
@@ -60,18 +62,15 @@ function toPrintInvoice(inv: PortalInvoice): Invoice {
   }
 }
 
-function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <h3 className={portalSectionTitleClass}>{children}</h3>
-}
-
 export function ClientDashboard({ onSignOut }: Props) {
-  const [tab, setTab] = useState<ClientPortalTab>('home')
+  const billingRef = useRef<HTMLDivElement>(null)
   const [account, setAccount] = useState<PortalAccount | null>(null)
   const [projects, setProjects] = useState<PortalProject[]>([])
   const [invoices, setInvoices] = useState<PortalInvoice[]>([])
   const [proposals, setProposals] = useState<PortalProposal[]>([])
   const [serviceRequests, setServiceRequests] = useState<PortalServiceRequest[]>([])
   const [assets, setAssets] = useState<PortalAsset[]>([])
+  const [portalMessages, setPortalMessages] = useState<{ id: string; subject: string; createdAt: string }[]>([])
   const [stripeEnabled, setStripeEnabled] = useState(false)
   const [payingId, setPayingId] = useState<string | null>(null)
   const [paymentError, setPaymentError] = useState<string | null>(null)
@@ -82,6 +81,7 @@ export function ClientDashboard({ onSignOut }: Props) {
   const [messageOpen, setMessageOpen] = useState(false)
   const [uploadOpen, setUploadOpen] = useState(false)
   const [messageDefaultSubject, setMessageDefaultSubject] = useState('')
+  const [messageDefaultCategory, setMessageDefaultCategory] = useState<MessageCategoryId | undefined>()
   const [viewInvoice, setViewInvoice] = useState<PortalInvoice | null>(null)
   const [viewLoading, setViewLoading] = useState(false)
 
@@ -89,7 +89,7 @@ export function ClientDashboard({ onSignOut }: Props) {
     setLoading(true)
     setError(null)
     try {
-      const [me, projectRows, invoiceRows, proposalRows, requestRows, assetRows, billing] = await Promise.all([
+      const [me, projectRows, invoiceRows, proposalRows, requestRows, assetRows, billing, messages] = await Promise.all([
         fetchPortalMe(),
         fetchPortalProjects(),
         fetchPortalInvoices(),
@@ -97,6 +97,7 @@ export function ClientDashboard({ onSignOut }: Props) {
         fetchPortalServiceRequests(),
         fetchPortalAssets(),
         fetchPortalBillingStatus(),
+        fetchPortalMessages().catch(() => []),
       ])
       setAccount(me)
       setProjects(projectRows)
@@ -105,6 +106,7 @@ export function ClientDashboard({ onSignOut }: Props) {
       setServiceRequests(requestRows)
       setAssets(assetRows)
       setStripeEnabled(billing.stripeEnabled)
+      setPortalMessages(messages)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not load your portal.')
     } finally {
@@ -119,6 +121,11 @@ export function ClientDashboard({ onSignOut }: Props) {
     [invoices, projects, proposals],
   )
 
+  const activity = useMemo(
+    () => buildPortalActivity(invoices, proposals, serviceRequests, portalMessages),
+    [invoices, proposals, serviceRequests, portalMessages],
+  )
+
   const activeProjects = useMemo(
     () => projects.filter((p) => !['delivered', 'on_hold', 'not_started'].includes(p.status)),
     [projects],
@@ -129,7 +136,7 @@ export function ClientDashboard({ onSignOut }: Props) {
     return proposals.filter((p) => p.status === 'sent' && new Date(p.validUntil) >= now)
   }, [proposals])
 
-  const recentAssets = useMemo(() => assets.slice(0, 3), [assets])
+  const recentAssets = useMemo(() => assets.slice(0, 5), [assets])
 
   const openInvoice = async (id: string) => {
     setViewLoading(true)
@@ -168,15 +175,19 @@ export function ClientDashboard({ onSignOut }: Props) {
     }
   }
 
-  const openMessage = (subject = '') => {
-    setMessageDefaultSubject(subject)
-    setTab('messages')
-    setMessageOpen(false)
+  const openMessage = (opts?: { subject?: string; category?: MessageCategoryId }) => {
+    setMessageDefaultSubject(opts?.subject ?? '')
+    setMessageDefaultCategory(opts?.category)
+    setMessageOpen(true)
+  }
+
+  const scrollToBilling = () => {
+    billingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   if (viewInvoice) {
     return (
-      <div className="max-w-5xl mx-auto flex flex-col gap-6 py-4">
+      <div className="max-w-6xl mx-auto flex flex-col gap-6 py-4">
         <div className="flex items-center justify-between gap-4">
           <Btn size="sm" variant="ghost" onClick={() => setViewInvoice(null)}>← Back</Btn>
           <Btn size="sm" onClick={() => window.print()}>Print / PDF</Btn>
@@ -202,98 +213,50 @@ export function ClientDashboard({ onSignOut }: Props) {
   }
 
   return (
-    <div className="max-w-5xl mx-auto flex flex-col gap-8 py-4">
+    <div className="max-w-6xl mx-auto flex flex-col gap-10 py-4 pb-24 md:pb-8">
+      {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-[10px] text-gold tracking-[0.2em] uppercase">Client portal</p>
-          <h1 className="font-serif text-3xl text-white mt-2">Your workspace</h1>
+          <h1 className="font-serif text-3xl text-white">Your workspace</h1>
           {account && (
-            <p className="text-sm text-slate-400 mt-1">Welcome back, {account.name}</p>
+            <p className="text-sm text-slate-400 mt-2">Welcome back, {account.name}</p>
           )}
         </div>
-        {account && (
-          <UserMenu
-            name={account.name}
-            subtitle={account.company ?? account.email}
-            onOpenSettings={() => setSettingsOpen(true)}
-            onSignOut={handleSignOut}
-          />
-        )}
+        <div className="flex items-center gap-2">
+          <span className="hidden md:inline-flex">
+            <Btn size="sm" onClick={() => openMessage({ category: 'other' })}>
+              Message Nico
+            </Btn>
+          </span>
+          {account && (
+            <UserMenu
+              name={account.name}
+              subtitle={account.company ?? account.email}
+              onOpenSettings={() => setSettingsOpen(true)}
+              onSignOut={handleSignOut}
+            />
+          )}
+        </div>
       </div>
-
-      <ClientPortalNav active={tab} onChange={setTab} />
-
-      <ClientPortalQuickActions
-        onStartRequest={() => setRequestOpen(true)}
-        onUpload={() => setUploadOpen(true)}
-        onMessage={() => openMessage()}
-      />
 
       {error && <p className="text-sm text-red-400">{error}</p>}
 
-      {tab === 'home' && (
-        <>
-          <ClientDashboardStats stats={stats} />
+      {/* Overview — always visible */}
+      <div className="space-y-10">
+        <ClientDashboardStats stats={stats} />
 
-          <section>
-            <SectionTitle>Your files</SectionTitle>
-            <div className={`${card} space-y-4`}>
-              <PortalFileList
-                assets={recentAssets}
-                emptyMessage="No files yet — upload logos, photos, or documents anytime."
-              />
-              <div className="flex flex-wrap gap-2 pt-2">
-                <Btn size="sm" onClick={() => setUploadOpen(true)}>Upload files</Btn>
-                {assets.length > 3 && (
-                  <Btn size="sm" variant="ghost" onClick={() => setTab('files')}>View all files</Btn>
-                )}
-              </div>
-            </div>
-          </section>
+        <ClientActionCards
+          onMessage={() => openMessage({ category: 'other' })}
+          onStartRequest={() => setRequestOpen(true)}
+          onUpload={() => setUploadOpen(true)}
+          onViewBilling={scrollToBilling}
+        />
 
-          <ClientWorkStatusSection
-            activeProjects={activeProjects}
-            serviceRequests={serviceRequests}
-            onStartRequest={() => setRequestOpen(true)}
-          />
+        <ClientActivityFeed items={activity} />
+      </div>
 
-          <section>
-            <SectionTitle>Estimates &amp; Approvals</SectionTitle>
-            {pendingProposals.length === 0 && proposals.length === 0 ? (
-              <p className={`${card} text-sm text-slate-500`}>No estimates yet.</p>
-            ) : (
-              <ul className="space-y-3">
-                {(pendingProposals.length > 0 ? pendingProposals : proposals).slice(0, 3).map((p) => (
-                  <li key={p.id} className={card}>
-                    <div className="flex flex-wrap justify-between gap-3">
-                      <div>
-                        <p className="font-serif text-lg text-white">{p.title}</p>
-                        <p className="text-sm text-slate-400 mt-1">
-                          {p.status === 'sent' ? 'Awaiting your approval' : p.status} · valid until {formatDate(p.validUntil)}
-                        </p>
-                      </div>
-                      {p.status === 'sent' && new Date(p.validUntil) >= new Date() && (
-                        <Btn
-                          size="sm"
-                          onClick={() => openMessage(`Approve estimate: ${p.title}`)}
-                        >
-                          Approve proposal
-                        </Btn>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        </>
-      )}
-
-      {tab === 'files' && (
-        <ClientFilesView assets={assets} onUpload={() => setUploadOpen(true)} />
-      )}
-
-      {tab === 'billing' && (
+      {/* Billing summary — open by default */}
+      <div ref={billingRef}>
         <ClientBillingSection
           invoices={invoices}
           stripeEnabled={stripeEnabled}
@@ -302,19 +265,162 @@ export function ClientDashboard({ onSignOut }: Props) {
           paymentError={paymentError}
           onPay={payInvoice}
           onView={openInvoice}
-          onMessageNico={() => openMessage('Billing question')}
+          onMessageNico={() => openMessage({ category: 'billing' })}
+          mode="summary"
         />
-      )}
+      </div>
 
-      {tab === 'messages' && <ClientMessagesView />}
+      {/* Collapsible sections */}
+      <div className="space-y-4">
+        <ClientCollapsibleSection
+          id="files"
+          title="Files"
+          defaultOpen={false}
+          summary={assets.length > 0 ? `${assets.length} file${assets.length === 1 ? '' : 's'} shared` : 'Upload logos, photos, or documents'}
+        >
+          <div className="space-y-4 pt-4">
+            <Btn size="sm" onClick={() => setUploadOpen(true)}>Upload files</Btn>
+            <PortalFileList
+              assets={recentAssets.length > 0 ? recentAssets : assets}
+              emptyMessage="No files yet — upload logos, photos, or documents anytime."
+            />
+            {assets.length > 5 && (
+              <p className="text-xs text-slate-500">Showing 5 most recent of {assets.length} files.</p>
+            )}
+          </div>
+        </ClientCollapsibleSection>
+
+        <ClientCollapsibleSection
+          id="work-status"
+          title="Projects & work status"
+          defaultOpen={false}
+          summary={
+            activeProjects.length > 0
+              ? `${activeProjects.length} active project${activeProjects.length === 1 ? '' : 's'}`
+              : 'No active projects'
+          }
+        >
+          <div className="pt-4">
+            <ClientWorkStatusSection
+              activeProjects={activeProjects}
+              serviceRequests={serviceRequests}
+              onStartRequest={() => setRequestOpen(true)}
+              variant="projects"
+            />
+          </div>
+        </ClientCollapsibleSection>
+
+        <ClientCollapsibleSection
+          id="requests"
+          title="Requests"
+          defaultOpen={false}
+          summary={
+            serviceRequests.length > 0
+              ? `${serviceRequests.length} request${serviceRequests.length === 1 ? '' : 's'} on file`
+              : 'No recent requests'
+          }
+        >
+          <div className="pt-4">
+            <ClientWorkStatusSection
+              activeProjects={activeProjects}
+              serviceRequests={serviceRequests}
+              onStartRequest={() => setRequestOpen(true)}
+              variant="requests"
+            />
+          </div>
+        </ClientCollapsibleSection>
+
+        <ClientCollapsibleSection
+          id="estimates"
+          title="Estimates & approvals"
+          defaultOpen={false}
+          summary={
+            pendingProposals.length > 0
+              ? `${pendingProposals.length} awaiting your approval`
+              : proposals.length > 0 ? `${proposals.length} estimate${proposals.length === 1 ? '' : 's'}` : 'No estimates yet'
+          }
+        >
+          <div className="pt-4">
+            {proposals.length === 0 ? (
+              <p className={`${card} text-sm text-slate-500`}>No estimates yet.</p>
+            ) : (
+              <ul className="space-y-3">
+                {proposals.map((p) => {
+                  const chip = proposalStatusChip(p.status, p.validUntil)
+                  return (
+                    <li key={p.id} className={card}>
+                      <div className="flex flex-wrap justify-between gap-3">
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="font-serif text-lg text-white">{p.title}</p>
+                            {chip && <StatusChip variant={chip} />}
+                          </div>
+                          <p className="text-sm text-slate-400 mt-1">
+                            Valid until {formatDate(p.validUntil)}
+                          </p>
+                        </div>
+                        {p.status === 'sent' && new Date(p.validUntil) >= new Date() && (
+                          <Btn
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => openMessage({ subject: `Approve estimate: ${p.title}`, category: 'other' })}
+                          >
+                            Approve proposal
+                          </Btn>
+                        )}
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+          </div>
+        </ClientCollapsibleSection>
+
+        <ClientCollapsibleSection
+          id="invoice-history"
+          title="Invoice history"
+          defaultOpen={false}
+          summary={
+            invoices.length > 0
+              ? `${invoices.length} invoice${invoices.length === 1 ? '' : 's'} on file`
+              : 'No invoices yet'
+          }
+        >
+          <div className="pt-4">
+            <ClientBillingSection
+              invoices={invoices}
+              stripeEnabled={stripeEnabled}
+              payingId={payingId}
+              viewLoading={viewLoading}
+              onPay={payInvoice}
+              onView={openInvoice}
+              mode="history"
+            />
+          </div>
+        </ClientCollapsibleSection>
+      </div>
+
+      {/* Mobile sticky help bar */}
+      <div className="fixed bottom-0 inset-x-0 z-40 md:hidden p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-gradient-to-t from-[#111418] via-[#111418]/95 to-transparent pointer-events-none">
+        <button
+          type="button"
+          onClick={() => openMessage({ category: 'other' })}
+          className="pointer-events-auto w-full rounded-xl bg-gold text-obsidian font-semibold py-3.5 px-4 text-sm shadow-lg shadow-black/30 active:scale-[0.98] transition-transform"
+        >
+          Need help? Message Nico
+        </button>
+      </div>
 
       {messageOpen && (
         <ClientMessageModal
           open={messageOpen}
           defaultSubject={messageDefaultSubject}
+          defaultCategory={messageDefaultCategory}
           onClose={() => {
             setMessageOpen(false)
             setMessageDefaultSubject('')
+            setMessageDefaultCategory(undefined)
           }}
         />
       )}

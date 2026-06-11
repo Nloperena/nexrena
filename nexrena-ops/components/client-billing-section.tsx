@@ -1,17 +1,16 @@
 'use client'
 
-import { useState } from 'react'
 import type { PortalInvoice } from '@/lib/portal-types'
 import {
   computeOutstandingBalance,
   countInvoicesByStatus,
   effectiveInvoiceStatus,
   getOldestUnpaidInvoice,
-  portalSectionTitleClass,
   sortInvoicesNewestFirst,
 } from '@/lib/portal-dashboard-utils'
 import { formatCurrency, formatDate } from '@/lib/store'
 import { Btn } from '@/components/ui'
+import { StatusChip, invoiceStatusChip } from '@/components/status-chip'
 
 const card = 'glass-panel rounded-xl border border-slate-800/60 p-5'
 
@@ -24,6 +23,7 @@ type Props = {
   onPay: (id: string) => void
   onView: (id: string) => void
   onMessageNico?: () => void
+  mode?: 'summary' | 'history'
 }
 
 function InvoiceRow({
@@ -42,6 +42,7 @@ function InvoiceRow({
   onView: (id: string) => void
 }) {
   const status = effectiveInvoiceStatus(inv)
+  const chip = invoiceStatusChip(status, inv.dueDate)
   const canPay = stripeEnabled && (status === 'sent' || status === 'overdue')
   const isPaying = payingId === inv.id
 
@@ -49,7 +50,10 @@ function InvoiceRow({
     <li className={card}>
       <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
         <div className="min-w-0">
-          <p className="font-serif text-lg text-white">{inv.number}</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="font-serif text-lg text-white">{inv.number}</p>
+            {chip && <StatusChip variant={chip} />}
+          </div>
           {inv.projectName && (
             <p className="text-sm text-slate-400 mt-0.5 truncate">{inv.projectName}</p>
           )}
@@ -130,54 +134,71 @@ export function ClientBillingSection({
   onPay,
   onView,
   onMessageNico,
+  mode = 'summary',
 }: Props) {
-  const [showAll, setShowAll] = useState(false)
   const sorted = sortInvoicesNewestFirst(invoices)
   const { outstanding, paid } = countInvoicesByStatus(invoices)
   const balance = computeOutstandingBalance(invoices)
-  const visible = showAll ? sorted : sorted.slice(0, 3)
   const oldestUnpaid = getOldestUnpaidInvoice(invoices)
   const showBillingHelp = (!stripeEnabled && outstanding > 0) || Boolean(paymentError)
 
   const payBalance = () => {
-    if (!oldestUnpaid) return
-    if (!stripeEnabled) return
+    if (!oldestUnpaid || !stripeEnabled) return
     onPay(oldestUnpaid.id)
   }
 
-  return (
-    <section>
-      <h3 className={portalSectionTitleClass}>Billing</h3>
+  if (mode === 'history') {
+    if (sorted.length === 0) {
+      return <p className="text-sm text-slate-500">No invoices yet.</p>
+    }
+    return (
+      <ul className="space-y-3">
+        {sorted.map((inv) => (
+          <InvoiceRow
+            key={inv.id}
+            inv={inv}
+            stripeEnabled={stripeEnabled}
+            payingId={payingId}
+            viewLoading={viewLoading}
+            onPay={onPay}
+            onView={onView}
+          />
+        ))}
+      </ul>
+    )
+  }
 
-      <div className={`${card} space-y-4 mb-4`}>
+  return (
+    <section id="billing">
+      <h2 className="text-sm text-slate-400 mb-4 font-medium">Billing</h2>
+
+      <div className={`${card} space-y-4`}>
         <div>
-          <p className="text-base text-white font-medium tabular-nums">
-            Outstanding balance: {formatCurrency(balance)}
+          <p className="text-2xl font-serif text-white tabular-nums">
+            {formatCurrency(balance)}
           </p>
-          <p className="text-sm text-slate-400 mt-1">
-            {outstanding} unpaid invoice{outstanding === 1 ? '' : 's'} · {paid} paid
+          <p className="text-sm text-slate-400 mt-1">Outstanding balance</p>
+          <p className="text-xs text-slate-500 mt-2">
+            {outstanding} unpaid · {paid} paid
           </p>
         </div>
 
-        {sorted.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {balance > 0 && (
-              <Btn
-                size="sm"
-                disabled={!stripeEnabled || payingId !== null}
-                onClick={payBalance}
-              >
-                {payingId ? '…' : `Pay ${formatCurrency(balance)} balance`}
-              </Btn>
-            )}
-            <Btn
-              size="sm"
-              variant="ghost"
-              onClick={() => setShowAll((v) => !v)}
-            >
-              {showAll ? 'Show recent only' : 'View all invoices'}
-            </Btn>
-          </div>
+        {balance > 0 && (
+          <Btn
+            size="md"
+            disabled={!stripeEnabled || payingId !== null}
+            onClick={payBalance}
+          >
+            {payingId ? 'Starting checkout…' : `Pay balance`}
+          </Btn>
+        )}
+
+        {balance === 0 && sorted.length > 0 && (
+          <p className="text-sm text-emerald-400/90">You&apos;re all caught up — no balance due.</p>
+        )}
+
+        {sorted.length === 0 && (
+          <p className="text-sm text-slate-500">No invoices yet.</p>
         )}
 
         {!stripeEnabled && outstanding > 0 && (
@@ -187,36 +208,8 @@ export function ClientBillingSection({
         )}
 
         {showBillingHelp && <BillingHelpLink onMessageNico={onMessageNico} />}
+        {paymentError && <p className="text-sm text-red-400">{paymentError}</p>}
       </div>
-
-      {sorted.length === 0 ? (
-        <p className={`${card} text-sm text-slate-500`}>No invoices yet.</p>
-      ) : (
-        <>
-          <ul className="space-y-3">
-            {visible.map((inv) => (
-              <InvoiceRow
-                key={inv.id}
-                inv={inv}
-                stripeEnabled={stripeEnabled}
-                payingId={payingId}
-                viewLoading={viewLoading}
-                onPay={onPay}
-                onView={onView}
-              />
-            ))}
-          </ul>
-          {!showAll && sorted.length > 3 && (
-            <button
-              type="button"
-              onClick={() => setShowAll(true)}
-              className="mt-3 text-sm text-slate-500 hover:text-gold transition-colors"
-            >
-              View invoice history ({sorted.length - 3} more) →
-            </button>
-          )}
-        </>
-      )}
     </section>
   )
 }

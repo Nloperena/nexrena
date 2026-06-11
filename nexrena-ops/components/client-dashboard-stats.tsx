@@ -15,9 +15,9 @@ export function ClientDashboardStats({ stats }: Props) {
         gold={stats.outstandingBalance > 0}
       />
       <StatCard
-        label="Active project"
-        value={stats.activeProjectName ?? 'No active project'}
-        sub={stats.activeProjectName ? 'In progress' : 'Start a request when you\u2019re ready.'}
+        label="Current work"
+        value={stats.activeProjectName ?? 'Nothing active'}
+        sub={stats.activeProjectName ? 'In progress' : 'We\u2019ll update you when work starts.'}
       />
       <StatCard
         label="Pending approval"
@@ -26,7 +26,7 @@ export function ClientDashboardStats({ stats }: Props) {
         gold={stats.pendingApprovalCount > 0}
       />
       <StatCard
-        label="Next due invoice"
+        label="Next due"
         value={stats.nextDueDate ? formatDate(stats.nextDueDate) : 'None'}
         sub={stats.nextDueDate ? 'Upcoming payment' : 'All caught up'}
       />
