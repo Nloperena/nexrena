@@ -14,7 +14,7 @@ import {
   createPortalCheckout,
   logoutPortal,
 } from '@/lib/portal-client'
-import { computePortalStats } from '@/lib/portal-dashboard-utils'
+import { computePortalStats, portalSectionTitleClass } from '@/lib/portal-dashboard-utils'
 import { formatDate } from '@/lib/store'
 import { InvoicePrint } from '@/components/invoice-print'
 import { PortalUploadsSection } from '@/components/portal-uploads-section'
@@ -55,7 +55,7 @@ function toPrintInvoice(inv: PortalInvoice): Invoice {
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <h3 className="text-[10px] uppercase tracking-widest text-slate-500 mb-3">{children}</h3>
+  return <h3 className={portalSectionTitleClass}>{children}</h3>
 }
 
 export function ClientDashboard({ onSignOut }: Props) {
@@ -181,7 +181,7 @@ export function ClientDashboard({ onSignOut }: Props) {
   }
 
   return (
-    <div className="max-w-5xl mx-auto flex flex-col gap-8 py-4">
+    <div className="max-w-5xl mx-auto flex flex-col gap-10 py-4">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-[10px] text-gold tracking-[0.2em] uppercase">Client portal</p>
@@ -215,7 +215,7 @@ export function ClientDashboard({ onSignOut }: Props) {
           </div>
           <div className="flex flex-wrap gap-2">
             <Btn size="sm" onClick={() => setRequestOpen(true)}>Start a new request</Btn>
-            <Btn size="sm" variant="ghost" onClick={scrollToUploads}>Upload files</Btn>
+            <Btn size="sm" onClick={scrollToUploads}>Upload files</Btn>
             <Btn
               size="sm"
               variant="ghost"
@@ -226,6 +226,15 @@ export function ClientDashboard({ onSignOut }: Props) {
           </div>
         </div>
       </section>
+
+      <div ref={uploadsRef}>
+        <PortalUploadsSection
+          compact
+          assets={assets}
+          serviceRequests={serviceRequests}
+          onUploaded={(asset) => setAssets((prev) => [asset, ...prev])}
+        />
+      </div>
 
       <section>
         <SectionTitle>Active Projects</SectionTitle>
@@ -275,15 +284,6 @@ export function ClientDashboard({ onSignOut }: Props) {
         onPay={payInvoice}
         onView={openInvoice}
       />
-
-      <div ref={uploadsRef}>
-        <PortalUploadsSection
-          compact
-          assets={assets}
-          serviceRequests={serviceRequests}
-          onUploaded={(asset) => setAssets((prev) => [asset, ...prev])}
-        />
-      </div>
 
       <section>
         <SectionTitle>Estimates &amp; Approvals</SectionTitle>

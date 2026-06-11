@@ -7,11 +7,6 @@ import type { PortalDashboardStats } from '@/lib/portal-dashboard-utils'
 type Props = { stats: PortalDashboardStats }
 
 export function ClientDashboardStats({ stats }: Props) {
-  const pendingLabel =
-    stats.pendingApprovalCount > 0
-      ? String(stats.pendingApprovalCount)
-      : 'None'
-
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       <StatCard
@@ -21,13 +16,13 @@ export function ClientDashboardStats({ stats }: Props) {
       />
       <StatCard
         label="Active project"
-        value={stats.activeProjectName ?? 'None'}
-        sub={stats.activeProjectName ? 'In progress' : undefined}
+        value={stats.activeProjectName ?? 'No active project'}
+        sub={stats.activeProjectName ? 'In progress' : 'Start a request when you\u2019re ready.'}
       />
       <StatCard
         label="Pending approval"
-        value={pendingLabel}
-        sub={stats.pendingApprovalCount > 0 ? 'Estimates awaiting you' : undefined}
+        value={stats.pendingApprovalCount > 0 ? String(stats.pendingApprovalCount) : 'Nothing pending'}
+        sub={stats.pendingApprovalCount > 0 ? 'Estimates awaiting you' : 'No estimates need approval.'}
         gold={stats.pendingApprovalCount > 0}
       />
       <StatCard

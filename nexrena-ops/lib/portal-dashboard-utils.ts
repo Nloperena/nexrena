@@ -68,6 +68,9 @@ export function countInvoicesByStatus(invoices: PortalInvoice[]) {
   return { outstanding, paid }
 }
 
+export const portalSectionTitleClass =
+  'text-sm uppercase tracking-widest text-slate-400 mb-4 font-medium'
+
 export type PortalDashboardStats = {
   outstandingBalance: number
   activeProjectName: string | null

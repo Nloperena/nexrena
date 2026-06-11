@@ -3,9 +3,11 @@
 import { useState } from 'react'
 import type { PortalInvoice } from '@/lib/portal-types'
 import {
+  computeOutstandingBalance,
   countInvoicesByStatus,
   effectiveInvoiceStatus,
   getOldestUnpaidInvoice,
+  portalSectionTitleClass,
   sortInvoicesNewestFirst,
 } from '@/lib/portal-dashboard-utils'
 import { formatCurrency, formatDate } from '@/lib/store'
@@ -67,9 +69,15 @@ function InvoiceRow({
               {payingId === inv.id ? '…' : 'Pay now'}
             </Btn>
           )}
-          <Btn size="sm" variant="ghost" disabled={viewLoading} onClick={() => onView(inv.id)}>
-            {status === 'paid' ? 'View receipt' : 'View'}
-          </Btn>
+          {status === 'paid' ? (
+            <Btn size="sm" variant="ghost" disabled={viewLoading} onClick={() => onView(inv.id)}>
+              Receipt
+            </Btn>
+          ) : (
+            <Btn size="sm" variant="ghost" disabled={viewLoading} onClick={() => onView(inv.id)}>
+              View
+            </Btn>
+          )}
         </div>
       </div>
     </li>
@@ -87,6 +95,7 @@ export function ClientBillingSection({
   const [showAll, setShowAll] = useState(false)
   const sorted = sortInvoicesNewestFirst(invoices)
   const { outstanding, paid } = countInvoicesByStatus(invoices)
+  const balance = computeOutstandingBalance(invoices)
   const visible = showAll ? sorted : sorted.slice(0, 3)
   const oldestUnpaid = getOldestUnpaidInvoice(invoices)
 
@@ -98,29 +107,36 @@ export function ClientBillingSection({
 
   return (
     <section>
-      <div className="flex flex-wrap items-end justify-between gap-3 mb-3">
+      <h3 className={portalSectionTitleClass}>Billing</h3>
+      <div className="flex flex-col gap-3 mb-4">
         <div>
-          <h3 className="text-[10px] uppercase tracking-widest text-slate-500">Billing</h3>
+          <p className="text-base text-white font-medium tabular-nums">
+            Outstanding balance: {formatCurrency(balance)}
+          </p>
           <p className="text-sm text-slate-400 mt-1">
-            Outstanding: {outstanding} · Paid: {paid}
+            {outstanding} unpaid invoice{outstanding === 1 ? '' : 's'} · {paid} paid
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {outstanding > 0 && (
+        {sorted.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {balance > 0 && (
+              <Btn
+                size="sm"
+                disabled={!stripeEnabled || payingId !== null}
+                onClick={payBalance}
+              >
+                {payingId ? '…' : `Pay ${formatCurrency(balance)} balance`}
+              </Btn>
+            )}
             <Btn
               size="sm"
-              disabled={!stripeEnabled || payingId !== null}
-              onClick={payBalance}
+              variant="ghost"
+              onClick={() => setShowAll((v) => !v)}
             >
-              {payingId ? '…' : 'Pay balance'}
-            </Btn>
-          )}
-          {sorted.length > 3 && (
-            <Btn size="sm" variant="ghost" onClick={() => setShowAll((v) => !v)}>
               {showAll ? 'Show recent only' : 'View all invoices'}
             </Btn>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {!stripeEnabled && outstanding > 0 && (
