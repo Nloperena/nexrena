@@ -16,6 +16,7 @@ type Props = {
   activeView: ClientPortalView
   onNavigate: (view: ClientPortalView) => void
   messageUnread: number
+  formsNewCount?: number
   account: PortalAccount | null
   onSignOut: () => void
   children: ReactNode
@@ -25,6 +26,7 @@ export function ClientPortalShell({
   activeView,
   onNavigate,
   messageUnread,
+  formsNewCount = 0,
   account,
   onSignOut,
   children,
@@ -64,7 +66,8 @@ export function ClientPortalShell({
               key={item.id}
               item={item}
               active={activeView === item.id}
-              unreadCount={messageUnread}
+              messageUnread={messageUnread}
+              formsNewCount={formsNewCount}
               onClick={() => navigate(item.id)}
             />
           ))}
@@ -111,7 +114,8 @@ export function ClientPortalShell({
               key={item.id}
               item={item}
               active={activeView === item.id}
-              unreadCount={messageUnread}
+              messageUnread={messageUnread}
+              formsNewCount={formsNewCount}
               onClick={() => navigate(item.id)}
               compact
             />
@@ -157,7 +161,8 @@ export function ClientPortalShell({
                   key={item.id}
                   item={item}
                   active={activeView === item.id}
-                  unreadCount={messageUnread}
+                  messageUnread={messageUnread}
+                  formsNewCount={formsNewCount}
                   onClick={() => navigate(item.id)}
                 />
               ))}

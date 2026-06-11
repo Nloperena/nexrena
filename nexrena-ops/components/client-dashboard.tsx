@@ -20,7 +20,9 @@ import { computePortalStats } from '@/lib/portal-dashboard-utils'
 import { buildPortalActivity } from '@/lib/activity-utils'
 import { formatDate } from '@/lib/store'
 import { InvoicePrint } from '@/components/invoice-print'
+import { ClientDashboardHero } from '@/components/client-dashboard-hero'
 import { ClientDashboardStats } from '@/components/client-dashboard-stats'
+import { ServiceRequestForm } from '@/components/service-request-form'
 import { ClientBillingSection } from '@/components/client-billing-section'
 import { PortalSubscriptionsSection } from '@/components/portal-subscriptions-section'
 import { ClientWorkStatusSection } from '@/components/client-work-status-section'
@@ -31,7 +33,7 @@ import { UploadFilesModal } from '@/components/upload-files-modal'
 import { ClientFilesView } from '@/components/client-files-view'
 import { ClientMessagesThreadView } from '@/components/client-messages-thread-view'
 import { ClientWebsitesSection } from '@/components/client-websites-section'
-import { ClientFormHistorySection } from '@/components/client-form-history-section'
+import { ClientFormsView } from '@/components/client-forms-view'
 import { ClientSettingsView } from '@/components/client-settings-view'
 import { ClientScheduleView } from '@/components/client-schedule-view'
 import { ClientPortalShell } from '@/components/client-portal-shell'
@@ -123,6 +125,11 @@ export function ClientDashboard({ onSignOut }: Props) {
 
   useEffect(() => { load() }, [load])
 
+  const formsNewCount = useMemo(
+    () => formSubmissions.filter((s) => s.status === 'new').length,
+    [formSubmissions],
+  )
+
   const stats = useMemo(
     () => computePortalStats(invoices, projects, proposals),
     [invoices, projects, proposals],
@@ -202,8 +209,13 @@ export function ClientDashboard({ onSignOut }: Props) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#111418] flex items-center justify-center">
-        <p className="text-sm text-slate-400 animate-pulse">Loading your workspace…</p>
+      <div className="min-h-screen bg-[#111418] flex items-center justify-center px-6">
+        <div className="text-center space-y-4">
+          <div className="mx-auto h-12 w-12 rounded-2xl border border-gold/20 bg-gold/10 flex items-center justify-center">
+            <span className="h-2 w-2 rounded-full bg-gold animate-ping" />
+          </div>
+          <p className="text-sm text-slate-400">Loading your workspace…</p>
+        </div>
       </div>
     )
   }
@@ -224,12 +236,16 @@ export function ClientDashboard({ onSignOut }: Props) {
       case 'home':
         return (
           <div className="space-y-8">
+            <ClientDashboardHero
+              account={account}
+              stats={stats}
+              messageUnread={messageUnread}
+              onStartRequest={() => setRequestOpen(true)}
+            />
             <ClientDashboardStats stats={stats} />
             <ClientActionCards
               onMessage={() => setActiveView('messages')}
-              onSchedule={() => setActiveView('schedule')}
               onStartRequest={() => setRequestOpen(true)}
-              onUpload={() => setUploadOpen(true)}
               onViewBilling={() => setActiveView('billing')}
             />
             <ClientActivityFeed items={activity} />
@@ -288,31 +304,46 @@ export function ClientDashboard({ onSignOut }: Props) {
           <ClientWebsitesSection resources={resources} />
         ) : (
           <p className={`${card} text-sm text-slate-500`}>
-            No website links yet — your Nexrena team can add GitHub and live site links here.
+            No website links yet — your Nexrena team can add live site and staging links here.
           </p>
         )
+
+      case 'forms':
+        return <ClientFormsView submissions={formSubmissions} />
 
       case 'requests':
         return (
           <div className="space-y-8">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm text-slate-400">Track project work and service requests.</p>
-              <Btn size="sm" onClick={() => setRequestOpen(true)}>Start a request</Btn>
+            <div className={`${card} space-y-4`}>
+              <div>
+                <h3 className="font-serif text-lg text-white">Start a request</h3>
+                <p className="text-sm text-slate-400 mt-1">
+                  Pick Website, Growth, or Support — then add your details.
+                </p>
+              </div>
+              <ServiceRequestForm
+                variant="inline"
+                onCreated={(row) => setServiceRequests((prev) => [row, ...prev])}
+              />
             </div>
-            <ClientWorkStatusSection
-              activeProjects={activeProjects}
-              serviceRequests={serviceRequests}
-              invoices={invoices}
-              onStartRequest={() => setRequestOpen(true)}
-              variant="projects"
-            />
-            <ClientWorkStatusSection
-              activeProjects={activeProjects}
-              serviceRequests={serviceRequests}
-              invoices={invoices}
-              onStartRequest={() => setRequestOpen(true)}
-              variant="requests"
-            />
+            <div className="space-y-3">
+              <h3 className="text-[10px] uppercase tracking-widest text-slate-500">Active projects</h3>
+              <ClientWorkStatusSection
+                activeProjects={activeProjects}
+                serviceRequests={serviceRequests}
+                invoices={invoices}
+                variant="projects"
+              />
+            </div>
+            <div className="space-y-3">
+              <h3 className="text-[10px] uppercase tracking-widest text-slate-500">Recent requests</h3>
+              <ClientWorkStatusSection
+                activeProjects={activeProjects}
+                serviceRequests={serviceRequests}
+                invoices={invoices}
+                variant="requests"
+              />
+            </div>
             {proposals.length > 0 && (
               <div className="space-y-3">
                 <h3 className="text-sm uppercase tracking-widest text-slate-400 font-medium">Estimates & approvals</h3>
@@ -347,7 +378,6 @@ export function ClientDashboard({ onSignOut }: Props) {
                 </ul>
               </div>
             )}
-            <ClientFormHistorySection submissions={formSubmissions} />
           </div>
         )
 
@@ -366,6 +396,7 @@ export function ClientDashboard({ onSignOut }: Props) {
       activeView={activeView}
       onNavigate={setActiveView}
       messageUnread={messageUnread}
+      formsNewCount={formsNewCount}
       account={account}
       onSignOut={handleSignOut}
     >

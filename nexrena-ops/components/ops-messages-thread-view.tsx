@@ -14,11 +14,12 @@ import type { ClientMessage, MessageThread } from '@/lib/types'
 
 type Props = {
   initialThreadId?: string | null
+  contactFilter?: string
 }
 
 type MobilePanel = 'list' | 'thread'
 
-export function OpsMessagesThreadView({ initialThreadId = null }: Props) {
+export function OpsMessagesThreadView({ initialThreadId = null, contactFilter }: Props) {
   const [threads, setThreads] = useState<MessageThread[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [activeThreadId, setActiveThreadId] = useState<string | null>(initialThreadId)
@@ -34,16 +35,22 @@ export function OpsMessagesThreadView({ initialThreadId = null }: Props) {
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      const data = await api.get<{ threads: MessageThread[]; unreadCount: number }>('/messages/threads')
+      const path = contactFilter
+        ? `/messages/threads?contactId=${encodeURIComponent(contactFilter)}`
+        : '/messages/threads'
+      const data = await api.get<{ threads: MessageThread[]; unreadCount: number }>(path)
       setThreads(data.threads)
       setUnreadCount(data.unreadCount)
-      setActiveThreadId((current) => current ?? data.threads[0]?.threadId ?? null)
+      setActiveThreadId((current) => {
+        if (current && data.threads.some((t) => t.threadId === current)) return current
+        return data.threads[0]?.threadId ?? null
+      })
     } catch {
       setError('Could not load message threads.')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [contactFilter])
 
   useEffect(() => { load() }, [load])
 

@@ -8,7 +8,7 @@ type Props = { stats: PortalDashboardStats }
 
 export function ClientDashboardStats({ stats }: Props) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
       <StatCard
         label="Outstanding balance"
         value={formatCurrency(stats.outstandingBalance)}
@@ -18,12 +18,6 @@ export function ClientDashboardStats({ stats }: Props) {
         label="Current work"
         value={stats.activeProjectName ?? 'Nothing active'}
         sub={stats.activeProjectName ? 'In progress' : 'We\u2019ll update you when work starts.'}
-      />
-      <StatCard
-        label="Pending approval"
-        value={stats.pendingApprovalCount > 0 ? String(stats.pendingApprovalCount) : 'Nothing pending'}
-        sub={stats.pendingApprovalCount > 0 ? 'Estimates awaiting you' : 'No estimates need approval.'}
-        gold={stats.pendingApprovalCount > 0}
       />
       <StatCard
         label="Next due"

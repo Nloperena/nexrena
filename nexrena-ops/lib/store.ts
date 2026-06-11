@@ -376,18 +376,21 @@ export function useClientResources(contactId?: string) {
   return { resources, add, edit, remove, reload }
 }
 
-export function useMessages() {
+export function useMessages(contactId?: string) {
   const [threads, setThreads] = useState<import('./types').MessageThread[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
 
   const reload = useCallback(() => {
-    api.get<{ threads: import('./types').MessageThread[]; unreadCount: number }>('/messages/threads')
+    const path = contactId
+      ? `/messages/threads?contactId=${encodeURIComponent(contactId)}`
+      : '/messages/threads'
+    api.get<{ threads: import('./types').MessageThread[]; unreadCount: number }>(path)
       .then((data) => {
         setThreads(data.threads)
         setUnreadCount(data.unreadCount)
       })
       .catch(console.error)
-  }, [])
+  }, [contactId])
 
   useEffect(() => { reload() }, [reload])
 

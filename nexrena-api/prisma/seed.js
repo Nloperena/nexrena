@@ -7,6 +7,10 @@ const WARREN_SUBSCRIPTION_ID = 'sub-warren-website-hosting'
 const WARREN_PORTAL_EMAIL = 'warren@twoazaleagroup.com'
 const WARREN_PORTAL_PASSWORD = 'WarrenDemo2026!'
 const JOE_CONTACT_ID = 'joe-loperena-furniture-packages'
+const JOE_SUB_HOSTING_ID = 'sub-fpu-website-hosting'
+const JOE_SUB_ANALYTICS_ID = 'sub-fpu-website-analytics'
+const JOE_PORTAL_EMAIL = 'joe@furniturepackagesusa.com'
+const JOE_PORTAL_PASSWORD = 'JoeDemo2026!'
 
 function hashPassword(password) {
   const salt = randomBytes(16).toString('hex')
@@ -57,31 +61,118 @@ async function seed() {
     where: { id: JOE_CONTACT_ID },
     create: {
       id: JOE_CONTACT_ID,
-      name: 'Joe Loperena',
+      name: 'Joe',
       company: 'Furniture Packages USA',
-      email: 'accounts@furniturepackagesusa.com',
+      email: JOE_PORTAL_EMAIL,
       phone: '407-348-8848',
       billingAddress: '2440 Tesoro Court, Kissimmee, FL 34744',
       industry: 'other',
       stage: 'won',
       value: 0,
-      notes: 'Client record for Furniture Packages USA.',
+      notes: 'Portal: joe@furniturepackagesusa.com. Billing contact: accounts@furniturepackagesusa.com. Site: furniturepackagesusa.com.',
       createdAt: now,
       updatedAt: now,
     },
     update: {
-      name: 'Joe Loperena',
+      name: 'Joe',
       company: 'Furniture Packages USA',
-      email: 'accounts@furniturepackagesusa.com',
+      email: JOE_PORTAL_EMAIL,
       phone: '407-348-8848',
       billingAddress: '2440 Tesoro Court, Kissimmee, FL 34744',
       industry: 'other',
       stage: 'won',
-      value: 0,
-      notes: 'Client record for Furniture Packages USA.',
+      notes: 'Portal: joe@furniturepackagesusa.com. Billing contact: accounts@furniturepackagesusa.com. Site: furniturepackagesusa.com.',
       updatedAt: now,
     },
   })
+
+  for (const sub of [
+    {
+      id: JOE_SUB_HOSTING_ID,
+      description: 'Website Hosting',
+      notes: 'Hosting for Furniture Packages USA (furniturepackagesusa.com).',
+    },
+    {
+      id: JOE_SUB_ANALYTICS_ID,
+      description: 'Website Analytics',
+      notes: 'Analytics for Furniture Packages USA site.',
+    },
+  ]) {
+    await prisma.subscription.upsert({
+      where: { id: sub.id },
+      create: {
+        id: sub.id,
+        contactId: JOE_CONTACT_ID,
+        description: sub.description,
+        amount: 20,
+        interval: 'monthly',
+        status: 'active',
+        billingDay: 1,
+        nextBillingDate: firstOfNextMonth(),
+        skipNext: false,
+        netTerms: 'net30',
+        notes: sub.notes,
+        createdAt: now,
+      },
+      update: {
+        description: sub.description,
+        amount: 20,
+        interval: 'monthly',
+        status: 'active',
+        billingDay: 1,
+        netTerms: 'net30',
+        notes: sub.notes,
+      },
+    })
+  }
+
+  await prisma.portalAccount.upsert({
+    where: { email: JOE_PORTAL_EMAIL },
+    create: {
+      email: JOE_PORTAL_EMAIL,
+      passwordHash: hashPassword(JOE_PORTAL_PASSWORD),
+      name: 'Joe',
+      company: 'Furniture Packages USA',
+      contactId: JOE_CONTACT_ID,
+    },
+    update: {
+      passwordHash: hashPassword(JOE_PORTAL_PASSWORD),
+      name: 'Joe',
+      company: 'Furniture Packages USA',
+      contactId: JOE_CONTACT_ID,
+    },
+  })
+
+  for (const resource of [
+    {
+      id: 'res-fpu-live',
+      type: 'live_site',
+      title: 'Furniture Packages USA Website',
+      url: 'https://furniturepackagesusa.com',
+      description: 'Your public website at furniturepackagesusa.com.',
+    },
+    {
+      id: 'res-fpu-github',
+      type: 'github',
+      title: 'FPUSA Website Source',
+      url: 'https://github.com/Nloperena/FPUSA-NEXTJS-Template/tree/main/fpusa-astro-production',
+      description: 'Astro production site source on GitHub.',
+    },
+  ]) {
+    await prisma.clientResource.upsert({
+      where: { id: resource.id },
+      create: {
+        ...resource,
+        contactId: JOE_CONTACT_ID,
+      },
+      update: {
+        type: resource.type,
+        title: resource.title,
+        url: resource.url,
+        description: resource.description,
+      },
+    })
+  }
 
   await prisma.subscription.upsert({
     where: { id: WARREN_SUBSCRIPTION_ID },
@@ -183,7 +274,7 @@ async function seed() {
   })
   const warrenResources = [
     { id: 'res-warren-ttag-live', type: 'live_site', title: 'Two Azalea Group Website', url: 'https://www.thetwoazaleagroup.com', description: 'Your public website at thetwoazaleagroup.com.', linkUpgrade: false },
-    { id: 'res-warren-ttag-upgrade', type: 'github', title: 'Website Upgrade (Astro rebuild)', url: 'https://github.com/Nloperena/LoperenaPortfolio2026/tree/main/astro-rebuild', description: 'Astro static one-pager delivered Dec 2025 — source in the LoperenaPortfolio2026 astro-rebuild folder.', linkUpgrade: true },
+    { id: 'res-warren-ttag-upgrade', type: 'staging', title: 'Website Upgrade (Astro rebuild)', url: 'https://ttag-astro.vercel.app', description: 'Preview the upgraded Astro site at ttag-astro.vercel.app.', linkUpgrade: true },
   ]
   await prisma.clientResource.deleteMany({ where: { id: 'res-warren-ttag-github' } })
   for (const r of warrenResources) {
@@ -208,7 +299,9 @@ async function seed() {
     })
   }
 
-  console.log('Seed complete: Warren Daughtridge + Joe Loperena contacts; Warren hosting subscription + portal account')
+  console.log(
+    'Seed complete: Warren + Joe (Furniture Packages USA) contacts, portal accounts, subscriptions',
+  )
 }
 
 seed()

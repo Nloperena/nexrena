@@ -30,6 +30,33 @@ const upload = multer({
   },
 })
 
+async function contactMessageWhere(contactId: string) {
+  const contact = await prisma.contact.findUnique({
+    where: { id: contactId },
+    select: { email: true },
+  })
+  if (!contact) return undefined
+
+  const portalAccounts = await prisma.portalAccount.findMany({
+    where: { contactId },
+    select: { email: true },
+  })
+
+  const emails = new Set<string>()
+  if (contact.email) emails.add(contact.email.toLowerCase())
+  for (const account of portalAccounts) {
+    if (account.email) emails.add(account.email.toLowerCase())
+  }
+
+  const emailFilters = [...emails].map((email) => ({
+    clientEmail: { equals: email, mode: 'insensitive' as const },
+  }))
+
+  return {
+    OR: [{ contactId }, ...emailFilters],
+  }
+}
+
 /** GET /api/messages */
 router.get('/', requireAuth, async (_req, res) => {
   const rows = await prisma.clientMessage.findMany({
@@ -40,8 +67,23 @@ router.get('/', requireAuth, async (_req, res) => {
 })
 
 /** GET /api/messages/threads */
-router.get('/threads', requireAuth, async (_req, res) => {
+router.get('/threads', requireAuth, async (req, res) => {
+  const contactId = typeof req.query.contactId === 'string'
+    ? req.query.contactId.trim() || undefined
+    : undefined
+
+  let messageWhere: NonNullable<Awaited<ReturnType<typeof contactMessageWhere>>> | undefined
+  if (contactId) {
+    const filter = await contactMessageWhere(contactId)
+    if (!filter) {
+      res.json({ threads: [], unreadCount: 0 })
+      return
+    }
+    messageWhere = filter
+  }
+
   const rows = await prisma.clientMessage.findMany({
+    where: messageWhere,
     orderBy: { createdAt: 'asc' },
     select: messageSelect,
   })

@@ -14,16 +14,14 @@ export function ClientRequestModal({ open, onClose, onCreated }: Props) {
   if (!open) return null
 
   return (
-    <Modal title="Start a New Request" onClose={onClose} wide>
-      <p className="text-sm text-slate-400 mb-5">
-        Tell us about your next website update, landing page, SEO sprint, or maintenance need.
-      </p>
+    <Modal title="Start a request" onClose={onClose}>
       <ServiceRequestForm
+        variant="modal"
         onCreated={(row) => {
           onCreated(row)
         }}
         onSuccess={() => {
-          setTimeout(onClose, 1200)
+          setTimeout(onClose, 900)
         }}
       />
     </Modal>

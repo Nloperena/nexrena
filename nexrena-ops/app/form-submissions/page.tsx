@@ -9,6 +9,7 @@ import { PageHeader, Btn, StatCard, SectionCard, EmptyState } from '@/components
 const SITE_LABELS: Record<string, string> = {
   ttag: 'TTAG',
   nexrena: 'Nexrena',
+  fpusa: 'Furniture Packages USA',
 }
 
 function messagePreview(sub: FormSubmission): string {

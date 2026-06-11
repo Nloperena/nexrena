@@ -7,6 +7,7 @@ export type ClientPortalView =
   | 'schedule'
   | 'files'
   | 'websites'
+  | 'forms'
   | 'requests'
   | 'settings'
 
@@ -14,16 +15,17 @@ type NavItem = {
   id: ClientPortalView
   label: string
   icon: string
-  badge?: boolean
+  badge?: 'messages' | 'forms'
 }
 
 export const CLIENT_NAV_ITEMS: NavItem[] = [
   { id: 'home', label: 'Home', icon: '⌂' },
-  { id: 'messages', label: 'Messages', icon: '✉', badge: true },
+  { id: 'messages', label: 'Messages', icon: '✉', badge: 'messages' },
   { id: 'schedule', label: 'Book a call', icon: '📅' },
   { id: 'billing', label: 'Billing', icon: '▤' },
   { id: 'files', label: 'Files', icon: '📁' },
   { id: 'websites', label: 'Websites', icon: '◈' },
+  { id: 'forms', label: 'Forms', icon: '▣', badge: 'forms' },
   { id: 'requests', label: 'Requests', icon: '✦' },
   { id: 'settings', label: 'Settings', icon: '⚙' },
 ]
@@ -31,7 +33,7 @@ export const CLIENT_NAV_ITEMS: NavItem[] = [
 /** Primary bottom tabs on mobile — Messages always one tap away */
 export const MOBILE_TAB_ITEMS: NavItem[] = [
   { id: 'home', label: 'Home', icon: '⌂' },
-  { id: 'messages', label: 'Messages', icon: '✉', badge: true },
+  { id: 'messages', label: 'Messages', icon: '✉', badge: 'messages' },
   { id: 'billing', label: 'Billing', icon: '▤' },
   { id: 'files', label: 'Files', icon: '📁' },
 ]
@@ -43,13 +45,23 @@ export const MOBILE_DRAWER_ITEMS: NavItem[] = CLIENT_NAV_ITEMS.filter(
 type NavButtonProps = {
   item: NavItem
   active: boolean
-  unreadCount?: number
+  messageUnread?: number
+  formsNewCount?: number
   onClick: () => void
   compact?: boolean
 }
 
-export function ClientNavButton({ item, active, unreadCount = 0, onClick, compact }: NavButtonProps) {
-  const showBadge = item.badge && unreadCount > 0
+export function ClientNavButton({
+  item,
+  active,
+  messageUnread = 0,
+  formsNewCount = 0,
+  onClick,
+  compact,
+}: NavButtonProps) {
+  const badgeCount =
+    item.badge === 'messages' ? messageUnread : item.badge === 'forms' ? formsNewCount : 0
+  const showBadge = item.badge && badgeCount > 0
 
   return (
     <button
@@ -74,7 +86,7 @@ export function ClientNavButton({ item, active, unreadCount = 0, onClick, compac
         {item.icon}
         {showBadge && compact && (
           <span className="absolute -top-1.5 -right-2 min-w-[1rem] h-4 px-1 rounded-full bg-gold text-obsidian text-[9px] font-bold flex items-center justify-center tabular-nums">
-            {unreadCount > 9 ? '9+' : unreadCount}
+            {badgeCount > 9 ? '9+' : badgeCount}
           </span>
         )}
       </span>
@@ -83,7 +95,7 @@ export function ClientNavButton({ item, active, unreadCount = 0, onClick, compac
       </span>
       {showBadge && !compact && (
         <span className="min-w-[1.25rem] h-5 px-1.5 rounded-full bg-gold text-obsidian text-[10px] font-bold flex items-center justify-center tabular-nums">
-          {unreadCount > 99 ? '99+' : unreadCount}
+          {badgeCount > 99 ? '99+' : badgeCount}
         </span>
       )}
       {active && !compact && (

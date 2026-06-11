@@ -3,7 +3,7 @@ const prisma = new PrismaClient()
 
 const WARREN_CONTACT_ID = 'warren-daughtridge-ttag'
 const TTAG_LIVE = 'https://www.thetwoazaleagroup.com'
-const ASTRO_REBUILD_REPO = 'https://github.com/Nloperena/LoperenaPortfolio2026/tree/main/astro-rebuild'
+const TTAG_UPGRADE = 'https://ttag-astro.vercel.app'
 const WARREN_RESOURCES = [
   {
     id: 'res-warren-ttag-live',
@@ -15,10 +15,10 @@ const WARREN_RESOURCES = [
   },
   {
     id: 'res-warren-ttag-upgrade',
-    type: 'github',
+    type: 'staging',
     title: 'Website Upgrade (Astro rebuild)',
-    url: ASTRO_REBUILD_REPO,
-    description: 'Astro static one-pager delivered Dec 2025 — source in the LoperenaPortfolio2026 astro-rebuild folder.',
+    url: TTAG_UPGRADE,
+    description: 'Preview the upgraded Astro site at ttag-astro.vercel.app.',
     linkUpgradeInvoice: true,
   },
 ]

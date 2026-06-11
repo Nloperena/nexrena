@@ -2,8 +2,13 @@
 
 import type { PortalInvoice, PortalProject, PortalServiceRequest } from '@/lib/portal-types'
 import { getProjectPaymentStatus } from '@/lib/portal-dashboard-utils'
-import { Btn } from '@/components/ui'
 import { StatusChip, projectStatusChip, requestStatusChip } from '@/components/status-chip'
+
+function requestDisplay(description: string, projectType: string): { label: string; body: string } {
+  const match = description.match(/^\[([^\]]+)\]\s*([\s\S]*)$/)
+  if (match) return { label: match[1], body: match[2] || description }
+  return { label: projectType, body: description }
+}
 
 const card = 'glass-panel rounded-xl border border-slate-800/60 p-5'
 
@@ -11,7 +16,6 @@ type Props = {
   activeProjects: PortalProject[]
   serviceRequests: PortalServiceRequest[]
   invoices?: PortalInvoice[]
-  onStartRequest: () => void
   variant?: 'projects' | 'requests' | 'all'
 }
 
@@ -31,7 +35,6 @@ export function ClientWorkStatusSection({
   activeProjects,
   serviceRequests,
   invoices = [],
-  onStartRequest,
   variant = 'all',
 }: Props) {
   const recentRequests = serviceRequests.slice(0, 5)
@@ -75,14 +78,11 @@ export function ClientWorkStatusSection({
   if (showRequests && !showProjects) {
     if (recentRequests.length === 0) {
       return (
-        <div className={`${card} space-y-3`}>
-          <p className="text-sm text-slate-400">
-            No recent requests.
-          </p>
+        <div className={`${card} space-y-2`}>
+          <p className="text-sm text-slate-400">No requests yet.</p>
           <p className="text-sm text-slate-500">
-            Need a website update or new page? Start a request.
+            Use the quick request form above — we will track status here.
           </p>
-          <Btn size="sm" onClick={onStartRequest}>Start a new request</Btn>
         </div>
       )
     }
@@ -90,13 +90,14 @@ export function ClientWorkStatusSection({
       <ul className="space-y-3">
         {recentRequests.map((r) => {
           const chip = requestStatusChip(r.status)
+          const { label, body } = requestDisplay(r.description, r.projectType)
           return (
             <li key={r.id} className={card}>
               <div className="flex flex-wrap justify-between gap-2">
-                <p className="font-serif text-lg text-white capitalize">{r.projectType}</p>
+                <p className="font-serif text-lg text-white">{label}</p>
                 {chip && <StatusChip variant={chip} />}
               </div>
-              <p className="text-sm text-slate-400 mt-1 line-clamp-2">{r.description}</p>
+              <p className="text-sm text-slate-400 mt-1 line-clamp-2">{body}</p>
               <p className="text-xs text-slate-500 mt-2">
                 {r.budget ? `${r.budget} · ` : ''}
                 Submitted {new Date(r.createdAt).toLocaleDateString()}
@@ -111,9 +112,9 @@ export function ClientWorkStatusSection({
   const isEmpty = activeProjects.length === 0 && recentRequests.length === 0
   if (isEmpty) {
     return (
-      <div className={`${card} space-y-3`}>
-        <p className="text-sm text-slate-400">No active projects or recent requests yet.</p>
-        <Btn size="sm" onClick={onStartRequest}>Start a new request</Btn>
+      <div className={`${card} space-y-2`}>
+        <p className="text-sm text-slate-400">No active projects or requests yet.</p>
+        <p className="text-sm text-slate-500">Send a quick request above to get started.</p>
       </div>
     )
   }
@@ -143,13 +144,14 @@ export function ClientWorkStatusSection({
         <ul className="space-y-3">
           {recentRequests.map((r) => {
             const chip = requestStatusChip(r.status)
+            const { label, body } = requestDisplay(r.description, r.projectType)
             return (
               <li key={r.id} className={card}>
                 <div className="flex flex-wrap justify-between gap-2">
-                  <p className="font-serif text-lg text-white capitalize">{r.projectType}</p>
+                  <p className="font-serif text-lg text-white">{label}</p>
                   {chip && <StatusChip variant={chip} />}
                 </div>
-                <p className="text-sm text-slate-400 mt-1 line-clamp-2">{r.description}</p>
+                <p className="text-sm text-slate-400 mt-1 line-clamp-2">{body}</p>
               </li>
             )
           })}

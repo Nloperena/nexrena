@@ -13,6 +13,7 @@ export const SITES: Record<string, SiteConfig> = {
     label: 'TTAG',
     origins: [
       'https://ttag-fawn.vercel.app',
+      'https://ttag-astro.vercel.app',
       'https://www.thetwoazaleagroup.com',
       'https://thetwoazaleagroup.com',
       'https://www.twoazaleagroup.com',
@@ -24,6 +25,17 @@ export const SITES: Record<string, SiteConfig> = {
     contactId: '',
     label: 'Nexrena',
     origins: ['https://nexrena.com', 'https://www.nexrena.com'],
+  },
+  fpusa: {
+    contactId: 'joe-loperena-furniture-packages',
+    label: 'Furniture Packages USA',
+    origins: [
+      'https://furniturepackagesusa.com',
+      'https://www.furniturepackagesusa.com',
+      'http://localhost:4321',
+      'http://127.0.0.1:4321',
+    ],
+    formSecretEnv: 'FPUSA_FORM_SECRET',
   },
 }
 
