@@ -162,9 +162,30 @@ router.get('/me', requirePortalAuth, async (req, res) => {
   })
 })
 
-/** PATCH /api/portal/me */
+function accountResponse(account: {
+  id: string
+  email: string
+  name: string
+  company: string | null
+  contactId: string
+}) {
+  return {
+    id: account.id,
+    email: account.email,
+    name: account.name,
+    company: account.company,
+    contactId: account.contactId,
+  }
+}
+
+/** PATCH /api/portal/me — profile fields and/or password change */
 router.patch('/me', requirePortalAuth, async (req, res) => {
-  const { name, company } = req.body as { name?: string; company?: string }
+  const { name, company, currentPassword, newPassword } = req.body as {
+    name?: string
+    company?: string
+    currentPassword?: string
+    newPassword?: string
+  }
   const account = await prisma.portalAccount.findUnique({
     where: { id: req.portalUser!.accountId },
   })
@@ -173,30 +194,51 @@ router.patch('/me', requirePortalAuth, async (req, res) => {
     return
   }
 
+  const wantsPasswordChange = currentPassword !== undefined || newPassword !== undefined
+  if (wantsPasswordChange) {
+    const cur = currentPassword?.trim()
+    const next = newPassword?.trim()
+    if (!cur || !next) {
+      res.status(400).json({ error: 'currentPassword and newPassword are required to change password' })
+      return
+    }
+    if (next.length < 8) {
+      res.status(400).json({ error: 'New password must be at least 8 characters' })
+      return
+    }
+    if (!verifyPassword(cur, account.passwordHash)) {
+      res.status(401).json({ error: 'Current password is incorrect' })
+      return
+    }
+  }
+
   const nextName = name?.trim() || account.name
   const nextCompany = company !== undefined ? (company.trim() || null) : account.company
+  const data: { name: string; company: string | null; passwordHash?: string } = {
+    name: nextName,
+    company: nextCompany,
+  }
+  if (wantsPasswordChange) {
+    data.passwordHash = hashPassword(newPassword!.trim())
+  }
 
   const updated = await prisma.portalAccount.update({
     where: { id: account.id },
-    data: { name: nextName, company: nextCompany },
+    data,
   })
 
-  await prisma.contact.update({
-    where: { id: account.contactId },
-    data: {
-      name: nextName,
-      company: nextCompany || nextName,
-      updatedAt: nowIso(),
-    },
-  })
+  if (name !== undefined || company !== undefined) {
+    await prisma.contact.update({
+      where: { id: account.contactId },
+      data: {
+        name: nextName,
+        company: nextCompany || nextName,
+        updatedAt: nowIso(),
+      },
+    })
+  }
 
-  res.json({
-    id: updated.id,
-    email: updated.email,
-    name: updated.name,
-    company: updated.company,
-    contactId: updated.contactId,
-  })
+  res.json(accountResponse(updated))
 })
 
 /** GET /api/portal/projects */

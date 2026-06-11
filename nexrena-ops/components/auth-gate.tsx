@@ -13,13 +13,30 @@ import {
 const ADMIN_USER = 'NLoperena'
 const ADMIN_PASS = 'Fortnitebattlepass'
 const ADMIN_SESSION_KEY = 'nx-ops-unlocked'
+export const ADMIN_DISPLAY_NAME_KEY = 'nx-ops-display-name'
 
 type AuthRole = 'admin' | 'client' | null
 
-const AuthContext = createContext<{ role: AuthRole }>({ role: null })
+type AuthContextValue = {
+  role: AuthRole
+  signOut: () => void
+  teamDisplayName: string
+  setTeamDisplayName: (name: string) => void
+}
+
+const AuthContext = createContext<AuthContextValue>({
+  role: null,
+  signOut: () => {},
+  teamDisplayName: ADMIN_USER,
+  setTeamDisplayName: () => {},
+})
 
 export function useAuthRole() {
   return useContext(AuthContext).role
+}
+
+export function useAuth() {
+  return useContext(AuthContext)
 }
 
 type Props = { children: ReactNode }
@@ -33,6 +50,7 @@ type LoginMode = 'client-sign-in' | 'client-sign-up' | 'team'
 export function AuthGate({ children }: Props) {
   const [hydrated, setHydrated] = useState(false)
   const [role, setRole] = useState<AuthRole>(null)
+  const [teamDisplayName, setTeamDisplayNameState] = useState(ADMIN_USER)
   const [mode, setMode] = useState<LoginMode>('client-sign-in')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -44,6 +62,8 @@ export function AuthGate({ children }: Props) {
   useEffect(() => {
     const isAdmin = sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true'
     const hasClientToken = Boolean(getPortalToken())
+    const storedDisplayName = sessionStorage.getItem(ADMIN_DISPLAY_NAME_KEY)
+    if (storedDisplayName) setTeamDisplayNameState(storedDisplayName)
     if (isAdmin) setRole('admin')
     else if (hasClientToken) setRole('client')
 
@@ -54,6 +74,11 @@ export function AuthGate({ children }: Props) {
 
     setHydrated(true)
   }, [])
+
+  const setTeamDisplayName = (name: string) => {
+    sessionStorage.setItem(ADMIN_DISPLAY_NAME_KEY, name)
+    setTeamDisplayNameState(name)
+  }
 
   const signOut = () => {
     sessionStorage.removeItem(ADMIN_SESSION_KEY)
@@ -110,16 +135,15 @@ export function AuthGate({ children }: Props) {
     }
   }
 
+  const authValue: AuthContextValue = { role, signOut, teamDisplayName, setTeamDisplayName }
+
   if (!hydrated) {
     return <div className="min-h-screen bg-[#111418]" />
   }
 
   if (role === 'admin') {
     return (
-      <AuthContext.Provider value={{ role: 'admin' }}>
-        <div className="fixed right-4 top-3 z-[60]">
-          <Btn size="sm" variant="ghost" onClick={signOut}>Lock</Btn>
-        </div>
+      <AuthContext.Provider value={authValue}>
         {children}
       </AuthContext.Provider>
     )
@@ -127,7 +151,7 @@ export function AuthGate({ children }: Props) {
 
   if (role === 'client') {
     return (
-      <AuthContext.Provider value={{ role: 'client' }}>
+      <AuthContext.Provider value={authValue}>
         <div className="min-h-screen px-6 py-10">
           <ClientDashboard onSignOut={signOut} />
         </div>

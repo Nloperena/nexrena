@@ -65,6 +65,13 @@ export async function updatePortalProfile(payload: { name?: string; company?: st
   })
 }
 
+export async function changePortalPassword(currentPassword: string, newPassword: string) {
+  return portalFetch<PortalAccount>('/api/portal/me', {
+    method: 'PATCH',
+    body: JSON.stringify({ currentPassword, newPassword }),
+  })
+}
+
 export async function fetchPortalProjects() {
   return portalFetch<PortalProject[]>('/api/portal/projects')
 }
