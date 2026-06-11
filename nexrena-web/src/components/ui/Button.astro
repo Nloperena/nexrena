@@ -6,6 +6,9 @@ interface Props {
   type?: 'button' | 'submit';
   target?: string;
   rel?: string;
+  growthPlanPortal?: boolean;
+  'data-cta-zone'?: string;
+  'data-cta-role'?: string;
 }
 
 import { normalizeInternalHref } from '@/lib/url';
@@ -17,6 +20,9 @@ const {
   type = 'button',
   target,
   rel,
+  growthPlanPortal = false,
+  'data-cta-zone': ctaZone,
+  'data-cta-role': ctaRole,
 } = Astro.props;
 const normalizedHref = normalizeInternalHref(href);
 
@@ -36,6 +42,9 @@ const Tag = href ? 'a' : 'button';
   type={href ? undefined : type}
   target={target}
   rel={rel}
+  data-growth-plan-portal={growthPlanPortal ? '' : undefined}
+  data-cta-zone={ctaZone}
+  data-cta-role={ctaRole}
 >
   <span class="magnetic-content pointer-events-none flex items-center gap-2">
     <slot />

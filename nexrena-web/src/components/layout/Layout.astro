@@ -11,6 +11,7 @@ import Footer from './Footer.astro';
 import Schema from '../seo/Schema.astro';
 import Analytics from '@vercel/analytics/astro';
 import Loader from '../ui/Loader.astro';
+import { GrowthPlanPortal } from '../GrowthPlanPortal';
 
 interface Props {
   title?: string;
@@ -88,6 +89,7 @@ const imageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, site).t
       <slot />
     </div>
     <Footer />
+    <GrowthPlanPortal client:load transition:persist="growth-plan-portal" />
     <Analytics />
 
     <script>

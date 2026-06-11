@@ -31,7 +31,7 @@ const navLinks = [
     </nav>
 
     <div class="site-nav__actions">
-      <a href="/contact/" class="site-nav__cta" data-cta-zone="nav" data-cta-role="primary">Get Your 90-Day Growth Plan</a>
+      <a href="/contact/" data-growth-plan-portal class="site-nav__cta" data-cta-zone="nav" data-cta-role="primary">Get Your 90-Day Growth Plan</a>
       <button class="site-nav__toggle" type="button" aria-expanded="false" aria-label="Toggle menu">
         <div class="hamburger">
           <span class="line line-1"></span>
@@ -54,7 +54,7 @@ const navLinks = [
           </a>
         );
       })}
-      <a href="/contact/" class="mobile-menu__link mobile-menu__link--cta" style={`--delay: ${navLinks.length * 0.05}s`} data-cta-zone="nav" data-cta-role="primary">
+      <a href="/contact/" data-growth-plan-portal class="mobile-menu__link mobile-menu__link--cta" style={`--delay: ${navLinks.length * 0.05}s`} data-cta-zone="nav" data-cta-role="primary">
         Get Your 90-Day Growth Plan
       </a>
     </nav>
