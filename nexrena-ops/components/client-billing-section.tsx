@@ -1,222 +1,231 @@
-'use client'
-
-import type { PortalInvoice } from '@/lib/portal-types'
-import {
-  computeOutstandingBalance,
-  countInvoicesByStatus,
-  effectiveInvoiceStatus,
-  getOldestUnpaidInvoice,
-  invoicePhaseLabel,
-  sortInvoicesNewestFirst,
-} from '@/lib/portal-dashboard-utils'
-import { formatCurrency, formatDate } from '@/lib/store'
-import { Btn } from '@/components/ui'
-import { StatusChip, invoiceStatusChip } from '@/components/status-chip'
-
-const card = 'glass-panel rounded-xl border border-slate-800/60 p-5'
-
-type Props = {
-  invoices: PortalInvoice[]
-  stripeEnabled: boolean
-  payingId: string | null
-  viewLoading: boolean
-  paymentError?: string | null
-  onPay: (id: string) => void
-  onView: (id: string) => void
-  onMessageNico?: () => void
-  mode?: 'summary' | 'history'
-}
-
-function InvoiceRow({
-  inv,
-  stripeEnabled,
-  payingId,
-  viewLoading,
-  onPay,
-  onView,
-}: {
-  inv: PortalInvoice
-  stripeEnabled: boolean
-  payingId: string | null
-  viewLoading: boolean
-  onPay: (id: string) => void
-  onView: (id: string) => void
-}) {
-  const status = effectiveInvoiceStatus(inv)
-  const chip = invoiceStatusChip(status, inv.dueDate)
-  const phaseLabel = invoicePhaseLabel(inv.invoicePhase)
-  const canPay = stripeEnabled && (status === 'sent' || status === 'overdue')
-  const isPaying = payingId === inv.id
-
-  return (
-    <li className={card}>
-      <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="font-serif text-lg text-white">{inv.number}</p>
-            {chip && <StatusChip variant={chip} />}
-          </div>
-          {phaseLabel ? (
-            <p className="text-sm text-gold/90 mt-0.5">{phaseLabel}</p>
-          ) : inv.projectName ? (
-            <p className="text-sm text-slate-400 mt-0.5 truncate">{inv.projectName}</p>
-          ) : null}
-          {phaseLabel && inv.projectName && (
-            <p className="text-xs text-slate-500 mt-0.5 truncate">{inv.projectName}</p>
-          )}
-          <p className="text-base text-white font-medium mt-2 tabular-nums">{formatCurrency(inv.total)}</p>
-          {status === 'overdue' && (
-            <p className="text-sm font-medium text-red-400 mt-2">
-              Overdue since {formatDate(inv.dueDate)}
-            </p>
-          )}
-          {status === 'sent' && (
-            <p className="text-sm text-slate-400 mt-2">Due {formatDate(inv.dueDate)}</p>
-          )}
-          {status === 'paid' && inv.paidDate && (
-            <p className="text-sm text-emerald-400/90 mt-2">Paid on {formatDate(inv.paidDate)}</p>
-          )}
-        </div>
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
-          {status === 'paid' ? (
-            <Btn size="sm" variant="ghost" disabled={viewLoading} onClick={() => onView(inv.id)}>
-              Receipt
-            </Btn>
-          ) : status === 'overdue' ? (
-            canPay ? (
-              <Btn size="sm" disabled={isPaying} onClick={() => onPay(inv.id)}>
-                {isPaying ? '…' : 'Pay now'}
-              </Btn>
-            ) : (
-              <Btn size="sm" variant="ghost" disabled={viewLoading} onClick={() => onView(inv.id)}>
-                View invoice
-              </Btn>
-            )
-          ) : canPay ? (
-            <>
-              <Btn size="sm" disabled={isPaying} onClick={() => onPay(inv.id)}>
-                {isPaying ? '…' : 'Pay invoice'}
-              </Btn>
-              <Btn size="sm" variant="ghost" disabled={viewLoading} onClick={() => onView(inv.id)}>
-                View
-              </Btn>
-            </>
-          ) : (
-            <Btn size="sm" variant="ghost" disabled={viewLoading} onClick={() => onView(inv.id)}>
-              View invoice
-            </Btn>
-          )}
-        </div>
-      </div>
-    </li>
-  )
-}
-
-function BillingHelpLink({ onMessageNico }: { onMessageNico?: () => void }) {
-  return (
-    <p className="text-sm text-slate-500">
-      Need help with billing?{' '}
-      {onMessageNico ? (
-        <button
-          type="button"
-          onClick={onMessageNico}
-          className="text-gold hover:text-gold-light transition-colors"
-        >
-          Message Nico
-        </button>
-      ) : (
-        <span className="text-gold">Message Nico</span>
-      )}
-      .
-    </p>
-  )
-}
-
-export function ClientBillingSection({
-  invoices,
-  stripeEnabled,
-  payingId,
-  viewLoading,
-  paymentError,
-  onPay,
-  onView,
-  onMessageNico,
-  mode = 'summary',
-}: Props) {
-  const sorted = sortInvoicesNewestFirst(invoices)
-  const { outstanding, paid } = countInvoicesByStatus(invoices)
-  const balance = computeOutstandingBalance(invoices)
-  const oldestUnpaid = getOldestUnpaidInvoice(invoices)
-  const showBillingHelp = (!stripeEnabled && outstanding > 0) || Boolean(paymentError)
-
-  const payBalance = () => {
-    if (!oldestUnpaid || !stripeEnabled) return
-    onPay(oldestUnpaid.id)
-  }
-
-  if (mode === 'history') {
-    if (sorted.length === 0) {
-      return <p className="text-sm text-slate-500">No invoices yet.</p>
-    }
-    return (
-      <ul className="space-y-3">
-        {sorted.map((inv) => (
-          <InvoiceRow
-            key={inv.id}
-            inv={inv}
-            stripeEnabled={stripeEnabled}
-            payingId={payingId}
-            viewLoading={viewLoading}
-            onPay={onPay}
-            onView={onView}
-          />
-        ))}
-      </ul>
-    )
-  }
-
-  return (
-    <section id="billing">
-      <h2 className="text-sm text-slate-400 mb-4 font-medium">Billing</h2>
-
-      <div className={`${card} space-y-4`}>
-        <div>
-          <p className="text-2xl font-serif text-white tabular-nums">
-            {formatCurrency(balance)}
-          </p>
-          <p className="text-sm text-slate-400 mt-1">Outstanding balance</p>
-          <p className="text-xs text-slate-500 mt-2">
-            {outstanding} unpaid · {paid} paid
-          </p>
-        </div>
-
-        {balance > 0 && (
-          <Btn
-            size="md"
-            disabled={!stripeEnabled || payingId !== null}
-            onClick={payBalance}
-          >
-            {payingId ? 'Starting checkout…' : `Pay balance`}
-          </Btn>
-        )}
-
-        {balance === 0 && sorted.length > 0 && (
-          <p className="text-sm text-emerald-400/90">You&apos;re all caught up — no balance due.</p>
-        )}
-
-        {sorted.length === 0 && (
-          <p className="text-sm text-slate-500">No invoices yet.</p>
-        )}
-
-        {!stripeEnabled && outstanding > 0 && (
-          <p className="text-xs text-slate-500">
-            Online payment is coming soon — contact us to settle your balance in the meantime.
-          </p>
-        )}
-
-        {showBillingHelp && <BillingHelpLink onMessageNico={onMessageNico} />}
-        {paymentError && <p className="text-sm text-red-400">{paymentError}</p>}
-      </div>
-    </section>
-  )
-}
+'use client'
+
+import { useState } from 'react'
+import type { PortalInvoice } from '@/lib/portal-types'
+import {
+  computeOutstandingBalance,
+  countInvoicesByStatus,
+  effectiveInvoiceStatus,
+  getOldestUnpaidInvoice,
+  invoicePhaseLabel,
+  sortInvoicesNewestFirst,
+} from '@/lib/portal-dashboard-utils'
+import { formatCurrency, formatDate } from '@/lib/store'
+import { Button, Card, SectionHeader } from '@/components/design-system'
+import { StatusChip, invoiceStatusChip } from '@/components/status-chip'
+import { portalMutedClass, portalSectionHintClass } from '@/lib/portal-a11y'
+import { typography } from '@/lib/design-tokens'
+
+type Props = {
+  invoices: PortalInvoice[]
+  stripeEnabled: boolean
+  payingId: string | null
+  viewLoading: boolean
+  paymentError?: string | null
+  onPay: (id: string) => void
+  onView: (id: string) => void
+  onMessageNico?: () => void
+  mode?: 'summary' | 'history'
+}
+
+function ClientInvoiceCard({
+  inv,
+  stripeEnabled,
+  payingId,
+  viewLoading,
+  onPay,
+  onView,
+}: {
+  inv: PortalInvoice
+  stripeEnabled: boolean
+  payingId: string | null
+  viewLoading: boolean
+  onPay: (id: string) => void
+  onView: (id: string) => void
+}) {
+  const status = effectiveInvoiceStatus(inv)
+  const chip = invoiceStatusChip(status, inv.dueDate)
+  const phaseLabel = invoicePhaseLabel(inv.invoicePhase)
+  const canPay = stripeEnabled && (status === 'sent' || status === 'overdue')
+  const isPaying = payingId === inv.id
+
+  return (
+    <Card variant="client" className="space-y-3">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="font-serif text-lg text-white">{inv.number}</p>
+          {phaseLabel ? (
+            <p className="text-sm text-gold-light mt-0.5">{phaseLabel}</p>
+          ) : inv.projectName ? (
+            <p className={`${typography.hint} truncate`}>{inv.projectName}</p>
+          ) : null}
+        </div>
+        {chip && <StatusChip variant={chip} />}
+      </div>
+      <p className="font-serif text-2xl text-white tabular-nums">{formatCurrency(inv.total)}</p>
+      {status === 'overdue' && (
+        <p className="text-sm font-medium text-red-300">Overdue since {formatDate(inv.dueDate)}</p>
+      )}
+      {status === 'sent' && <p className={typography.hint}>Due {formatDate(inv.dueDate)}</p>}
+      {status === 'paid' && inv.paidDate && (
+        <p className="text-sm text-emerald-300">Paid {formatDate(inv.paidDate)}</p>
+      )}
+      <div className="flex flex-wrap gap-2 pt-1">
+        {status === 'paid' ? (
+          <Button size="sm" variant="ghost" disabled={viewLoading} onClick={() => onView(inv.id)}>
+            Receipt
+          </Button>
+        ) : canPay ? (
+          <Button size="sm" disabled={isPaying} onClick={() => onPay(inv.id)}>
+            {isPaying ? '…' : 'Pay now'}
+          </Button>
+        ) : null}
+        {status !== 'paid' && (
+          <Button size="sm" variant="ghost" disabled={viewLoading} onClick={() => onView(inv.id)}>
+            View
+          </Button>
+        )}
+      </div>
+    </Card>
+  )
+}
+
+function BillingHelpLink({ onMessageNico }: { onMessageNico?: () => void }) {
+  return (
+    <p className={portalMutedClass}>
+      Questions about billing?{' '}
+      {onMessageNico ? (
+        <button
+          type="button"
+          onClick={onMessageNico}
+          className="text-gold-light hover:text-white underline underline-offset-2"
+        >
+          Message Nico
+        </button>
+      ) : (
+        <span className="text-gold">Message Nico</span>
+      )}
+    </p>
+  )
+}
+
+export function ClientBillingSection({
+  invoices,
+  stripeEnabled,
+  payingId,
+  viewLoading,
+  paymentError,
+  onPay,
+  onView,
+  onMessageNico,
+  mode = 'summary',
+}: Props) {
+  const sorted = sortInvoicesNewestFirst(invoices)
+  const unpaid = sorted.filter((i) => effectiveInvoiceStatus(i) !== 'paid')
+  const paid = sorted.filter((i) => effectiveInvoiceStatus(i) === 'paid')
+  const { outstanding, paid: paidCount } = countInvoicesByStatus(invoices)
+  const balance = computeOutstandingBalance(invoices)
+  const oldestUnpaid = getOldestUnpaidInvoice(invoices)
+  const showBillingHelp = (!stripeEnabled && outstanding > 0) || Boolean(paymentError)
+  const [paidOpen, setPaidOpen] = useState(false)
+
+  const payBalance = () => {
+    if (!oldestUnpaid || !stripeEnabled) return
+    onPay(oldestUnpaid.id)
+  }
+
+  if (mode === 'history') {
+    if (sorted.length === 0) {
+      return <p className={portalMutedClass}>No invoices yet.</p>
+    }
+
+    return (
+      <div className="space-y-6">
+        {unpaid.length > 0 && (
+          <div>
+            <SectionHeader title="Unpaid" hint={`${unpaid.length} invoice${unpaid.length > 1 ? 's' : ''} need attention`} compact />
+            <ul className="space-y-3">
+              {unpaid.map((inv) => (
+                <li key={inv.id}>
+                  <ClientInvoiceCard
+                    inv={inv}
+                    stripeEnabled={stripeEnabled}
+                    payingId={payingId}
+                    viewLoading={viewLoading}
+                    onPay={onPay}
+                    onView={onView}
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {paid.length > 0 && (
+          <div>
+            <button
+              type="button"
+              onClick={() => setPaidOpen((v) => !v)}
+              className="flex w-full items-center justify-between gap-3 rounded-xl border border-slate-700/50 bg-slate-900/40 px-4 py-3 min-h-[44px] text-left md:pointer-events-none md:border-0 md:bg-transparent md:px-0 md:py-0"
+              aria-expanded={paidOpen}
+            >
+              <SectionHeader title="Paid" hint={`${paid.length} receipt${paid.length > 1 ? 's' : ''}`} compact />
+              <span className="text-gold text-sm md:hidden">{paidOpen ? 'Hide' : 'Show'}</span>
+            </button>
+            <ul className={`space-y-3 ${paidOpen ? 'block' : 'hidden'} md:block`}>
+              {paid.map((inv) => (
+                <li key={inv.id}>
+                  <ClientInvoiceCard
+                    inv={inv}
+                    stripeEnabled={stripeEnabled}
+                    payingId={payingId}
+                    viewLoading={viewLoading}
+                    onPay={onPay}
+                    onView={onView}
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <section id="billing">
+      <SectionHeader title="Billing" hint="Outstanding balance and quick pay" />
+
+      <Card variant="client" className="space-y-4">
+        <div>
+          <p className="font-serif text-3xl text-white tabular-nums">{formatCurrency(balance)}</p>
+          <p className={`${typography.body} mt-1 text-base`}>Outstanding balance</p>
+          <p className={`${typography.hint} mt-1`}>
+            {outstanding} unpaid · {paidCount} paid
+          </p>
+        </div>
+
+        {balance > 0 && (
+          <Button size="lg" disabled={!stripeEnabled || payingId !== null} onClick={payBalance}>
+            {payingId ? 'Starting checkout…' : 'Pay balance'}
+          </Button>
+        )}
+
+        {balance === 0 && sorted.length > 0 && (
+          <p className="text-base text-emerald-300">All caught up — nothing due.</p>
+        )}
+
+        {sorted.length === 0 && <p className={portalMutedClass}>No invoices yet.</p>}
+
+        {!stripeEnabled && outstanding > 0 && (
+          <p className={portalSectionHintClass}>
+            Online pay coming soon — message us to settle your balance.
+          </p>
+        )}
+
+        {showBillingHelp && <BillingHelpLink onMessageNico={onMessageNico} />}
+        {paymentError && <p className="text-base text-red-300">{paymentError}</p>}
+      </Card>
+    </section>
+  )
+}
+

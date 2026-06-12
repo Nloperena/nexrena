@@ -1,8 +1,12 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, type FormEvent, type ReactNode } from 'react'
-import { Btn, inputCls } from '@/components/ui'
+import { Btn } from '@/components/ui'
+import { portalInputCls, portalLabelClass, portalFocusRing } from '@/lib/portal-a11y'
+import { PortalMediaPanel } from '@/components/portal-media-panel'
+import { PORTAL_IMAGES } from '@/lib/portal-imagery'
 import { ClientDashboard } from '@/components/client-dashboard'
+import { PwaInstallPrompt } from '@/components/pwa-install-prompt'
 import {
   getPortalToken,
   loginPortalAccount,
@@ -47,6 +51,25 @@ function normalizeUsername(value: string) {
 
 type LoginMode = 'client-sign-in' | 'client-sign-up' | 'team'
 
+function loginModeFromTab(tab: string | null): LoginMode {
+  if (tab === 'team') return 'team'
+  if (tab === 'sign-up') return 'client-sign-up'
+  return 'client-sign-in'
+}
+
+function writeLoginTabToUrl(mode: LoginMode) {
+  const url = new URL(window.location.href)
+  if (mode === 'client-sign-in') url.searchParams.delete('tab')
+  else if (mode === 'client-sign-up') url.searchParams.set('tab', 'sign-up')
+  else url.searchParams.set('tab', 'team')
+  window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`)
+}
+
+function setLoginMode(mode: LoginMode, setMode: (mode: LoginMode) => void) {
+  setMode(mode)
+  writeLoginTabToUrl(mode)
+}
+
 export function AuthGate({ children }: Props) {
   const [hydrated, setHydrated] = useState(false)
   const [role, setRole] = useState<AuthRole>(null)
@@ -68,11 +91,15 @@ export function AuthGate({ children }: Props) {
     else if (hasClientToken) setRole('client')
 
     const tab = new URLSearchParams(window.location.search).get('tab')
-    if (tab === 'team') setMode('team')
-    else if (tab === 'sign-up') setMode('client-sign-up')
-    else if (tab === 'sign-in') setMode('client-sign-in')
+    setMode(loginModeFromTab(tab))
 
+    const onPopState = () => {
+      const nextTab = new URLSearchParams(window.location.search).get('tab')
+      setMode(loginModeFromTab(nextTab))
+    }
+    window.addEventListener('popstate', onPopState)
     setHydrated(true)
+    return () => window.removeEventListener('popstate', onPopState)
   }, [])
 
   const setTeamDisplayName = (name: string) => {
@@ -145,6 +172,7 @@ export function AuthGate({ children }: Props) {
     return (
       <AuthContext.Provider value={authValue}>
         {children}
+        <PwaInstallPrompt enabled />
       </AuthContext.Provider>
     )
   }
@@ -153,6 +181,7 @@ export function AuthGate({ children }: Props) {
     return (
       <AuthContext.Provider value={authValue}>
         <ClientDashboard onSignOut={signOut} />
+        <PwaInstallPrompt enabled />
       </AuthContext.Provider>
     )
   }
@@ -161,49 +190,50 @@ export function AuthGate({ children }: Props) {
   const isTeam = mode === 'team'
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-[#111418]">
-      <div className="w-full max-w-md glass-panel rounded-2xl border border-slate-700/60 p-6 md:p-8">
-        <div className="mb-6">
-          <p className="text-[10px] text-gold tracking-[0.2em] uppercase">Nexrena</p>
-          <h1 className="font-serif text-2xl text-white mt-2">
-            {isTeam ? 'Team access' : isSignUp ? 'Create your account' : 'Client portal'}
+    <div className="client-portal min-h-screen grid lg:grid-cols-[1fr_min(480px,45%)] bg-[#111418]">
+      <div className="flex items-center justify-center px-6 py-12 lg:px-12">
+        <div className="w-full max-w-lg">
+        <div className="mb-8">
+          <p className="text-base text-gold font-medium">Nexrena</p>
+          <h1 className="font-serif text-3xl text-white mt-2 leading-tight">
+            {isTeam ? 'Team sign in' : isSignUp ? 'Create your account' : 'Client sign in'}
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-base text-slate-300 mt-3 leading-relaxed">
             {isTeam
-              ? 'Internal operations dashboard.'
+              ? 'Sign in to manage clients, messages, billing, and projects.'
               : isSignUp
-                ? 'Track projects, proposals, and invoices with Nexrena.'
-                : 'Sign in to view your projects and billing.'}
+                ? 'Create an account to view your projects and invoices.'
+                : 'Sign in to view your website, billing, and messages.'}
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-6">
-          <ModeBtn active={mode === 'client-sign-in'} onClick={() => { setMode('client-sign-in'); setError('') }}>
-            Client sign in
+        <div className="flex flex-wrap gap-3 mb-8" role="tablist" aria-label="Sign in options">
+          <ModeBtn active={mode === 'client-sign-in'} onClick={() => { setLoginMode('client-sign-in', setMode); setError('') }}>
+            Sign in
           </ModeBtn>
-          <ModeBtn active={mode === 'client-sign-up'} onClick={() => { setMode('client-sign-up'); setError('') }}>
-            Create account
+          <ModeBtn active={mode === 'client-sign-up'} onClick={() => { setLoginMode('client-sign-up', setMode); setError('') }}>
+            New account
           </ModeBtn>
-          <ModeBtn active={mode === 'team'} onClick={() => { setMode('team'); setError('') }}>
-            Team
+          <ModeBtn active={mode === 'team'} onClick={() => { setLoginMode('team', setMode); setError('') }}>
+            Team login
           </ModeBtn>
         </div>
 
-        <form className="space-y-4" onSubmit={onSubmit}>
+        <form className="space-y-5" onSubmit={onSubmit}>
           {isSignUp && (
             <>
-              <Field label="Full name">
-                <input className={inputCls} required value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
+              <Field label="Your full name">
+                <input className={portalInputCls} required value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
               </Field>
-              <Field label="Company (optional)">
-                <input className={inputCls} value={company} onChange={(e) => setCompany(e.target.value)} autoComplete="organization" />
+              <Field label="Company name (optional)">
+                <input className={portalInputCls} value={company} onChange={(e) => setCompany(e.target.value)} autoComplete="organization" />
               </Field>
             </>
           )}
 
-          <Field label={isTeam ? 'Username' : 'Email'}>
+          <Field label={isTeam ? 'Username' : 'Email address'}>
             <input
-              className={inputCls}
+              className={portalInputCls}
               required
               type={isTeam ? 'text' : 'email'}
               autoComplete={isTeam ? 'username' : 'email'}
@@ -216,7 +246,7 @@ export function AuthGate({ children }: Props) {
           <Field label="Password">
             <input
               type="password"
-              className={inputCls}
+              className={portalInputCls}
               required
               minLength={isSignUp ? 8 : undefined}
               autoComplete={isSignUp ? 'new-password' : 'current-password'}
@@ -225,15 +255,46 @@ export function AuthGate({ children }: Props) {
             />
           </Field>
 
-          {error && <p className="text-xs text-red-400">{error}</p>}
+          {error && <p className="text-base text-red-300 font-medium" role="alert">{error}</p>}
 
-          <div className="w-full [&>button]:w-full [&>button]:justify-center">
-            <Btn type="submit" disabled={loading}>
+          <div className="w-full pt-2 [&>button]:w-full [&>button]:justify-center">
+            <Btn type="submit" size="lg" disabled={loading}>
               {loading ? 'Please wait…' : isSignUp ? 'Create account' : 'Sign in'}
             </Btn>
           </div>
         </form>
+        </div>
       </div>
+
+      <PortalMediaPanel
+        photo="auth"
+        svgSrc={PORTAL_IMAGES.infrastructure}
+        overlay={isTeam ? 45 : 35}
+        rounded="none"
+        className="hidden lg:block min-h-screen sticky top-0"
+      >
+        <div className="flex h-full flex-col justify-end p-10 xl:p-14">
+          {isTeam ? (
+            <>
+              <p className="font-serif text-4xl text-white leading-tight max-w-md">
+                Run client work from one calm dashboard.
+              </p>
+              <p className="text-lg text-slate-200 mt-4 max-w-sm leading-relaxed">
+                Messages, invoices, leads, and project files — organized so your team can move fast without the clutter.
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="font-serif text-4xl text-white leading-tight max-w-md">
+                Your website, billing, and projects — one clean workspace.
+              </p>
+              <p className="text-lg text-slate-200 mt-4 max-w-sm leading-relaxed">
+                Built for clarity. Message Nico, track work, and manage invoices without the clutter.
+              </p>
+            </>
+          )}
+        </div>
+      </PortalMediaPanel>
     </div>
   )
 }
@@ -242,9 +303,11 @@ function ModeBtn({ active, onClick, children }: { active: boolean; onClick: () =
   return (
     <button
       type="button"
+      role="tab"
+      aria-selected={active}
       onClick={onClick}
-      className={`px-3 py-1.5 rounded-full text-[10px] uppercase tracking-widest font-medium transition-colors ${
-        active ? 'bg-gold text-obsidian' : 'border border-slate-700 text-slate-400 hover:text-white'
+      className={`px-5 py-3 rounded-xl text-base font-medium transition-colors min-h-[48px] ${portalFocusRing} ${
+        active ? 'bg-gold text-obsidian' : 'border-2 border-slate-600 text-slate-200 hover:text-white hover:border-slate-500'
       }`}
     >
       {children}
@@ -255,7 +318,7 @@ function ModeBtn({ active, onClick, children }: { active: boolean; onClick: () =
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
-      <label className="block text-[10px] text-slate-400 tracking-[0.15em] uppercase mb-2 font-medium">{label}</label>
+      <label className={portalLabelClass}>{label}</label>
       {children}
     </div>
   )

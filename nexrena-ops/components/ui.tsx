@@ -1,108 +1,4 @@
 'use client'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useMessages } from '@/lib/store'
-
-const PRIMARY_NAV = [
-  { href: '/invoices',       label: 'Invoices',      icon: '▤' },
-  { href: '/subscriptions',  label: 'Subscriptions', icon: '↻' },
-  { href: '/proposals',      label: 'Proposals',     icon: '◇' },
-  { href: '/leads',          label: 'Leads',         icon: '◉' },
-  { href: '/form-submissions', label: 'Form submissions', icon: '▣' },
-  { href: '/messages',       label: 'Messages',      icon: '✉', badge: true },
-  { href: '/client-files',   label: 'Business assets',  icon: '📁' },
-  { href: '/client-resources', label: 'Client websites', icon: '⌘' },
-  { href: '/service-requests', label: 'Requests',  icon: '✦' },
-  { href: '/portal-accounts', label: 'Portal',      icon: '◈' },
-  { href: '/projects',       label: 'Projects',      icon: '▦' },
-]
-
-const SECONDARY_NAV = [
-  { href: '/crm',       label: 'CRM',        icon: '◎' },
-  { href: '/expenses',  label: 'Expenses',   icon: '▥' },
-  { href: '/reports',   label: 'Reports',    icon: '◩' },
-]
-
-export function Sidebar() {
-  const path = usePathname()
-  const { unreadCount } = useMessages()
-  return (
-    <aside className="fixed left-0 top-0 h-screen w-56 bg-obsidian/80 backdrop-blur-xl border-r border-slate-800/60 flex flex-col z-50">
-      {/* Ambient glow at top */}
-      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-gold/[0.03] to-transparent pointer-events-none" />
-
-      {/* Logo */}
-      <div className="relative px-6 py-6 border-b border-slate-800/60">
-        <div className="flex items-baseline gap-0.5">
-          <span className="font-serif text-xl text-white tracking-tight">Nex</span>
-          <span className="font-serif text-xl text-gold tracking-tight">rena</span>
-        </div>
-        <p className="text-[9px] text-slate-400 mt-1 tracking-[0.25em] uppercase">Operations</p>
-      </div>
-
-      {/* Nav */}
-      <nav className="relative flex-1 px-3 py-5">
-        <div className="space-y-1">
-          {PRIMARY_NAV.map(({ href, label, icon, badge }) => {
-            const active = href === '/' ? path === '/' : path.startsWith(href)
-            const showBadge = badge && unreadCount > 0
-            return (
-              <Link key={href} href={href}
-                className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 ${
-                  active
-                    ? 'bg-slate-800/60 text-gold'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
-                }`}>
-                <span className={`text-base leading-none transition-transform duration-200 group-hover:scale-110 ${active ? 'text-gold' : ''}`}>
-                  {icon}
-                </span>
-                <span className="font-medium tracking-wide flex-1">{label}</span>
-                {showBadge && (
-                  <span className="min-w-[1.25rem] h-5 px-1.5 rounded-full bg-gold text-obsidian text-[10px] font-bold flex items-center justify-center tabular-nums">
-                    {unreadCount > 99 ? '99+' : unreadCount}
-                  </span>
-                )}
-                {active && (
-                  <span className="absolute right-2 w-1 h-5 bg-gold rounded-full shadow-[0_0_8px_rgba(201,169,110,0.4)]" />
-                )}
-              </Link>
-            )
-          })}
-        </div>
-        <div className="my-4 mx-3 border-t border-slate-800/40" />
-        <p className="px-3 mb-2 text-[9px] text-slate-600 tracking-[0.2em] uppercase font-medium">Tools</p>
-        <div className="space-y-1">
-          {SECONDARY_NAV.map(({ href, label, icon }) => {
-            const active = path.startsWith(href)
-            return (
-              <Link key={href} href={href}
-                className={`group relative flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] transition-all duration-200 ${
-                  active
-                    ? 'bg-slate-800/60 text-gold'
-                    : 'text-slate-500 hover:text-white hover:bg-slate-800/30'
-                }`}>
-                <span className={`text-sm leading-none transition-transform duration-200 group-hover:scale-110 ${active ? 'text-gold' : ''}`}>
-                  {icon}
-                </span>
-                <span className="font-medium tracking-wide">{label}</span>
-                {active && (
-                  <span className="absolute right-2 w-1 h-4 bg-gold rounded-full shadow-[0_0_8px_rgba(201,169,110,0.4)]" />
-                )}
-              </Link>
-            )
-          })}
-        </div>
-      </nav>
-
-      {/* Footer */}
-      <div className="relative px-6 py-5 border-t border-slate-800/60">
-        <div className="gold-rule-center mb-4 opacity-40" />
-        <p className="text-[9px] text-slate-600 tracking-[0.2em] uppercase">Nexrena LLC</p>
-        <p className="text-[9px] text-slate-600 mt-0.5">nexrena.com</p>
-      </div>
-    </aside>
-  )
-}
 
 // ── Badge ──────────────────────────────────────────────────────────────
 const STAGE_COLORS: Record<string, string> = {
@@ -158,13 +54,13 @@ export function Badge({ label }: { label: string }) {
 // ── Stat Card ─────────────────────────────────────────────────────────
 export function StatCard({ label, value, sub, gold }: { label: string; value: string; sub?: React.ReactNode; gold?: boolean }) {
   return (
-    <div className={`glass-panel rounded-xl p-5 relative overflow-hidden card-lift ${gold ? 'animate-pulse-glow' : ''}`}>
+    <div className={`nx-stat-card glass-panel rounded-xl p-5 relative overflow-hidden card-lift ${gold ? 'animate-pulse-glow' : ''}`}>
       {gold && (
         <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-gold/[0.06] to-transparent rounded-bl-full" />
       )}
-      <p className="text-[10px] text-slate-400 tracking-[0.15em] uppercase mb-3 font-medium">{label}</p>
+      <p className="nx-stat-card-label text-[10px] text-slate-400 tracking-[0.15em] uppercase mb-3 font-medium">{label}</p>
       <p className={`text-2xl font-serif font-semibold tracking-tight ${gold ? 'gold-shimmer' : 'text-white'}`}>{value}</p>
-      {sub && <p className="text-xs text-slate-600 mt-1.5">{sub}</p>}
+      {sub && <p className="nx-stat-card-sub text-xs text-slate-600 mt-1.5">{sub}</p>}
     </div>
   )
 }
@@ -172,28 +68,36 @@ export function StatCard({ label, value, sub, gold }: { label: string; value: st
 // ── Page header ───────────────────────────────────────────────────────
 export function PageHeader({ title, sub, action }: { title: string; sub?: string; action?: React.ReactNode }) {
   return (
-    <div className="mb-10 animate-fade-in-up">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="font-serif text-3xl text-white tracking-tight">{title}</h1>
-          {sub && <p className="text-sm text-slate-400 mt-1.5">{sub}</p>}
+    <div className="nx-page-header mb-5 md:mb-8 animate-fade-in-up w-full min-w-0">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 flex-1">
+          <h1 className="font-serif text-2xl sm:text-2xl md:text-3xl text-white tracking-tight break-words">{title}</h1>
+          {sub && <p className="nx-page-header-sub text-sm text-slate-400 mt-1 break-words">{sub}</p>}
         </div>
-        {action}
+        {action && (
+          <div className="shrink-0 w-full sm:w-auto [&>button]:w-full sm:[&>button]:w-auto [&>a]:w-full sm:[&>a]:w-auto">
+            {action}
+          </div>
+        )}
       </div>
-      <div className="gold-rule mt-6 opacity-60" />
+      <div className="gold-rule mt-4 md:mt-6 opacity-60 hidden md:block" />
     </div>
   )
 }
 
 // ── Button ────────────────────────────────────────────────────────────
 export function Btn({ children, onClick, variant = 'primary', size = 'md', type = 'button', disabled = false }:
-  { children: React.ReactNode; onClick?: () => void; variant?: 'primary'|'ghost'|'danger'; size?: 'sm'|'md'; type?: 'button'|'submit'; disabled?: boolean }) {
-  const base = 'inline-flex items-center gap-2 font-medium rounded-lg transition-all duration-200 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100'
-  const sizes = { sm: 'px-3 py-1.5 text-xs', md: 'px-5 py-2.5 text-sm' }
+  { children: React.ReactNode; onClick?: () => void; variant?: 'primary'|'ghost'|'danger'; size?: 'sm'|'md'|'lg'; type?: 'button'|'submit'; disabled?: boolean }) {
+  const base = 'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100'
+  const sizes = {
+    sm: 'px-4 py-2 text-sm min-h-[44px]',
+    md: 'px-5 py-3 text-base min-h-[48px]',
+    lg: 'px-7 py-4 text-lg min-h-[56px] font-semibold',
+  }
   const variants = {
     primary: 'bg-gold text-obsidian hover:bg-gold-light btn-glow font-semibold',
-    ghost:   'border border-slate-800 text-slate-400 hover:text-white hover:border-slate-600 hover:bg-slate-800/30',
-    danger:  'border border-red-900/50 text-red-400 hover:bg-red-950/30 hover:border-red-800/50',
+    ghost:   'border-2 border-slate-600 text-slate-200 hover:text-white hover:border-slate-400 hover:bg-slate-800/40',
+    danger:  'border-2 border-red-800/60 text-red-300 hover:bg-red-950/30 hover:border-red-600/60',
   }
   return <button type={type} onClick={onClick} disabled={disabled} className={`${base} ${sizes[size]} ${variants[variant]}`}>{children}</button>
 }
@@ -231,15 +135,15 @@ export function Modal({ title, onClose, children, wide }: { title: string; onClo
 // ── Form field ────────────────────────────────────────────────────────
 export function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div>
+    <div className="nx-field">
       <label className="block text-[10px] text-slate-400 tracking-[0.15em] uppercase mb-2 font-medium">{label}</label>
       {children}
     </div>
   )
 }
 
-export const inputCls = 'w-full bg-slate-800/50 border border-slate-700/50 rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-200'
-export const selectCls = inputCls + ' cursor-pointer'
+export const inputCls = 'nx-input w-full bg-slate-800/50 border border-slate-700/50 rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-200'
+export const selectCls = inputCls + ' nx-select cursor-pointer'
 
 // ── Empty state ──────────────────────────────────────────────────────
 export function EmptyState({ message, action, actionLabel }: { message: string; action?: () => void; actionLabel?: string }) {

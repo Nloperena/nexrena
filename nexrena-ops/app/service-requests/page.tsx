@@ -34,7 +34,7 @@ export default function ServiceRequestsPage() {
     <div>
       <PageHeader title="Service Requests" sub={`${requests.length} client portal submissions`} />
 
-      <div className="grid grid-cols-3 gap-4 mb-10 stagger">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 md:mb-10 stagger">
         <StatCard label="Total" value={String(requests.length)} />
         <StatCard label="Needs review" value={String(newCount)} gold />
         <StatCard label="With assets" value={String(requests.filter((r) => (r.assets?.length ?? 0) > 0).length)} />

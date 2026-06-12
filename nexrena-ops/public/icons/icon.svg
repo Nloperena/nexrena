@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Nexrena">
+  <rect width="512" height="512" rx="96" fill="#111418"/>
+  <rect x="32" y="32" width="448" height="448" rx="80" fill="none" stroke="#C9A96E" stroke-width="8" opacity="0.35"/>
+  <path fill="#C9A96E" d="M128 352V160h56l88 128 88-128h56v192h-48V248l-76 104h-4l-76-104v104z"/>
+  <circle cx="256" cy="128" r="12" fill="#E8D5B0"/>
+</svg>

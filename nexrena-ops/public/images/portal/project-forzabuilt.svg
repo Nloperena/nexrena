@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" style="background:transparent; width:100%; height:100%;">
+  <defs>
+    <radialGradient id="bgGlowForza" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#b89354" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#050507" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="lineGradForza" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#b89354" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#f5d796" stop-opacity="0.4"/>
+    </linearGradient>
+    <filter id="glowForza" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="10" result="blur" />
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  
+  <rect width="1200" height="800" fill="url(#bgGlowForza)" />
+
+  <!-- Background Data Grid -->
+  <g stroke="#b89354" stroke-width="1" opacity="0.2">
+    <path d="M 0,700 L 1200,700 M 0,600 L 1200,600 M 0,500 L 1200,500" />
+    <path d="M 200,400 L 200,800 M 400,400 L 400,800 M 600,400 L 600,800 M 800,400 L 800,800 M 1000,400 L 1000,800" />
+  </g>
+
+  <!-- Massive Volumetric Smoke Plumes -->
+  <g fill="none">
+    <!-- Main Tower Plume -->
+    <path d="M 850,200 C 850,50 1100,50 1200,-50" stroke="#f5d796" stroke-width="80" filter="blur(24px)" opacity="0.15"/>
+    <path d="M 850,200 C 850,50 1100,50 1200,-50" stroke="#f5d796" stroke-width="4" stroke-dasharray="12 16" opacity="0.8"/>
+    <path d="M 820,200 C 820,80 1050,20 1200,-80" stroke="#f5d796" stroke-width="2" stroke-dasharray="6 12" opacity="0.5"/>
+    
+    <!-- Secondary Tower Plume -->
+    <path d="M 1030,280 C 1030,100 1200,100 1300,0" stroke="#b89354" stroke-width="60" filter="blur(20px)" opacity="0.2"/>
+    <path d="M 1030,280 C 1030,100 1200,100 1300,0" stroke="#b89354" stroke-width="3" stroke-dasharray="8 12" opacity="0.6"/>
+  </g>
+
+  <!-- Central Pipe Maze & Infrastructure -->
+  <g stroke="url(#lineGradForza)" stroke-width="3" fill="none" stroke-linejoin="round">
+    <!-- Elevated pipelines -->
+    <path d="M 450,650 L 450,400 A 20 20 0 0 1 470,380 L 600,380 A 20 20 0 0 0 620,360 L 620,250" stroke-width="4"/>
+    <path d="M 500,650 L 500,500 A 20 20 0 0 0 480,480 L 300,480" />
+    <path d="M 550,650 L 550,300 A 20 20 0 0 1 570,280 L 700,280" />
+    
+    <!-- Distillation Tank 1 -->
+    <rect x="580" y="450" width="100" height="200" rx="10" fill="rgba(184,147,84,0.08)"/>
+    <path d="M 580,500 L 680,500 M 580,550 L 680,550 M 580,600 L 680,600" opacity="0.5"/>
+    <path d="M 630,450 L 630,650" stroke-dasharray="6 6" opacity="0.6"/>
+    
+    <!-- Tall Silo -->
+    <rect x="700" y="380" width="60" height="270" rx="30" fill="rgba(184,147,84,0.04)"/>
+    <path d="M 700,430 L 760,430 M 700,480 L 760,480 M 700,530 L 760,530 M 700,580 L 760,580 M 700,630 L 760,630" opacity="0.3"/>
+  </g>
+
+  <!-- Left Side: Classic Detailed Factory Building -->
+  <g stroke="url(#lineGradForza)" stroke-width="2.5" fill="none" stroke-linejoin="round">
+    <!-- Factory Body 1 -->
+    <path d="M 100,650 L 100,450 L 200,380 L 300,450 L 300,650 Z" fill="rgba(184,147,84,0.06)"/>
+    <path d="M 100,450 L 300,450" stroke-width="4"/>
+    
+    <!-- Massive Arched Windows -->
+    <path d="M 130,550 L 130,500 A 25 25 0 0 1 180,500 L 180,550 Z" />
+    <path d="M 220,550 L 220,500 A 25 25 0 0 1 270,500 L 270,550 Z" />
+    <path d="M 155,500 L 155,550 M 130,525 L 180,525" opacity="0.5"/>
+    <path d="M 245,500 L 245,550 M 220,525 L 270,525" opacity="0.5"/>
+    
+    <!-- Garage Bay -->
+    <rect x="160" y="580" width="80" height="70" />
+    <path d="M 160,600 L 240,600 M 160,620 L 240,620 M 160,640 L 240,640" stroke-dasharray="4 4" opacity="0.6"/>
+
+    <!-- Factory Body 2 (Layered behind) -->
+    <path d="M 250,550 L 250,350 L 350,280 L 450,350 L 450,650" fill="rgba(184,147,84,0.03)"/>
+    <path d="M 250,350 L 450,350" stroke-width="3"/>
+    
+    <!-- Upper Windows -->
+    <rect x="300" y="400" width="40" height="80" rx="20" />
+    <rect x="370" y="400" width="40" height="80" rx="20" />
+    <path d="M 320,400 L 320,480 M 390,400 L 390,480" opacity="0.4"/>
+  </g>
+
+  <!-- Right Side: Giant Nuclear-Style Cooling Towers -->
+  <g stroke="url(#lineGradForza)" stroke-width="3" fill="none">
+    <!-- Tower 1 -->
+    <path d="M 750,650 Q 800,400 780,200" />
+    <path d="M 950,650 Q 900,400 920,200" />
+    <ellipse cx="850" cy="200" rx="70" ry="20" fill="rgba(5,5,7,0.8)"/>
+    <ellipse cx="850" cy="650" rx="100" ry="30" stroke-dasharray="8 8" opacity="0.5"/>
+    <path d="M 750,650 A 100 30 0 0 0 950,650" fill="rgba(184,147,84,0.04)"/>
+    
+    <!-- Tower 1 Structural Grid Lines -->
+    <path d="M 780,500 Q 850,530 920,500" opacity="0.4"/>
+    <path d="M 790,350 Q 850,370 910,350" opacity="0.4"/>
+    <path d="M 850,220 L 850,680" stroke-dasharray="6 6" opacity="0.5"/>
+    <path d="M 810,210 L 800,660" stroke-dasharray="6 6" opacity="0.3"/>
+    <path d="M 890,210 L 900,660" stroke-dasharray="6 6" opacity="0.3"/>
+
+    <!-- Tower 2 (Slightly behind and right) -->
+    <path d="M 950,550 Q 980,350 970,280" opacity="0.8"/>
+    <path d="M 1110,550 Q 1080,350 1090,280" opacity="0.8"/>
+    <ellipse cx="1030" cy="280" rx="60" ry="15" fill="rgba(5,5,7,0.8)" opacity="0.8"/>
+    <path d="M 950,550 A 80 25 0 0 0 1110,550" fill="rgba(184,147,84,0.02)"/>
+  </g>
+
+  <!-- Glowing Tech / Infrastructure Nodes -->
+  <g fill="#f5d796">
+    <!-- Factory Roof Nodes -->
+    <circle cx="200" cy="380" r="6" fill="#fff" filter="url(#glowForza)"/>
+    <circle cx="350" cy="280" r="6" fill="#fff" filter="url(#glowForza)"/>
+    
+    <!-- Pipeline Hubs -->
+    <circle cx="450" cy="400" r="5" />
+    <circle cx="620" cy="250" r="7" fill="#fff" filter="url(#glowForza)"/>
+    <circle cx="500" cy="500" r="5" />
+    <circle cx="570" cy="280" r="5" />
+    
+    <!-- Tower Exhaust Core (Glowing Heat) -->
+    <ellipse cx="850" cy="200" rx="55" ry="10" fill="#f5d796" opacity="0.8" filter="url(#glowForza)"/>
+    <ellipse cx="1030" cy="280" rx="45" ry="8" fill="#b89354" opacity="0.7" filter="url(#glowForza)"/>
+    
+    <!-- Base Data Nodes -->
+    <circle cx="100" cy="650" r="5" />
+    <circle cx="300" cy="650" r="5" />
+    <circle cx="450" cy="650" r="5" />
+    <circle cx="750" cy="650" r="5" />
+    <circle cx="950" cy="650" r="5" />
+  </g>
+</svg>

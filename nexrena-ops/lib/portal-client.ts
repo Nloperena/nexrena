@@ -256,6 +256,28 @@ export function fetchPortalFormSubmissions() {
   return portalFetch<import('./portal-types').PortalFormSubmission[]>('/api/portal/form-submissions')
 }
 
+export function fetchPortalWebsiteMedia() {
+  return portalFetch<import('./website-media-types').WebsiteMediaCatalog>('/api/portal/website-media')
+}
+
+const OPS_API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa9f.herokuapp.com'
+const OPS_API_KEY = process.env.NEXT_PUBLIC_API_KEY || ''
+
+export async function fetchOpsWebsiteMedia(contactId: string) {
+  const params = new URLSearchParams({ contactId })
+  const res = await fetch(`${OPS_API_BASE}/api/portal-website-media?${params}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(OPS_API_KEY ? { Authorization: `Bearer ${OPS_API_KEY}` } : {}),
+    },
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    throw new Error(typeof data.error === 'string' ? data.error : 'Request failed')
+  }
+  return data as import('./website-media-types').WebsiteMediaCatalog
+}
+
 export function logoutPortal() {
   clearPortalToken()
 }

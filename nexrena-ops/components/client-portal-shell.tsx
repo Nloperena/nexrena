@@ -11,6 +11,9 @@ import {
   type ClientPortalView,
 } from '@/components/client-nav'
 import { isCalendlyEnabled } from '@/lib/calendly'
+import { PORTAL_MAIN_OFFSET, PORTAL_SIDEBAR_WIDTH, portalFocusRing, PORTAL_MOBILE_TAB_MIN_H } from '@/lib/portal-a11y'
+import { PortalMediaPanel } from '@/components/portal-media-panel'
+import type { PortalPhotoKey } from '@/lib/portal-imagery'
 
 type Props = {
   activeView: ClientPortalView
@@ -46,18 +49,36 @@ export function ClientPortalShell({
   )
   const viewTitle = navItems.find((item) => item.id === activeView)?.label ?? 'Home'
 
-  return (
-    <div className="min-h-screen bg-[#111418] flex">
-      {/* Desktop sidebar */}
-      <aside className="hidden md:flex fixed left-0 top-0 h-screen w-[220px] bg-obsidian/80 backdrop-blur-xl border-r border-slate-800/60 flex-col z-50">
-        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-gold/[0.04] to-transparent pointer-events-none" />
+  const viewBannerPhoto: PortalPhotoKey | null =
+    activeView === 'home' ? null
+    : activeView === 'messages' ? 'messages'
+    : activeView === 'billing' ? 'billing'
+    : activeView === 'websites' ? 'websites'
+    : activeView === 'files' ? 'files'
+    : activeView === 'schedule' ? 'schedule'
+    : activeView === 'forms' ? 'websites'
+    : activeView === 'requests' ? 'request'
+    : activeView === 'settings' ? 'auth'
+    : null
 
-        <div className="relative px-5 py-6 border-b border-slate-800/60">
+  return (
+    <div className="client-portal min-h-screen bg-[#111418] flex">
+      {/* Desktop sidebar */}
+      <aside className={`hidden md:flex fixed left-0 top-0 h-screen ${PORTAL_SIDEBAR_WIDTH} bg-obsidian/80 backdrop-blur-xl border-r border-slate-700/60 flex-col z-50 overflow-hidden`}>
+        <PortalMediaPanel
+          photo="hero"
+          overlay={72}
+          rounded="none"
+          className="absolute inset-0 opacity-40"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0c0f12]/60 via-[#0c0f12]/90 to-[#0c0f12]" aria-hidden />
+
+        <div className="relative px-5 py-6 border-b border-slate-700/50">
           <div className="flex items-baseline gap-0.5">
-            <span className="font-serif text-xl text-white tracking-tight">Nex</span>
-            <span className="font-serif text-xl text-gold tracking-tight">rena</span>
+            <span className="font-serif text-2xl text-white tracking-tight">Nex</span>
+            <span className="font-serif text-2xl text-gold tracking-tight">rena</span>
           </div>
-          <p className="text-[9px] text-slate-400 mt-1 tracking-[0.2em] uppercase">Your workspace</p>
+          <p className="text-lg text-slate-200 mt-2">Your client workspace</p>
         </div>
 
         <nav className="relative flex-1 px-2 py-4 space-y-1 overflow-y-auto">
@@ -74,19 +95,21 @@ export function ClientPortalShell({
         </nav>
 
         <div className="relative px-5 py-4 border-t border-slate-800/60">
-          <p className="text-[9px] text-slate-600 tracking-[0.2em] uppercase">Need help?</p>
-          <p className="text-xs text-slate-500 mt-1">Message Nico anytime</p>
+          <p className="text-lg text-slate-100 font-medium">Need help?</p>
+          <p className="text-lg text-slate-300 mt-1">Open Messages to reach Nico</p>
         </div>
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 md:ml-[220px] flex flex-col min-h-screen">
-        <header className="sticky top-0 z-40 flex items-center justify-between gap-4 border-b border-slate-800/40 bg-[#111418]/85 backdrop-blur-md px-4 md:px-8 py-3">
-          <div className="min-w-0">
-            <p className="text-[10px] text-gold tracking-[0.2em] uppercase md:hidden">Nexrena</p>
-            <h1 className="font-serif text-xl md:text-2xl text-white truncate">{viewTitle}</h1>
+      <div className={`flex-1 ${PORTAL_MAIN_OFFSET} flex flex-col min-h-screen`}>
+        <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-slate-800/40 bg-[#111418]/92 backdrop-blur-md px-4 py-3 md:px-8 md:py-4">
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-medium text-gold-light/80 md:hidden">Client portal</p>
+            <h1 className={`font-serif text-xl sm:text-2xl text-white truncate ${viewBannerPhoto ? 'md:sr-only' : ''}`}>
+              {activeView === 'messages' ? 'Message Nico' : viewTitle}
+            </h1>
             {account && activeView === 'home' && (
-              <p className="text-xs text-slate-400 mt-0.5 truncate hidden sm:block">
+              <p className="text-sm text-slate-400 mt-0.5 truncate hidden sm:block">
                 Welcome back, {account.name}
               </p>
             )}
@@ -101,14 +124,30 @@ export function ClientPortalShell({
           )}
         </header>
 
-        <main className="flex-1 px-4 md:px-8 py-6 pb-24 md:pb-8 max-w-5xl w-full mx-auto">
+        {viewBannerPhoto && (
+          <div className="hidden md:block shrink-0">
+            <PortalMediaPanel
+            photo={viewBannerPhoto}
+            aspect="wide"
+            overlay={65}
+            rounded="none"
+            className="shrink-0 border-b border-slate-700/50 max-h-[140px] md:max-h-[160px]"
+          >
+            <div className="flex h-full min-h-[100px] items-end px-4 md:px-8 pb-4">
+              <p className="font-serif text-2xl text-white drop-shadow-md">{viewTitle}</p>
+            </div>
+          </PortalMediaPanel>
+          </div>
+        )}
+
+        <main className="flex-1 px-4 md:px-8 py-5 pb-24 md:pb-8 max-w-5xl w-full mx-auto overflow-x-hidden">
           {children}
         </main>
       </div>
 
       {/* Mobile bottom tab bar */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-slate-800/60 bg-obsidian/95 backdrop-blur-xl pb-[max(0.5rem,env(safe-area-inset-bottom))]">
-        <div className="flex items-stretch px-1 pt-1">
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-slate-700/50 bg-[#141820]/98 backdrop-blur-xl shadow-[0_-8px_32px_rgba(0,0,0,0.45)] pb-[max(0.35rem,env(safe-area-inset-bottom))]">
+        <div className="flex items-stretch px-1.5 pt-1 gap-0.5">
           {MOBILE_TAB_ITEMS.map((item) => (
             <ClientNavButton
               key={item.id}
@@ -123,14 +162,15 @@ export function ClientPortalShell({
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
-            className={`flex flex-col items-center gap-1 px-2 py-2 flex-1 min-w-0 rounded-xl transition-colors ${
+            aria-label="Open more menu"
+            className={`flex flex-col items-center gap-2 px-2 py-3 flex-1 min-w-0 ${PORTAL_MOBILE_TAB_MIN_H} justify-center rounded-xl transition-colors ${portalFocusRing} ${
               drawerItems.some((item) => item.id === activeView)
-                ? 'text-gold'
-                : 'text-slate-500 hover:text-slate-300'
+                ? 'text-gold-light bg-gold/15'
+                : 'text-slate-200 hover:text-white'
             }`}
           >
-            <span className="text-xl leading-none">☰</span>
-            <span className="text-[10px] font-medium">More</span>
+            <span className="text-3xl leading-none" aria-hidden>☰</span>
+            <span className="text-base font-medium">More</span>
           </button>
         </div>
       </nav>
@@ -146,16 +186,16 @@ export function ClientPortalShell({
           />
           <div className="absolute bottom-0 inset-x-0 rounded-t-2xl bg-obsidian border-t border-slate-800/60 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] animate-in slide-in-from-bottom duration-200">
             <div className="flex items-center justify-between mb-4">
-              <p className="text-sm font-medium text-white">More</p>
+              <p className="text-lg font-semibold text-white">More options</p>
               <button
                 type="button"
                 onClick={() => setDrawerOpen(false)}
-                className="text-slate-400 hover:text-white text-sm px-2 py-1"
+                className="text-lg text-slate-200 hover:text-white px-4 py-3 min-h-[52px] rounded-xl border-2 border-slate-600"
               >
                 Close
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2">
               {drawerItems.map((item) => (
                 <ClientNavButton
                   key={item.id}

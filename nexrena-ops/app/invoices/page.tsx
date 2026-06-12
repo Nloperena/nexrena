@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useInvoices, useContacts, useProjects, genId, formatCurrency, formatDate, nextInvoiceNumber, invoiceTotal } from '@/lib/store'
 import { Invoice, InvoiceStatus } from '@/lib/types'
 import { PageHeader, Badge, Btn, Modal, StatCard, SectionCard, EmptyState } from '@/components/ui'
+import { InvoiceCard } from '@/components/design-system'
 import { InvoiceForm } from '@/components/invoice-form'
 
 const STATUSES: InvoiceStatus[] = ['draft', 'sent', 'paid', 'overdue', 'cancelled']
@@ -43,6 +44,9 @@ export default function InvoicesPage() {
       )
     })
 
+  const unpaid = filtered.filter((i) => ['sent', 'overdue', 'draft'].includes(effectiveStatus(i)))
+  const paid = filtered.filter((i) => effectiveStatus(i) === 'paid')
+
   const nextNum = nextInvoiceNumber(invoices)
 
   const handleDuplicate = (inv: Invoice) => {
@@ -68,15 +72,14 @@ export default function InvoicesPage() {
     invoices.filter(i => effectiveStatus(i) === s).length
 
   return (
-    <div>
+    <div className="overflow-x-hidden">
       <PageHeader
         title="Invoices"
         sub={`${invoices.length} total  ·  ${formatCurrency(invoices.filter(i => i.status === 'paid').reduce((s, i) => s + getTotal(i), 0))} collected`}
         action={<Btn onClick={() => setModal('add')}>+ New Invoice</Btn>}
       />
 
-      {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-4 mb-10 stagger">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 md:mb-10 stagger">
         <StatCard label="Total Outstanding" value={formatCurrency(totalOutstanding)} gold />
         <StatCard label="Paid This Month" value={formatCurrency(paidMTD)}
           sub={`${invoices.filter(i => i.status === 'paid' && i.paidDate && new Date(i.paidDate) >= mtdStart).length} invoices`} />
@@ -84,12 +87,11 @@ export default function InvoicesPage() {
           sub={overdueCount > 0 ? 'Action required' : 'All clear'} />
       </div>
 
-      {/* Filter tabs + search */}
-      <div className="flex items-center justify-between mb-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-        <div className="flex gap-0.5">
+      <div className="flex flex-col gap-4 mb-6 animate-fade-in sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
           {(['all', ...STATUSES] as const).map(s => (
             <button key={s} onClick={() => setFilter(s)}
-              className={`px-4 py-2.5 text-xs font-semibold capitalize transition-all duration-200 rounded-lg ${
+              className={`shrink-0 px-3 py-2 text-xs font-semibold capitalize transition-all duration-200 rounded-lg min-h-[44px] ${
                 filter === s
                   ? 'bg-gold/10 text-gold ring-1 ring-gold/20'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
@@ -99,13 +101,58 @@ export default function InvoicesPage() {
           ))}
         </div>
         <input value={search} onChange={e => setSearch(e.target.value)}
-          className="bg-slate-800/50 border border-slate-700/50 rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 w-56 transition-all duration-200"
+          className="w-full sm:w-56 bg-slate-800/50 border border-slate-700/50 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 min-h-[44px]"
           placeholder="Search client or project…" />
       </div>
 
-      {/* Invoice table */}
-      <div className="animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
+      {/* Mobile cards */}
+      <div className="md:hidden space-y-6 animate-fade-in-up">
+        {filtered.length === 0 ? (
+          <EmptyState message="No invoices found." />
+        ) : (
+          <>
+            {unpaid.length > 0 && (
+              <div className="space-y-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Unpaid & draft</p>
+                {unpaid.map((inv) => (
+                  <InvoiceCard
+                    key={inv.id}
+                    invoice={inv}
+                    total={getTotal(inv)}
+                    status={effectiveStatus(inv)}
+                    overdue={isOverdue(inv)}
+                    onEdit={() => setModal(inv)}
+                    onMarkPaid={() => handleMarkPaid(inv)}
+                    onDuplicate={() => handleDuplicate(inv)}
+                    onDelete={() => remove(inv.id)}
+                  />
+                ))}
+              </div>
+            )}
+            {paid.length > 0 && (
+              <div className="space-y-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Paid</p>
+                {paid.map((inv) => (
+                  <InvoiceCard
+                    key={inv.id}
+                    invoice={inv}
+                    total={getTotal(inv)}
+                    status={effectiveStatus(inv)}
+                    onEdit={() => setModal(inv)}
+                    onDuplicate={() => handleDuplicate(inv)}
+                    onDelete={() => remove(inv.id)}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
         <SectionCard>
+          <div className="nx-table-wrap">
           <table className="nx-table">
             <thead>
               <tr>
@@ -158,12 +205,12 @@ export default function InvoicesPage() {
               )}
             </tbody>
           </table>
+          </div>
         </SectionCard>
       </div>
 
-      {/* Showing total */}
       {filtered.length > 0 && (
-        <div className="flex justify-end mt-4 pr-4 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+        <div className="flex justify-end mt-4 pr-0 md:pr-4 animate-fade-in">
           <div className="text-right">
             <p className="text-[10px] text-slate-400 tracking-[0.1em] uppercase">Showing total</p>
             <p className="text-xl font-serif gold-shimmer font-semibold mt-1">
@@ -173,7 +220,6 @@ export default function InvoicesPage() {
         </div>
       )}
 
-      {/* Modal */}
       {modal && (
         <Modal wide
           title={modal === 'add' ? 'New Invoice' : `Edit — ${(modal as Invoice).number}`}

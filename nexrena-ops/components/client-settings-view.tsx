@@ -4,10 +4,11 @@ import { useState, type FormEvent } from 'react'
 import type { PortalAccount } from '@/lib/portal-types'
 import { changePortalPassword, updatePortalProfile } from '@/lib/portal-client'
 import { PortalSubscriptionsSection } from '@/components/portal-subscriptions-section'
-import { Btn, Field, inputCls } from '@/components/ui'
+import { Btn } from '@/components/ui'
+import { portalCardClass, portalInputCls, portalLabelClass, portalSectionHintClass } from '@/lib/portal-a11y'
 import { portalSectionTitleClass } from '@/lib/portal-dashboard-utils'
 
-const card = 'glass-panel rounded-xl border border-slate-800/60 p-5'
+const card = portalCardClass
 
 type Props = {
   account: PortalAccount
@@ -71,42 +72,48 @@ export function ClientSettingsView({ account, onUpdated }: Props) {
     <section className="space-y-6">
       <div>
         <h2 className={portalSectionTitleClass}>Account settings</h2>
-        <p className="text-sm text-slate-400 mt-1">Update your profile and manage your account.</p>
+        <p className={`${portalSectionHintClass} mt-2`}>Update your profile and manage your account.</p>
       </div>
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
-      {message && <p className="text-sm text-emerald-400">{message}</p>}
+      {error && <p className="text-base text-red-300" role="alert">{error}</p>}
+      {message && <p className="text-base text-emerald-300">{message}</p>}
 
-      <form onSubmit={saveProfile} className={`${card} space-y-4`}>
-        <p className="text-[10px] uppercase tracking-widest text-slate-500">Profile</p>
-        <Field label="Full name">
-          <input className={inputCls} required value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
-        </Field>
-        <Field label="Company">
-          <input className={inputCls} value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Optional" autoComplete="organization" />
-        </Field>
-        <Field label="Email">
-          <input className={`${inputCls} opacity-70 cursor-not-allowed`} value={account.email} readOnly tabIndex={-1} />
-          <p className="text-[10px] text-slate-600 mt-1.5">Contact Nexrena if you need to update your email.</p>
-        </Field>
+      <form onSubmit={saveProfile} className={`${card} space-y-5`}>
+        <p className="text-lg font-semibold text-slate-100">Your profile</p>
+        <div>
+          <label className={portalLabelClass}>Full name</label>
+          <input className={portalInputCls} required value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
+        </div>
+        <div>
+          <label className={portalLabelClass}>Company</label>
+          <input className={portalInputCls} value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Optional" autoComplete="organization" />
+        </div>
+        <div>
+          <label className={portalLabelClass}>Email address</label>
+          <input className={`${portalInputCls} opacity-70 cursor-not-allowed`} value={account.email} readOnly tabIndex={-1} />
+          <p className="text-base text-slate-400 mt-2">Contact Nexrena if you need to change your email.</p>
+        </div>
         <div className="flex justify-end pt-2">
-          <Btn type="submit" disabled={profileSaving}>{profileSaving ? 'Saving…' : 'Save profile'}</Btn>
+          <Btn type="submit" size="lg" disabled={profileSaving}>{profileSaving ? 'Saving…' : 'Save profile'}</Btn>
         </div>
       </form>
 
-      <form onSubmit={changePassword} className={`${card} space-y-4`}>
-        <p className="text-[10px] uppercase tracking-widest text-slate-500">Change password</p>
-        <Field label="Current password">
-          <input type="password" className={inputCls} required value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} autoComplete="current-password" />
-        </Field>
-        <Field label="New password">
-          <input type="password" className={inputCls} required minLength={8} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} autoComplete="new-password" />
-        </Field>
-        <Field label="Confirm new password">
-          <input type="password" className={inputCls} required minLength={8} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="new-password" />
-        </Field>
+      <form onSubmit={changePassword} className={`${card} space-y-5`}>
+        <p className="text-lg font-semibold text-slate-100">Change password</p>
+        <div>
+          <label className={portalLabelClass}>Current password</label>
+          <input type="password" className={portalInputCls} required value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} autoComplete="current-password" />
+        </div>
+        <div>
+          <label className={portalLabelClass}>New password</label>
+          <input type="password" className={portalInputCls} required minLength={8} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} autoComplete="new-password" />
+        </div>
+        <div>
+          <label className={portalLabelClass}>Confirm new password</label>
+          <input type="password" className={portalInputCls} required minLength={8} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="new-password" />
+        </div>
         <div className="flex justify-end pt-2">
-          <Btn type="submit" variant="ghost" disabled={passwordSaving}>{passwordSaving ? 'Updating…' : 'Update password'}</Btn>
+          <Btn type="submit" size="lg" variant="ghost" disabled={passwordSaving}>{passwordSaving ? 'Updating…' : 'Update password'}</Btn>
         </div>
       </form>
 

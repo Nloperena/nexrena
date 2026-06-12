@@ -3,6 +3,7 @@
 import type { PortalInvoice, PortalProject, PortalServiceRequest } from '@/lib/portal-types'
 import { getProjectPaymentStatus } from '@/lib/portal-dashboard-utils'
 import { StatusChip, projectStatusChip, requestStatusChip } from '@/components/status-chip'
+import { portalCardClass, portalMutedClass, portalSectionHintClass } from '@/lib/portal-a11y'
 
 function requestDisplay(description: string, projectType: string): { label: string; body: string } {
   const match = description.match(/^\[([^\]]+)\]\s*([\s\S]*)$/)
@@ -10,7 +11,7 @@ function requestDisplay(description: string, projectType: string): { label: stri
   return { label: projectType, body: description }
 }
 
-const card = 'glass-panel rounded-xl border border-slate-800/60 p-5'
+const card = portalCardClass
 
 type Props = {
   activeProjects: PortalProject[]
@@ -28,7 +29,7 @@ function ProjectPaymentLine({
 }) {
   const status = getProjectPaymentStatus(project.id, invoices)
   if (!status) return null
-  return <p className="text-sm text-slate-400 mt-2">{status}</p>
+  return <p className={`${portalMutedClass} mt-2`}>{status}</p>
 }
 
 export function ClientWorkStatusSection({
@@ -44,13 +45,9 @@ export function ClientWorkStatusSection({
   if (showProjects && !showRequests) {
     if (activeProjects.length === 0) {
       return (
-        <div className={`${card} space-y-2`}>
-          <p className="text-sm text-slate-400">
-            No active projects right now.
-          </p>
-          <p className="text-sm text-slate-500">
-            When we start your next request, it will show up here.
-          </p>
+        <div className={`${card} space-y-3 text-center py-6`}>
+          <p className="font-serif text-lg text-white">No active projects yet</p>
+          <p className={portalSectionHintClass}>When work begins, you&apos;ll see status and next steps here.</p>
         </div>
       )
     }
@@ -62,8 +59,8 @@ export function ClientWorkStatusSection({
             <li key={p.id} className={card}>
               <div className="flex justify-between gap-4">
                 <div>
-                  <p className="font-serif text-lg text-white">{p.name}</p>
-                  <p className="text-sm text-slate-400 mt-1">{p.type}</p>
+                  <p className="font-serif text-xl text-white">{p.name}</p>
+                  <p className={`${portalMutedClass} mt-2`}>{p.type}</p>
                   <ProjectPaymentLine project={p} invoices={invoices} />
                 </div>
                 {chip && <StatusChip variant={chip} />}
@@ -79,10 +76,8 @@ export function ClientWorkStatusSection({
     if (recentRequests.length === 0) {
       return (
         <div className={`${card} space-y-2`}>
-          <p className="text-sm text-slate-400">No requests yet.</p>
-          <p className="text-sm text-slate-500">
-            Use the quick request form above — we will track status here.
-          </p>
+          <p className={portalMutedClass}>No requests yet.</p>
+          <p className={portalSectionHintClass}>Use the request form above — we will track status here.</p>
         </div>
       )
     }
@@ -94,11 +89,11 @@ export function ClientWorkStatusSection({
           return (
             <li key={r.id} className={card}>
               <div className="flex flex-wrap justify-between gap-2">
-                <p className="font-serif text-lg text-white">{label}</p>
+                <p className="font-serif text-xl text-white">{label}</p>
                 {chip && <StatusChip variant={chip} />}
               </div>
-              <p className="text-sm text-slate-400 mt-1 line-clamp-2">{body}</p>
-              <p className="text-xs text-slate-500 mt-2">
+              <p className={`${portalMutedClass} mt-2 line-clamp-3`}>{body}</p>
+              <p className={`${portalMutedClass} mt-2`}>
                 {r.budget ? `${r.budget} · ` : ''}
                 Submitted {new Date(r.createdAt).toLocaleDateString()}
               </p>
@@ -113,8 +108,8 @@ export function ClientWorkStatusSection({
   if (isEmpty) {
     return (
       <div className={`${card} space-y-2`}>
-        <p className="text-sm text-slate-400">No active projects or requests yet.</p>
-        <p className="text-sm text-slate-500">Send a quick request above to get started.</p>
+        <p className={portalMutedClass}>No active projects or requests yet.</p>
+        <p className={portalSectionHintClass}>Send a request above to get started.</p>
       </div>
     )
   }
@@ -151,7 +146,7 @@ export function ClientWorkStatusSection({
                   <p className="font-serif text-lg text-white">{label}</p>
                   {chip && <StatusChip variant={chip} />}
                 </div>
-                <p className="text-sm text-slate-400 mt-1 line-clamp-2">{body}</p>
+                <p className={`${portalMutedClass} mt-2 line-clamp-3`}>{body}</p>
               </li>
             )
           })}

@@ -38,10 +38,12 @@ import { ClientSettingsView } from '@/components/client-settings-view'
 import { ClientScheduleView } from '@/components/client-schedule-view'
 import { ClientPortalShell } from '@/components/client-portal-shell'
 import type { ClientPortalView } from '@/components/client-nav'
+import { readPortalViewFromUrl, writePortalViewToUrl } from '@/lib/portal-view-url'
 import type { PortalResource } from '@/lib/client-resource-utils'
 import { StatusChip, proposalStatusChip } from '@/components/status-chip'
 import type { Invoice, InvoiceStatus } from '@/lib/types'
 import { Btn } from '@/components/ui'
+import { portalSectionTitleClass } from '@/lib/portal-a11y'
 
 type Props = { onSignOut: () => void }
 
@@ -71,7 +73,13 @@ function toPrintInvoice(inv: PortalInvoice): Invoice {
 }
 
 export function ClientDashboard({ onSignOut }: Props) {
-  const [activeView, setActiveView] = useState<ClientPortalView>('home')
+  const [activeView, setActiveViewState] = useState<ClientPortalView>('home')
+  const [viewReady, setViewReady] = useState(false)
+
+  const setActiveView = useCallback((view: ClientPortalView) => {
+    setActiveViewState(view)
+    writePortalViewToUrl(view)
+  }, [])
   const [account, setAccount] = useState<PortalAccount | null>(null)
   const [projects, setProjects] = useState<PortalProject[]>([])
   const [invoices, setInvoices] = useState<PortalInvoice[]>([])
@@ -124,6 +132,15 @@ export function ClientDashboard({ onSignOut }: Props) {
   }, [])
 
   useEffect(() => { load() }, [load])
+
+  useEffect(() => {
+    setActiveViewState(readPortalViewFromUrl())
+    setViewReady(true)
+
+    const onPopState = () => setActiveViewState(readPortalViewFromUrl())
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [])
 
   const formsNewCount = useMemo(
     () => formSubmissions.filter((s) => s.status === 'new').length,
@@ -207,14 +224,14 @@ export function ClientDashboard({ onSignOut }: Props) {
     )
   }
 
-  if (loading) {
+  if (loading || !viewReady) {
     return (
       <div className="min-h-screen bg-[#111418] flex items-center justify-center px-6">
         <div className="text-center space-y-4">
           <div className="mx-auto h-12 w-12 rounded-2xl border border-gold/20 bg-gold/10 flex items-center justify-center">
             <span className="h-2 w-2 rounded-full bg-gold animate-ping" />
           </div>
-          <p className="text-sm text-slate-400">Loading your workspace…</p>
+          <p className="text-lg text-slate-300">Loading your workspace…</p>
         </div>
       </div>
     )
@@ -224,7 +241,7 @@ export function ClientDashboard({ onSignOut }: Props) {
     return (
       <div className="min-h-screen bg-[#111418] flex items-center justify-center px-6">
         <div className="space-y-4 text-center">
-          <p className="text-sm text-red-400">{error}</p>
+          <p className="text-lg text-red-300">{error}</p>
           <Btn size="sm" variant="ghost" onClick={handleSignOut}>Sign in again</Btn>
         </div>
       </div>
@@ -235,7 +252,7 @@ export function ClientDashboard({ onSignOut }: Props) {
     switch (activeView) {
       case 'home':
         return (
-          <div className="space-y-8">
+          <div className="space-y-6 md:space-y-8">
             <ClientDashboardHero
               account={account}
               stats={stats}
@@ -254,7 +271,7 @@ export function ClientDashboard({ onSignOut }: Props) {
 
       case 'billing':
         return (
-          <div className="space-y-8">
+          <div className="space-y-6 md:space-y-8">
             <ClientBillingSection
               invoices={invoices}
               stripeEnabled={stripeEnabled}
@@ -313,21 +330,13 @@ export function ClientDashboard({ onSignOut }: Props) {
 
       case 'requests':
         return (
-          <div className="space-y-8">
-            <div className={`${card} space-y-4`}>
-              <div>
-                <h3 className="font-serif text-lg text-white">Start a request</h3>
-                <p className="text-sm text-slate-400 mt-1">
-                  Pick Website, Growth, or Support — then add your details.
-                </p>
-              </div>
-              <ServiceRequestForm
-                variant="inline"
-                onCreated={(row) => setServiceRequests((prev) => [row, ...prev])}
-              />
-            </div>
+          <div className="space-y-6 md:space-y-8">
+            <ServiceRequestForm
+              variant="inline"
+              onCreated={(row) => setServiceRequests((prev) => [row, ...prev])}
+            />
             <div className="space-y-3">
-              <h3 className="text-[10px] uppercase tracking-widest text-slate-500">Active projects</h3>
+              <h3 className={portalSectionTitleClass}>Active projects</h3>
               <ClientWorkStatusSection
                 activeProjects={activeProjects}
                 serviceRequests={serviceRequests}
@@ -336,7 +345,7 @@ export function ClientDashboard({ onSignOut }: Props) {
               />
             </div>
             <div className="space-y-3">
-              <h3 className="text-[10px] uppercase tracking-widest text-slate-500">Recent requests</h3>
+              <h3 className={portalSectionTitleClass}>Recent requests</h3>
               <ClientWorkStatusSection
                 activeProjects={activeProjects}
                 serviceRequests={serviceRequests}
@@ -346,7 +355,7 @@ export function ClientDashboard({ onSignOut }: Props) {
             </div>
             {proposals.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-sm uppercase tracking-widest text-slate-400 font-medium">Estimates & approvals</h3>
+                <h3 className={portalSectionTitleClass}>Estimates & approvals</h3>
                 <ul className="space-y-3">
                   {proposals.map((p) => {
                     const chip = proposalStatusChip(p.status, p.validUntil)
@@ -400,7 +409,7 @@ export function ClientDashboard({ onSignOut }: Props) {
       account={account}
       onSignOut={handleSignOut}
     >
-      {error && <p className="text-sm text-red-400 mb-4">{error}</p>}
+      {error && <p className="text-lg text-red-300 mb-4">{error}</p>}
       {renderView()}
 
       {uploadOpen && (

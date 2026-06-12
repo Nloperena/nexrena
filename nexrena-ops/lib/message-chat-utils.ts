@@ -45,3 +45,26 @@ export function groupMessagesByDay<T extends { createdAt: string }>(messages: T[
 }
 
 export const MESSAGE_ATTACHMENT_ACCEPT = 'image/*,video/mp4,video/quicktime'
+
+export function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean)
+  if (parts.length === 0) return '?'
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+  return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
+}
+
+export function isImageMime(mimeType: string, filename?: string) {
+  if (mimeType.startsWith('image/')) return true
+  return Boolean(filename && /\.(jpe?g|png|gif|webp|svg)$/i.test(filename))
+}
+
+export function isVideoMime(mimeType: string, filename?: string) {
+  if (mimeType.startsWith('video/')) return true
+  return Boolean(filename && /\.(mp4|mov|webm|m4v)$/i.test(filename))
+}
+
+export function attachmentPreviewLabel(filename: string, mimeType: string) {
+  if (isImageMime(mimeType, filename)) return 'Photo'
+  if (isVideoMime(mimeType, filename)) return 'Video'
+  return filename
+}

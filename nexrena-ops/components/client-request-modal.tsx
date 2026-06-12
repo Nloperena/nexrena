@@ -14,7 +14,7 @@ export function ClientRequestModal({ open, onClose, onCreated }: Props) {
   if (!open) return null
 
   return (
-    <Modal title="Start a request" onClose={onClose}>
+    <Modal title="Start a request" onClose={onClose} wide>
       <ServiceRequestForm
         variant="modal"
         onCreated={(row) => {

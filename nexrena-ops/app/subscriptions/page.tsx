@@ -80,7 +80,7 @@ export default function SubscriptionsPage() {
       )}
 
       {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-4 mb-10 stagger">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 md:mb-10 stagger">
         <StatCard label="Monthly MRR" value={formatCurrency(monthlyMRR)} gold />
         <StatCard label="Active Subscriptions" value={String(activeSubs.length)} />
         <StatCard label="Due for Billing" value={String(dueCount)}

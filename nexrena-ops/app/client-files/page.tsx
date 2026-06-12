@@ -4,7 +4,9 @@ import { useMemo, useState } from 'react'
 import { useContacts, usePortalAssets, formatDate } from '@/lib/store'
 import { categoryLabel, formatFileBytes, isImageAsset } from '@/lib/portal-file-utils'
 import { SignedAssetLink, SignedAssetThumb } from '@/components/signed-asset-thumb'
+import { WebsiteMediaBrowser } from '@/components/website-media-browser'
 import { PageHeader, SectionCard, EmptyState, selectCls } from '@/components/ui'
+import { Card } from '@/components/design-system'
 import type { PortalFolderRecord } from '@/lib/types'
 
 function folderPath(folders: PortalFolderRecord[], folderId: string | null): string {
@@ -18,6 +20,11 @@ function folderPath(folders: PortalFolderRecord[], folderId: string | null): str
   return chain.join(' / ') || 'Root'
 }
 
+const WEBSITE_MEDIA_CONTACTS = new Set([
+  'joe-loperena-furniture-packages',
+  'warren-daughtridge-ttag',
+])
+
 export default function ClientFilesPage() {
   const { contacts } = useContacts()
   const [contactFilter, setContactFilter] = useState('')
@@ -28,13 +35,16 @@ export default function ClientFilesPage() {
     [contacts],
   )
 
+  const websiteMediaContactId =
+    contactFilter && WEBSITE_MEDIA_CONTACTS.has(contactFilter) ? contactFilter : ''
+
   const clientFolders = useMemo(
     () => folders.filter((f) => !contactFilter || f.contactId === contactFilter),
     [folders, contactFilter],
   )
 
   return (
-    <div>
+    <div className="w-full min-w-0 overflow-x-hidden">
       <PageHeader
         title="Business assets"
         sub={`${assets.length} client uploads — logos, photos, documents, and more`}
@@ -58,6 +68,10 @@ export default function ClientFilesPage() {
         </select>
       </div>
 
+      <SectionCard className="mb-6">
+        <WebsiteMediaBrowser variant="ops" contactId={websiteMediaContactId} />
+      </SectionCard>
+
       {clientFolders.length > 0 && (
         <SectionCard>
           <p className="text-[10px] uppercase tracking-widest text-slate-500 mb-3">Folder structure</p>
@@ -73,6 +87,40 @@ export default function ClientFilesPage() {
       )}
 
       <SectionCard>
+        <p className="text-[10px] uppercase tracking-widest text-slate-500 mb-3">Client uploads</p>
+
+        <div className="lg:hidden space-y-3">
+          {assets.length === 0 ? (
+            <EmptyState message="No client uploads yet." />
+          ) : (
+            assets.map((asset) => (
+              <Card key={asset.id} className="flex items-start gap-3">
+                {isImageAsset(asset) ? (
+                  <SignedAssetThumb
+                    assetId={asset.id}
+                    variant="ops"
+                    alt=""
+                    className="w-12 h-12 rounded-lg object-cover bg-slate-800 shrink-0"
+                  />
+                ) : (
+                  <span className="w-12 h-12 rounded-lg bg-slate-800/60 flex items-center justify-center text-xl shrink-0">📄</span>
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="text-white font-medium truncate">{asset.filename}</p>
+                  <p className="text-sm text-slate-400 truncate">{asset.contactName ?? 'Unknown'}</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {formatFileBytes(asset.sizeBytes)} · {formatDate(asset.createdAt)}
+                  </p>
+                  <SignedAssetLink assetId={asset.id} variant="ops" className="inline-block mt-2 text-sm text-gold hover:underline">
+                    Open file
+                  </SignedAssetLink>
+                </div>
+              </Card>
+            ))
+          )}
+        </div>
+
+        <div className="hidden lg:block">
         <table className="nx-table">
           <thead>
             <tr>
@@ -135,6 +183,7 @@ export default function ClientFilesPage() {
             )}
           </tbody>
         </table>
+        </div>
       </SectionCard>
     </div>
   )

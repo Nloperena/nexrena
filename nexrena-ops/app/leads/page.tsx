@@ -3,6 +3,8 @@ import { useState } from 'react'
 import { useLeads, useContacts, genId, formatDate } from '@/lib/store'
 import { Lead, LeadStatus } from '@/lib/types'
 import { PageHeader, Btn, StatCard, SectionCard, EmptyState, Badge } from '@/components/ui'
+import { Card } from '@/components/design-system'
+import { MobileFilterChip, MobileFilterRow } from '@/components/mobile-filter-row'
 
 const STATUS_CONFIG: Record<LeadStatus, { label: string; color: string }> = {
   new:       { label: 'New',       color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
@@ -63,28 +65,62 @@ export default function LeadsPage() {
   }
 
   return (
-    <div>
+    <div className="w-full min-w-0 overflow-x-hidden">
       <PageHeader title="Website Leads" sub={`${leads.length} total submissions`} />
 
-      <div className="grid grid-cols-4 gap-4 mb-10 stagger">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 stagger">
         <StatCard label="Total Leads" value={String(leads.length)} />
         <StatCard label="Needs Response" value={String(newCount)} gold />
         <StatCard label="This Month" value={String(thisMonth.length)} />
         <StatCard label="Sources" value={String(new Set(leads.map(l => l.source || 'website')).size)} sub={`${portalSignups} portal signups`} />
       </div>
 
-      <div className="flex gap-2 mb-4">
+      <MobileFilterRow className="mb-5">
         {(['all', ...STATUS_ORDER] as const).map(s => (
-          <button key={s} onClick={() => setFilter(s)}
-            className={`px-3 py-1.5 rounded text-xs font-semibold uppercase transition-all duration-200 ${
-              filter === s ? 'bg-gold text-obsidian' : 'text-slate-400 hover:text-white hover:bg-slate-800/40 border border-slate-700/40'
-            }`}>
+          <MobileFilterChip key={s} active={filter === s} onClick={() => setFilter(s)}>
             {s === 'all' ? `All (${leads.length})` : `${STATUS_CONFIG[s].label} (${leads.filter(l => l.status === s || (s === 'new' && !l.status)).length})`}
-          </button>
+          </MobileFilterChip>
         ))}
+      </MobileFilterRow>
+
+      {/* Mobile cards */}
+      <div className="lg:hidden space-y-3">
+        {filteredLeads.length === 0 ? (
+          <EmptyState message={filter === 'all' ? 'No website leads yet.' : `No leads with status "${filter}".`} />
+        ) : (
+          filteredLeads.map((lead) => (
+            <Card key={lead.id} className="space-y-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-serif text-lg text-white truncate">{lead.name}</p>
+                  <p className="text-sm text-slate-400 truncate">{lead.company || lead.email}</p>
+                </div>
+                <StatusBadge status={lead.status || 'new'} onCycle={() => cycleStatus(lead)} />
+              </div>
+              <div className="flex flex-wrap gap-2 text-sm">
+                {lead.projectType && <Badge label={lead.projectType} />}
+                {lead.budget && <span className="text-gold font-medium">{lead.budget}</span>}
+                <span className="text-slate-500">{formatDate(lead.createdAt)}</span>
+              </div>
+              {expanded === lead.id && (
+                <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap bg-slate-900/50 rounded-xl p-3">
+                  {lead.message}
+                </p>
+              )}
+              <div className="flex flex-wrap gap-2 pt-1">
+                <Btn size="sm" variant="ghost" onClick={() => setExpanded(expanded === lead.id ? null : lead.id)}>
+                  {expanded === lead.id ? 'Hide message' : 'View message'}
+                </Btn>
+                <Btn size="sm" variant="primary" onClick={() => convertToContact(lead)}>→ CRM</Btn>
+                <Btn size="sm" variant="danger" onClick={() => remove(lead.id)}>Delete</Btn>
+              </div>
+            </Card>
+          ))
+        )}
       </div>
 
-      <SectionCard>
+      {/* Desktop table */}
+      <SectionCard className="hidden lg:block">
         <table className="nx-table">
           <thead>
             <tr>

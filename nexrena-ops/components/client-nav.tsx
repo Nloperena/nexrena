@@ -1,5 +1,7 @@
 'use client'
 
+import { portalFocusRing, portalNavLabelClass, PORTAL_MOBILE_TAB_MIN_H } from '@/lib/portal-a11y'
+
 export type ClientPortalView =
   | 'home'
   | 'billing'
@@ -20,22 +22,21 @@ type NavItem = {
 
 export const CLIENT_NAV_ITEMS: NavItem[] = [
   { id: 'home', label: 'Home', icon: '⌂' },
-  { id: 'messages', label: 'Messages', icon: '✉', badge: 'messages' },
+  { id: 'messages', label: 'Message Nico', icon: '✉', badge: 'messages' },
   { id: 'schedule', label: 'Book a call', icon: '📅' },
-  { id: 'billing', label: 'Billing', icon: '▤' },
-  { id: 'files', label: 'Files', icon: '📁' },
-  { id: 'websites', label: 'Websites', icon: '◈' },
-  { id: 'forms', label: 'Forms', icon: '▣', badge: 'forms' },
-  { id: 'requests', label: 'Requests', icon: '✦' },
-  { id: 'settings', label: 'Settings', icon: '⚙' },
+  { id: 'billing', label: 'Billing & invoices', icon: '▤' },
+  { id: 'files', label: 'Your files', icon: '📁' },
+  { id: 'websites', label: 'Your website', icon: '◈' },
+  { id: 'forms', label: 'Website form leads', icon: '▣', badge: 'forms' },
+  { id: 'requests', label: 'Request help', icon: '✦' },
+  { id: 'settings', label: 'Account settings', icon: '⚙' },
 ]
 
-/** Primary bottom tabs on mobile — Messages always one tap away */
 export const MOBILE_TAB_ITEMS: NavItem[] = [
   { id: 'home', label: 'Home', icon: '⌂' },
-  { id: 'messages', label: 'Messages', icon: '✉', badge: 'messages' },
+  { id: 'messages', label: 'Nico', icon: '✉', badge: 'messages' },
   { id: 'billing', label: 'Billing', icon: '▤' },
-  { id: 'files', label: 'Files', icon: '📁' },
+  { id: 'files', label: 'Assets', icon: '📁' },
 ]
 
 export const MOBILE_DRAWER_ITEMS: NavItem[] = CLIENT_NAV_ITEMS.filter(
@@ -68,38 +69,39 @@ export function ClientNavButton({
       type="button"
       onClick={onClick}
       title={item.label}
-      className={`group relative flex items-center gap-3 rounded-xl transition-all duration-200 ${
+      aria-current={active ? 'page' : undefined}
+      className={`group relative flex items-center gap-3 rounded-xl transition-all duration-200 ${portalFocusRing} ${
         compact
-          ? 'flex-col gap-1 px-2 py-2 min-w-0 flex-1'
-          : 'w-full px-3 py-2.5 text-left'
+          ? `flex-col gap-2 px-2 py-3 min-w-0 flex-1 ${PORTAL_MOBILE_TAB_MIN_H} justify-center`
+          : 'w-full px-4 py-4 min-h-[56px] text-left'
       } ${
         active
           ? compact
-            ? 'text-gold'
-            : 'bg-slate-800/60 text-gold'
+            ? 'text-gold-light bg-gold/15'
+            : 'bg-slate-800/80 text-gold-light border-2 border-gold/40'
           : compact
-            ? 'text-slate-500 hover:text-slate-300'
-            : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
+            ? 'text-slate-200 hover:text-white'
+            : 'text-slate-100 hover:text-white hover:bg-slate-800/50 border-2 border-transparent'
       }`}
     >
-      <span className={`relative leading-none ${compact ? 'text-xl' : 'text-base'} ${active ? 'text-gold' : ''}`}>
+      <span className={`relative leading-none ${compact ? 'text-3xl' : 'text-2xl'} ${active ? 'text-gold-light' : ''}`}>
         {item.icon}
         {showBadge && compact && (
-          <span className="absolute -top-1.5 -right-2 min-w-[1rem] h-4 px-1 rounded-full bg-gold text-obsidian text-[9px] font-bold flex items-center justify-center tabular-nums">
+          <span className="absolute -top-2 -right-3 min-w-[1.5rem] h-6 px-1.5 rounded-full bg-gold text-obsidian text-sm font-bold flex items-center justify-center tabular-nums">
             {badgeCount > 9 ? '9+' : badgeCount}
           </span>
         )}
       </span>
-      <span className={`font-medium tracking-wide ${compact ? 'text-[10px]' : 'text-sm flex-1'}`}>
+      <span className={`leading-tight ${compact ? `${portalNavLabelClass} text-center text-base` : portalNavLabelClass}`}>
         {item.label}
       </span>
       {showBadge && !compact && (
-        <span className="min-w-[1.25rem] h-5 px-1.5 rounded-full bg-gold text-obsidian text-[10px] font-bold flex items-center justify-center tabular-nums">
+        <span className="min-w-[1.75rem] h-7 px-2 rounded-full bg-gold text-obsidian text-base font-bold flex items-center justify-center tabular-nums">
           {badgeCount > 99 ? '99+' : badgeCount}
         </span>
       )}
       {active && !compact && (
-        <span className="absolute right-2 w-1 h-5 bg-gold rounded-full shadow-[0_0_8px_rgba(201,169,110,0.4)]" />
+        <span className="absolute right-3 w-1.5 h-7 bg-gold rounded-full" aria-hidden />
       )}
     </button>
   )

@@ -5,11 +5,14 @@ import Link from 'next/link'
 import { useFormSubmissions, useContacts, formatDate } from '@/lib/store'
 import type { FormSubmission, FormSubmissionStatus } from '@/lib/types'
 import { PageHeader, Btn, StatCard, SectionCard, EmptyState } from '@/components/ui'
+import { Card } from '@/components/design-system'
+import { MobileFilterChip, MobileFilterRow } from '@/components/mobile-filter-row'
 
 const SITE_LABELS: Record<string, string> = {
   ttag: 'TTAG',
   nexrena: 'Nexrena',
   fpusa: 'Furniture Packages USA',
+  nicoloperena: 'NicoLoperena.com',
 }
 
 function messagePreview(sub: FormSubmission): string {
@@ -45,38 +48,86 @@ export default function FormSubmissionsPage() {
   }
 
   return (
-    <div>
+    <div className="w-full min-w-0 overflow-x-hidden">
       <PageHeader
         title="Form Submissions"
         sub={`${submissions.length} submissions from client websites`}
       />
 
-      <div className="grid grid-cols-3 gap-4 mb-10 stagger">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 md:mb-10 stagger">
         <StatCard label="Total" value={String(submissions.length)} />
         <StatCard label="Unread" value={String(newCount)} gold />
         <StatCard label="Sites" value={String(sites.length)} />
       </div>
 
-      <div className="flex flex-wrap gap-2 mb-4">
-        <FilterBtn active={siteFilter === 'all'} onClick={() => setSiteFilter('all')}>
-          All sites
-        </FilterBtn>
+      <MobileFilterRow className="mb-3">
+        <MobileFilterChip active={siteFilter === 'all'} onClick={() => setSiteFilter('all')}>All sites</MobileFilterChip>
         {sites.map(site => (
-          <FilterBtn key={site} active={siteFilter === site} onClick={() => setSiteFilter(site)}>
+          <MobileFilterChip key={site} active={siteFilter === site} onClick={() => setSiteFilter(site)}>
             {SITE_LABELS[site] ?? site.toUpperCase()}
-          </FilterBtn>
+          </MobileFilterChip>
         ))}
-      </div>
+      </MobileFilterRow>
 
-      <div className="flex flex-wrap gap-2 mb-6">
+      <MobileFilterRow className="mb-6">
         {(['all', 'new', 'read'] as const).map(s => (
-          <FilterBtn key={s} active={statusFilter === s} onClick={() => setStatusFilter(s)}>
+          <MobileFilterChip key={s} active={statusFilter === s} onClick={() => setStatusFilter(s)}>
             {s === 'all' ? 'Any status' : s}
-          </FilterBtn>
+          </MobileFilterChip>
         ))}
+      </MobileFilterRow>
+
+      <div className="lg:hidden space-y-3 mb-6">
+        {filtered.length === 0 ? (
+          <EmptyState message="No form submissions yet." />
+        ) : (
+          filtered.map((sub) => {
+            const contact = contactFor(sub.contactId)
+            return (
+              <Card key={sub.id} className="space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-serif text-lg text-white truncate">{sub.submitterName}</p>
+                    <p className="text-sm text-gold">{SITE_LABELS[sub.siteKey] ?? sub.siteKey}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => toggleRead(sub)}
+                    className={`text-[10px] uppercase tracking-wider px-2 py-1 rounded border shrink-0 ${
+                      sub.status === 'new' ? 'text-gold border-gold/40' : 'text-slate-500 border-slate-700'
+                    }`}
+                  >
+                    {sub.status}
+                  </button>
+                </div>
+                <p className="text-sm text-slate-400 truncate">{sub.submitterEmail}</p>
+                <p className="text-sm text-slate-500 line-clamp-2">{messagePreview(sub)}</p>
+                <p className="text-xs text-slate-600">{formatDate(sub.createdAt)}</p>
+                {expanded === sub.id && (
+                  <div className="text-sm text-slate-300 space-y-2 bg-slate-900/50 rounded-xl p-3">
+                    {Object.entries(sub.fields as Record<string, unknown>).map(([key, value]) => (
+                      <p key={key}><span className="text-slate-500">{key}: </span>{String(value)}</p>
+                    ))}
+                  </div>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  <Btn size="sm" variant="ghost" onClick={() => setExpanded(expanded === sub.id ? null : sub.id)}>
+                    {expanded === sub.id ? 'Less' : 'Details'}
+                  </Btn>
+                  {contact && (
+                    <Link href={`/crm?highlight=${contact.id}`}>
+                      <Btn size="sm" variant="ghost">{contact.name}</Btn>
+                    </Link>
+                  )}
+                  <Btn size="sm" variant="danger" onClick={() => remove(sub.id)}>Delete</Btn>
+                </div>
+              </Card>
+            )
+          })
+        )}
       </div>
 
-      <SectionCard>
+      <SectionCard className="hidden lg:block">
         <table className="nx-table">
           <thead>
             <tr>
@@ -171,19 +222,5 @@ export default function FormSubmissionsPage() {
         </table>
       </SectionCard>
     </div>
-  )
-}
-
-function FilterBtn({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`px-3 py-1.5 rounded text-xs font-semibold uppercase transition-all duration-200 ${
-        active ? 'bg-gold text-obsidian' : 'text-slate-400 hover:text-white hover:bg-slate-800/40 border border-slate-700/40'
-      }`}
-    >
-      {children}
-    </button>
   )
 }

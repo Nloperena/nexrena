@@ -3,6 +3,8 @@ import { useState } from 'react'
 import { useExpenses, useProjects, genId, formatCurrency, formatDate } from '@/lib/store'
 import { Expense, ExpenseCategory } from '@/lib/types'
 import { PageHeader, Btn, Modal, Field, inputCls, selectCls, StatCard, SectionCard, EmptyState, Badge } from '@/components/ui'
+import { Card } from '@/components/design-system'
+import { MobileFilterChip, MobileFilterRow } from '@/components/mobile-filter-row'
 
 const CATEGORIES: { value: ExpenseCategory; label: string }[] = [
   { value: 'software', label: 'Software & Tools' },
@@ -106,32 +108,55 @@ export default function ExpensesPage() {
   }, { label: '—', amount: 0 })
 
   return (
-    <div>
+    <div className="w-full min-w-0 overflow-x-hidden">
       <PageHeader title="Expenses" sub={`${expenses.length} total entries`}
         action={<Btn onClick={() => setModal('add')}>+ Add Expense</Btn>} />
 
-      <div className="grid grid-cols-3 gap-4 mb-10 stagger">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 md:mb-10 stagger">
         <StatCard label="Showing Total" value={formatCurrency(totalExpenses)} gold />
         <StatCard label="This Month" value={formatCurrency(mtdExpenses)} />
         <StatCard label="Top Category" value={topCategory.label} sub={topCategory.amount > 0 ? formatCurrency(topCategory.amount) : undefined} />
       </div>
 
-      <div className="flex items-center justify-between mb-6 animate-fade-in">
-        <div className="flex gap-0.5">
+      <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
+        <MobileFilterRow>
           {(['month', 'quarter', 'all'] as const).map(p => (
-            <button key={p} onClick={() => setFilterPeriod(p)}
-              className={`px-4 py-2.5 text-xs font-semibold capitalize rounded-lg transition-all duration-200 ${
-                filterPeriod === p ? 'bg-gold/10 text-gold ring-1 ring-gold/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
-              }`}>{p === 'all' ? 'All Time' : p === 'month' ? 'This Month' : 'This Quarter'}</button>
+            <MobileFilterChip key={p} active={filterPeriod === p} onClick={() => setFilterPeriod(p)}>
+              {p === 'all' ? 'All time' : p === 'month' ? 'This month' : 'This quarter'}
+            </MobileFilterChip>
           ))}
-        </div>
-        <select className={`${selectCls} !w-48`} value={filterCat} onChange={e => setFilterCat(e.target.value as 'all' | ExpenseCategory)}>
+        </MobileFilterRow>
+        <select className={`${selectCls} w-full sm:!w-48`} value={filterCat} onChange={e => setFilterCat(e.target.value as 'all' | ExpenseCategory)}>
           <option value="all">All categories</option>
           {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
         </select>
       </div>
 
-      <SectionCard>
+      <div className="lg:hidden space-y-3 mb-6">
+        {filtered.length === 0 ? (
+          <EmptyState message="No expenses found." action={() => setModal('add')} actionLabel="Add expense" />
+        ) : (
+          filtered.map(exp => (
+            <Card key={exp.id} className="space-y-2">
+              <div className="flex items-start justify-between gap-3">
+                <p className="font-medium text-white">{exp.description}</p>
+                <p className="font-serif text-gold shrink-0">{formatCurrency(exp.amount)}</p>
+              </div>
+              <div className="flex flex-wrap gap-2 text-sm">
+                <Badge label={exp.category} />
+                <span className="text-slate-500">{formatDate(exp.date)}</span>
+              </div>
+              {exp.vendor && <p className="text-sm text-slate-400">{exp.vendor}</p>}
+              <div className="flex gap-2 pt-1">
+                <Btn size="sm" variant="ghost" onClick={() => setModal(exp)}>Edit</Btn>
+                <Btn size="sm" variant="danger" onClick={() => remove(exp.id)}>Delete</Btn>
+              </div>
+            </Card>
+          ))
+        )}
+      </div>
+
+      <SectionCard className="hidden lg:block">
         <table className="nx-table">
           <thead>
             <tr><th>Date</th><th>Description</th><th>Category</th><th>Vendor</th><th>Project</th><th className="text-right">Amount</th><th></th></tr>

@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" style="background:transparent; width:100%; height:100%;">
+  <defs>
+    <radialGradient id="bgGlowFurn" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#b89354" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#b89354" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="lineGradFurn" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#b89354" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#f5d796" stop-opacity="0.5"/>
+    </linearGradient>
+    <filter id="glowFurn" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  
+  <rect width="1200" height="800" fill="url(#bgGlowFurn)" />
+
+  <!-- Base Grid / Topographic Map -->
+  <g stroke="#b89354" stroke-width="1.5" opacity="0.15">
+    <path d="M 0,650 C 400,600 800,750 1200,650" fill="none"/>
+    <path d="M 0,700 C 400,650 800,800 1200,700" fill="none"/>
+  </g>
+
+  <g stroke="url(#lineGradFurn)" stroke-width="2.5" fill="none" stroke-linejoin="round">
+    
+    <!-- 2.5D BOX TRUCK (Left Side) -->
+    <!-- Box Body -->
+    <polygon points="50,530 250,530 250,350 50,350" />
+    <path d="M 50,350 L 100,320 L 300,320 L 250,350" opacity="0.6"/> <!-- Box Top -->
+    <path d="M 250,530 L 300,500 L 300,320 L 250,350" opacity="0.6"/> <!-- Box Right Side -->
+    
+    <!-- Truck Cab -->
+    <polygon points="250,530 350,530 350,430 280,430 250,470" stroke-width="3"/>
+    <path d="M 350,530 L 380,510 L 380,410 L 350,430" opacity="0.6"/> <!-- Cab Right Side -->
+    <path d="M 280,430 L 310,410 L 380,410 L 350,430" opacity="0.6"/> <!-- Cab Top / Hood -->
+    <path d="M 280,430 L 250,470" stroke-width="2" stroke-dasharray="4 4" opacity="0.8"/> <!-- Window Slant -->
+
+    <!-- Wheels -->
+    <circle cx="100" cy="530" r="25" />
+    <circle cx="100" cy="530" r="10" stroke-dasharray="4 4"/>
+    <circle cx="300" cy="530" r="25" />
+    <circle cx="300" cy="530" r="10" stroke-dasharray="4 4"/>
+    <!-- Depth wheels -->
+    <path d="M 145,510 A 25 25 0 0 1 120,550" opacity="0.5"/>
+    <path d="M 345,510 A 25 25 0 0 1 320,550" opacity="0.5"/>
+
+    <!-- Glowing B2B/B2C Data Delivery Path -->
+    <!-- Sweeping path from the truck box to the house front door -->
+    <path d="M 300,500 C 450,500 500,680 820,550" stroke="#f5d796" stroke-width="5" stroke-dasharray="10 15"/>
+    <path d="M 300,480 C 450,480 500,660 820,530" opacity="0.4" stroke-width="2"/>
+    <path d="M 300,520 C 450,520 500,700 820,570" opacity="0.4" stroke-width="2"/>
+
+    <!-- 2.5D MODEL RENTAL HOME (Right Side) -->
+    <!-- Garage -->
+    <polygon points="580,580 730,580 730,430 580,430" />
+    <!-- Garage Door -->
+    <polygon points="600,580 710,580 710,480 600,480" stroke-dasharray="8 8" opacity="0.6"/>
+    <!-- Garage Roof -->
+    <polygon points="560,430 655,360 750,430" stroke-width="3" stroke="#f5d796"/>
+    
+    <!-- Main House Structure -->
+    <polygon points="700,580 1100,580 1100,330 700,330" />
+    <!-- Main House Roof -->
+    <polygon points="670,330 900,200 1130,330" stroke-width="4" stroke="#f5d796"/>
+    
+    <!-- 2nd Story Dormer / Pop-out -->
+    <polygon points="820,330 900,250 980,330" stroke-width="3" stroke="#f5d796"/>
+    <polygon points="860,330 940,330 940,290 860,290" /> <!-- Dormer Face -->
+    
+    <!-- Front Door -->
+    <polygon points="800,580 870,580 870,480 800,480" stroke-width="2"/>
+    <circle cx="860" cy="530" r="3" fill="#f5d796" />
+
+    <!-- Big Modern Windows (Showing data inside) -->
+    <!-- Window 1 (Lower Right) -->
+    <polygon points="950,560 1050,560 1050,460 950,460" />
+    <path d="M 1000,560 L 1000,460 M 950,510 L 1050,510" opacity="0.5"/>
+    
+    <!-- Window 2 (Upper Left) -->
+    <polygon points="750,420 810,420 810,360 750,360" />
+    <path d="M 780,420 L 780,360 M 750,390 L 810,390" opacity="0.5"/>
+    
+    <!-- Window 3 (Upper Right) -->
+    <polygon points="980,420 1040,420 1040,360 980,360" />
+    <path d="M 1010,420 L 1010,360 M 980,390 L 1040,390" opacity="0.5"/>
+    
+    <!-- Window 4 (Dormer) -->
+    <polygon points="885,320 915,320 915,295 885,295" />
+
+    <!-- Branching Data Lines from Front Door into House Rooms -->
+    <path d="M 835,550 L 835,450 L 780,400" stroke="#f5d796" stroke-width="3" stroke-dasharray="4 8"/>
+    <path d="M 835,450 L 1000,510" stroke="#f5d796" stroke-width="3" stroke-dasharray="4 8"/>
+    <path d="M 835,450 L 900,310" stroke="#f5d796" stroke-width="3" stroke-dasharray="4 8"/>
+    <path d="M 900,450 L 1010,400" stroke="#f5d796" stroke-width="3" stroke-dasharray="4 8"/>
+    
+    <!-- Landscaping / Bushes (Wireframe Circles) -->
+    <circle cx="560" cy="580" r="30" opacity="0.5"/>
+    <circle cx="760" cy="580" r="25" opacity="0.5"/>
+    <circle cx="1120" cy="580" r="40" opacity="0.5"/>
+    <circle cx="1160" cy="580" r="25" opacity="0.5"/>
+  </g>
+
+  <!-- Glowing Tech Nodes -->
+  <g fill="#f5d796">
+    <!-- Truck Nodes -->
+    <circle cx="250" cy="530" r="5" />
+    <circle cx="350" cy="530" r="5" />
+    <circle cx="100" cy="530" r="5" fill="#fff" filter="url(#glowFurn)"/>
+    <circle cx="300" cy="530" r="5" fill="#fff" filter="url(#glowFurn)"/>
+
+    <!-- Data Stream / Delivery Path Nodes -->
+    <circle cx="450" cy="550" r="6" fill="#fff" filter="url(#glowFurn)"/>
+    <circle cx="650" cy="590" r="8" fill="#fff" filter="url(#glowFurn)"/>
+    <circle cx="820" cy="550" r="6" fill="#fff" filter="url(#glowFurn)"/>
+
+    <!-- House Structural/Room Nodes -->
+    <circle cx="655" cy="360" r="5" fill="#fff" filter="url(#glowFurn)"/>
+    <circle cx="900" cy="200" r="8" fill="#fff" filter="url(#glowFurn)"/>
+    <circle cx="1100" cy="330" r="5" />
+    
+    <!-- Room Target Nodes (Inside windows) -->
+    <circle cx="1000" cy="510" r="6" fill="#fff" filter="url(#glowFurn)"/>
+    <circle cx="780" cy="390" r="5" fill="#fff" filter="url(#glowFurn)"/>
+    <circle cx="1010" cy="390" r="5" fill="#fff" filter="url(#glowFurn)"/>
+    <circle cx="900" cy="307" r="4" fill="#fff" filter="url(#glowFurn)"/>
+  </g>
+</svg>

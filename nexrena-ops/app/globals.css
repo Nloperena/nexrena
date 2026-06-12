@@ -207,3 +207,184 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   body::before { display: none !important; }
   @page { margin: 0; size: A4; }
 }
+
+/* ── Client portal: accessible defaults (larger type, contrast, touch) ─── */
+.client-portal {
+  font-size: 20px;
+  line-height: 1.65;
+  color: #e2e8f0;
+  -webkit-text-size-adjust: 100%;
+}
+
+.client-portal h1,
+.client-portal h2,
+.client-portal h3 {
+  color: #ffffff;
+}
+
+.client-portal :focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* Brighter panels — less “muddy” dark gray on dark gray */
+.client-portal .glass-panel {
+  background: rgba(22, 27, 34, 0.92);
+  border-color: rgba(100, 116, 139, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .client-portal *,
+  .client-portal-accessible * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Team ops: readable defaults (larger type, touch targets) ─────────── */
+.team-ops {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #e2e8f0;
+  -webkit-text-size-adjust: 100%;
+}
+
+.team-ops h1,
+.team-ops h2,
+.team-ops h3 {
+  color: #ffffff;
+}
+
+.team-ops :focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.team-ops .glass-panel {
+  background: #1e2430;
+  border-color: rgba(100, 116, 139, 0.35);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+}
+
+.team-ops .nx-stat-card,
+.team-ops .glass-panel {
+  transition: box-shadow 0.2s ease;
+}
+
+.team-ops .glass-panel:hover {
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.team-ops .nx-page-header h1 {
+  font-size: 2rem;
+}
+
+@media (min-width: 640px) {
+  .team-ops .nx-page-header h1 {
+    font-size: 2.25rem;
+  }
+}
+
+.team-ops .nx-page-header-sub {
+  font-size: 1rem;
+  color: #94a3b8;
+}
+
+.team-ops .nx-stat-card-label {
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: #cbd5e1;
+}
+
+.team-ops .nx-stat-card-sub {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.team-ops .nx-field label {
+  font-size: 0.875rem;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #e2e8f0;
+  margin-bottom: 0.5rem;
+}
+
+.team-ops .nx-input,
+.team-ops .nx-select {
+  min-height: 48px;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  font-size: 1rem;
+  border-width: 2px;
+  border-color: rgba(100, 116, 139, 0.5);
+}
+
+.team-ops .nx-table th {
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: #94a3b8;
+}
+
+.team-ops .nx-table td {
+  font-size: 0.9375rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.team-ops .nx-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 768px) {
+  .team-ops .nx-table-wrap {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .team-ops * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Mobile layout utilities ───────────────────────────────────────────── */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+.nx-mobile-only {
+  display: block;
+}
+.nx-desktop-only {
+  display: none;
+}
+@media (min-width: 768px) {
+  .nx-mobile-only {
+    display: none;
+  }
+  .nx-desktop-only {
+    display: block;
+  }
+}

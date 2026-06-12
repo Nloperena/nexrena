@@ -71,7 +71,7 @@ export default function ProposalsPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-4 mb-10 stagger">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 md:mb-10 stagger">
         <StatCard label="Pending Value" value={formatCurrency(sentValue)} gold sub={`${proposals.filter(p => p.status === 'sent').length} awaiting response`} />
         <StatCard label="Won Value" value={formatCurrency(wonValue)} />
         <StatCard label="Win Rate" value={`${winRate}%`} sub="Accepted / (Accepted + Declined)" />

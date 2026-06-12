@@ -10,8 +10,10 @@ import {
   resourceEmbedUrl,
 } from '@/lib/client-resource-utils'
 import { Btn } from '@/components/ui'
+import { portalSectionHintClass, portalMutedClass } from '@/lib/portal-a11y'
+import { PortalMediaPanel } from '@/components/portal-media-panel'
 
-const card = 'glass-panel rounded-xl border border-slate-800/60 p-5'
+const cardBody = 'px-5 py-5 bg-slate-900/80'
 
 type PreviewViewport = 'desktop' | 'mobile'
 
@@ -96,32 +98,41 @@ export function ClientWebsitesSection({ resources }: Props) {
     <>
       <div className="space-y-8 pt-4">
         <div className="space-y-4">
-            <p className="text-sm text-slate-400">
+            <p className={portalSectionHintClass}>
               Preview your live website here or open it in a new tab. Use desktop or mobile view when
               previewing.
             </p>
 
             {embeddable.length > 0 && (
-              <ul className="space-y-3">
+              <ul className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 {embeddable.map((resource) => {
                   const domain = resourceDisplayDomain(resource.url)
                   const isActive = previewId === resource.id
                   return (
-                    <li key={resource.id} className={card}>
-                      <div className="flex flex-wrap items-start justify-between gap-4">
-                        <div className="min-w-0 flex-1">
-                          <p className="font-serif text-lg text-white">{resource.title}</p>
-                          <p className="text-sm text-gold/90 mt-1">{domain}</p>
-                          {resource.description && (
-                            <p className="text-sm text-slate-400 mt-1">{resource.description}</p>
-                          )}
+                    <li
+                      key={resource.id}
+                      className={`overflow-hidden rounded-2xl border-2 transition-colors ${
+                        isActive ? 'border-gold/50' : 'border-slate-600/80 hover:border-slate-500'
+                      }`}
+                    >
+                      <PortalMediaPanel photo="websites" aspect="video" overlay={58} rounded="none" className="min-h-[160px]">
+                        <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
+                          <div>
+                            <p className="font-serif text-xl text-white drop-shadow-md">{resource.title}</p>
+                            <p className="text-base text-gold-light mt-1">{domain}</p>
+                          </div>
                         </div>
-                        <div className="flex flex-wrap gap-2 shrink-0">
-                          <Btn size="sm" onClick={() => openPreview(resource.id)}>
+                      </PortalMediaPanel>
+                      <div className={cardBody}>
+                        {resource.description && (
+                          <p className={`${portalMutedClass} mb-4`}>{resource.description}</p>
+                        )}
+                        <div className="flex flex-wrap gap-3">
+                          <Btn size="lg" onClick={() => openPreview(resource.id)}>
                             {isActive ? 'Viewing' : 'Preview site'}
                           </Btn>
                           <Btn
-                            size="sm"
+                            size="lg"
                             variant="ghost"
                             onClick={() =>
                               window.open(
@@ -142,29 +153,31 @@ export function ClientWebsitesSection({ resources }: Props) {
             )}
 
             {other.length > 0 && (
-              <ul className="space-y-3">
+              <ul className="space-y-4">
                 {other.map((resource) => (
-                  <li key={resource.id} className={card}>
-                    <div className="flex flex-wrap items-start justify-between gap-4">
-                      <div className="min-w-0 flex-1">
-                        <p className="font-serif text-lg text-white">{resource.title}</p>
-                        {resource.description && (
-                          <p className="text-sm text-slate-400 mt-1">{resource.description}</p>
-                        )}
+                  <li key={resource.id} className="overflow-hidden rounded-2xl border-2 border-slate-600/80">
+                    <div className={cardBody}>
+                      <div className="flex flex-wrap items-start justify-between gap-4">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-serif text-xl text-white">{resource.title}</p>
+                          {resource.description && (
+                            <p className={`${portalMutedClass} mt-2`}>{resource.description}</p>
+                          )}
+                        </div>
+                        <Btn
+                          size="lg"
+                          variant="ghost"
+                          onClick={() =>
+                            window.open(
+                              resourceBrowseUrl(resource.url, resource.type),
+                              '_blank',
+                              'noopener,noreferrer',
+                            )
+                          }
+                        >
+                          {resourceActionLabel(resource.type, resource.url)}
+                        </Btn>
                       </div>
-                      <Btn
-                        size="sm"
-                        variant="ghost"
-                        onClick={() =>
-                          window.open(
-                            resourceBrowseUrl(resource.url, resource.type),
-                            '_blank',
-                            'noopener,noreferrer',
-                          )
-                        }
-                      >
-                        {resourceActionLabel(resource.type, resource.url)}
-                      </Btn>
                     </div>
                   </li>
                 ))}

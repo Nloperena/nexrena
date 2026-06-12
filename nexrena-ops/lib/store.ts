@@ -1,6 +1,8 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import { Contact, Project, Invoice, Lead, PortalAccount, TimeEntry, Proposal, Expense, Subscription, ServiceRequest, ClientMessage, PortalAssetRecord, ClientResourceRecord } from './types'
+import { applyMessageStreamEvent, countUnreadForViewer } from './message-realtime-utils'
+import { useOpsMessageStream } from './use-message-stream'
 import { api } from './api'
 
 // ── hooks ────────────────────────────────────────────────────────────────
@@ -393,6 +395,14 @@ export function useMessages(contactId?: string) {
   }, [contactId])
 
   useEffect(() => { reload() }, [reload])
+
+  useOpsMessageStream((event) => {
+    setThreads((prev) => {
+      const next = applyMessageStreamEvent(prev, event, 'admin')
+      setUnreadCount(countUnreadForViewer(next, 'admin'))
+      return next
+    })
+  }, contactId)
 
   const messages = threads.flatMap((t) => t.messages)
 
