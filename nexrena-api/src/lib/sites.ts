@@ -37,6 +37,19 @@ export const SITES: Record<string, SiteConfig> = {
     ],
     formSecretEnv: 'FPUSA_FORM_SECRET',
   },
+  nicoloperena: {
+    contactId: 'nicholas-loperena-portfolio',
+    label: 'NicoLoperena.com',
+    origins: [
+      'https://www.nicoloperena.com',
+      'https://nicoloperena.com',
+      'http://localhost:4321',
+      'http://127.0.0.1:4321',
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+    ],
+    formSecretEnv: 'NICOLOPERENA_FORM_SECRET',
+  },
 }
 
 export function getSiteConfig(siteKey: string): SiteConfig | null {

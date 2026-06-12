@@ -18,6 +18,7 @@ import {
   serializeMessage,
   type MessageRow,
 } from '../lib/message-serialize'
+import { emitMessageCreated, emitThreadRead } from '../lib/message-stream'
 
 const router = Router()
 const MESSAGE_MAX = 5000
@@ -114,14 +115,30 @@ router.get('/attachments/:id/url', requireAuth, async (req, res) => {
 
 /** PATCH /api/messages/threads/:threadId/read */
 router.patch('/threads/:threadId/read', requireAuth, async (req, res) => {
+  const threadId = req.params.threadId
+  const sample = await prisma.clientMessage.findFirst({
+    where: { OR: [{ threadId }, { id: threadId }] },
+    select: { contactId: true, portalAccountId: true },
+  })
+
   await prisma.clientMessage.updateMany({
     where: {
       direction: 'client',
       readByAdmin: false,
-      OR: [{ threadId: req.params.threadId }, { id: req.params.threadId }],
+      OR: [{ threadId }, { id: threadId }],
     },
     data: { readByAdmin: true, status: 'read' },
   })
+
+  if (sample) {
+    emitThreadRead({
+      threadId,
+      reader: 'admin',
+      contactId: sample.contactId,
+      portalAccountId: sample.portalAccountId,
+    })
+  }
+
   res.json({ ok: true })
 })
 
@@ -210,6 +227,7 @@ router.post('/:id/reply', requireAuth, upload.array('files', MESSAGE_ATTACHMENT_
       }).catch(() => {})
     }
 
+    emitMessageCreated(row as MessageRow)
     res.status(201).json(serializeMessage(row as MessageRow))
   } catch (err) {
     console.error('[ops message reply upload]', err)

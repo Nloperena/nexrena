@@ -20,7 +20,7 @@ function nextBillingDateFor(day: number): string {
 
 interface SubscriptionFormProps {
   initial?: Partial<Subscription>
-  onSave: (s: Subscription) => void
+  onSave: (s: Subscription) => void | Promise<void>
   onClose: () => void
   contacts: Contact[]
 }
@@ -44,9 +44,9 @@ export function SubscriptionForm({ initial, onSave, onClose, contacts }: Subscri
     if (!isEdit) set('nextBillingDate', nextBillingDateFor(day))
   }
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
-    onSave({
+    await onSave({
       id: form.id ?? genId(),
       contactId: form.contactId!,
       contactName: form.contactName,
@@ -62,7 +62,6 @@ export function SubscriptionForm({ initial, onSave, onClose, contacts }: Subscri
       notes: form.notes,
       createdAt: form.createdAt ?? new Date().toISOString(),
     })
-    onClose()
   }
 
   return (

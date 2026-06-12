@@ -13,8 +13,12 @@ import portalBillingRoutes from './portal-billing'
 import portalMessageRoutes from './portal-messages'
 import portalResourceRoutes from './portal-resources'
 import portalFormSubmissionRoutes from './portal-form-submissions'
+import portalWebsiteMediaRoutes from './portal-website-media'
+import portalOAuthRoutes from './portal-oauth'
 
 const router = Router()
+
+router.use('/oauth', portalOAuthRoutes)
 
 router.use('/service-requests', portalServiceRequestRoutes)
 router.use('/form-submissions', portalFormSubmissionRoutes)
@@ -23,6 +27,7 @@ router.use('/folders', portalFolderRoutes)
 router.use('/billing', portalBillingRoutes)
 router.use('/messages', portalMessageRoutes)
 router.use('/resources', portalResourceRoutes)
+router.use('/website-media', portalWebsiteMediaRoutes)
 
 function genContactId() {
   return Math.random().toString(36).slice(2, 10)
@@ -143,7 +148,16 @@ router.post('/login', async (req, res) => {
   }
 
   const account = await prisma.portalAccount.findUnique({ where: { email: trimmedEmail } })
-  if (!account || !verifyPassword(trimmedPassword, account.passwordHash)) {
+  if (!account) {
+    res.status(401).json({ error: 'Invalid email or password' })
+    return
+  }
+  if (!account.passwordHash) {
+    const provider = account.authProvider === 'microsoft' ? 'Microsoft' : account.authProvider === 'google' ? 'Google' : 'your OAuth provider'
+    res.status(401).json({ error: `This account uses ${provider} sign-in. Use that option below.` })
+    return
+  }
+  if (!verifyPassword(trimmedPassword, account.passwordHash)) {
     res.status(401).json({ error: 'Invalid email or password' })
     return
   }
@@ -204,6 +218,10 @@ router.patch('/me', requirePortalAuth, async (req, res) => {
 
   const wantsPasswordChange = currentPassword !== undefined || newPassword !== undefined
   if (wantsPasswordChange) {
+    if (!account.passwordHash) {
+      res.status(400).json({ error: 'Password sign-in is not enabled for this account. Use Google or Microsoft.' })
+      return
+    }
     const cur = currentPassword?.trim()
     const next = newPassword?.trim()
     if (!cur || !next) {
@@ -333,7 +351,19 @@ router.get('/proposals', requirePortalAuth, async (req, res) => {
 
 /** GET /api/portal/accounts — ops only */
 router.get('/accounts', requireAuth, async (_req, res) => {
-  const accounts = await prisma.portalAccount.findMany({ orderBy: { createdAt: 'desc' } })
+  const accounts = await prisma.portalAccount.findMany({
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      company: true,
+      contactId: true,
+      authProvider: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  })
   res.json(accounts)
 })
 

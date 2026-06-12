@@ -238,6 +238,7 @@ export interface ServiceRequest {
   timeline?: string | null
   status: ServiceRequestStatus
   source: string
+  internalNotes?: string | null
   createdAt: string
   updatedAt: string
   assets?: PortalAssetRecord[]
@@ -292,7 +293,7 @@ export interface MessageThread {
 
 // ── Client website form submissions ────────────────────────────────────────
 
-export type FormSubmissionStatus = 'new' | 'read'
+export type FormSubmissionStatus = 'new' | 'read' | 'archived'
 
 export interface FormSubmission {
   id: string

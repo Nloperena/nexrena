@@ -5,7 +5,7 @@ import { Btn } from '@/components/ui'
 import { MessageBubble } from '@/components/message-bubble'
 import { MessageComposer } from '@/components/message-composer'
 import { MessageThreadListItem } from '@/components/message-thread-list-item'
-import { portalFocusRing, portalInputCls, portalSectionTitleClass, portalMutedClass } from '@/lib/portal-a11y'
+import { portalFocusRing, portalInputCls, portalMutedClass } from '@/lib/portal-a11y'
 import {
   fetchPortalMessageThreads,
   markPortalThreadRead,
@@ -26,7 +26,7 @@ type Props = {
 
 type MobilePanel = 'list' | 'thread'
 
-const NEXRENA_AVATAR = 'Nico Nexrena'
+const NEXRENA_AVATAR = 'Nico · Nexrena'
 
 export function ClientMessagesThreadView({ variant = 'embedded', onUnreadChange }: Props) {
   const isFull = variant === 'full'
@@ -166,165 +166,175 @@ export function ClientMessagesThreadView({ variant = 'embedded', onUnreadChange 
     setPendingFiles((prev) => [...prev, ...picked].slice(0, 5))
   }
 
-  const showSidebar = isFull ? mobilePanel === 'list' : true
-  const showChat = isFull ? mobilePanel === 'thread' || composingNew : true
+  const showList = isFull ? mobilePanel === 'list' && !composingNew : true
+  const showThread = isFull ? mobilePanel === 'thread' || composingNew : true
 
-  const containerClass = isFull
-    ? 'flex flex-col h-[calc(100vh-9rem)] md:h-[calc(100vh-7rem)]'
-    : 'space-y-4'
+  if (loading && threads.length === 0) {
+    return (
+      <div className={`flex items-center justify-center ${isFull ? 'flex-1 min-h-[50dvh]' : 'py-12'}`}>
+        <p className={`animate-pulse ${portalMutedClass}`}>Loading messages…</p>
+      </div>
+    )
+  }
+
+  const listHeader = (
+    <div className="shrink-0 flex items-center justify-between gap-2 border-b border-slate-800/60 px-4 py-3 bg-[#111418]">
+      <div>
+        <p className="text-base font-semibold text-white">Messages</p>
+        {unreadCount > 0 && (
+          <p className="text-sm text-gold-light">{unreadCount} unread</p>
+        )}
+      </div>
+      <Btn
+        size="sm"
+        variant="ghost"
+        onClick={() => {
+          setComposingNew(true)
+          setActiveThreadId(null)
+          setMobilePanel('thread')
+        }}
+      >
+        New
+      </Btn>
+    </div>
+  )
 
   return (
-    <section className={containerClass}>
-      <div
-        className={`flex min-h-0 overflow-hidden rounded-xl border border-slate-800/60 bg-slate-950/50 ${
-          isFull ? 'flex-1 flex-row' : 'min-h-[420px] flex-col md:flex-row'
-        }`}
+    <div
+      className={`team-messenger flex w-full overflow-hidden bg-[#111418] ${
+        isFull ? 'flex-1 min-h-0 h-full' : 'min-h-[420px] rounded-xl border border-slate-800/60'
+      }`}
+    >
+      <aside
+        className={`${
+          showList ? 'flex' : 'hidden'
+        } ${isFull ? 'md:flex' : 'md:flex'} w-full md:w-[min(100%,320px)] shrink-0 flex-col min-h-0 bg-[#111418] md:border-r md:border-slate-800/60`}
       >
-        <aside
-          className={`${showSidebar ? 'flex' : 'hidden'} md:flex w-full shrink-0 flex-col border-r border-slate-800/60 bg-slate-900/40 md:w-80 max-h-[240px] md:max-h-none`}
-        >
-          <div className="flex items-center justify-between gap-2 border-b border-slate-800/60 px-4 py-3">
-            <div>
-              <p className={portalSectionTitleClass}>Chats</p>
-              {unreadCount > 0 && (
-                <p className="text-lg font-medium text-gold-light">{unreadCount} unread</p>
-              )}
-            </div>
-            <Btn
-              size="lg"
-              variant="ghost"
-              onClick={() => {
-                setComposingNew(true)
-                setActiveThreadId(null)
-                setMobilePanel('thread')
-              }}
-            >
-              New
-            </Btn>
-          </div>
-          <div className="flex-1 space-y-0.5 overflow-y-auto p-2">
-            {loading ? (
-              <p className={`animate-pulse px-2 py-3 ${portalMutedClass}`}>Loading…</p>
-            ) : threads.length === 0 ? (
-              <p className={`px-2 py-3 ${portalMutedClass}`}>No conversations yet.</p>
-            ) : (
-              threads.map((thread) => (
-                <MessageThreadListItem
-                  key={thread.threadId}
-                  active={activeThreadId === thread.threadId && !composingNew}
-                  title="Nico · Nexrena"
-                  subtitle={thread.subject}
-                  preview={thread.lastMessagePreview ?? thread.messages.at(-1)?.message}
-                  updatedAt={thread.updatedAt}
-                  unread={thread.unreadByClient}
-                  avatarLabel={NEXRENA_AVATAR}
-                  avatarClassName="bg-gold/25 text-gold-light"
-                  onClick={() => openThread(thread.threadId)}
-                  focusRing
-                  size="portal"
-                />
-              ))
-            )}
-          </div>
-        </aside>
-
-        <main
-          className={`${showChat ? 'flex' : 'hidden'} md:flex min-h-0 min-w-0 flex-1 flex-col`}
-        >
-          {composingNew ? (
-            <>
-              <header className="flex shrink-0 items-center gap-3 border-b border-slate-800/60 px-4 py-3">
-                <button
-                  type="button"
-                  className={`px-3 text-lg text-slate-200 hover:text-white md:hidden min-h-[52px] ${portalFocusRing}`}
-                  onClick={() => {
-                    setComposingNew(false)
-                    setMobilePanel('list')
-                  }}
-                >
-                  ← Back
-                </button>
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gold/25 text-lg font-semibold text-gold-light">
-                  N
-                </span>
-                <div>
-                  <p className="text-xl font-semibold text-white">New message</p>
-                  <p className="text-lg text-slate-300">Nico · Nexrena</p>
-                </div>
-              </header>
-              <div className="shrink-0 border-b border-slate-800/60 px-4 py-3">
-                <input
-                  className={portalInputCls}
-                  placeholder="Subject (optional)"
-                  value={newSubject}
-                  onChange={(e) => setNewSubject(e.target.value)}
-                />
-              </div>
-            </>
-          ) : !activeThread ? (
-            <div className="flex flex-1 items-center justify-center p-6 text-lg text-slate-300">
-              Select a conversation or start a new message.
-            </div>
+        {listHeader}
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-2 space-y-0.5">
+          {threads.length === 0 ? (
+            <p className={`px-3 py-8 text-center ${portalMutedClass}`}>No conversations yet.</p>
           ) : (
-            <>
-              <header className="flex shrink-0 items-center gap-3 border-b border-slate-800/60 px-4 py-3">
-                <button
-                  type="button"
-                  className={`px-3 text-lg text-slate-200 hover:text-white md:hidden min-h-[52px] ${portalFocusRing}`}
-                  onClick={() => setMobilePanel('list')}
-                >
-                  ← Back
-                </button>
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gold/25 text-lg font-semibold text-gold-light">
-                  N
-                </span>
-                <div className="min-w-0">
-                  <p className="truncate text-xl font-semibold text-white">Nico · Nexrena</p>
-                  <p className="truncate text-lg text-slate-300">{activeThread.subject}</p>
-                </div>
-              </header>
-              <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
-                {groupMessagesByDay(activeThread.messages).map((group) => (
-                  <div key={group.label}>
-                    <p className="mb-3 text-center text-lg text-slate-300 font-medium">{group.label}</p>
-                    <div className="space-y-1.5">
-                      {group.messages.map((msg) => (
-                        <MessageBubble
-                          key={msg.id}
-                          message={msg}
-                          isOutgoing={msg.direction === 'client'}
-                          variant="portal"
-                          size="portal"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-                <div ref={messagesEndRef} />
+            threads.map((thread) => (
+              <MessageThreadListItem
+                key={thread.threadId}
+                active={activeThreadId === thread.threadId && !composingNew}
+                title={NEXRENA_AVATAR}
+                subtitle={thread.subject}
+                preview={thread.lastMessagePreview ?? thread.messages.at(-1)?.message}
+                updatedAt={thread.updatedAt}
+                unread={thread.unreadByClient}
+                avatarLabel={NEXRENA_AVATAR}
+                avatarClassName="bg-gold/25 text-gold-light"
+                onClick={() => openThread(thread.threadId)}
+                focusRing
+                size="portal"
+              />
+            ))
+          )}
+        </div>
+      </aside>
+
+      <main
+        className={`${
+          showThread ? 'flex' : 'hidden'
+        } ${isFull ? 'md:flex' : 'md:flex'} min-h-0 min-w-0 flex-1 flex-col bg-[#0e1116]`}
+      >
+        {composingNew ? (
+          <>
+            <header className="flex shrink-0 items-center gap-3 border-b border-slate-800/60 px-3 py-3 bg-[#111418]">
+              <button
+                type="button"
+                className={`flex h-11 w-11 items-center justify-center rounded-full text-xl text-slate-200 hover:text-white md:hidden ${portalFocusRing}`}
+                onClick={() => {
+                  setComposingNew(false)
+                  setMobilePanel('list')
+                }}
+                aria-label="Back to conversations"
+              >
+                ←
+              </button>
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gold/25 text-lg font-semibold text-gold-light">
+                N
+              </span>
+              <div>
+                <p className="text-lg font-semibold text-white">New message</p>
+                <p className="text-base text-slate-300">{NEXRENA_AVATAR}</p>
               </div>
-            </>
-          )}
+            </header>
+            <div className="shrink-0 border-b border-slate-800/60 px-4 py-3">
+              <input
+                className={portalInputCls}
+                placeholder="Subject (optional)"
+                value={newSubject}
+                onChange={(e) => setNewSubject(e.target.value)}
+              />
+            </div>
+          </>
+        ) : !activeThread ? (
+          <div className="hidden md:flex flex-1 items-center justify-center p-6 text-lg text-slate-300">
+            Select a conversation or start a new message.
+          </div>
+        ) : (
+          <>
+            <header className="flex shrink-0 items-center gap-3 border-b border-slate-800/60 px-3 py-3 bg-[#111418]">
+              <button
+                type="button"
+                className={`flex h-11 w-11 items-center justify-center rounded-full text-xl text-slate-200 hover:text-white md:hidden ${portalFocusRing}`}
+                onClick={() => setMobilePanel('list')}
+                aria-label="Back to conversations"
+              >
+                ←
+              </button>
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gold/25 text-lg font-semibold text-gold-light">
+                N
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-lg font-semibold text-white">{NEXRENA_AVATAR}</p>
+                <p className="truncate text-base text-slate-300">{activeThread.subject}</p>
+              </div>
+            </header>
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 space-y-3">
+              {groupMessagesByDay(activeThread.messages).map((group) => (
+                <div key={group.label}>
+                  <p className="mb-3 text-center text-base text-slate-400 font-medium">{group.label}</p>
+                  <div className="space-y-2">
+                    {group.messages.map((msg) => (
+                      <MessageBubble
+                        key={msg.id}
+                        message={msg}
+                        isOutgoing={msg.direction === 'client'}
+                        variant="portal"
+                        size="portal"
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+          </>
+        )}
 
-          {(composingNew || activeThread) && (
-            <MessageComposer
-              value={reply}
-              onChange={setReply}
-              onSend={composingNew ? startConversation : sendReply}
-              pendingFiles={pendingFiles}
-              onPickFiles={onPickFiles}
-              onRemoveFile={(i) => setPendingFiles((prev) => prev.filter((_, idx) => idx !== i))}
-              submitting={submitting}
-              placeholder="Message Nico…"
-              size="portal"
-            />
-          )}
+        {(composingNew || activeThread) && (
+          <MessageComposer
+            value={reply}
+            onChange={setReply}
+            onSend={composingNew ? startConversation : sendReply}
+            pendingFiles={pendingFiles}
+            onPickFiles={onPickFiles}
+            onRemoveFile={(i) => setPendingFiles((prev) => prev.filter((_, idx) => idx !== i))}
+            submitting={submitting}
+            placeholder="Write a message…"
+            size="portal"
+          />
+        )}
 
-          {error && (
-            <p className="px-4 py-2 text-lg text-red-300" role="alert">{error}</p>
-          )}
-        </main>
-      </div>
-    </section>
+        {error && (
+          <p className="px-4 py-2 text-base text-red-300 shrink-0" role="alert">{error}</p>
+        )}
+      </main>
+    </div>
   )
 }
 

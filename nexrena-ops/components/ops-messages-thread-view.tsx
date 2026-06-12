@@ -5,22 +5,32 @@ import { MessageBubble } from '@/components/message-bubble'
 import { MessageComposer } from '@/components/message-composer'
 import { MessageThreadListItem } from '@/components/message-thread-list-item'
 import { api } from '@/lib/api'
+import { teamSelectCls } from '@/lib/team-a11y'
 import {
   attachmentPreviewLabel,
   groupMessagesByDay,
 } from '@/lib/message-chat-utils'
 import { applyMessageStreamEvent, countUnreadForViewer } from '@/lib/message-realtime-utils'
 import { useOpsMessageStream } from '@/lib/use-message-stream'
-import type { ClientMessage, MessageThread } from '@/lib/types'
+import type { ClientMessage, Contact, MessageThread } from '@/lib/types'
 
 type Props = {
   initialThreadId?: string | null
   contactFilter?: string
+  clients?: Contact[]
+  contactFilterValue?: string
+  onContactFilterChange?: (id: string) => void
 }
 
 type MobilePanel = 'list' | 'thread'
 
-export function OpsMessagesThreadView({ initialThreadId = null, contactFilter }: Props) {
+export function OpsMessagesThreadView({
+  initialThreadId = null,
+  contactFilter,
+  clients = [],
+  contactFilterValue = '',
+  onContactFilterChange,
+}: Props) {
   const [threads, setThreads] = useState<MessageThread[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [activeThreadId, setActiveThreadId] = useState<string | null>(initialThreadId)
@@ -133,23 +143,50 @@ export function OpsMessagesThreadView({ initialThreadId = null, contactFilter }:
   }
 
   if (loading) {
-    return <p className="animate-pulse text-sm text-slate-500">Loading conversations…</p>
+    return (
+      <div className="flex flex-1 items-center justify-center min-h-[50dvh]">
+        <p className="animate-pulse text-sm text-slate-500">Loading conversations…</p>
+      </div>
+    )
   }
 
-  return (
-    <div className="flex min-h-[min(72dvh,640px)] lg:h-[calc(100vh-12rem)] w-full min-w-0 overflow-hidden rounded-xl border border-slate-800/60 bg-slate-950/50">
-      <aside
-        className={`${mobilePanel === 'list' ? 'flex' : 'hidden'} lg:flex w-full shrink-0 flex-col border-r border-slate-800/60 bg-slate-900/40 lg:w-80`}
-      >
-        <div className="border-b border-slate-800/60 px-4 py-3">
-          <p className="text-sm font-semibold text-white">Chats</p>
-          {unreadCount > 0 && (
-            <p className="text-xs text-gold">{unreadCount} unread</p>
-          )}
+  const listHeader = (
+    <div className="shrink-0 border-b border-slate-800/60 px-4 py-3 space-y-3 bg-[#111418]">
+      <div className="flex items-center justify-between gap-2">
+        <div>
+          <p className="text-base font-semibold text-white lg:hidden">Messages</p>
+          <p className="text-sm font-semibold text-white hidden lg:block">Chats</p>
+          {unreadCount > 0 && <p className="text-xs text-gold">{unreadCount} unread</p>}
         </div>
-        <div className="flex-1 space-y-0.5 overflow-y-auto p-2">
+      </div>
+      {onContactFilterChange && clients.length > 0 && (
+        <select
+          className={`${teamSelectCls} lg:hidden text-sm`}
+          value={contactFilterValue}
+          onChange={(e) => onContactFilterChange(e.target.value)}
+          aria-label="Filter by client"
+        >
+          <option value="">All clients</option>
+          {clients.map((c) => (
+            <option key={c.id} value={c.id}>{c.company || c.name}</option>
+          ))}
+        </select>
+      )}
+    </div>
+  )
+
+  return (
+    <div className="team-messenger flex flex-1 min-h-0 w-full overflow-hidden bg-[#111418] lg:rounded-xl lg:border lg:border-slate-800/60">
+      {/* Thread list */}
+      <aside
+        className={`${
+          mobilePanel === 'list' ? 'flex' : 'hidden'
+        } lg:flex w-full lg:w-[min(100%,320px)] shrink-0 flex-col min-h-0 bg-[#111418] lg:bg-slate-900/30 lg:border-r lg:border-slate-800/60`}
+      >
+        {listHeader}
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-2 space-y-0.5">
           {threads.length === 0 ? (
-            <p className="px-2 py-3 text-sm text-slate-500">No messages yet.</p>
+            <p className="px-3 py-8 text-center text-sm text-slate-500">No messages yet.</p>
           ) : (
             threads.map((thread) => (
               <MessageThreadListItem
@@ -169,49 +206,43 @@ export function OpsMessagesThreadView({ initialThreadId = null, contactFilter }:
         </div>
       </aside>
 
+      {/* Active thread — full viewport on mobile */}
       <main
-        className={`${mobilePanel === 'thread' ? 'flex' : 'hidden'} lg:flex min-h-0 min-w-0 flex-1 flex-col`}
+        className={`${
+          mobilePanel === 'thread' ? 'flex' : 'hidden'
+        } lg:flex min-h-0 min-w-0 flex-1 flex-col bg-[#0e1116]`}
       >
         {!activeThread ? (
-          <div className="flex flex-1 items-center justify-center text-sm text-slate-500">
-            Select a conversation.
+          <div className="hidden lg:flex flex-1 items-center justify-center text-sm text-slate-500">
+            Select a conversation to start messaging.
           </div>
         ) : (
           <>
-            <header className="flex shrink-0 items-center gap-3 border-b border-slate-800/60 px-4 py-3">
+            <header className="flex shrink-0 items-center gap-3 border-b border-slate-800/60 px-3 py-3 bg-[#111418]">
               <button
                 type="button"
-                className="text-sm text-slate-400 hover:text-white lg:hidden"
+                className="flex h-10 w-10 items-center justify-center rounded-full text-lg text-slate-300 hover:text-white lg:hidden"
                 onClick={() => setMobilePanel('list')}
+                aria-label="Back to conversations"
               >
-                ← Back
+                ←
               </button>
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-700/80 text-sm font-semibold text-slate-200">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gold/20 text-sm font-bold text-gold">
                 {(activeThread.clientName || 'C').slice(0, 1).toUpperCase()}
               </span>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-white">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-base font-semibold text-white">
                   {activeThread.clientName || 'Client'}
                 </p>
-                <p className="truncate text-xs text-slate-500">
-                  {activeThread.subject}
-                  {activeThread.clientEmail && (
-                    <>
-                      {' · '}
-                      <a href={`mailto:${activeThread.clientEmail}`} className="text-gold hover:underline">
-                        {activeThread.clientEmail}
-                      </a>
-                    </>
-                  )}
-                </p>
+                <p className="truncate text-xs text-slate-400">{activeThread.subject}</p>
               </div>
             </header>
 
-            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 space-y-3">
               {groupMessagesByDay(activeThread.messages).map((group) => (
                 <div key={group.label}>
-                  <p className="mb-3 text-center text-xs text-slate-500">{group.label}</p>
-                  <div className="space-y-1.5">
+                  <p className="mb-3 text-center text-xs font-medium text-slate-500">{group.label}</p>
+                  <div className="space-y-2">
                     {group.messages.map((msg) => (
                       <MessageBubble
                         key={msg.id}
@@ -237,12 +268,12 @@ export function OpsMessagesThreadView({ initialThreadId = null, contactFilter }:
               onRemoveFile={(i) => setPendingFiles((prev) => prev.filter((_, idx) => idx !== i))}
               submitting={submitting}
               disabled={!lastClientMessage}
-              placeholder="Message client…"
+              placeholder="Write a message…"
               size="ops"
             />
           </>
         )}
-        {error && <p className="px-4 py-2 text-sm text-red-400">{error}</p>}
+        {error && <p className="px-4 py-2 text-sm text-red-400 shrink-0">{error}</p>}
       </main>
     </div>
   )

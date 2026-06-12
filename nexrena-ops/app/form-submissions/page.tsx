@@ -21,12 +21,117 @@ function messagePreview(sub: FormSubmission): string {
   return msg.length > 120 ? `${msg.slice(0, 120)}…` : msg
 }
 
+function SubmissionActions({
+  sub,
+  expanded,
+  onToggleExpand,
+  onToggleRead,
+  onArchive,
+  onRemove,
+  contactName,
+  contactId,
+}: {
+  sub: FormSubmission
+  expanded: boolean
+  onToggleExpand: () => void
+  onToggleRead: () => void
+  onArchive: () => void
+  onRemove: () => void
+  contactName?: string
+  contactId?: string
+}) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      <Btn size="sm" variant="ghost" onClick={onToggleExpand}>
+        {expanded ? 'Less' : 'Details'}
+      </Btn>
+      {sub.status !== 'archived' && (
+        <Btn size="sm" variant="ghost" onClick={onToggleRead}>
+          {sub.status === 'new' ? 'Mark read' : 'Mark new'}
+        </Btn>
+      )}
+      {sub.status !== 'archived' ? (
+        <Btn size="sm" variant="ghost" onClick={onArchive}>Archive</Btn>
+      ) : (
+        <Btn size="sm" variant="ghost" onClick={onToggleRead}>Restore</Btn>
+      )}
+      {contactId && contactName && (
+        <Link href={`/crm?highlight=${contactId}`}>
+          <Btn size="sm" variant="ghost">{contactName}</Btn>
+        </Link>
+      )}
+      <Btn size="sm" variant="danger" onClick={onRemove}>Delete</Btn>
+    </div>
+  )
+}
+
+function SubmissionCard({
+  sub,
+  expanded,
+  onToggleExpand,
+  onToggleRead,
+  onArchive,
+  onRemove,
+  contact,
+}: {
+  sub: FormSubmission
+  expanded: boolean
+  onToggleExpand: () => void
+  onToggleRead: () => void
+  onArchive: () => void
+  onRemove: () => void
+  contact?: { id: string; name: string }
+}) {
+  return (
+    <Card className={`space-y-3 ${sub.status === 'archived' ? 'opacity-60' : ''}`}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="font-serif text-lg text-white truncate">{sub.submitterName}</p>
+          <p className="text-sm text-gold">{SITE_LABELS[sub.siteKey] ?? sub.siteKey}</p>
+        </div>
+        <span
+          className={`text-[10px] uppercase tracking-wider px-2 py-1 rounded border shrink-0 ${
+            sub.status === 'new'
+              ? 'text-gold border-gold/40'
+              : sub.status === 'archived'
+                ? 'text-slate-500 border-slate-700'
+                : 'text-slate-400 border-slate-600'
+          }`}
+        >
+          {sub.status}
+        </span>
+      </div>
+      <p className="text-sm text-slate-400 truncate">{sub.submitterEmail}</p>
+      <p className="text-sm text-slate-500 line-clamp-2">{messagePreview(sub)}</p>
+      <p className="text-xs text-slate-600">{formatDate(sub.createdAt)}</p>
+      {expanded && (
+        <div className="text-sm text-slate-300 space-y-2 bg-slate-900/50 rounded-xl p-3">
+          {Object.entries(sub.fields as Record<string, unknown>).map(([key, value]) => (
+            <p key={key}><span className="text-slate-500">{key}: </span>{String(value)}</p>
+          ))}
+        </div>
+      )}
+      <SubmissionActions
+        sub={sub}
+        expanded={expanded}
+        onToggleExpand={onToggleExpand}
+        onToggleRead={onToggleRead}
+        onArchive={onArchive}
+        onRemove={onRemove}
+        contactId={contact?.id}
+        contactName={contact?.name}
+      />
+    </Card>
+  )
+}
+
 export default function FormSubmissionsPage() {
-  const { submissions, updateStatus, remove } = useFormSubmissions()
+  const { submissions, loading, refresh, updateStatus, archive, remove } = useFormSubmissions()
   const { contacts } = useContacts()
   const [expanded, setExpanded] = useState<string | null>(null)
   const [siteFilter, setSiteFilter] = useState<string>('all')
-  const [statusFilter, setStatusFilter] = useState<FormSubmissionStatus | 'all'>('all')
+  const [statusFilter, setStatusFilter] = useState<FormSubmissionStatus | 'all' | 'active'>('active')
+  const [refreshing, setRefreshing] = useState(false)
 
   const sites = useMemo(
     () => Array.from(new Set(submissions.map(s => s.siteKey))).sort(),
@@ -35,23 +140,42 @@ export default function FormSubmissionsPage() {
 
   const filtered = submissions.filter(s => {
     if (siteFilter !== 'all' && s.siteKey !== siteFilter) return false
-    if (statusFilter !== 'all' && s.status !== statusFilter) return false
+    if (statusFilter === 'active' && s.status === 'archived') return false
+    if (statusFilter !== 'all' && statusFilter !== 'active' && s.status !== statusFilter) return false
     return true
   })
 
   const newCount = submissions.filter(s => s.status === 'new').length
-
   const contactFor = (contactId: string) => contacts.find(c => c.id === contactId)
 
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    await refresh()
+    setRefreshing(false)
+  }
+
   const toggleRead = (sub: FormSubmission) => {
+    if (sub.status === 'archived') {
+      updateStatus(sub.id, 'read')
+      return
+    }
     updateStatus(sub.id, sub.status === 'new' ? 'read' : 'new')
   }
+
+  const headerAction = (
+    <div className="flex flex-wrap gap-2">
+      <Btn size="sm" variant="ghost" onClick={handleRefresh} disabled={refreshing || loading}>
+        {refreshing ? 'Refreshing…' : '↻ Refresh'}
+      </Btn>
+    </div>
+  )
 
   return (
     <div className="w-full min-w-0 overflow-x-hidden">
       <PageHeader
         title="Form Submissions"
-        sub={`${submissions.length} submissions from client websites`}
+        sub={`${submissions.length} total · auto-updates every 15s · sound on new leads`}
+        action={headerAction}
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 md:mb-10 stagger">
@@ -70,60 +194,30 @@ export default function FormSubmissionsPage() {
       </MobileFilterRow>
 
       <MobileFilterRow className="mb-6">
-        {(['all', 'new', 'read'] as const).map(s => (
+        <MobileFilterChip active={statusFilter === 'active'} onClick={() => setStatusFilter('active')}>Active</MobileFilterChip>
+        {(['all', 'new', 'read', 'archived'] as const).map(s => (
           <MobileFilterChip key={s} active={statusFilter === s} onClick={() => setStatusFilter(s)}>
-            {s === 'all' ? 'Any status' : s}
+            {s === 'all' ? 'All' : s}
           </MobileFilterChip>
         ))}
       </MobileFilterRow>
 
       <div className="lg:hidden space-y-3 mb-6">
         {filtered.length === 0 ? (
-          <EmptyState message="No form submissions yet." />
+          <EmptyState message="No form submissions match these filters." />
         ) : (
-          filtered.map((sub) => {
-            const contact = contactFor(sub.contactId)
-            return (
-              <Card key={sub.id} className="space-y-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="font-serif text-lg text-white truncate">{sub.submitterName}</p>
-                    <p className="text-sm text-gold">{SITE_LABELS[sub.siteKey] ?? sub.siteKey}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => toggleRead(sub)}
-                    className={`text-[10px] uppercase tracking-wider px-2 py-1 rounded border shrink-0 ${
-                      sub.status === 'new' ? 'text-gold border-gold/40' : 'text-slate-500 border-slate-700'
-                    }`}
-                  >
-                    {sub.status}
-                  </button>
-                </div>
-                <p className="text-sm text-slate-400 truncate">{sub.submitterEmail}</p>
-                <p className="text-sm text-slate-500 line-clamp-2">{messagePreview(sub)}</p>
-                <p className="text-xs text-slate-600">{formatDate(sub.createdAt)}</p>
-                {expanded === sub.id && (
-                  <div className="text-sm text-slate-300 space-y-2 bg-slate-900/50 rounded-xl p-3">
-                    {Object.entries(sub.fields as Record<string, unknown>).map(([key, value]) => (
-                      <p key={key}><span className="text-slate-500">{key}: </span>{String(value)}</p>
-                    ))}
-                  </div>
-                )}
-                <div className="flex flex-wrap gap-2">
-                  <Btn size="sm" variant="ghost" onClick={() => setExpanded(expanded === sub.id ? null : sub.id)}>
-                    {expanded === sub.id ? 'Less' : 'Details'}
-                  </Btn>
-                  {contact && (
-                    <Link href={`/crm?highlight=${contact.id}`}>
-                      <Btn size="sm" variant="ghost">{contact.name}</Btn>
-                    </Link>
-                  )}
-                  <Btn size="sm" variant="danger" onClick={() => remove(sub.id)}>Delete</Btn>
-                </div>
-              </Card>
-            )
-          })
+          filtered.map((sub) => (
+            <SubmissionCard
+              key={sub.id}
+              sub={sub}
+              expanded={expanded === sub.id}
+              onToggleExpand={() => setExpanded(expanded === sub.id ? null : sub.id)}
+              onToggleRead={() => toggleRead(sub)}
+              onArchive={() => archive(sub.id)}
+              onRemove={() => remove(sub.id)}
+              contact={contactFor(sub.contactId)}
+            />
+          ))
         )}
       </div>
 
@@ -149,21 +243,15 @@ export default function FormSubmissionsPage() {
                 <>
                   <tr
                     key={sub.id}
-                    className="group cursor-pointer"
+                    className={`group cursor-pointer ${sub.status === 'archived' ? 'opacity-60' : ''}`}
                     onClick={() => setExpanded(expanded === sub.id ? null : sub.id)}
                   >
                     <td onClick={e => e.stopPropagation()}>
-                      <button
-                        type="button"
-                        onClick={() => toggleRead(sub)}
-                        className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border transition-colors ${
-                          sub.status === 'new'
-                            ? 'text-gold border-gold/40 hover:bg-gold/10'
-                            : 'text-slate-500 border-slate-700 hover:text-slate-300'
-                        }`}
-                      >
+                      <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${
+                        sub.status === 'new' ? 'text-gold border-gold/40' : 'text-slate-500 border-slate-700'
+                      }`}>
                         {sub.status}
-                      </button>
+                      </span>
                     </td>
                     <td className="text-gold font-medium">{SITE_LABELS[sub.siteKey] ?? sub.siteKey}</td>
                     <td className="text-slate-400">{sub.formName}</td>
@@ -181,7 +269,20 @@ export default function FormSubmissionsPage() {
                     </td>
                     <td className="text-slate-400 text-xs">{formatDate(sub.createdAt)}</td>
                     <td onClick={e => e.stopPropagation()}>
-                      <Btn size="sm" variant="danger" onClick={() => remove(sub.id)}>Del</Btn>
+                      <div className="flex gap-1 flex-wrap justify-end">
+                        {sub.status !== 'archived' && (
+                          <>
+                            <Btn size="sm" variant="ghost" onClick={() => toggleRead(sub)}>
+                              {sub.status === 'new' ? 'Read' : 'New'}
+                            </Btn>
+                            <Btn size="sm" variant="ghost" onClick={() => archive(sub.id)}>Archive</Btn>
+                          </>
+                        )}
+                        {sub.status === 'archived' && (
+                          <Btn size="sm" variant="ghost" onClick={() => updateStatus(sub.id, 'read')}>Restore</Btn>
+                        )}
+                        <Btn size="sm" variant="danger" onClick={() => remove(sub.id)}>Del</Btn>
+                      </div>
                     </td>
                   </tr>
                   {expanded === sub.id && (
@@ -214,7 +315,7 @@ export default function FormSubmissionsPage() {
             {filtered.length === 0 && (
               <tr>
                 <td colSpan={9}>
-                  <EmptyState message="No form submissions yet. Client website forms (e.g. TTAG) will appear here." />
+                  <EmptyState message="No form submissions match these filters." />
                 </td>
               </tr>
             )}

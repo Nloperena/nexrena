@@ -1,6 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Nexrena">
-  <rect width="512" height="512" rx="96" fill="#111418"/>
-  <rect x="32" y="32" width="448" height="448" rx="80" fill="none" stroke="#C9A96E" stroke-width="8" opacity="0.35"/>
-  <path fill="#C9A96E" d="M128 352V160h56l88 128 88-128h56v192h-48V248l-76 104h-4l-76-104v104z"/>
-  <circle cx="256" cy="128" r="12" fill="#E8D5B0"/>
+  <rect width="512" height="512" rx="112" fill="#111418"/>
+  <rect x="24" y="24" width="464" height="464" rx="96" fill="none" stroke="#C9A96E" stroke-width="6" opacity="0.35"/>
+  <rect x="128" y="148" width="256" height="44" rx="12" fill="#C9A96E" opacity="0.95"/>
+  <rect x="128" y="234" width="192" height="44" rx="12" fill="#64748b"/>
+  <rect x="128" y="320" width="224" height="44" rx="12" fill="#64748b" opacity="0.75"/>
+  <circle cx="360" cy="170" r="36" fill="#E8D5B0"/>
 </svg>

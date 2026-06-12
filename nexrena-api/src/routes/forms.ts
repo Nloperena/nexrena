@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { prisma } from '../lib/prisma'
 import { requireAuth } from '../middleware/auth'
 import { getSiteConfig, verifySiteSecret } from '../lib/sites'
-import { notifyFormSubmission } from '../lib/notify'
+import { notifyFormSubmission, notifyFormSubmitterThankYou } from '../lib/notify'
 import { stripHtml } from '../lib/sanitize'
 
 const router = Router()
@@ -137,6 +137,19 @@ router.post('/submit', async (req, res) => {
     pageUrl: submission.pageUrl,
   }).catch(() => {})
 
+  if (siteKey === 'ttag') {
+    notifyFormSubmitterThankYou({
+      siteLabel: site.label,
+      siteKey,
+      formName: submission.formName,
+      name: submitterName,
+      email: submitterEmail,
+      message: bodyMessage,
+      fields: sanitizedCustom,
+      pageUrl: submission.pageUrl,
+    }).catch(() => {})
+  }
+
   res.status(201).json(serialize(submission))
 })
 
@@ -162,8 +175,8 @@ router.get('/submissions', requireAuth, async (req, res) => {
 /** PATCH /api/forms/submissions/:id — mark read, etc. */
 router.patch('/submissions/:id', requireAuth, async (req, res) => {
   const { status } = req.body as { status?: string }
-  if (!status || !['new', 'read'].includes(status)) {
-    res.status(400).json({ error: 'status must be "new" or "read"' })
+  if (!status || !['new', 'read', 'archived'].includes(status)) {
+    res.status(400).json({ error: 'status must be "new", "read", or "archived"' })
     return
   }
   const row = await prisma.formSubmission.update({

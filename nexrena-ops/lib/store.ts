@@ -4,6 +4,10 @@ import { Contact, Project, Invoice, Lead, PortalAccount, TimeEntry, Proposal, Ex
 import { applyMessageStreamEvent, countUnreadForViewer } from './message-realtime-utils'
 import { useOpsMessageStream } from './use-message-stream'
 import { api } from './api'
+import { mergeSubscriptionRow, toSubscriptionPayload } from './subscription-api'
+import { mergeServiceRequestRow, toServiceRequestPayload } from './service-request-api'
+
+export { useFormSubmissions } from './form-submissions-context'
 
 // ── hooks ────────────────────────────────────────────────────────────────
 
@@ -141,28 +145,6 @@ export function useLeads() {
   return { leads, updateStatus, remove }
 }
 
-export function useFormSubmissions() {
-  const [submissions, setSubmissions] = useState<import('./types').FormSubmission[]>([])
-
-  useEffect(() => {
-    api.get<import('./types').FormSubmission[]>('/forms/submissions').then(setSubmissions).catch(console.error)
-  }, [])
-
-  const updateStatus = useCallback(async (id: string, status: import('./types').FormSubmissionStatus) => {
-    setSubmissions(prev => prev.map(x => x.id === id ? { ...x, status } : x))
-    try { await api.patch(`/forms/submissions/${id}`, { status }) }
-    catch (e) { console.error(e) }
-  }, [])
-
-  const remove = useCallback(async (id: string) => {
-    setSubmissions(prev => prev.filter(x => x.id !== id))
-    try { await api.del(`/forms/submissions/${id}`) }
-    catch (e) { console.error(e) }
-  }, [])
-
-  return { submissions, updateStatus, remove }
-}
-
 export function usePortalAccounts() {
   const [accounts, setAccounts] = useState<PortalAccount[]>([])
 
@@ -275,49 +257,177 @@ export function useExpenses() {
 export function useSubscriptions() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
 
-  useEffect(() => {
-    api.get<Subscription[]>('/subscriptions').then(setSubscriptions).catch(console.error)
+  const load = useCallback(async () => {
+    const rows = await api.get<Subscription[]>('/subscriptions')
+    setSubscriptions(rows)
+    return rows
   }, [])
 
+  useEffect(() => {
+    load().catch(console.error)
+  }, [load])
+
   const add = useCallback(async (s: Subscription) => {
-    setSubscriptions(prev => [s, ...prev])
-    try { await api.post('/subscriptions', s) }
-    catch (err) { console.error(err); setSubscriptions(prev => prev.filter(x => x.id !== s.id)) }
+    setSubscriptions((prev) => [s, ...prev])
+    try {
+      const created = await api.post<Subscription>('/subscriptions', toSubscriptionPayload(s))
+      setSubscriptions((prev) =>
+        prev.map((x) => (x.id === s.id ? mergeSubscriptionRow(created, s) : x)),
+      )
+    } catch (err) {
+      console.error(err)
+      setSubscriptions((prev) => prev.filter((x) => x.id !== s.id))
+      throw err
+    }
   }, [])
 
   const edit = useCallback(async (s: Subscription) => {
-    setSubscriptions(prev => prev.map(x => x.id === s.id ? s : x))
-    try { await api.put(`/subscriptions/${s.id}`, s) }
-    catch (err) { console.error(err) }
+    let snapshot: Subscription[] = []
+    setSubscriptions((prev) => {
+      snapshot = prev
+      return prev.map((x) => (x.id === s.id ? s : x))
+    })
+    try {
+      const updated = await api.put<Subscription>(`/subscriptions/${s.id}`, toSubscriptionPayload(s))
+      setSubscriptions((prev) =>
+        prev.map((x) => (x.id === s.id ? mergeSubscriptionRow(updated, s) : x)),
+      )
+    } catch (err) {
+      console.error(err)
+      setSubscriptions(snapshot)
+      throw err
+    }
+  }, [])
+
+  const patch = useCallback(async (id: string, patch: Partial<Subscription>) => {
+    let snapshot: Subscription[] = []
+    setSubscriptions((prev) => {
+      snapshot = prev
+      return prev.map((x) => (x.id === id ? { ...x, ...patch } : x))
+    })
+    try {
+      const updated = await api.patch<Subscription>(`/subscriptions/${id}`, toSubscriptionPayload(patch))
+      setSubscriptions((prev) =>
+        prev.map((x) => (x.id === id ? mergeSubscriptionRow(updated, x) : x)),
+      )
+    } catch (err) {
+      console.error(err)
+      setSubscriptions(snapshot)
+      throw err
+    }
   }, [])
 
   const remove = useCallback(async (id: string) => {
-    setSubscriptions(prev => prev.filter(x => x.id !== id))
-    try { await api.del(`/subscriptions/${id}`) }
-    catch (err) { console.error(err) }
+    let snapshot: Subscription[] = []
+    setSubscriptions((prev) => {
+      snapshot = prev
+      return prev.filter((x) => x.id !== id)
+    })
+    try {
+      await api.del(`/subscriptions/${id}`)
+    } catch (err) {
+      console.error(err)
+      setSubscriptions(snapshot)
+      throw err
+    }
   }, [])
 
   const runBilling = useCallback(async (): Promise<{ generated: number; skipped: number; errors: string[] }> => {
-    return api.post('/subscriptions/run-billing', {})
-  }, [])
+    const result = await api.post<{ generated: number; skipped: number; errors: string[] }>('/subscriptions/run-billing', {})
+    await load()
+    return result
+  }, [load])
 
-  return { subscriptions, add, edit, remove, runBilling }
+  return { subscriptions, load, add, edit, patch, remove, runBilling }
 }
 
 export function useServiceRequests() {
   const [requests, setRequests] = useState<ServiceRequest[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const refresh = useCallback(async () => {
+    try {
+      const rows = await api.get<ServiceRequest[]>('/service-requests')
+      setRequests(rows)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
-    api.get<ServiceRequest[]>('/service-requests').then(setRequests).catch(console.error)
+    refresh().catch(console.error)
+  }, [refresh])
+
+  const add = useCallback(async (payload: Omit<ServiceRequest, 'id' | 'createdAt' | 'updatedAt' | 'assets'>) => {
+    const created = await api.post<ServiceRequest>('/service-requests', toServiceRequestPayload(payload))
+    setRequests((prev) => [created, ...prev])
+    return created
+  }, [])
+
+  const edit = useCallback(async (request: ServiceRequest) => {
+    let snapshot: ServiceRequest[] = []
+    setRequests((prev) => {
+      snapshot = prev
+      return prev.map((row) => (row.id === request.id ? request : row))
+    })
+    try {
+      const updated = await api.put<ServiceRequest>(
+        `/service-requests/${request.id}`,
+        toServiceRequestPayload(request),
+      )
+      setRequests((prev) =>
+        prev.map((row) => (row.id === request.id ? mergeServiceRequestRow(updated, request) : row)),
+      )
+    } catch (err) {
+      console.error(err)
+      setRequests(snapshot)
+      throw err
+    }
+  }, [])
+
+  const patch = useCallback(async (id: string, patch: Partial<ServiceRequest>) => {
+    let snapshot: ServiceRequest[] = []
+    setRequests((prev) => {
+      snapshot = prev
+      return prev.map((row) => (row.id === id ? { ...row, ...patch } : row))
+    })
+    try {
+      const updated = await api.patch<ServiceRequest>(
+        `/service-requests/${id}`,
+        toServiceRequestPayload(patch),
+      )
+      setRequests((prev) =>
+        prev.map((row) => (row.id === id ? mergeServiceRequestRow(updated, row) : row)),
+      )
+    } catch (err) {
+      console.error(err)
+      setRequests(snapshot)
+      throw err
+    }
   }, [])
 
   const updateStatus = useCallback(async (id: string, status: ServiceRequest['status']) => {
-    setRequests(prev => prev.map(x => x.id === id ? { ...x, status } : x))
-    try { await api.patch(`/service-requests/${id}`, { status }) }
-    catch (e) { console.error(e) }
+    await patch(id, { status })
+  }, [patch])
+
+  const remove = useCallback(async (id: string) => {
+    let snapshot: ServiceRequest[] = []
+    setRequests((prev) => {
+      snapshot = prev
+      return prev.filter((row) => row.id !== id)
+    })
+    try {
+      await api.del(`/service-requests/${id}`)
+    } catch (err) {
+      console.error(err)
+      setRequests(snapshot)
+      throw err
+    }
   }, [])
 
-  return { requests, updateStatus }
+  return { requests, loading, refresh, add, edit, patch, updateStatus, remove }
 }
 
 export function usePortalAssets(contactId?: string) {

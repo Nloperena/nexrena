@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useMessages } from '@/lib/store'
+import { useFormSubmissions } from '@/lib/form-submissions-context'
 import {
   teamFocusRing,
   teamNavItemClass,
@@ -16,12 +17,20 @@ import {
   TEAM_WORK_NAV,
   isTeamNavActive,
 } from '@/lib/team-nav'
+import { NexrenaLogo } from '@/components/nexrena-logo'
 
-type NavItem = { href: string; label: string; icon: string; badge?: 'messages' }
+type NavItem = { href: string; label: string; icon: string; badge?: 'messages' | 'forms' }
+
+function navBadgeCount(item: NavItem, messageUnread: number, formsNewCount: number) {
+  if (item.badge === 'messages') return messageUnread
+  if (item.badge === 'forms') return formsNewCount
+  return 0
+}
 
 function NavSection({ title, items }: { title: string; items: NavItem[] }) {
   const path = usePathname()
   const { unreadCount } = useMessages()
+  const { newCount: formsNewCount } = useFormSubmissions()
 
   return (
     <div className="mb-6">
@@ -29,7 +38,8 @@ function NavSection({ title, items }: { title: string; items: NavItem[] }) {
       <div className="space-y-1">
         {items.map(({ href, label, icon, badge }) => {
           const active = isTeamNavActive(path, href)
-          const showBadge = badge === 'messages' && unreadCount > 0
+          const count = navBadgeCount({ href, label, icon, badge }, unreadCount, formsNewCount)
+          const showBadge = count > 0
           return (
             <Link
               key={href}
@@ -50,7 +60,7 @@ function NavSection({ title, items }: { title: string; items: NavItem[] }) {
               <span className={`${teamNavLabelClass} flex-1`}>{label}</span>
               {showBadge && (
                 <span className="min-w-[1.5rem] h-6 px-2 rounded-full bg-gold text-obsidian text-xs font-bold flex items-center justify-center tabular-nums">
-                  {unreadCount > 99 ? '99+' : unreadCount}
+                  {count > 99 ? '99+' : count}
                 </span>
               )}
               {active && (
@@ -72,16 +82,10 @@ export function TeamSidebar() {
       <div className="pointer-events-none absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-gold/[0.04] to-transparent" />
 
       <div className="relative border-b border-slate-700/60 px-5 py-6">
-        <Link href="/" className="flex items-center gap-3 no-underline">
-          <img src="/icons/icon.svg" alt="" className="h-10 w-10 rounded-lg" width={40} height={40} />
-          <div>
-            <div className="flex items-baseline gap-0.5">
-              <span className="font-serif text-xl text-white tracking-tight">Nex</span>
-              <span className="font-serif text-xl text-gold tracking-tight">rena</span>
-            </div>
-            <p className="mt-0.5 text-sm text-slate-400">Team operations</p>
-          </div>
+        <Link href="/" className="no-underline">
+          <NexrenaLogo size="md" />
         </Link>
+        <p className="text-sm text-slate-400 mt-3">Team workspace</p>
       </div>
 
       <nav className="relative flex-1 overflow-y-auto px-2 py-5">

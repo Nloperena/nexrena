@@ -23,7 +23,7 @@ export const portalLabelClass =
   'block text-lg font-medium text-slate-100 mb-2 normal-case tracking-normal'
 
 export const portalInputCls =
-  'w-full bg-slate-800/90 border-2 border-slate-500 rounded-xl px-4 py-4 text-lg text-white placeholder-slate-400 focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/60 min-h-[56px]'
+  'auth-field w-full bg-[#1a2332] border-2 border-slate-500 rounded-xl px-4 py-4 text-lg text-white caret-white placeholder-slate-400 focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/60 min-h-[56px]'
 
 export const portalTextareaCls = `${portalInputCls} min-h-[160px] resize-y leading-relaxed`
 

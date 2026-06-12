@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Playfair_Display, DM_Sans } from 'next/font/google'
+import { Playfair_Display, DM_Sans, Barlow_Condensed } from 'next/font/google'
 import './globals.css'
 import { AuthGate } from '@/components/auth-gate'
 import { AdminShell } from '@/components/admin-shell'
@@ -8,6 +8,11 @@ import { PwaInstallCapture } from '@/components/pwa-install-prompt'
 
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-serif' })
 const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-sans' })
+const barlowCondensed = Barlow_Condensed({
+  subsets: ['latin'],
+  weight: ['600', '700', '800'],
+  variable: '--font-persona',
+})
 
 export const metadata: Metadata = {
   title: 'Nexrena',
@@ -30,7 +35,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${dmSans.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${dmSans.variable} ${barlowCondensed.variable}`}>
       <body className="bg-[#111418] text-white min-h-screen">
         <PwaRegister />
         <PwaInstallCapture />

@@ -19,6 +19,7 @@ import {
   serializePortalMessage,
   type MessageRow,
 } from '../lib/message-serialize'
+import { emitMessageCreated, emitThreadRead } from '../lib/message-stream'
 
 const router = Router()
 
@@ -197,7 +198,9 @@ router.post('/', requirePortalAuth, messageLimiter, upload.array('files', MESSAG
       }).catch(() => {})
     }
 
-    res.status(201).json(serializePortalMessage({ ...row, threadId: threadKey } as MessageRow))
+    const created = { ...row, threadId: threadKey } as MessageRow
+    emitMessageCreated(created)
+    res.status(201).json(serializePortalMessage(created))
   } catch (err) {
     console.error('[portal messages upload]', err)
     const messageText = blobUploadErrorMessage(err)
@@ -209,15 +212,34 @@ router.post('/', requirePortalAuth, messageLimiter, upload.array('files', MESSAG
 /** PATCH /api/portal/messages/threads/:threadId/read */
 router.patch('/threads/:threadId/read', requirePortalAuth, async (req, res) => {
   const accountId = req.portalUser!.accountId
+  const threadId = req.params.threadId
+  const sample = await prisma.clientMessage.findFirst({
+    where: {
+      portalAccountId: accountId,
+      OR: [{ threadId }, { id: threadId }],
+    },
+    select: { contactId: true, portalAccountId: true },
+  })
+
   await prisma.clientMessage.updateMany({
     where: {
       portalAccountId: accountId,
       direction: 'admin',
       readByClient: false,
-      OR: [{ threadId: req.params.threadId }, { id: req.params.threadId }],
+      OR: [{ threadId }, { id: threadId }],
     },
     data: { readByClient: true },
   })
+
+  if (sample) {
+    emitThreadRead({
+      threadId,
+      reader: 'client',
+      contactId: sample.contactId,
+      portalAccountId: sample.portalAccountId ?? accountId,
+    })
+  }
+
   res.json({ ok: true })
 })
 

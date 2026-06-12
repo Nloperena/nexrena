@@ -11,6 +11,7 @@ const JOE_SUB_HOSTING_ID = 'sub-fpu-website-hosting'
 const JOE_SUB_ANALYTICS_ID = 'sub-fpu-website-analytics'
 const JOE_PORTAL_EMAIL = 'joe@furniturepackagesusa.com'
 const JOE_PORTAL_PASSWORD = 'JoeDemo2026!'
+const NICO_PORTFOLIO_CONTACT_ID = 'nicholas-loperena-portfolio'
 
 function hashPassword(password) {
   const salt = randomBytes(16).toString('hex')
@@ -82,6 +83,29 @@ async function seed() {
       industry: 'other',
       stage: 'won',
       notes: 'Portal: joe@furniturepackagesusa.com. Billing contact: accounts@furniturepackagesusa.com. Site: furniturepackagesusa.com.',
+      updatedAt: now,
+    },
+  })
+
+  await prisma.contact.upsert({
+    where: { id: NICO_PORTFOLIO_CONTACT_ID },
+    create: {
+      id: NICO_PORTFOLIO_CONTACT_ID,
+      name: 'Nicholas Loperena',
+      company: 'NicoLoperena.com',
+      email: 'nicholasloperena@gmail.com',
+      industry: 'professional',
+      stage: 'won',
+      value: 0,
+      notes: 'Personal portfolio site — form leads from nicoloperena.com intake modal.',
+      createdAt: now,
+      updatedAt: now,
+    },
+    update: {
+      name: 'Nicholas Loperena',
+      company: 'NicoLoperena.com',
+      email: 'nicholasloperena@gmail.com',
+      notes: 'Personal portfolio site — form leads from nicoloperena.com intake modal.',
       updatedAt: now,
     },
   })

@@ -75,15 +75,18 @@ model Invoice {
 
 // ── Client portal accounts ───────────────────────────────────────────────
 model PortalAccount {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String   @map("password_hash")
-  name         String
-  company      String?
-  contactId    String   @unique @map("contact_id")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id             String   @id @default(cuid())
+  email          String   @unique
+  passwordHash   String?  @map("password_hash")
+  authProvider   String   @default("password") @map("auth_provider")
+  oauthSubjectId String?  @map("oauth_subject_id")
+  name           String
+  company        String?
+  contactId      String   @unique @map("contact_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
 
+  @@unique([authProvider, oauthSubjectId])
   @@map("portal_accounts")
 }
 
@@ -98,6 +101,7 @@ model ServiceRequest {
   timeline        String?
   status          String   @default("new")
   source          String   @default("portal")
+  internalNotes   String?  @map("internal_notes")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 

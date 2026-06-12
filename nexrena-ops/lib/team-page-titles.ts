@@ -1,7 +1,7 @@
 type PageContext = { title: string; subtitle?: string }
 
 const ROUTES: Record<string, PageContext> = {
-  '/': { title: 'Dashboard', subtitle: 'Overview and quick actions' },
+  '/': { title: 'Main Menu', subtitle: 'Select a destination' },
   '/invoices': { title: 'Invoices', subtitle: 'Billing, payments, and invoice history' },
   '/subscriptions': { title: 'Subscriptions', subtitle: 'Recurring client plans' },
   '/proposals': { title: 'Proposals', subtitle: 'Quotes and project scopes' },
@@ -11,11 +11,12 @@ const ROUTES: Record<string, PageContext> = {
   '/client-files': { title: 'Business assets', subtitle: 'Shared files and deliverables' },
   '/client-resources': { title: 'Client websites', subtitle: 'Hosted sites and resources' },
   '/service-requests': { title: 'Service requests', subtitle: 'Client change and support tickets' },
+  '/safety-warnings': { title: 'Safety notices', subtitle: 'On-site hazard warnings for clients' },
   '/portal-accounts': { title: 'Portal accounts', subtitle: 'Client login access' },
   '/projects': { title: 'Projects', subtitle: 'Active work and delivery status' },
   '/crm': { title: 'CRM', subtitle: 'Contacts and relationships' },
   '/expenses': { title: 'Expenses', subtitle: 'Business costs and receipts' },
-  '/reports': { title: 'Reports', subtitle: 'Summaries and exports' },
+  '/reports': { title: 'Reports', subtitle: 'Revenue, pipeline, and profitability' },
 }
 
 export function getTeamPageContext(pathname: string): PageContext {

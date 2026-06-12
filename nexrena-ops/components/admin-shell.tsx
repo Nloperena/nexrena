@@ -5,11 +5,13 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { TeamSidebar } from '@/components/team-sidebar'
 import { TeamMobileNavProvider } from '@/components/team-mobile-nav'
+import { NexrenaLogo } from '@/components/nexrena-logo'
 import { useAuth } from '@/components/auth-gate'
 import { UserMenu } from '@/components/user-menu'
 import { TeamSettingsModal } from '@/components/team-settings-modal'
 import { getTeamPageContext } from '@/lib/team-page-titles'
 import { TEAM_MAIN_OFFSET, TEAM_MOBILE_BOTTOM_PAD } from '@/lib/team-a11y'
+import { FormSubmissionsProvider } from '@/lib/form-submissions-context'
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const { role, signOut, teamDisplayName, setTeamDisplayName } = useAuth()
@@ -19,19 +21,22 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   if (role !== 'admin') return <>{children}</>
 
   const page = getTeamPageContext(pathname)
+  const isMessenger = pathname === '/messages'
+  const isDashboard = pathname === '/'
 
   return (
-    <TeamMobileNavProvider>
+    <FormSubmissionsProvider enabled>
+      <TeamMobileNavProvider>
       <div className="team-ops min-h-screen overflow-x-hidden bg-[#111418]">
         <TeamSidebar />
 
         <div className={`flex min-h-screen w-full min-w-0 flex-col ${TEAM_MAIN_OFFSET}`}>
-          {/* Mobile: compact bar — no sidebar, no duplicate page chrome */}
+          {/* Mobile: full chrome hidden in thread; minimal bar on Messages list */}
+          {isMessenger ? (
           <header className="sticky top-0 z-40 border-b border-slate-700/40 bg-[#111418]/95 backdrop-blur-md lg:hidden">
-            <div className="flex items-center justify-between gap-3 px-4 py-3">
-              <Link href="/" className="flex min-w-0 items-baseline gap-0.5">
-                <span className="font-serif text-lg text-white">Nex</span>
-                <span className="font-serif text-lg text-gold">rena</span>
+            <div className="flex items-center justify-between gap-3 px-4 py-2">
+              <Link href="/" className="min-w-0 text-sm text-slate-400 hover:text-white">
+                ← Dashboard
               </Link>
               <UserMenu
                 name={teamDisplayName}
@@ -41,8 +46,24 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               />
             </div>
           </header>
+          ) : (
+          <header className={`sticky top-0 z-40 border-b border-slate-700/40 bg-[#111418]/95 backdrop-blur-md lg:hidden ${isDashboard ? 'border-transparent bg-transparent' : ''}`}>
+            <div className="flex items-center justify-between gap-3 px-4 py-3">
+              <Link href="/" className="min-w-0">
+                <NexrenaLogo size="sm" />
+              </Link>
+              <UserMenu
+                name={teamDisplayName}
+                subtitle="Team"
+                onOpenSettings={() => setSettingsOpen(true)}
+                onSignOut={signOut}
+              />
+            </div>
+          </header>
+          )}
 
-          {/* Desktop: page title row */}
+          {/* Desktop: page title row (hidden on main menu) */}
+          {!isDashboard && (
           <header className="sticky top-0 z-40 hidden border-b border-slate-700/40 bg-[#141820]/95 backdrop-blur-md lg:block">
             <div className="flex items-center justify-between gap-4 px-8 py-4">
               <div className="min-w-0">
@@ -64,11 +85,24 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               </p>
             </div>
           </header>
+          )}
 
           <main
-            className={`flex-1 w-full min-w-0 max-w-full ${TEAM_MOBILE_BOTTOM_PAD}`}
+            className={`flex-1 w-full min-w-0 max-w-full ${TEAM_MOBILE_BOTTOM_PAD} ${
+              isMessenger ? 'flex flex-col min-h-0 overflow-hidden pb-0 lg:pb-0' : ''
+            }`}
           >
-            <div className="mx-auto w-full max-w-7xl px-4 py-5 md:px-8 md:py-8">{children}</div>
+            <div
+              className={`mx-auto w-full ${
+                isMessenger
+                  ? 'flex flex-col flex-1 min-h-0 max-w-7xl px-0 py-0 lg:px-8 lg:py-8'
+                  : isDashboard
+                    ? 'max-w-none px-0 py-0'
+                    : 'max-w-7xl px-4 py-5 md:px-8 md:py-8'
+              }`}
+            >
+              {children}
+            </div>
           </main>
         </div>
 
@@ -81,5 +115,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         )}
       </div>
     </TeamMobileNavProvider>
+    </FormSubmissionsProvider>
   )
 }

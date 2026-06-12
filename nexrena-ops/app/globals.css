@@ -233,6 +233,30 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border-color: rgba(100, 116, 139, 0.45);
 }
 
+/* Login / form fields — fix white-on-white in PWA and autofill */
+.client-portal .auth-field,
+.client-portal input.auth-field,
+.client-portal textarea.auth-field {
+  color: #ffffff !important;
+  background-color: #1a2332 !important;
+  color-scheme: dark;
+  -webkit-text-fill-color: #ffffff;
+}
+
+.client-portal .auth-field::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}
+
+.client-portal input.auth-field:-webkit-autofill,
+.client-portal input.auth-field:-webkit-autofill:hover,
+.client-portal input.auth-field:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff;
+  box-shadow: 0 0 0 1000px #1a2332 inset !important;
+  border: 2px solid #64748b;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .client-portal *,
   .client-portal-accessible * {
@@ -365,6 +389,52 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 }
 
+/* Full-viewport team messenger (mobile PWA) */
+.team-messenger-page {
+  height: calc(100dvh - 2.75rem);
+  max-height: calc(100dvh - 2.75rem);
+}
+
+@media (min-width: 1024px) {
+  .team-messenger-page {
+    height: auto;
+    max-height: none;
+  }
+}
+
+.team-messenger .team-messenger {
+  border: none;
+  border-radius: 0;
+}
+
+.client-portal .team-messenger {
+  height: calc(100dvh - 2.75rem);
+  max-height: calc(100dvh - 2.75rem);
+}
+
+@media (min-width: 768px) {
+  .client-portal .team-messenger {
+    height: calc(100vh - 12rem);
+    max-height: none;
+  }
+}
+
+/* CRM pipeline — horizontal board scroll without fighting page scroll */
+.crm-pipeline-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.5) transparent;
+}
+
+.crm-pipeline-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.crm-pipeline-scroll::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.45);
+  border-radius: 999px;
+}
+
 /* ── Mobile layout utilities ───────────────────────────────────────────── */
 .scrollbar-none {
   -ms-overflow-style: none;
@@ -386,5 +456,373 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
   .nx-desktop-only {
     display: block;
+  }
+}
+
+/* ── Persona-style dashboard menu ─────────────────────────────────────── */
+.font-persona {
+  font-family: var(--font-persona), 'Arial Narrow', sans-serif;
+}
+
+.persona-dash {
+  --persona-red: #c41e3a;
+  --persona-red-dark: #8f1429;
+  position: relative;
+  min-height: calc(100dvh - 5.5rem);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+@media (min-width: 1024px) {
+  .persona-dash {
+    min-height: calc(100dvh - 8rem);
+  }
+}
+
+.persona-dash__backdrop {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(118deg, transparent 38%, rgba(196, 30, 58, 0.14) 38%, rgba(196, 30, 58, 0.06) 52%, transparent 52%),
+    linear-gradient(165deg, #0a0c10 0%, #121820 45%, #0f1218 100%);
+}
+
+.persona-dash__backdrop::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: min(55vw, 520px);
+  height: min(55vw, 520px);
+  background: radial-gradient(circle, rgba(201, 169, 110, 0.12) 0%, transparent 68%);
+}
+
+.persona-dash__backdrop::after {
+  content: '';
+  position: absolute;
+  bottom: 8%;
+  left: -8%;
+  width: 280px;
+  height: 280px;
+  transform: rotate(-18deg);
+  background: linear-gradient(135deg, rgba(196, 30, 58, 0.35), transparent 70%);
+  filter: blur(2px);
+}
+
+.persona-dash__slash {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 18%;
+  width: 6px;
+  height: 120%;
+  transform: rotate(16deg);
+  background: linear-gradient(180deg, var(--persona-red), var(--gold));
+  opacity: 0.85;
+  box-shadow: 0 0 24px rgba(196, 30, 58, 0.45);
+}
+
+.persona-dash__inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.25rem 1rem 6.5rem;
+}
+
+@media (min-width: 768px) {
+  .persona-dash__inner {
+    padding: 1.75rem 2rem 2rem;
+    gap: 1.5rem;
+  }
+}
+
+.persona-dash__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.persona-dash__eyebrow {
+  font-family: var(--font-persona), sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.persona-dash__title {
+  font-family: var(--font-persona), sans-serif;
+  font-size: clamp(2.4rem, 8vw, 4.5rem);
+  font-weight: 800;
+  line-height: 0.92;
+  letter-spacing: 0.04em;
+  color: white;
+  text-transform: uppercase;
+  font-style: italic;
+  text-shadow: 4px 4px 0 rgba(196, 30, 58, 0.55);
+}
+
+.persona-dash__welcome {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  margin-top: 0.35rem;
+}
+
+.persona-dash__welcome strong {
+  color: white;
+}
+
+.persona-dash__clock {
+  font-family: var(--font-persona), sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.persona-dash__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .persona-dash__grid {
+    grid-template-columns: minmax(200px, 240px) minmax(0, 1fr) minmax(220px, 280px);
+    gap: 1.25rem;
+    align-items: start;
+  }
+}
+
+.persona-dash__panel {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(8, 10, 14, 0.72);
+  backdrop-filter: blur(10px);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+}
+
+.persona-dash__panel-head {
+  font-family: var(--font-persona), sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--persona-red);
+  padding: 0.85rem 1rem 0.35rem;
+}
+
+.persona-dash__stat {
+  padding: 0.65rem 1rem;
+}
+
+.persona-dash__stat-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 0.35rem;
+}
+
+.persona-dash__stat-bar {
+  height: 8px;
+  background: #1e2530;
+  overflow: hidden;
+  transform: skewX(-12deg);
+}
+
+.persona-dash__stat-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--persona-red), var(--gold));
+  transition: width 0.35s ease;
+}
+
+.persona-dash__categories {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  scrollbar-width: none;
+}
+
+.persona-dash__categories::-webkit-scrollbar {
+  display: none;
+}
+
+.persona-dash__cat {
+  flex-shrink: 0;
+  font-family: var(--font-persona), sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.65rem 1.1rem;
+  border: 2px solid transparent;
+  background: rgba(15, 18, 24, 0.85);
+  color: #94a3b8;
+  transform: skewX(-10deg);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.persona-dash__cat span {
+  display: inline-block;
+  transform: skewX(10deg);
+}
+
+.persona-dash__cat--active {
+  color: white;
+  border-color: var(--persona-red);
+  background: linear-gradient(135deg, rgba(196, 30, 58, 0.35), rgba(15, 18, 24, 0.95));
+  box-shadow: 0 0 20px rgba(196, 30, 58, 0.25);
+}
+
+.persona-dash__items {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 640px) {
+  .persona-dash__items {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .persona-dash__items {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.persona-dash__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 72px;
+  padding: 0.85rem 1rem;
+  border: 2px solid rgba(100, 116, 139, 0.35);
+  background: rgba(12, 15, 20, 0.88);
+  color: inherit;
+  text-decoration: none;
+  transform: skewX(-8deg);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.persona-dash__item > * {
+  transform: skewX(8deg);
+}
+
+.persona-dash__item:hover,
+.persona-dash__item--selected {
+  border-color: var(--gold);
+  box-shadow: -6px 6px 0 rgba(196, 30, 58, 0.45);
+  transform: skewX(-8deg) translate(-2px, -2px);
+}
+
+.persona-dash__item--selected {
+  background: linear-gradient(120deg, rgba(196, 30, 58, 0.22), rgba(12, 15, 20, 0.95));
+}
+
+.persona-dash__item-icon {
+  font-size: 1.65rem;
+  line-height: 1;
+  width: 2.25rem;
+  text-align: center;
+  color: var(--gold-light);
+}
+
+.persona-dash__item-label {
+  font-family: var(--font-persona), sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: white;
+}
+
+.persona-dash__item-sub {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin-top: 0.15rem;
+}
+
+.persona-dash__badge {
+  margin-left: auto;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--persona-red);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.persona-dash__hint {
+  margin-top: 1rem;
+  font-family: var(--font-persona), sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.persona-dash__feed-item {
+  display: block;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid rgba(51, 65, 85, 0.45);
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.persona-dash__feed-item:hover {
+  background: rgba(196, 30, 58, 0.08);
+}
+
+.persona-dash__feed-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+}
+
+.persona-dash__feed-sub {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 0.15rem;
+}
+
+.persona-dash__enter-flash {
+  animation: personaEnter 0.28s ease;
+}
+
+@keyframes personaEnter {
+  from {
+    opacity: 0.6;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .persona-dash__item,
+  .persona-dash__stat-fill {
+    transition: none;
   }
 }

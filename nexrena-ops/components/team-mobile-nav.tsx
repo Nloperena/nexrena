@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from 'react'
 import { useMessages } from '@/lib/store'
+import { useFormSubmissions } from '@/lib/form-submissions-context'
 import { teamFocusRing, teamNavLabelClass } from '@/lib/team-a11y'
 import {
   isTeamMoreRouteActive,
@@ -63,16 +64,22 @@ export function TeamMobileNavProvider({ children }: { children: ReactNode }) {
   )
 }
 
+function navBadgeCount(item: TeamNavItem, messageUnread: number, formsNewCount: number) {
+  if (item.badge === 'messages') return messageUnread
+  if (item.badge === 'forms') return formsNewCount
+  return 0
+}
+
 function TabLink({
   item,
   active,
-  unreadCount,
+  badgeCount,
 }: {
   item: TeamNavItem
   active: boolean
-  unreadCount: number
+  badgeCount: number
 }) {
-  const showBadge = item.badge === 'messages' && unreadCount > 0
+  const showBadge = badgeCount > 0
 
   return (
     <Link
@@ -86,7 +93,7 @@ function TabLink({
         {item.icon}
         {showBadge && (
           <span className="absolute -top-1.5 -right-2.5 min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-gold text-obsidian text-[10px] font-bold flex items-center justify-center">
-            {unreadCount > 9 ? '9+' : unreadCount}
+            {badgeCount > 9 ? '9+' : badgeCount}
           </span>
         )}
       </span>
@@ -100,8 +107,11 @@ function TabLink({
 function TeamMobileBottomBar() {
   const path = usePathname()
   const { unreadCount } = useMessages()
+  const { newCount: formsNewCount } = useFormSubmissions()
   const { openMenu } = useTeamMobileNav()
   const moreActive = isTeamMoreRouteActive(path)
+
+  if (path === '/messages') return null
 
   return (
     <nav
@@ -114,7 +124,7 @@ function TeamMobileBottomBar() {
             key={item.href}
             item={item}
             active={isTeamNavActive(path, item.href)}
-            unreadCount={unreadCount}
+            badgeCount={navBadgeCount(item, unreadCount, formsNewCount)}
           />
         ))}
         <button
@@ -138,15 +148,15 @@ function TeamMobileBottomBar() {
 function MenuLink({
   item,
   active,
-  unreadCount,
+  badgeCount,
   onNavigate,
 }: {
   item: TeamNavItem
   active: boolean
-  unreadCount: number
+  badgeCount: number
   onNavigate: () => void
 }) {
-  const showBadge = item.badge === 'messages' && unreadCount > 0
+  const showBadge = badgeCount > 0
 
   return (
     <Link
@@ -165,7 +175,7 @@ function MenuLink({
       <span className={`${teamNavLabelClass} flex-1`}>{item.label}</span>
       {showBadge && (
         <span className="min-w-[1.5rem] h-6 px-2 rounded-full bg-gold text-obsidian text-xs font-bold flex items-center justify-center tabular-nums">
-          {unreadCount > 99 ? '99+' : unreadCount}
+          {badgeCount > 99 ? '99+' : badgeCount}
         </span>
       )}
     </Link>
@@ -175,6 +185,7 @@ function MenuLink({
 function TeamFullScreenMenu() {
   const path = usePathname()
   const { unreadCount } = useMessages()
+  const { newCount: formsNewCount } = useFormSubmissions()
   const { menuOpen, closeMenu } = useTeamMobileNav()
 
   if (!menuOpen) return null
@@ -212,7 +223,7 @@ function TeamFullScreenMenu() {
                   key={item.href}
                   item={item}
                   active={isTeamNavActive(path, item.href)}
-                  unreadCount={unreadCount}
+                  badgeCount={navBadgeCount(item, unreadCount, formsNewCount)}
                   onNavigate={closeMenu}
                 />
               ))}

@@ -5,11 +5,11 @@ const SMTP_HOST = process.env.SMTP_HOST
 const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587', 10)
 const SMTP_USER = process.env.SMTP_USER
 const SMTP_PASS = process.env.SMTP_PASS
-const NOTIFY_TO = process.env.NOTIFY_EMAIL || 'NicholasL@Nexrena.com'
+const NOTIFY_TO = process.env.NOTIFY_EMAIL || 'nicholasl@nexrena.com'
 const NOTIFY_FROM = process.env.NOTIFY_FROM || 'Nexrena Leads <leads@nexrena.com>'
 const MESSAGE_NOTIFY_TO = [
   'NicholasLoperena@gmail.com',
-  'NicholasL@Nexrena.com',
+  'nicholasl@nexrena.com',
 ]
 const OPS_URL = (process.env.PORTAL_URL || 'https://nexrena-ops.vercel.app').replace(/\/$/, '')
 
@@ -117,6 +117,60 @@ export async function notifyFormSubmission(data: FormSubmissionData): Promise<vo
     console.log(`[notify] Form submission notification sent for ${data.email} (${data.siteKey})`)
   } catch (err) {
     console.error('[notify] Failed to send form submission notification:', err)
+  }
+}
+
+export async function notifyFormSubmitterThankYou(data: FormSubmissionData): Promise<void> {
+  if (!transporter) {
+    console.log('[notify] SMTP not configured — skipping submitter thank-you email')
+    return
+  }
+
+  const subject = `We received your message — ${data.siteLabel}`
+  const safeName = escapeHtml(data.name)
+  const safeSite = escapeHtml(data.siteLabel)
+
+  const text = [
+    `Hi ${data.name},`,
+    ``,
+    `Thank you for contacting ${data.siteLabel}. We received your message and will respond within two business days.`,
+    ``,
+    `If anything is urgent, call us at 252.406.3102 or email Warren@TwoAzaleaGroup.com.`,
+    ``,
+    `— The Two Azalea Group`,
+  ].join('\n')
+
+  const html = `
+    <div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background: #0C0F12; padding: 24px 32px; border-bottom: 2px solid #C9A96E;">
+        <h1 style="color: #FDFCFA; font-size: 20px; margin: 0; font-weight: 400;">
+          Thank you, ${safeName}
+        </h1>
+      </div>
+      <div style="padding: 24px 32px; background: #141820; color: #A8B5C4;">
+        <p style="margin: 0 0 16px; color: #FDFCFA;">Hi ${safeName},</p>
+        <p style="margin: 0 0 16px; line-height: 1.6;">
+          Thank you for contacting ${safeSite}. We received your message and will respond within two business days.
+        </p>
+        <p style="margin: 0; font-size: 14px; color: #7A8A9E; line-height: 1.6;">
+          If anything is urgent, call <a href="tel:2524063102" style="color: #C9A96E;">252.406.3102</a>
+          or email <a href="mailto:Warren@TwoAzaleaGroup.com" style="color: #C9A96E;">Warren@TwoAzaleaGroup.com</a>.
+        </p>
+      </div>
+    </div>
+  `
+
+  try {
+    await transporter.sendMail({
+      from: NOTIFY_FROM,
+      to: data.email,
+      subject,
+      text,
+      html,
+    })
+    console.log(`[notify] Submitter thank-you sent to ${data.email} (${data.siteKey})`)
+  } catch (err) {
+    console.error('[notify] Failed to send submitter thank-you:', err)
   }
 }
 

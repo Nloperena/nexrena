@@ -24,6 +24,8 @@ import resourceRoutes from './routes/resources'
 import stripeWebhookRoutes from './routes/stripe-webhook'
 import formRoutes from './routes/forms'
 import portalFormSubmissionRoutes from './routes/portal-form-submissions'
+import portalWebsiteMediaOpsRoutes from './routes/portal-website-media-ops'
+import { handleOpsMessageStream, handlePortalMessageStream } from './lib/message-stream'
 import { runDueBilling } from './lib/billing'
 import { allSiteOrigins } from './lib/sites'
 
@@ -46,8 +48,8 @@ const allowedOrigins = [
   ...allSiteOrigins(),
 ]
 
-// Also allow all Vercel preview deployments for nexrena projects
-const VERCEL_PREVIEW_RE = /^https:\/\/nexrena[\w-]*\.vercel\.app$/
+// Also allow Vercel preview deployments for nexrena and TTAG projects
+const VERCEL_PREVIEW_RE = /^https:\/\/(nexrena|ttag)[\w-]*\.vercel\.app$/
 
 function isAllowedOrigin(origin: string | undefined): boolean {
   if (!origin) return true  // curl, Postman, server-to-server
@@ -94,7 +96,10 @@ app.use('/api/forms', leadLimiter, formRoutes)           // POST /submit public;
 app.use('/api/portal', portalAuthLimiter, portalRoutes) // register/login public; rest portal-auth inside
 app.use('/api/service-requests', requireAuth, serviceRequestRoutes)
 app.use('/api/portal-assets', requireAuth, portalAssetsOpsRoutes)
+app.use('/api/portal-website-media', requireAuth, portalWebsiteMediaOpsRoutes)
 app.use('/api/resources', requireAuth, resourceRoutes)
+app.get('/api/messages/stream', handleOpsMessageStream)
+app.get('/api/portal/messages/stream', handlePortalMessageStream)
 app.use('/api/messages', requireAuth, messageRoutes)
 app.use('/api/contacts', requireAuth, contactRoutes)
 app.use('/api/projects', requireAuth, projectRoutes)

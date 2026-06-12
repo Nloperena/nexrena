@@ -1,12 +1,16 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, type FormEvent, type ReactNode } from 'react'
+import { usePathname } from 'next/navigation'
 import { Btn } from '@/components/ui'
 import { portalInputCls, portalLabelClass, portalFocusRing } from '@/lib/portal-a11y'
 import { PortalMediaPanel } from '@/components/portal-media-panel'
 import { PORTAL_IMAGES } from '@/lib/portal-imagery'
 import { ClientDashboard } from '@/components/client-dashboard'
 import { PwaInstallPrompt } from '@/components/pwa-install-prompt'
+import { NexrenaLogo } from '@/components/nexrena-logo'
+import { OAuthSignInButtons } from '@/components/oauth-sign-in-buttons'
+import { fetchOAuthProviders } from '@/lib/oauth'
 import {
   getPortalToken,
   loginPortalAccount,
@@ -71,6 +75,7 @@ function setLoginMode(mode: LoginMode, setMode: (mode: LoginMode) => void) {
 }
 
 export function AuthGate({ children }: Props) {
+  const pathname = usePathname()
   const [hydrated, setHydrated] = useState(false)
   const [role, setRole] = useState<AuthRole>(null)
   const [teamDisplayName, setTeamDisplayNameState] = useState(ADMIN_USER)
@@ -81,11 +86,18 @@ export function AuthGate({ children }: Props) {
   const [company, setCompany] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [teamOAuthEnabled, setTeamOAuthEnabled] = useState(false)
 
   useEffect(() => {
-    const isAdmin = sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true'
+    fetchOAuthProviders().then((p) => setTeamOAuthEnabled(p.teamOAuth))
+  }, [])
+
+  useEffect(() => {
+    const isAdmin = localStorage.getItem(ADMIN_SESSION_KEY) === 'true'
+      || sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true'
     const hasClientToken = Boolean(getPortalToken())
-    const storedDisplayName = sessionStorage.getItem(ADMIN_DISPLAY_NAME_KEY)
+    const storedDisplayName = localStorage.getItem(ADMIN_DISPLAY_NAME_KEY)
+      || sessionStorage.getItem(ADMIN_DISPLAY_NAME_KEY)
     if (storedDisplayName) setTeamDisplayNameState(storedDisplayName)
     if (isAdmin) setRole('admin')
     else if (hasClientToken) setRole('client')
@@ -103,11 +115,13 @@ export function AuthGate({ children }: Props) {
   }, [])
 
   const setTeamDisplayName = (name: string) => {
+    localStorage.setItem(ADMIN_DISPLAY_NAME_KEY, name)
     sessionStorage.setItem(ADMIN_DISPLAY_NAME_KEY, name)
     setTeamDisplayNameState(name)
   }
 
   const signOut = () => {
+    localStorage.removeItem(ADMIN_SESSION_KEY)
     sessionStorage.removeItem(ADMIN_SESSION_KEY)
     logoutPortal()
     setRole(null)
@@ -133,6 +147,7 @@ export function AuthGate({ children }: Props) {
           return
         }
         logoutPortal()
+        localStorage.setItem(ADMIN_SESSION_KEY, 'true')
         sessionStorage.setItem(ADMIN_SESSION_KEY, 'true')
         setRole('admin')
         return
@@ -154,6 +169,7 @@ export function AuthGate({ children }: Props) {
       }
 
       sessionStorage.removeItem(ADMIN_SESSION_KEY)
+      localStorage.removeItem(ADMIN_SESSION_KEY)
       setRole('client')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign in failed.')
@@ -166,6 +182,10 @@ export function AuthGate({ children }: Props) {
 
   if (!hydrated) {
     return <div className="min-h-screen bg-[#111418]" />
+  }
+
+  if (pathname?.startsWith('/oauth/callback')) {
+    return <>{children}</>
   }
 
   if (role === 'admin') {
@@ -194,7 +214,7 @@ export function AuthGate({ children }: Props) {
       <div className="flex items-center justify-center px-6 py-12 lg:px-12">
         <div className="w-full max-w-lg">
         <div className="mb-8">
-          <p className="text-base text-gold font-medium">Nexrena</p>
+          <NexrenaLogo size="lg" className="mb-6" />
           <h1 className="font-serif text-3xl text-white mt-2 leading-tight">
             {isTeam ? 'Team sign in' : isSignUp ? 'Create your account' : 'Client sign in'}
           </h1>
@@ -263,6 +283,19 @@ export function AuthGate({ children }: Props) {
             </Btn>
           </div>
         </form>
+
+        {!isTeam && <OAuthSignInButtons intent="client" disabled={loading} />}
+
+        {isTeam && teamOAuthEnabled && (
+          <>
+            <div className="flex items-center gap-3 my-6">
+              <div className="h-px flex-1 bg-slate-700/60" />
+              <span className="text-sm text-slate-400">or team SSO</span>
+              <div className="h-px flex-1 bg-slate-700/60" />
+            </div>
+            <OAuthSignInButtons intent="team" disabled={loading} />
+          </>
+        )}
         </div>
       </div>
 
