@@ -13,9 +13,170 @@ export const engagementModels: Array<{
   {
     id: 'waas',
     label: 'Website as a Service (WaaS)',
-    description: 'Monthly partnership — site, hosting, updates, and ongoing growth.',
+    description: 'Managed website — design, hosting, updates, and ongoing care for one monthly price.',
   },
 ];
+
+export const waasPageCopy = {
+  hero: {
+    title: 'A website that stays maintained, updated, and ready for customers.',
+    subtitle:
+      'Nexrena builds and manages modern websites for small businesses — without the upfront build cost, hosting headaches, or “launch and forget” cycle.',
+  },
+  pain: {
+    eyebrow: 'The problem',
+    headline: 'Most websites are launched and forgotten.',
+    body: [
+      'They look fine at first. Then nobody updates them. Nobody checks speed. Nobody fixes broken sections. Nobody improves SEO.',
+      'Eventually the site stops helping the business grow — but hosting bills and maintenance requests keep showing up.',
+    ],
+  },
+  positioning: {
+    eyebrow: 'Website + care',
+    headline: 'Not just a website. A managed online presence.',
+    body:
+      'Your website should not be a one-time project that gets abandoned after launch. Nexrena gives you a professionally built site with hosting, updates, support, SEO basics, performance monitoring, and ongoing improvements included — so you focus on running your business while we keep your site working, improving, and ready for customers.',
+  },
+  valueAnchor: {
+    headline: 'One predictable monthly price — instead of a big upfront bill plus surprise costs later.',
+    body:
+      'A normal small-business website often costs $1,500–$5,000 upfront. Then hosting, edits, fixes, and maintenance are separate. Nexrena Website-as-a-Service gives you a managed website for one monthly price — no huge upfront cost, 12-month minimum.',
+  },
+  included: {
+    eyebrow: 'What is included',
+    headline: 'Everything you need to look trustworthy online',
+    items: [
+      'Custom website design',
+      'Mobile-first build',
+      'Hosting included',
+      'Security and maintenance',
+      'Monthly edits',
+      'Basic SEO setup',
+      'Speed optimization',
+      'Contact forms / lead capture',
+      'Analytics setup',
+      'Ongoing support',
+    ],
+  },
+  audience: {
+    eyebrow: 'Who this is for',
+    headline: 'Built for local and small businesses that need more than a template',
+    items: [
+      { title: 'Local service businesses', detail: 'Contractors, clinics, salons, and shops that need a clean, credible web presence.' },
+      { title: 'Growing teams', detail: 'Businesses ready to turn their website into a steady source of leads — not just a brochure.' },
+      { title: 'Owners who hate tech', detail: 'No time for hosting dashboards, plugin updates, or chasing freelancers for small fixes.' },
+    ],
+  },
+  comparison: {
+    eyebrow: 'Compare',
+    headline: 'Traditional website vs Nexrena monthly plan',
+    traditional: [
+      '$1,500–$8,000+ upfront for design and build',
+      'Hosting billed separately',
+      'Edits and fixes quoted per request',
+      'SEO and speed often “extra”',
+      'Site goes stale after launch',
+    ],
+    nexrena: [
+      'No huge upfront build fee',
+      'Hosting and maintenance included',
+      'Monthly edits built into your plan',
+      'SEO basics and performance care included',
+      'Ongoing support — site keeps improving',
+    ],
+  },
+} as const;
+
+export const waasTiers = [
+  {
+    id: 'waas-starter',
+    name: 'Starter',
+    priceLabel: '$149',
+    priceSuffix: '/mo',
+    budgetValue: '149/mo',
+    tagline: 'For simple local businesses that need a clean online presence.',
+    minimum: '12-month minimum',
+    recommended: false,
+    features: [
+      '1–3 page website',
+      'Hosting included',
+      'Mobile-first design',
+      'Contact form',
+      'Basic SEO setup',
+      '30 minutes of edits per month',
+    ],
+  },
+  {
+    id: 'waas-growth',
+    name: 'Growth',
+    priceLabel: '$249',
+    priceSuffix: '/mo',
+    budgetValue: '249/mo',
+    tagline: 'For businesses that want their website to actually bring in leads.',
+    minimum: '12-month minimum · Recommended',
+    recommended: true,
+    features: [
+      'Everything in Starter',
+      'Up to 5 pages',
+      'Stronger homepage sections',
+      'Google Business Profile guidance',
+      'Monthly content & update support',
+      'Basic analytics',
+      '1 hour of edits per month',
+    ],
+  },
+  {
+    id: 'waas-pro',
+    name: 'Pro',
+    priceLabel: '$399',
+    priceSuffix: '/mo+',
+    budgetValue: '399/mo',
+    tagline: 'For businesses that need more serious marketing support.',
+    minimum: '12-month minimum',
+    recommended: false,
+    features: [
+      'Everything in Growth',
+      'Service & location pages',
+      'Blog or SEO page support',
+      'Conversion improvements',
+      'Priority support',
+      '2 hours of edits per month',
+    ],
+  },
+] as const;
+
+export const waasPricingFaq = [
+  {
+    id: 'waas-setup-fee',
+    question: 'Is there a setup fee?',
+    answer:
+      'Our standard WaaS plans have no huge upfront build fee — just a simple monthly website care plan with a 12-month minimum. If you need a custom scope beyond your tier, we will quote it clearly before you commit.',
+  },
+  {
+    id: 'waas-minimum',
+    question: 'Why a 12-month minimum?',
+    answer:
+      'A great website is built and improved over time — not abandoned after launch. The minimum lets us invest properly in your design, setup, and first months of care without relying on a large upfront project fee.',
+  },
+  {
+    id: 'waas-edits',
+    question: 'What counts as a monthly edit?',
+    answer:
+      'Copy changes, photo swaps, hours updates, new team members, minor layout tweaks, and small section adjustments. Larger new pages or features may be scoped separately or covered under Pro.',
+  },
+  {
+    id: 'waas-vs-diy',
+    question: 'How is this different from Wix or Squarespace?',
+    answer:
+      'DIY builders are cheap but you do the work — design, setup, updates, and fixes. Nexrena is a managed service: we design, build, host, maintain, and support your site so it stays fast, secure, and effective.',
+  },
+  {
+    id: 'waas-cancel',
+    question: 'What if I need to cancel?',
+    answer:
+      'After your 12-month minimum, you can cancel with 30 days notice. You can also purchase your website source files for a one-time export fee if you want to move off WaaS — ask us for details.',
+  },
+] as const;
 
 export const projectBuildTiers = [
   {
@@ -41,72 +202,12 @@ export const projectBuildTiers = [
   },
 ] as const;
 
-export const waasTiers = [
-  {
-    id: 'waas-essentials',
-    name: 'Essentials',
-    priceLabel: '$3,000',
-    priceSuffix: '/mo',
-    budgetValue: '3000/mo',
-    tagline: 'Keep the site healthy and improving without hiring in-house.',
-    includes: 'Maintenance, analytics, 2 content updates/mo, minor site changes',
-    minimum: '3-month minimum',
-    recommended: false,
-    features: [
-      'Hosting, SSL, and uptime monitoring',
-      'Security patches & dependency updates',
-      'Monthly analytics snapshot',
-      '2 content or copy updates per month',
-      'Minor design tweaks & bug fixes',
-      'Email support · 1 business day response',
-    ],
-  },
-  {
-    id: 'waas-growth',
-    name: 'Growth',
-    priceLabel: '$5,000',
-    priceSuffix: '/mo',
-    budgetValue: '5000/mo',
-    tagline: 'For teams that want the site to actively drive pipeline.',
-    includes: 'Essentials + SEO optimization, A/B testing, quarterly roadmap',
-    minimum: '3-month minimum',
-    recommended: true,
-    features: [
-      'Everything in Essentials',
-      'Technical SEO & on-page optimization',
-      'Conversion experiments (A/B tests)',
-      'Quarterly growth roadmap session',
-      'Landing page iterations',
-      'Priority support · same-day triage',
-    ],
-  },
-  {
-    id: 'waas-strategic',
-    name: 'Strategic',
-    priceLabel: '$8,000',
-    priceSuffix: '/mo',
-    budgetValue: '8000/mo',
-    tagline: 'Senior operator embedded — new features, not just maintenance.',
-    includes: 'Growth + new feature development, paid media coordination',
-    minimum: '3-month minimum',
-    recommended: false,
-    features: [
-      'Everything in Growth',
-      'New features & sections shipped monthly',
-      'Paid media landing page coordination',
-      'CMS workflow & team training',
-      'Dedicated Slack channel',
-      'Monthly strategy call with founder',
-    ],
-  },
-] as const;
-
 export const pricingTransparency = {
-  headline: 'Transparent pricing. No “contact us for a quote.”',
+  headline: 'Simple monthly website care plans.',
   subhead:
-    'Monthly WaaS plans include hosting, updates, and senior execution — billed monthly with a 3-month minimum. One-time builds are scoped before we invoice.',
-  billingNote: 'All WaaS plans billed monthly · 3-month minimum · Cancel with 30 days notice after minimum',
-  projectNote: 'One-time projects: 50% to start, 50% at launch unless otherwise scoped.',
+    'Website, hosting, edits, maintenance, and support — one predictable price. No “contact us for a quote” on standard WaaS tiers.',
+  billingNote: 'All WaaS plans billed monthly · 12-month minimum · Cancel with 30 days notice after minimum',
+  projectNote: 'Need a larger custom build? One-time projects are scoped separately — 50% to start, 50% at launch.',
 } as const;
 
 export const projectBudgetOptions = [

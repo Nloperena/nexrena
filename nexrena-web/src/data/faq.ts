@@ -36,13 +36,13 @@ export const faqItems = [
     id: 'project-pricing-model',
     question: 'How do you charge for projects?',
     answer:
-      'One-time builds typically run $10k–$50k+ depending on scope. Website as a Service (WaaS) starts at $3,000/mo with a 3-month minimum. See pricing on our contact page or submit the form for a scoped recommendation.',
+      'Standard WaaS plans start at $149/mo (Starter), $249/mo (Growth), and $399/mo (Pro) with a 12-month minimum — website, hosting, edits, and support included. Larger custom builds are scoped as one-time projects ($10k–$50k+). See our pricing page for full details.',
   },
   {
     id: 'waas-pricing',
     question: 'What is Website as a Service (WaaS)?',
     answer:
-      'WaaS is a monthly partnership: your site, hosting, updates, analytics, and ongoing growth work under one retainer. Essentials is $3,000/mo, Growth is $5,000/mo, and Strategic is $8,000/mo — all with a 3-month minimum.',
+      'WaaS is a managed website plan: we design and build your site, then handle hosting, maintenance, monthly edits, SEO basics, and support for one predictable monthly price. Starter is $149/mo, Growth is $249/mo (recommended), and Pro is $399/mo+ — all with a 12-month minimum and no huge upfront build fee on standard tiers.',
   },
   {
     id: 'ongoing-support-after-launch',
