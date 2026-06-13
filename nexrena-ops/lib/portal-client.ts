@@ -211,15 +211,22 @@ export function createPortalBalanceCheckout() {
   )
 }
 
-export function fetchPortalProducts(category?: 'website' | 'seo' | 'extension') {
+export function fetchPortalProducts(category?: import('./product-catalog').ServiceCategory) {
   const qs = category ? `?category=${encodeURIComponent(category)}` : ''
-  return portalFetch<import('./product-catalog').PortalProduct[]>(`/api/portal/products${qs}`)
+  return portalFetch<import('./product-catalog').PortalCatalogResponse>(`/api/portal/products${qs}`)
 }
 
 export function createPortalProductCheckout(sku: string) {
   return portalFetch<{ url: string | null; sessionId: string; sku: string }>(
     '/api/portal/products/checkout',
     { method: 'POST', body: JSON.stringify({ sku }) },
+  )
+}
+
+export function requestPortalProductQuote(sku: string, message?: string) {
+  return portalFetch<{ ok: boolean; requestId: string }>(
+    '/api/portal/products/quote',
+    { method: 'POST', body: JSON.stringify({ sku, message }) },
   )
 }
 

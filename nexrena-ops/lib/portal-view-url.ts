@@ -34,12 +34,17 @@ export function writePortalViewToUrl(view: ClientPortalView) {
   }
 }
 
-export function readPortalShopParams(): { sku: string | null; purchased: boolean | null } {
-  if (typeof window === 'undefined') return { sku: null, purchased: null }
+export function readPortalShopParams(): {
+  sku: string | null
+  category: string | null
+  purchased: boolean | null
+} {
+  if (typeof window === 'undefined') return { sku: null, category: null, purchased: null }
   const params = new URLSearchParams(window.location.search)
   const purchased = params.get('purchased')
   return {
     sku: params.get('sku'),
+    category: params.get('category'),
     purchased: purchased === '1' ? true : purchased === '0' ? false : null,
   }
 }

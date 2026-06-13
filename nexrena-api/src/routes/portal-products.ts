@@ -1,22 +1,35 @@
 import { Router } from 'express'
+import { prisma } from '../lib/prisma'
 import { requirePortalAuth } from '../middleware/portal-auth'
 import { isStripeConfigured, portalReturnUrl } from '../lib/stripe'
-import { catalogProductForClient, listCatalogProducts, type ProductCategory } from '../lib/product-catalog'
+import {
+  CATEGORY_ORDER,
+  UNIVERSAL_SCOPE_LANGUAGE,
+  catalogServiceForClient,
+  getCatalogService,
+  listCatalogServices,
+  type ServiceCategory,
+} from '../lib/service-catalog'
 import { createProductCheckoutSession } from '../lib/stripe-products'
 
 const router = Router()
 
-/** GET /api/portal/products — catalog (optional ?category=website|seo|extension) */
+const VALID_CATEGORIES = new Set<ServiceCategory>(CATEGORY_ORDER)
+
+/** GET /api/portal/products — full service menu (?category=website-plan|...) */
 router.get('/', async (req, res) => {
-  const category = req.query.category as ProductCategory | undefined
-  const validCategories = new Set(['website', 'seo', 'extension'])
-  const products = listCatalogProducts(
-    category && validCategories.has(category) ? category : undefined,
-  )
-  res.json(products.map(catalogProductForClient))
+  const raw = req.query.category as string | undefined
+  const category =
+    raw && VALID_CATEGORIES.has(raw as ServiceCategory) ? (raw as ServiceCategory) : undefined
+  const services = listCatalogServices(category)
+  res.json({
+    scopeLanguage: UNIVERSAL_SCOPE_LANGUAGE,
+    categories: CATEGORY_ORDER,
+    services: services.map(catalogServiceForClient),
+  })
 })
 
-/** POST /api/portal/products/checkout — buy a catalog product */
+/** POST /api/portal/products/checkout — buy a catalog service */
 router.post('/checkout', requirePortalAuth, async (req, res) => {
   const { sku } = req.body as { sku?: string }
   if (!sku?.trim()) {
@@ -44,6 +57,42 @@ router.post('/checkout', requirePortalAuth, async (req, res) => {
   } catch (err) {
     res.status(400).json({ error: err instanceof Error ? err.message : 'Checkout failed' })
   }
+})
+
+/** POST /api/portal/products/quote — request scope review for advanced/scoped services */
+router.post('/quote', requirePortalAuth, async (req, res) => {
+  const { sku, message } = req.body as { sku?: string; message?: string }
+  if (!sku?.trim()) {
+    res.status(400).json({ error: 'sku is required' })
+    return
+  }
+
+  const service = getCatalogService(sku.trim())
+  if (!service) {
+    res.status(404).json({ error: 'Unknown service' })
+    return
+  }
+
+  const account = await prisma.portalAccount.findUnique({
+    where: { id: req.portalUser!.accountId },
+  })
+
+  const row = await prisma.serviceRequest.create({
+    data: {
+      contactId: req.portalUser!.contactId,
+      portalAccountId: account?.id ?? null,
+      projectType: service.projectType,
+      description: message?.trim()
+        || `Quote request: ${service.name} (${service.sku}). ${service.scopeBoundary}`,
+      budget: service.priceLabel,
+      timeline: 'Pending scope review',
+      source: 'portal-shop-quote',
+      status: 'new',
+      internalNotes: `Quote request for ${service.sku}`,
+    },
+  })
+
+  res.status(201).json({ ok: true, requestId: row.id })
 })
 
 export default router

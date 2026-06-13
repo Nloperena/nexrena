@@ -10,7 +10,8 @@ import { useAuth } from '@/components/auth-gate'
 import { UserMenu } from '@/components/user-menu'
 import { TeamSettingsModal } from '@/components/team-settings-modal'
 import { getTeamPageContext } from '@/lib/team-page-titles'
-import { TEAM_MAIN_OFFSET, TEAM_MOBILE_BOTTOM_PAD } from '@/lib/team-a11y'
+import { AccountSettingsButton } from '@/components/account-settings-button'
+import { TEAM_LAYOUT_GRID, TEAM_MOBILE_BOTTOM_PAD } from '@/lib/team-a11y'
 import { FormSubmissionsProvider } from '@/lib/form-submissions-context'
 import { ApiConnectionBanner } from '@/components/api-connection-banner'
 
@@ -28,10 +29,10 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   return (
     <FormSubmissionsProvider enabled>
       <TeamMobileNavProvider>
-      <div className="team-ops min-h-screen overflow-x-hidden bg-[#111418]">
-        <TeamSidebar />
+      <div className={`team-ops min-h-screen overflow-x-hidden bg-[#111418] ${TEAM_LAYOUT_GRID}`}>
+        <TeamSidebar onOpenSettings={() => setSettingsOpen(true)} />
 
-        <div className={`flex min-h-screen w-full min-w-0 flex-col ${TEAM_MAIN_OFFSET}`}>
+        <div className="flex min-h-screen w-full min-w-0 flex-col">
           {/* Mobile: full chrome hidden in thread; minimal bar on Messages list */}
           {isMessenger ? (
           <header className="sticky top-0 z-40 border-b border-slate-700/40 bg-[#111418]/95 backdrop-blur-md lg:hidden">
@@ -39,12 +40,17 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <Link href="/" className="min-w-0 text-sm text-slate-400 hover:text-white">
                 ← Dashboard
               </Link>
-              <UserMenu
-                name={teamDisplayName}
-                subtitle="Team"
-                onOpenSettings={() => setSettingsOpen(true)}
-                onSignOut={signOut}
-              />
+              <div className="flex items-center gap-2 shrink-0">
+                <AccountSettingsButton
+                  onClick={() => setSettingsOpen(true)}
+                  size="sm"
+                />
+                <UserMenu
+                  name={teamDisplayName}
+                  subtitle="Team"
+                  onSignOut={signOut}
+                />
+              </div>
             </div>
           </header>
           ) : (
@@ -53,12 +59,17 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <Link href="/" className="min-w-0">
                 <NexrenaLogo size="sm" />
               </Link>
-              <UserMenu
-                name={teamDisplayName}
-                subtitle="Team"
-                onOpenSettings={() => setSettingsOpen(true)}
-                onSignOut={signOut}
-              />
+              <div className="flex items-center gap-2 shrink-0">
+                <AccountSettingsButton
+                  onClick={() => setSettingsOpen(true)}
+                  size="sm"
+                />
+                <UserMenu
+                  name={teamDisplayName}
+                  subtitle="Team"
+                  onSignOut={signOut}
+                />
+              </div>
             </div>
           </header>
           )}
@@ -73,12 +84,14 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   <p className="truncate text-sm text-slate-400">{page.subtitle}</p>
                 )}
               </div>
-              <UserMenu
-                name={teamDisplayName}
-                subtitle="Team"
-                onOpenSettings={() => setSettingsOpen(true)}
-                onSignOut={signOut}
-              />
+              <div className="flex items-center gap-2 shrink-0">
+                <AccountSettingsButton onClick={() => setSettingsOpen(true)} size="sm" />
+                <UserMenu
+                  name={teamDisplayName}
+                  subtitle="Team"
+                  onSignOut={signOut}
+                />
+              </div>
             </div>
             <div className="border-t border-slate-800/40 px-8 py-2.5">
               <p className="text-sm text-slate-300">

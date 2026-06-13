@@ -98,7 +98,7 @@ export function ClientDashboard({ onSignOut }: Props) {
   const [uploadOpen, setUploadOpen] = useState(false)
   const [viewInvoice, setViewInvoice] = useState<PortalInvoice | null>(null)
   const [viewLoading, setViewLoading] = useState(false)
-  const [shopParams, setShopParams] = useState({ sku: null as string | null, purchased: null as boolean | null })
+  const [shopParams, setShopParams] = useState({ sku: null as string | null, category: null as string | null, purchased: null as boolean | null })
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -337,6 +337,7 @@ export function ClientDashboard({ onSignOut }: Props) {
           <ClientShopView
             stripeEnabled={stripeEnabled}
             highlightSku={shopParams.sku}
+            initialCategory={shopParams.category}
             purchased={shopParams.purchased}
           />
         )

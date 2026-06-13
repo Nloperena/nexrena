@@ -3,9 +3,9 @@
 
 
 export const TEAM_SIDEBAR_WIDTH = 'w-[260px]'
-
-/** Sidebar is desktop-only (lg+) so tablets get full-width + bottom nav. */
-
+/** Grid column for sidebar + main — avoids fixed overlay on content */
+export const TEAM_LAYOUT_GRID = 'lg:grid lg:grid-cols-[260px_minmax(0,1fr)]'
+/** @deprecated Use TEAM_LAYOUT_GRID */
 export const TEAM_MAIN_OFFSET = 'lg:ml-[260px]'
 
 export const TEAM_MOBILE_BOTTOM_PAD = 'pb-[max(6.5rem,calc(5.5rem+env(safe-area-inset-bottom)))] lg:pb-0'

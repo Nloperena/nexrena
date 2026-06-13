@@ -1,6 +1,9 @@
 /** Shared typography, contrast, and touch targets for the client portal (older-user friendly). */
 
 export const PORTAL_SIDEBAR_WIDTH = 'w-[4.5rem]'
+/** Grid column for sidebar + main — avoids fixed overlay on content */
+export const PORTAL_LAYOUT_GRID = 'md:grid md:grid-cols-[4.5rem_minmax(0,1fr)]'
+/** @deprecated Use PORTAL_LAYOUT_GRID; margin offset alone can let content sit under fixed rails */
 export const PORTAL_MAIN_OFFSET = 'md:ml-[4.5rem]'
 
 /** Page / section headings */

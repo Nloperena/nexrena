@@ -31,7 +31,6 @@ export const CLIENT_NAV_ITEMS: NavItem[] = [
   { id: 'websites', label: 'Website' },
   { id: 'forms', label: 'Form leads', badge: 'forms' },
   { id: 'requests', label: 'Requests' },
-  { id: 'settings', label: 'Settings' },
 ]
 
 type NavButtonProps = {

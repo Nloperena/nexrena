@@ -13,11 +13,10 @@ function initials(name: string) {
 type Props = {
   name: string
   subtitle?: string
-  onOpenSettings: () => void
   onSignOut: () => void
 }
 
-export function UserMenu({ name, subtitle, onOpenSettings, onSignOut }: Props) {
+export function UserMenu({ name, subtitle, onSignOut }: Props) {
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
 
@@ -66,14 +65,6 @@ export function UserMenu({ name, subtitle, onOpenSettings, onSignOut }: Props) {
             <p className="text-base text-white truncate">{name}</p>
             {subtitle && <p className="text-sm text-slate-400 truncate">{subtitle}</p>}
           </div>
-          <button
-            type="button"
-            role="menuitem"
-            className={`w-full text-left px-4 py-3.5 text-base text-slate-200 hover:bg-slate-800/50 hover:text-white transition-colors min-h-[52px] ${portalFocusRing}`}
-            onClick={() => { setOpen(false); onOpenSettings() }}
-          >
-            Account settings
-          </button>
           <button
             type="button"
             role="menuitem"

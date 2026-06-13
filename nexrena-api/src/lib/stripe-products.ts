@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto'
 import { prisma } from './prisma'
 import { nextInvoiceNumber } from './invoice-utils'
-import { getCatalogProduct, type CatalogProduct } from './product-catalog'
+import { getCatalogService, type CatalogService } from './service-catalog'
 import { ensureStripeCustomer } from './stripe-customer'
 import { getStripe, portalReturnUrl } from './stripe'
 import { linkSubscriptionsFromCheckout } from './stripe-subscription'
@@ -13,29 +13,27 @@ function addMonths(isoDate: string, months: number): string {
   return d.toISOString().slice(0, 10)
 }
 
-async function ensureStripePriceForProduct(product: CatalogProduct, localSubId: string): Promise<string> {
+function serviceSummary(service: CatalogService): string {
+  return service.bestFor ?? service.scopeBoundary
+}
+
+async function ensureStripePriceForService(service: CatalogService, localSubId: string): Promise<string> {
   const stripe = getStripe()
   if (!stripe) throw new Error('Stripe is not configured')
+  if (service.priceCents == null) throw new Error('This service requires a custom quote')
 
   const stripeProduct = await stripe.products.create({
-    name: product.name,
-    description: product.description,
-    metadata: { nexrenaProductSku: product.sku, nexrenaSubscriptionId: localSubId },
+    name: service.name,
+    description: serviceSummary(service).slice(0, 500),
+    metadata: { nexrenaProductSku: service.sku, nexrenaSubscriptionId: localSubId },
   })
-
-  const recurring =
-    product.interval === 'annually'
-      ? { interval: 'year' as const }
-      : product.interval === 'quarterly'
-        ? { interval: 'month' as const, interval_count: 3 }
-        : { interval: 'month' as const }
 
   const price = await stripe.prices.create({
     product: stripeProduct.id,
-    unit_amount: product.priceCents,
+    unit_amount: service.priceCents,
     currency: 'usd',
-    recurring,
-    metadata: { nexrenaProductSku: product.sku, nexrenaSubscriptionId: localSubId },
+    recurring: { interval: 'month' },
+    metadata: { nexrenaProductSku: service.sku, nexrenaSubscriptionId: localSubId },
   })
 
   return price.id
@@ -48,8 +46,14 @@ export async function createProductCheckoutSession(params: {
   successUrl?: string
   cancelUrl?: string
 }) {
-  const product = getCatalogProduct(params.sku)
-  if (!product) throw new Error('Unknown product')
+  const service = getCatalogService(params.sku)
+  if (!service) throw new Error('Unknown service')
+  if (!service.checkoutEnabled) {
+    throw new Error('This service requires a scope review before purchase. Request a quote instead.')
+  }
+  if (service.priceCents == null || service.priceCents <= 0) {
+    throw new Error('This service requires a custom quote')
+  }
 
   const stripe = getStripe()
   if (!stripe) throw new Error('Stripe is not configured. Set STRIPE_SECRET_KEY on the API.')
@@ -60,7 +64,7 @@ export async function createProductCheckoutSession(params: {
   const successUrl = params.successUrl ?? `${portalReturnUrl('/?tab=sign-in')}&view=shop&purchased=1`
   const cancelUrl = params.cancelUrl ?? `${portalReturnUrl('/?tab=sign-in')}&view=shop&purchased=0`
 
-  if (product.kind === 'one_time') {
+  if (service.kind === 'one_time') {
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       customer: customerId,
@@ -69,42 +73,42 @@ export async function createProductCheckoutSession(params: {
           quantity: 1,
           price_data: {
             currency: 'usd',
-            unit_amount: product.priceCents,
+            unit_amount: service.priceCents,
             product_data: {
-              name: product.name,
-              description: product.description,
-              metadata: { nexrenaProductSku: product.sku },
+              name: service.name,
+              description: serviceSummary(service).slice(0, 500),
+              metadata: { nexrenaProductSku: service.sku },
             },
           },
         },
       ],
       metadata: {
         checkoutType: 'product',
-        productSku: product.sku,
+        productSku: service.sku,
         contactId: params.contactId,
         portalAccountId: params.accountId,
       },
       success_url: successUrl,
       cancel_url: cancelUrl,
     })
-    return { url: session.url, sessionId: session.id, sku: product.sku }
+    return { url: session.url, sessionId: session.id, sku: service.sku }
   }
 
   const today = new Date().toISOString().slice(0, 10)
   const subId = randomUUID()
-  const priceId = await ensureStripePriceForProduct(product, subId)
+  const priceId = await ensureStripePriceForService(service, subId)
 
   await prisma.subscription.create({
     data: {
       id: subId,
       contactId: params.contactId,
-      description: product.name,
-      amount: product.priceCents / 100,
-      interval: product.interval ?? 'monthly',
+      description: service.name,
+      amount: service.priceCents / 100,
+      interval: service.interval ?? 'monthly',
       status: 'active',
       billingDay: 1,
       nextBillingDate: addMonths(today, 1),
-      notes: `productSku:${product.sku}`,
+      notes: `productSku:${service.sku}`,
       stripePriceId: priceId,
       createdAt: new Date().toISOString(),
     },
@@ -117,13 +121,13 @@ export async function createProductCheckoutSession(params: {
     subscription_data: {
       metadata: {
         contactId: params.contactId,
-        productSku: product.sku,
+        productSku: service.sku,
         nexrenaSubscriptionIds: subId,
       },
     },
     metadata: {
       checkoutType: 'product',
-      productSku: product.sku,
+      productSku: service.sku,
       contactId: params.contactId,
       portalAccountId: params.accountId,
       nexrenaSubscriptionIds: subId,
@@ -132,14 +136,16 @@ export async function createProductCheckoutSession(params: {
     cancel_url: cancelUrl,
   })
 
-  return { url: session.url, sessionId: session.id, sku: product.sku, subscriptionId: subId }
+  return { url: session.url, sessionId: session.id, sku: service.sku, subscriptionId: subId }
 }
 
 async function createPaidProductInvoice(params: {
   contactId: string
-  product: CatalogProduct
+  service: CatalogService
   paymentIntent?: string
 }) {
+  if (params.service.priceCents == null) return
+
   const contact = await prisma.contact.findUnique({ where: { id: params.contactId } })
   const today = new Date().toISOString().slice(0, 10)
   const existingNumbers = (await prisma.invoice.findMany({ select: { number: true } })).map((i) => i.number)
@@ -152,14 +158,14 @@ async function createPaidProductInvoice(params: {
       clientCompany: contact?.company ?? undefined,
       clientEmail: contact?.email ?? undefined,
       contactId: params.contactId,
-      projectName: params.product.name,
+      projectName: params.service.name,
       status: 'paid',
       lineItems: [
         {
           id: randomUUID(),
-          description: params.product.name,
+          description: params.service.name,
           quantity: 1,
-          rate: params.product.priceCents / 100,
+          rate: params.service.priceCents / 100,
           taxable: false,
         },
       ],
@@ -168,7 +174,7 @@ async function createPaidProductInvoice(params: {
       paidDate: today,
       paidVia: 'stripe',
       invoicePhase: 'full',
-      notes: `productSku:${params.product.sku}`,
+      notes: `productSku:${params.service.sku}`,
       stripePaymentIntentId: params.paymentIntent,
       createdAt: new Date().toISOString(),
     },
@@ -178,8 +184,9 @@ async function createPaidProductInvoice(params: {
 async function createProductServiceRequest(params: {
   contactId: string
   accountId?: string
-  product: CatalogProduct
+  service: CatalogService
   source: string
+  note?: string
 }) {
   const account = params.accountId
     ? await prisma.portalAccount.findUnique({ where: { id: params.accountId } })
@@ -189,13 +196,14 @@ async function createProductServiceRequest(params: {
     data: {
       contactId: params.contactId,
       portalAccountId: account?.id ?? null,
-      projectType: params.product.projectType,
-      description: `Purchased ${params.product.name} (${params.product.sku}). ${params.product.description}`,
-      budget: params.product.priceLabel,
-      timeline: params.product.kind === 'recurring' ? 'Ongoing subscription' : 'Standard delivery',
+      projectType: params.service.projectType,
+      description: params.note
+        ?? `Purchased ${params.service.name} (${params.service.sku}). ${params.service.scopeBoundary}`,
+      budget: params.service.priceLabel,
+      timeline: params.service.kind === 'recurring' ? 'Ongoing subscription' : 'Standard delivery',
       source: params.source,
       status: 'new',
-      internalNotes: `Auto-created from product checkout: ${params.product.sku}`,
+      internalNotes: `Service order: ${params.service.sku}`,
     },
   })
 
@@ -204,9 +212,9 @@ async function createProductServiceRequest(params: {
       name: account.name,
       email: account.email,
       company: account.company ?? undefined,
-      message: `Product purchase: ${params.product.name}`,
-      projectType: params.product.projectType,
-      budget: params.product.priceLabel,
+      message: `Service order: ${params.service.name}`,
+      projectType: params.service.projectType,
+      budget: params.service.priceLabel,
     }).catch(() => {})
   }
 }
@@ -220,32 +228,32 @@ export async function handleProductCheckoutCompleted(session: Record<string, unk
   const accountId = metadata.portalAccountId
   if (!sku || !contactId) return true
 
-  const product = getCatalogProduct(sku)
-  if (!product) return true
+  const service = getCatalogService(sku)
+  if (!service) return true
 
   const mode = typeof session.mode === 'string' ? session.mode : undefined
   const paymentIntent =
     typeof session.payment_intent === 'string' ? session.payment_intent : undefined
 
-  if (mode === 'subscription' || product.kind === 'recurring') {
+  if (mode === 'subscription' || service.kind === 'recurring') {
     await linkSubscriptionsFromCheckout(session)
     await createProductServiceRequest({
       contactId,
       accountId,
-      product,
+      service,
       source: 'portal-shop',
     })
-    console.log(`[stripe] fulfilled recurring product ${sku} for ${contactId}`)
+    console.log(`[stripe] fulfilled recurring service ${sku} for ${contactId}`)
     return true
   }
 
-  await createPaidProductInvoice({ contactId, product, paymentIntent })
+  await createPaidProductInvoice({ contactId, service, paymentIntent })
   await createProductServiceRequest({
     contactId,
     accountId,
-    product,
+    service,
     source: 'portal-shop',
   })
-  console.log(`[stripe] fulfilled one-time product ${sku} for ${contactId}`)
+  console.log(`[stripe] fulfilled one-time service ${sku} for ${contactId}`)
   return true
 }

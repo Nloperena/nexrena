@@ -89,58 +89,55 @@ export const waasPageCopy = {
 
 export const waasTiers = [
   {
-    id: 'waas-starter',
-    name: 'Starter',
+    id: 'plan-launch',
+    sku: 'plan-launch',
+    name: 'Launch Website Plan',
     priceLabel: '$149',
     priceSuffix: '/mo',
     budgetValue: '149/mo',
-    tagline: 'For simple local businesses that need a clean online presence.',
+    tagline: 'Simple businesses that need a clean online presence.',
     minimum: '12-month minimum',
     recommended: false,
     features: [
-      '1–3 page website',
-      'Hosting included',
-      'Mobile-first design',
-      'Contact form',
-      'Basic SEO setup',
-      '30 minutes of edits per month',
+      'Up to 3 pages',
+      'Hosting, SSL & mobile-friendly design',
+      'Contact form & click-to-call',
+      'Basic SEO & speed optimization',
+      '30 min monthly edits',
     ],
   },
   {
-    id: 'waas-growth',
-    name: 'Growth',
+    id: 'plan-growth',
+    sku: 'plan-growth',
+    name: 'Growth Website Plan',
     priceLabel: '$249',
     priceSuffix: '/mo',
     budgetValue: '249/mo',
-    tagline: 'For businesses that want their website to actually bring in leads.',
+    tagline: 'Local businesses that want a stronger site for calls and leads.',
     minimum: '12-month minimum · Recommended',
     recommended: true,
     features: [
-      'Everything in Starter',
-      'Up to 5 pages',
-      'Stronger homepage sections',
-      'Google Business Profile guidance',
-      'Monthly content & update support',
-      'Basic analytics',
-      '1 hour of edits per month',
+      'Up to 5 pages · everything in Launch',
+      'Service & review sections',
+      'Google Analytics & Search Console',
+      '60 min monthly edits',
     ],
   },
   {
-    id: 'waas-pro',
-    name: 'Pro',
+    id: 'plan-lead-engine',
+    sku: 'plan-lead-engine',
+    name: 'Lead Engine Plan',
     priceLabel: '$399',
     priceSuffix: '/mo+',
     budgetValue: '399/mo',
-    tagline: 'For businesses that need more serious marketing support.',
+    tagline: 'Ongoing growth, more pages, and optimization.',
     minimum: '12-month minimum',
     recommended: false,
     features: [
-      'Everything in Growth',
-      'Service & location pages',
-      'Blog or SEO page support',
-      'Conversion improvements',
-      'Priority support',
-      '2 hours of edits per month',
+      'Up to 8 pages · everything in Growth',
+      'Priority support & conversion reviews',
+      'SEO page planning & analytics review',
+      '120 min monthly edits',
     ],
   },
 ] as const;
@@ -202,101 +199,19 @@ export const projectBuildTiers = [
   },
 ] as const;
 
-/** Self-serve outright website purchase — buy in client portal Shop */
-export const websiteBuyTiers = [
-  {
-    sku: 'website-buy-starter',
-    name: 'Starter',
-    priceLabel: '$1,999',
-    tagline: 'Own a professional 5-page business website.',
-    recommended: false,
-    features: [
-      'Up to 5 custom pages',
-      'Mobile-first design',
-      'Contact & lead forms',
-      'Basic SEO setup',
-      'Launch support',
-    ],
-  },
-  {
-    sku: 'website-buy-growth',
-    name: 'Growth',
-    priceLabel: '$3,499',
-    tagline: 'Conversion-focused site built to generate leads.',
-    recommended: true,
-    features: [
-      'Up to 10 custom pages',
-      'Stronger homepage sections',
-      'Service & location pages',
-      'Analytics setup',
-      'Priority launch timeline',
-    ],
-  },
-  {
-    sku: 'website-buy-pro',
-    name: 'Pro',
-    priceLabel: '$5,999',
-    tagline: 'Full build with blog foundation and advanced SEO structure.',
-    recommended: false,
-    features: [
-      'Up to 15 custom pages',
-      'Blog or resource hub setup',
-      'Advanced SEO foundation',
-      'Conversion optimization pass',
-      'Dedicated project manager',
-    ],
-  },
+/** Public service menu categories — details in client portal Shop */
+export const serviceMenuCategories = [
+  { id: 'website-plan', label: 'Website Plan', summary: 'Monthly foundation: design, hosting, edits, maintenance, forms, and basic SEO.' },
+  { id: 'page-upgrade', label: 'Page Upgrades', summary: 'Add pages, service pages, landing pages, or sales pages.' },
+  { id: 'lead-conversion', label: 'Lead Upgrades', summary: 'Booking, quote forms, auto-replies, call tracking, or lead routing.' },
+  { id: 'local-seo', label: 'SEO Upgrades', summary: 'Local pages, Google Business cleanup, metadata, and SEO content.' },
+  { id: 'trust-design', label: 'Trust Upgrades', summary: 'Reviews, galleries, FAQs, pricing sections, and before/after proof.' },
+  { id: 'copywriting', label: 'Content Upgrades', summary: 'Copywriting, blog posts, rewrites, and website content.' },
+  { id: 'advanced', label: 'Scoped Projects', summary: 'Ecommerce, portals, dashboards, custom apps, and integrations.' },
 ] as const;
 
-/** Monthly SEO content bundles — subscribe in client portal Shop */
-export const seoContentBundles = [
-  {
-    sku: 'seo-bundle-starter',
-    name: 'Starter',
-    priceLabel: '$499/mo',
-    tagline: '2 SEO blog posts per month to build visibility.',
-    recommended: false,
-    features: ['2 SEO blog posts / month', 'Keyword research', 'On-page optimization', 'Monthly snapshot'],
-  },
-  {
-    sku: 'seo-bundle-growth',
-    name: 'Growth',
-    priceLabel: '$899/mo',
-    tagline: 'More content plus ongoing on-page improvements.',
-    recommended: true,
-    features: ['4 SEO blog posts / month', 'On-page SEO updates', 'Internal linking', 'Monthly reporting call'],
-  },
-  {
-    sku: 'seo-bundle-authority',
-    name: 'Authority',
-    priceLabel: '$1,499/mo',
-    tagline: 'High-volume content for competitive markets.',
-    recommended: false,
-    features: ['8 SEO blog posts / month', 'Content strategy', 'Topic clusters', 'Priority support'],
-  },
-] as const;
-
-/** Renewable add-ons — billed monthly in client portal Shop */
-export const extensionAddOns = [
-  {
-    sku: 'ext-pages-pack-3',
-    name: 'Extra pages — 3 pack',
-    priceLabel: '$49/mo',
-    description: 'Up to 3 additional pages each billing cycle.',
-  },
-  {
-    sku: 'ext-pages-pack-5',
-    name: 'Extra pages — 5 pack',
-    priceLabel: '$79/mo',
-    description: 'Up to 5 additional pages each billing cycle.',
-  },
-  {
-    sku: 'ext-content-boost',
-    name: 'Content Boost',
-    priceLabel: '$199/mo',
-    description: '2 extra blog posts per month on top of your SEO plan.',
-  },
-] as const;
+export const universalScopeLanguage =
+  'Website plans include your foundation: design, hosting, maintenance, mobile optimization, contact forms, and basic SEO. Additional pages, copywriting, SEO content, booking tools, automations, and custom features are available as add-ons or scoped projects. Each service includes only what is listed — work outside scope requires a separate order or written quote.';
 
 export const pricingTransparency = {
   headline: 'Simple monthly website care plans.',
@@ -319,9 +234,9 @@ export const projectTypeOptions = [
 ] as const;
 
 export function formatLeadPlanLabel(projectType?: string | null, budget?: string | null) {
-  if (projectType?.startsWith('waas-')) {
-    const tier = waasTiers.find((t) => t.id === projectType);
-    return tier ? `WaaS · ${tier.name} (${tier.priceLabel}${tier.priceSuffix})` : 'WaaS';
+  if (projectType?.startsWith('plan-') || projectType?.startsWith('waas-')) {
+    const tier = waasTiers.find((t) => t.id === projectType || t.id === projectType?.replace('waas-', 'plan-'));
+    return tier ? `Plan · ${tier.name} (${tier.priceLabel}${tier.priceSuffix})` : 'Website plan';
   }
   const type = projectTypeOptions.find((t) => t.value === projectType);
   const budgetOption = projectBudgetOptions.find((b) => b.value === budget);
