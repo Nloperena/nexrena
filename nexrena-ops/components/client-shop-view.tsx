@@ -1,34 +1,30 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   createPortalProductCheckout,
   fetchPortalProducts,
   requestPortalProductQuote,
 } from '@/lib/portal-client'
 import {
-  CATEGORY_ORDER,
   type PortalProduct,
-  type ServiceCategory,
 } from '@/lib/product-catalog'
 import { portalMutedClass, portalSectionHintClass, portalSectionTitleClass } from '@/lib/portal-a11y'
 import { ShopAisleSection } from '@/components/shop/shop-aisle-section'
-import { ShopCategoryChip } from '@/components/shop/shop-category-chip'
+
+import type { ClientPortalView } from '@/components/client-nav'
 
 type Props = {
   stripeEnabled: boolean
   highlightSku?: string | null
   initialCategory?: string | null
   purchased?: boolean | null
+  onNavigate?: (view: ClientPortalView) => void
 }
 
-export function ClientShopView({ stripeEnabled, highlightSku, initialCategory, purchased }: Props) {
+export function ClientShopView({ stripeEnabled, highlightSku, initialCategory, purchased, onNavigate }: Props) {
   const [products, setProducts] = useState<PortalProduct[]>([])
   const [scopeLanguage, setScopeLanguage] = useState('')
-  const validCategory = (initialCategory && CATEGORY_ORDER.includes(initialCategory as ServiceCategory))
-    ? (initialCategory as ServiceCategory)
-    : 'all'
-  const [activeCategory, setActiveCategory] = useState<ServiceCategory | 'all'>(validCategory)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [busySku, setBusySku] = useState<string | null>(null)
@@ -49,25 +45,7 @@ export function ClientShopView({ stripeEnabled, highlightSku, initialCategory, p
     return () => { cancelled = true }
   }, [])
 
-  const visibleCategories = useMemo(() => {
-    if (activeCategory !== 'all') return [activeCategory]
-    return CATEGORY_ORDER
-  }, [activeCategory])
-
-  const itemsByCategory = useMemo(() => {
-    const map = new Map<ServiceCategory, PortalProduct[]>()
-    for (const cat of visibleCategories) {
-      const items = products.filter((p) => p.category === cat)
-      if (items.length > 0) map.set(cat, items)
-    }
-    return map
-  }, [products, visibleCategories])
-
-  const showEndcap = activeCategory === 'all' || activeCategory === 'website-plan'
-  const endcapItems = itemsByCategory.get('website-plan') ?? []
-  const aisleCategories = visibleCategories.filter(
-    (cat) => cat !== 'website-plan' || !showEndcap,
-  )
+  const endcapItems = products.filter((p) => p.category === 'website-plan')
 
   const buy = useCallback(async (sku: string) => {
     setBusySku(sku)
@@ -120,31 +98,26 @@ export function ClientShopView({ stripeEnabled, highlightSku, initialCategory, p
 
   return (
     <div className="space-y-10">
-      <div>
-        <h2 className={portalSectionTitleClass}>Services</h2>
-        <p className={`${portalSectionHintClass} mt-2 max-w-3xl`}>
-          Browse by aisle — monthly plans up front, then upgrades and add-ons. Scoped projects need a quote before work starts.
-        </p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 className={portalSectionTitleClass}>Services</h2>
+          <p className={`${portalSectionHintClass} mt-2 max-w-3xl`}>
+            Select a plan to get started.
+          </p>
+        </div>
+        {onNavigate && (
+          <button
+            onClick={() => onNavigate('billing')}
+            className="rounded-lg bg-slate-800/80 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors"
+          >
+            Manage your subscriptions
+          </button>
+        )}
       </div>
 
       <ShopStatusBanners purchased={purchased} error={error} stripeEnabled={stripeEnabled} products={products} />
 
-      <div className="-mx-1 flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-thin md:flex-wrap md:overflow-visible">
-        <ShopCategoryChip active={activeCategory === 'all'} onClick={() => setActiveCategory('all')}>
-          All aisles
-        </ShopCategoryChip>
-        {CATEGORY_ORDER.map((cat) => (
-          <ShopCategoryChip
-            key={cat}
-            active={activeCategory === cat}
-            onClick={() => setActiveCategory(cat)}
-          >
-            {cat === 'website-plan' ? 'Plans' : cat.split('-')[0]}
-          </ShopCategoryChip>
-        ))}
-      </div>
-
-      {showEndcap && endcapItems.length > 0 && (
+      {endcapItems.length > 0 && (
         <ShopAisleSection
           category="website-plan"
           items={endcapItems}
@@ -152,20 +125,6 @@ export function ClientShopView({ stripeEnabled, highlightSku, initialCategory, p
           handlers={handlers}
         />
       )}
-
-      {aisleCategories.map((cat) => {
-        const items = itemsByCategory.get(cat)
-        if (!items?.length || (cat === 'website-plan' && showEndcap)) return null
-        return (
-          <ShopAisleSection
-            key={cat}
-            category={cat}
-            items={items}
-            variant="aisle"
-            handlers={handlers}
-          />
-        )
-      })}
 
       {scopeLanguage && (
         <p className="text-sm text-slate-500 leading-relaxed border-t border-slate-800/60 pt-6">

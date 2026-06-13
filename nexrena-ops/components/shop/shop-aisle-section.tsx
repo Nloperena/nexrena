@@ -116,7 +116,6 @@ export function ShopAisleSection({ category, items, variant, handlers }: Props) 
 
 function AisleHeader({
   id,
-  aisleNumber,
   aisleLabel,
   title,
   hint,
@@ -144,9 +143,6 @@ function AisleHeader({
           <ShopCategoryIcon category={category} />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
-            {endcap ? `Endcap · ${aisleLabel}` : `Aisle ${aisleNumber} · ${aisleLabel}`}
-          </p>
           <h3 id={id} className="font-serif text-2xl text-white mt-1">{title}</h3>
           <p className={`${portalMutedClass} mt-1.5 text-base max-w-3xl`}>{hint}</p>
         </div>

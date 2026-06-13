@@ -69,6 +69,25 @@ export const SHOP_CATEGORY_VISUALS: Record<ServiceCategory, ShopCategoryVisual> 
   },
 }
 
+export function getShopVisual(product: PortalProduct): ShopCategoryVisual {
+  if (product.sku === 'plan-launch') {
+    return { photo: 'hero', svgSrc: PORTAL_IMAGES.heroShop, aisleLabel: 'Launch', aisleNumber: 1 }
+  }
+  if (product.sku === 'plan-growth') {
+    return { photo: 'websites', svgSrc: PORTAL_IMAGES.growthBar, aisleLabel: 'Growth', aisleNumber: 1 }
+  }
+  if (product.sku === 'plan-lead-engine') {
+    return { photo: 'messages', svgSrc: PORTAL_IMAGES.networkBg, aisleLabel: 'Lead Engine', aisleNumber: 1 }
+  }
+  if (product.sku === 'plan-hosting') {
+    return { photo: 'files', svgSrc: PORTAL_IMAGES.infrastructure, aisleLabel: 'Hosting', aisleNumber: 1 }
+  }
+  if (product.sku === 'plan-analytics') {
+    return { photo: 'schedule', svgSrc: PORTAL_IMAGES.projectFurniture, aisleLabel: 'Analytics', aisleNumber: 1 }
+  }
+  return SHOP_CATEGORY_VISUALS[product.category] || SHOP_CATEGORY_VISUALS['website-plan']
+}
+
 const SHORT_TITLES: Record<string, string> = {
   'plan-launch': 'Launch',
   'plan-growth': 'Growth',

@@ -45,9 +45,20 @@ export async function createProductCheckoutSession(params: {
   sku: string
   successUrl?: string
   cancelUrl?: string
+  email?: string
 }) {
-  const service = getCatalogService(params.sku)
-  if (!service) throw new Error('Unknown service')
+  const baseService = getCatalogService(params.sku)
+  if (!baseService) throw new Error('Unknown service')
+  
+  let service = { ...baseService }
+  if (params.email) {
+    const isOwner = ['joe@furniturepackagesusa.com', 'warren@twoazaleagroup.com'].includes(params.email)
+    if (isOwner && (service.sku === 'plan-hosting' || service.sku === 'plan-analytics')) {
+      service.priceCents = 2000
+      service.priceLabel = '$20/mo'
+    }
+  }
+
   if (!service.checkoutEnabled) {
     throw new Error('This service requires a scope review before purchase. Request a quote instead.')
   }
@@ -228,8 +239,18 @@ export async function handleProductCheckoutCompleted(session: Record<string, unk
   const accountId = metadata.portalAccountId
   if (!sku || !contactId) return true
 
-  const service = getCatalogService(sku)
-  if (!service) return true
+  const baseService = getCatalogService(sku)
+  if (!baseService) return true
+
+  let service = { ...baseService }
+  const contact = await prisma.contact.findUnique({ where: { id: contactId } })
+  if (contact?.email) {
+    const isOwner = ['joe@furniturepackagesusa.com', 'warren@twoazaleagroup.com'].includes(contact.email)
+    if (isOwner && (service.sku === 'plan-hosting' || service.sku === 'plan-analytics')) {
+      service.priceCents = 2000
+      service.priceLabel = '$20/mo'
+    }
+  }
 
   const mode = typeof session.mode === 'string' ? session.mode : undefined
   const paymentIntent =

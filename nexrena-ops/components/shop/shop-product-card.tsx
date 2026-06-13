@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { PortalProduct } from '@/lib/product-catalog'
 import {
   SHOP_CATEGORY_VISUALS,
+  getShopVisual,
   shopBenefit,
   shopPriceHint,
   shopShortTitle,
@@ -38,7 +39,7 @@ export function ShopProductCard({
   onQuote,
 }: Props) {
   const [open, setOpen] = useState(highlighted)
-  const visual = SHOP_CATEGORY_VISUALS[product.category]
+  const visual = getShopVisual(product)
 
   if (density === 'compact') {
     return (

@@ -335,6 +335,7 @@ export function ClientDashboard({ onSignOut }: Props) {
             highlightSku={shopParams.sku}
             initialCategory={shopParams.category}
             purchased={shopParams.purchased}
+            onNavigate={setActiveView}
           />
         )
 

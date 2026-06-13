@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { prisma } from '../lib/prisma'
-import { requirePortalAuth } from '../middleware/portal-auth'
+import { requirePortalAuth, optionalPortalAuth } from '../middleware/portal-auth'
 import { isStripeConfigured, portalReturnUrl } from '../lib/stripe'
 import {
   CATEGORY_ORDER,
@@ -17,15 +17,39 @@ const router = Router()
 const VALID_CATEGORIES = new Set<ServiceCategory>(CATEGORY_ORDER)
 
 /** GET /api/portal/products — full service menu (?category=website-plan|...) */
-router.get('/', async (req, res) => {
+router.get('/', optionalPortalAuth, async (req, res) => {
   const raw = req.query.category as string | undefined
   const category =
     raw && VALID_CATEGORIES.has(raw as ServiceCategory) ? (raw as ServiceCategory) : undefined
-  const services = listCatalogServices(category)
+  let services = listCatalogServices(category).map(catalogServiceForClient)
+
+  let isOwner = false
+  if (req.portalUser) {
+    isOwner = ['joe@furniturepackagesusa.com', 'warren@twoazaleagroup.com'].includes(req.portalUser.email)
+  }
+
+  if (!isOwner) {
+    // Hide hosting and analytics from non-owners
+    services = services.filter(s => s.sku !== 'plan-hosting' && s.sku !== 'plan-analytics')
+  } else {
+    // Apply discount for owners
+    services = services.map(s => {
+      if (s.sku === 'plan-hosting' || s.sku === 'plan-analytics') {
+        return {
+          ...s,
+          priceLabel: '$20/mo',
+          priceCents: 2000,
+          badge: 'Owner Exclusive Discount'
+        }
+      }
+      return s
+    })
+  }
+
   res.json({
     scopeLanguage: UNIVERSAL_SCOPE_LANGUAGE,
     categories: CATEGORY_ORDER,
-    services: services.map(catalogServiceForClient),
+    services,
   })
 })
 
@@ -50,6 +74,7 @@ router.post('/checkout', requirePortalAuth, async (req, res) => {
       contactId: req.portalUser!.contactId,
       accountId: req.portalUser!.accountId,
       sku: sku.trim(),
+      email: req.portalUser!.email,
       successUrl: `${portalReturnUrl('/?tab=sign-in')}&view=shop&purchased=1`,
       cancelUrl: `${portalReturnUrl('/?tab=sign-in')}&view=shop&purchased=0`,
     })

@@ -22,3 +22,15 @@ export function requirePortalAuth(req: Request, res: Response, next: NextFunctio
   req.portalUser = user
   next()
 }
+
+export function optionalPortalAuth(req: Request, res: Response, next: NextFunction) {
+  const header = req.headers.authorization
+  const token = header?.startsWith('Bearer ') ? header.slice(7) : null
+  if (token) {
+    const user = verifyPortalToken(token)
+    if (user) {
+      req.portalUser = user
+    }
+  }
+  next()
+}

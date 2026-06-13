@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { PortalProduct } from '@/lib/product-catalog'
 import {
   SHOP_CATEGORY_VISUALS,
+  getShopVisual,
   shopBenefit,
   shopPriceHint,
   shopShortTitle,
@@ -35,7 +36,7 @@ export function ShopHeroCard({
   onQuote,
 }: Props) {
   const [open, setOpen] = useState(highlighted)
-  const visual = SHOP_CATEGORY_VISUALS[product.category]
+  const visual = getShopVisual(product)
 
   return (
     <ShopCardShell highlighted={highlighted} featured={Boolean(product.badge)} className="h-full">
