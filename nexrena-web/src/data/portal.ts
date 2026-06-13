@@ -52,7 +52,7 @@ export const portalCopy = {
   navLabel: 'Portal',
   eyebrow: 'Client portal',
   intakeTitle: 'Start a project',
-  intakeSubtitle: 'Tell us where you are today. We reply within one business day.',
+  intakeSubtitle: "Tell us what's stuck. We reply within one business day.",
   signInTitle: 'Welcome back',
   signInSubtitle: 'Sign in to view projects, proposals, and invoices.',
   signUpTitle: 'Create your account',

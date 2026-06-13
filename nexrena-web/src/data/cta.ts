@@ -2,9 +2,9 @@
 export const projectIntakeCta = {
   button: 'Start a Project',
   portalEyebrow: 'Client portal',
-  portalTitle: 'Tell us where you are today.',
+  portalTitle: "Tell us what's stuck right now.",
   portalSubtitle:
-    'Audit, roadmap, and first sprint — scoped to your business. Reply within one business day.',
+    'Share your goals and current setup. We reply within one business day — with a scoped audit, roadmap, and first sprint, or a clear no.',
   submit: 'Send request',
   submitSending: 'Sending...',
   successTitle: 'Message received.',
