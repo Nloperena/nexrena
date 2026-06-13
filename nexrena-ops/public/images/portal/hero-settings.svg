@@ -17,11 +17,42 @@
     <style>.node-glow{filter:drop-shadow(0 0 4px rgba(240,208,128,.5))}.head-glow{filter:drop-shadow(0 0 5px #fff)}</style>
   </defs>
   <rect width="680" height="400" fill="url(#bgGlow)"/>
-  <g opacity="0.15" fill="none" stroke="#7a5c2d" stroke-width="1">
-    <circle cx="340" cy="200" r="70"/>
-    <circle cx="340" cy="200" r="45" stroke-dasharray="6 8"/>
-    <path d="M340,130 V170 M340,230 V270 M270,200 H310 M370,200 H410 M295,155 L320,180 M360,220 L385,245 M295,245 L320,220 M360,180 L385,155"/>
+  
+  <!-- Thematic Background: Gears, Sliders, Settings -->
+  <g opacity="0.25" fill="none" stroke="#7a5c2d" stroke-width="1.5">
+    <!-- Gear 1 -->
+    <g transform="translate(240, 180)">
+      <circle cx="0" cy="0" r="40" />
+      <circle cx="0" cy="0" r="15" />
+      <!-- Teeth -->
+      <path d="M-8,-40 L-12,-50 H12 L8,-40 M-8,40 L-12,50 H12 L8,40 M-40,-8 L-50,-12 V12 L-40,8 M40,-8 L50,-12 V12 L40,8" stroke-linejoin="round" />
+      <path d="M-28,-28 L-35,-35 L-20,-42 L-15,-32 M28,28 L35,35 L20,42 L15,32 M-28,28 L-35,35 L-42,20 L-32,15 M28,-28 L35,-35 L42,-20 L32,-15" stroke-linejoin="round" />
+    </g>
+    
+    <!-- Gear 2 -->
+    <g transform="translate(340, 240)">
+      <circle cx="0" cy="0" r="25" />
+      <circle cx="0" cy="0" r="8" />
+      <!-- Teeth -->
+      <path d="M-6,-25 L-10,-35 H10 L6,-25 M-6,25 L-10,35 H10 L6,25 M-25,-6 L-35,-10 V10 L-25,6 M25,-6 L35,-10 V10 L25,6" stroke-linejoin="round" />
+      <path d="M-18,-18 L-25,-25 L-10,-30 L-5,-22 M18,18 L25,25 L10,30 L5,22 M-18,18 L-25,25 L-30,10 L-22,5 M18,-18 L25,-25 L30,-10 L22,-5" stroke-linejoin="round" />
+    </g>
+
+    <!-- Sliders -->
+    <rect x="420" y="110" width="140" height="120" rx="8" />
+    <path d="M440,140 H540 M440,170 H540 M440,200 H540" stroke-width="4" opacity="0.5" stroke-linecap="round" />
+    <circle cx="470" cy="140" r="8" fill="#7a5c2d" />
+    <circle cx="510" cy="170" r="8" fill="#7a5c2d" />
+    <circle cx="450" cy="200" r="8" fill="#7a5c2d" />
+    
+    <!-- Toggle Switches -->
+    <rect x="440" y="250" width="40" height="20" rx="10" />
+    <circle cx="450" cy="260" r="6" fill="#7a5c2d" />
+    
+    <rect x="500" y="250" width="40" height="20" rx="10" fill="#7a5c2d" fill-opacity="0.3" />
+    <circle cx="530" cy="260" r="6" fill="#7a5c2d" />
   </g>
+
   <use href="#cfgTrack" stroke="#f5d796" stroke-width="10" opacity="0.06" stroke-linecap="round"/>
   <use href="#cfgTrack" stroke="#3a2a10" stroke-width="2" stroke-linecap="round"/>
   <use href="#cfgTrack" stroke="url(#mainLine)" stroke-width="2.5" stroke-linecap="round"/>

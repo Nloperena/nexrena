@@ -18,14 +18,35 @@
     <style>.node-glow{filter:drop-shadow(0 0 4px rgba(240,208,128,.5))}.head-glow{filter:drop-shadow(0 0 5px #fff)}</style>
   </defs>
   <rect width="680" height="400" fill="url(#bgGlow)"/>
-  <g opacity="0.18" stroke="#7a5c2d" stroke-width="1" fill="none">
-    <rect x="120" y="90" width="140" height="180" rx="6"/>
-    <path d="M140,130 H240 M140,160 H220 M140,190 H230 M140,220 H200"/>
-    <rect x="300" y="110" width="120" height="150" rx="6"/>
-    <path d="M320,145 H400 M320,175 H385 M320,205 H390"/>
-    <rect x="460" y="100" width="130" height="165" rx="6"/>
-    <path d="M480,135 H560 M480,165 H545 M480,195 H555 M480,225 H520"/>
+  
+  <!-- Thematic Background: Credit Card, Coins, Vault -->
+  <g opacity="0.25" fill="none" stroke="#7a5c2d" stroke-width="1.5">
+    <!-- Credit Card -->
+    <rect x="140" y="120" width="180" height="110" rx="12" />
+    <path d="M140,150 H320" stroke-width="16" opacity="0.3" />
+    <rect x="160" y="180" width="35" height="25" rx="4" />
+    <path d="M210,195 H290 M210,210 H250" stroke-linecap="round" />
+
+    <!-- Coin Stack -->
+    <ellipse cx="460" cy="220" rx="40" ry="15" />
+    <path d="M420,220 V240 A40,15 0 0,0 500,240 V220" />
+    <ellipse cx="460" cy="200" rx="40" ry="15" />
+    <path d="M420,200 V220 A40,15 0 0,0 500,220 V200" />
+    <ellipse cx="460" cy="180" rx="40" ry="15" />
+    <path d="M420,180 V200 A40,15 0 0,0 500,200 V180" />
+    <ellipse cx="460" cy="160" rx="40" ry="15" />
+    <path d="M420,160 V180 A40,15 0 0,0 500,180 V160" />
+    <ellipse cx="460" cy="140" rx="40" ry="15" />
+    <path d="M420,140 V160 A40,15 0 0,0 500,160 V140" />
+    
+    <!-- Floating Coins -->
+    <ellipse cx="540" cy="110" rx="20" ry="8" />
+    <path d="M520,110 V118 A20,8 0 0,0 560,118 V110" />
+    
+    <ellipse cx="360" cy="150" rx="15" ry="6" opacity="0.6" />
+    <path d="M345,150 V156 A15,6 0 0,0 375,156 V150" opacity="0.6" />
   </g>
+
   <use href="#billTrack" stroke="#f5d796" stroke-width="11" opacity="0.06" stroke-linecap="round"/>
   <use href="#billTrack" stroke="#3a2a10" stroke-width="2" stroke-linecap="round"/>
   <use href="#billTrack" stroke="url(#mainLine)" stroke-width="2.5" stroke-linecap="round"/>

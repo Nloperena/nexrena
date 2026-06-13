@@ -17,14 +17,29 @@
     <style>.node-glow{filter:drop-shadow(0 0 4px rgba(240,208,128,.5))}.head-glow{filter:drop-shadow(0 0 5px #fff)}</style>
   </defs>
   <rect width="680" height="400" fill="url(#bgGlow)"/>
-  <g opacity="0.2" fill="none" stroke="#7a5c2d" stroke-width="1">
-    <path d="M100,140 H180 L200,160 H280 V260 H100Z"/>
-    <path d="M240,120 H320 L340,140 H420 V240 H240Z"/>
-    <path d="M380,150 H460 L480,170 H560 V270 H380Z"/>
-    <path d="M140,300 H220 V340 H140Z" opacity="0.6"/>
-    <path d="M300,290 H380 V330 H300Z" opacity="0.6"/>
-    <path d="M460,285 H540 V325 H460Z" opacity="0.6"/>
+  
+  <!-- Thematic Background: Folders, Files, Documents -->
+  <g opacity="0.25" fill="none" stroke="#7a5c2d" stroke-width="1.5">
+    <!-- Folder 1 (Back) -->
+    <path d="M160,100 H220 L240,120 H340 V150" />
+    <path d="M340,150 V200 H320" />
+    
+    <!-- Folder 2 (Front) -->
+    <path d="M140,120 H200 L220,140 H320 V220 H140 Z" />
+    <path d="M140,150 H320" />
+    <path d="M160,170 H250 M160,190 H220" stroke-linecap="round" />
+
+    <!-- File Document -->
+    <rect x="420" y="100" width="110" height="150" rx="4" />
+    <path d="M480,100 L530,150 V250" />
+    <path d="M480,100 V150 H530" />
+    <path d="M440,160 H510 M440,185 H490 M440,210 H510 M440,235 H480" stroke-linecap="round" />
+    
+    <!-- Floating File -->
+    <rect x="340" y="240" width="60" height="80" rx="2" opacity="0.6" />
+    <path d="M340,260 H400 M350,280 H390 M350,300 H380" stroke-linecap="round" opacity="0.6" />
   </g>
+
   <use href="#fileTrack" stroke="#f5d796" stroke-width="10" opacity="0.06" stroke-linecap="round"/>
   <use href="#fileTrack" stroke="#3a2a10" stroke-width="2" stroke-linecap="round"/>
   <use href="#fileTrack" stroke="url(#mainLine)" stroke-width="2.5" stroke-linecap="round"/>

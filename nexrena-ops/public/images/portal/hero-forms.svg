@@ -17,17 +17,31 @@
     <style>.node-glow{filter:drop-shadow(0 0 4px rgba(240,208,128,.5))}.head-glow{filter:drop-shadow(0 0 5px #fff)}</style>
   </defs>
   <rect width="680" height="400" fill="url(#bgGlow)"/>
-  <g opacity="0.2" fill="none" stroke="#7a5c2d" stroke-width="1">
-    <rect x="140" y="95" width="220" height="170" rx="8"/>
-    <rect x="165" y="125" width="170" height="18" rx="4" opacity="0.7"/>
-    <rect x="165" y="155" width="170" height="18" rx="4" opacity="0.7"/>
-    <rect x="165" y="185" width="120" height="18" rx="4" opacity="0.7"/>
-    <rect x="165" y="220" width="80" height="22" rx="4" fill="#b89354" opacity="0.08" stroke="#b89354"/>
-    <rect x="400" y="110" width="180" height="140" rx="8"/>
-    <rect x="425" y="135" width="130" height="14" rx="3" opacity="0.7"/>
-    <rect x="425" y="160" width="130" height="14" rx="3" opacity="0.7"/>
-    <rect x="425" y="185" width="90" height="14" rx="3" opacity="0.7"/>
+  
+  <!-- Thematic Background: Funnel, Data Intake -->
+  <g opacity="0.25" fill="none" stroke="#7a5c2d" stroke-width="1.5">
+    <!-- Funnel Top -->
+    <ellipse cx="340" cy="100" rx="120" ry="30" />
+    <path d="M220,100 C220,100 220,160 300,220 V320 H380 V220 C460,160 460,100 460,100" />
+    
+    <!-- Funnel Rings -->
+    <ellipse cx="340" cy="150" rx="80" ry="20" />
+    <ellipse cx="340" cy="200" rx="45" ry="12" />
+    <ellipse cx="340" cy="250" rx="40" ry="10" />
+    
+    <!-- Data points falling in -->
+    <circle cx="340" cy="60" r="6" fill="#7a5c2d" />
+    <circle cx="280" cy="80" r="4" fill="#7a5c2d" />
+    <circle cx="400" cy="70" r="5" fill="#7a5c2d" />
+    <circle cx="310" cy="120" r="3" fill="#7a5c2d" />
+    <circle cx="360" cy="140" r="4" fill="#7a5c2d" />
+    <circle cx="340" cy="180" r="5" fill="#7a5c2d" />
+    <circle cx="340" cy="280" r="6" fill="#7a5c2d" />
+    
+    <!-- Intake lines -->
+    <path d="M340,40 V80 M280,60 V90 M400,50 V80" stroke-dasharray="2 4" />
   </g>
+
   <use href="#formTrack" stroke="#f5d796" stroke-width="10" opacity="0.06" stroke-linecap="round"/>
   <use href="#formTrack" stroke="#3a2a10" stroke-width="2" stroke-linecap="round"/>
   <use href="#formTrack" stroke="url(#mainLine)" stroke-width="2.5" stroke-linecap="round"/>

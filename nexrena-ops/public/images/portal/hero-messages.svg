@@ -17,11 +17,29 @@
     <style>.node-glow{filter:drop-shadow(0 0 4px rgba(240,208,128,.5))}.head-glow{filter:drop-shadow(0 0 5px #fff)}</style>
   </defs>
   <rect width="680" height="400" fill="url(#bgGlow)"/>
-  <g opacity="0.2">
-    <path d="M120,200 Q160,160 220,180 L260,210 Q280,230 240,250 L180,270 Q140,280 120,200Z" fill="none" stroke="#7a5c2d" stroke-width="1.2"/>
-    <path d="M380,160 Q420,130 480,150 L520,175 Q540,195 500,215 L440,235 Q400,245 380,160Z" fill="none" stroke="#7a5c2d" stroke-width="1.2"/>
-    <path d="M520,260 Q560,230 610,250 L640,275 Q650,290 620,300 L570,310 Q530,315 520,260Z" fill="none" stroke="#7a5c2d" stroke-width="1.2"/>
+  
+  <!-- Thematic Background: Chat Bubbles & Connections -->
+  <g opacity="0.25" fill="none" stroke="#7a5c2d" stroke-width="1.5">
+    <!-- Bubble 1 (Left) -->
+    <rect x="120" y="120" width="140" height="90" rx="20" />
+    <path d="M150,210 L140,240 L170,210" />
+    <!-- Typing dots -->
+    <circle cx="160" cy="165" r="4" fill="#7a5c2d" />
+    <circle cx="190" cy="165" r="4" fill="#7a5c2d" />
+    <circle cx="220" cy="165" r="4" fill="#7a5c2d" />
+
+    <!-- Bubble 2 (Right) -->
+    <rect x="380" y="160" width="160" height="100" rx="20" />
+    <path d="M500,260 L510,290 L470,260" />
+    <!-- Lines inside -->
+    <path d="M410,190 H510 M410,210 H490 M410,230 H460" stroke-linecap="round" />
+    
+    <!-- Bubble 3 (Top Center) -->
+    <rect x="280" y="60" width="120" height="70" rx="16" opacity="0.5" />
+    <path d="M300,130 L290,150 L320,130" opacity="0.5" />
+    <path d="M300,85 H380 M300,105 H360" stroke-linecap="round" opacity="0.5" />
   </g>
+
   <use href="#msgTrack" stroke="#f5d796" stroke-width="10" opacity="0.06" stroke-linecap="round"/>
   <use href="#msgTrack" stroke="#3a2a10" stroke-width="2" stroke-linecap="round"/>
   <use href="#msgTrack" stroke="url(#mainLine)" stroke-width="2.5" stroke-linecap="round"/>

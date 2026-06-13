@@ -17,19 +17,32 @@
     <style>.node-glow{filter:drop-shadow(0 0 4px rgba(240,208,128,.5))}.head-glow{filter:drop-shadow(0 0 5px #fff)}</style>
   </defs>
   <rect width="680" height="400" fill="url(#bgGlow)"/>
-  <g opacity="0.2" fill="none" stroke="#7a5c2d" stroke-width="1">
-    <rect x="110" y="100" width="200" height="130" rx="8"/>
-    <path d="M110,125 H310"/>
-    <circle cx="125" cy="112" r="4" fill="#b89354" opacity="0.3" stroke="none"/>
-    <circle cx="140" cy="112" r="4" fill="#b89354" opacity="0.3" stroke="none"/>
-    <rect x="360" y="85" width="180" height="115" rx="8"/>
-    <path d="M360,108 H540"/>
-    <rect x="200" y="250" width="160" height="100" rx="8" opacity="0.7"/>
-    <path d="M200,272 H360"/>
+  
+  <!-- Thematic Background: Globe and Network Nodes -->
+  <g opacity="0.25" fill="none" stroke="#7a5c2d" stroke-width="1.2">
+    <!-- Globe -->
+    <circle cx="240" cy="180" r="80" />
+    <ellipse cx="240" cy="180" rx="40" ry="80" />
+    <ellipse cx="240" cy="180" rx="80" ry="25" />
+    <ellipse cx="240" cy="180" rx="80" ry="55" />
+    <path d="M240,100 V260" stroke-dasharray="4 4" />
+
+    <!-- Web Nodes & Connections -->
+    <circle cx="460" cy="120" r="30" />
+    <circle cx="540" cy="220" r="40" />
+    <circle cx="400" cy="260" r="25" />
+    
+    <path d="M485,135 L515,195 M440,140 L415,240 M505,235 L425,255" />
+    
+    <!-- Connection from globe to nodes -->
+    <path d="M315,150 L430,130 M305,220 L375,250 M320,180 L500,210" stroke-dasharray="3 6" opacity="0.6" />
+    
+    <!-- Little nodes -->
+    <circle cx="460" cy="120" r="4" fill="#7a5c2d" />
+    <circle cx="540" cy="220" r="4" fill="#7a5c2d" />
+    <circle cx="400" cy="260" r="4" fill="#7a5c2d" />
   </g>
-  <g opacity="0.12" stroke="#5a461e" stroke-width="0.5">
-    <path d="M210,230 L310,125 M410,200 L450,108 M280,250 L200,272"/>
-  </g>
+
   <use href="#webTrack" stroke="#f5d796" stroke-width="11" opacity="0.06" stroke-linecap="round"/>
   <use href="#webTrack" stroke="#3a2a10" stroke-width="2" stroke-linecap="round"/>
   <use href="#webTrack" stroke="url(#mainLine)" stroke-width="2.5" stroke-linecap="round"/>
