@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
+import { ActionToast } from '@/components/action-toast'
+import { FormLeadConfirmDialog } from '@/components/form-lead-confirm-dialog'
 import { useFormSubmissions, useContacts, formatDate } from '@/lib/store'
 import type { FormSubmission, FormSubmissionStatus } from '@/lib/types'
 import { PageHeader, Btn, StatCard, SectionCard, EmptyState } from '@/components/ui'
@@ -23,16 +25,15 @@ function messagePreview(sub: FormSubmission): string {
   return msg.length > 120 ? `${msg.slice(0, 120)}…` : msg
 }
 
-function confirmArchive(sub: FormSubmission) {
-  return window.confirm(
-    `Move "${sub.submitterName}" to archive? You can restore it later from the Archive view.`,
-  )
+type PendingAction = {
+  type: 'archive' | 'delete'
+  sub: FormSubmission
 }
 
-function confirmPermanentDelete(sub: FormSubmission) {
-  return window.confirm(
-    `Delete "${sub.submitterName}" permanently? This cannot be undone.`,
-  )
+type ToastState = {
+  message: string
+  variant?: 'success' | 'error'
+  onUndo?: () => void
 }
 
 function SubmissionActions({
@@ -169,6 +170,9 @@ export default function FormSubmissionsPage() {
   const [listView, setListView] = useState<ListView>('active')
   const [statusFilter, setStatusFilter] = useState<FormSubmissionStatus | 'all'>('all')
   const [refreshing, setRefreshing] = useState(false)
+  const [pending, setPending] = useState<PendingAction | null>(null)
+  const [busyId, setBusyId] = useState<string | null>(null)
+  const [toast, setToast] = useState<ToastState | null>(null)
 
   const sites = useMemo(
     () => Array.from(new Set(submissions.map(s => s.siteKey))).sort(),
@@ -199,18 +203,61 @@ export default function FormSubmissionsPage() {
     updateStatus(sub.id, sub.status === 'new' ? 'read' : 'new')
   }
 
+  const runAction = async (id: string, action: () => Promise<void>, errorMessage?: string) => {
+    setBusyId(id)
+    try {
+      await action()
+    } catch (err) {
+      console.error(err)
+      setToast({
+        message: errorMessage ?? 'Something went wrong. Please try again.',
+        variant: 'error',
+      })
+    } finally {
+      setBusyId(null)
+    }
+  }
+
   const handleArchive = (sub: FormSubmission) => {
-    if (!confirmArchive(sub)) return
-    void archive(sub.id)
+    setPending({ type: 'archive', sub })
+  }
+
+  const confirmArchive = () => {
+    if (!pending || pending.type !== 'archive') return
+    const sub = pending.sub
+    setPending(null)
+    void runAction(sub.id, async () => {
+      await archive(sub.id)
+      setToast({
+        message: `Moved "${sub.submitterName}" to archive`,
+        onUndo: () => void runAction(sub.id, () => restore(sub.id)),
+      })
+    }, 'Could not archive this submission.')
   }
 
   const handleRestore = (sub: FormSubmission) => {
-    void restore(sub.id)
+    void runAction(sub.id, async () => {
+      await restore(sub.id)
+      setToast({
+        message: `Restored "${sub.submitterName}"`,
+        onUndo: () => void runAction(sub.id, () => archive(sub.id)),
+      })
+    }, 'Could not restore this submission.')
   }
 
   const handleRemove = (sub: FormSubmission) => {
-    if (!confirmPermanentDelete(sub)) return
-    void remove(sub.id)
+    setPending({ type: 'delete', sub })
+  }
+
+  const confirmDelete = () => {
+    if (!pending || pending.type !== 'delete') return
+    const sub = pending.sub
+    setPending(null)
+    void runAction(sub.id, async () => {
+      await remove(sub.id)
+      if (expanded === sub.id) setExpanded(null)
+      setToast({ message: `"${sub.submitterName}" deleted permanently` })
+    }, 'Could not delete this submission.')
   }
 
   const headerAction = (
@@ -400,6 +447,25 @@ export default function FormSubmissionsPage() {
           </tbody>
         </table>
       </SectionCard>
+
+      {pending && (
+        <FormLeadConfirmDialog
+          action={pending.type}
+          sub={pending.sub}
+          busy={busyId === pending.sub.id}
+          onConfirm={pending.type === 'archive' ? confirmArchive : confirmDelete}
+          onCancel={() => setPending(null)}
+        />
+      )}
+
+      {toast && (
+        <ActionToast
+          message={toast.message}
+          variant={toast.variant}
+          onUndo={toast.onUndo}
+          onDismiss={() => setToast(null)}
+        />
+      )}
     </div>
   )
 }

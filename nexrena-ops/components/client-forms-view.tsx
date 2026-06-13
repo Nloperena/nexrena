@@ -1,7 +1,9 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { ActionToast } from '@/components/action-toast'
 import { ClientFormHistorySection } from '@/components/client-form-history-section'
+import { FormLeadConfirmDialog } from '@/components/form-lead-confirm-dialog'
 import type { PortalFormSubmission, PortalFormSubmissionStatus } from '@/lib/portal-types'
 import {
   deletePortalFormSubmission,
@@ -10,6 +12,17 @@ import {
 import { portalFocusRing, portalSectionHintClass } from '@/lib/portal-a11y'
 
 type View = 'active' | 'archived'
+
+type PendingAction = {
+  type: 'archive' | 'delete'
+  sub: PortalFormSubmission
+}
+
+type ToastState = {
+  message: string
+  variant?: 'success' | 'error'
+  onUndo?: () => void
+}
 
 type Props = {
   submissions: PortalFormSubmission[]
@@ -27,6 +40,8 @@ function tabClass(active: boolean) {
 export function ClientFormsView({ submissions, onSubmissionsChange }: Props) {
   const [view, setView] = useState<View>('active')
   const [busyId, setBusyId] = useState<string | null>(null)
+  const [pending, setPending] = useState<PendingAction | null>(null)
+  const [toast, setToast] = useState<ToastState | null>(null)
 
   const activeCount = useMemo(
     () => submissions.filter((s) => s.status !== 'archived').length,
@@ -53,12 +68,16 @@ export function ClientFormsView({ submissions, onSubmissionsChange }: Props) {
     onSubmissionsChange(submissions.filter((s) => s.id !== id))
   }
 
-  const runAction = async (id: string, action: () => Promise<void>) => {
+  const runAction = async (id: string, action: () => Promise<void>, errorMessage?: string) => {
     setBusyId(id)
     try {
       await action()
     } catch (err) {
       console.error(err)
+      setToast({
+        message: errorMessage ?? 'Something went wrong. Please try again.',
+        variant: 'error',
+      })
     } finally {
       setBusyId(null)
     }
@@ -73,38 +92,57 @@ export function ClientFormsView({ submissions, onSubmissionsChange }: Props) {
   }
 
   const handleArchive = (sub: PortalFormSubmission) => {
-    if (
-      !window.confirm(
-        `Move "${sub.submitterName}" to archive? You can restore it later from the Archive tab.`,
-      )
-    ) {
-      return
-    }
+    setPending({ type: 'archive', sub })
+  }
+
+  const confirmArchive = () => {
+    if (!pending || pending.type !== 'archive') return
+    const sub = pending.sub
+    setPending(null)
     void runAction(sub.id, async () => {
       patchLocal(sub.id, 'archived')
       await updatePortalFormSubmission(sub.id, { status: 'archived' })
-    })
+      setToast({
+        message: `Moved "${sub.submitterName}" to archive`,
+        onUndo: () => {
+          void runAction(sub.id, async () => {
+            patchLocal(sub.id, 'read')
+            await updatePortalFormSubmission(sub.id, { status: 'read' })
+          })
+        },
+      })
+    }, 'Could not archive this lead.')
   }
 
   const handleRestore = (sub: PortalFormSubmission) => {
     void runAction(sub.id, async () => {
       patchLocal(sub.id, 'read')
       await updatePortalFormSubmission(sub.id, { status: 'read' })
-    })
+      setToast({
+        message: `Restored "${sub.submitterName}"`,
+        onUndo: () => {
+          void runAction(sub.id, async () => {
+            patchLocal(sub.id, 'archived')
+            await updatePortalFormSubmission(sub.id, { status: 'archived' })
+          })
+        },
+      })
+    }, 'Could not restore this lead.')
   }
 
   const handleDeletePermanently = (sub: PortalFormSubmission) => {
-    if (
-      !window.confirm(
-        `Delete "${sub.submitterName}" permanently? This cannot be undone.`,
-      )
-    ) {
-      return
-    }
+    setPending({ type: 'delete', sub })
+  }
+
+  const confirmDelete = () => {
+    if (!pending || pending.type !== 'delete') return
+    const sub = pending.sub
+    setPending(null)
     void runAction(sub.id, async () => {
       removeLocal(sub.id)
       await deletePortalFormSubmission(sub.id)
-    })
+      setToast({ message: `"${sub.submitterName}" deleted permanently` })
+    }, 'Could not delete this lead.')
   }
 
   return (
@@ -135,6 +173,25 @@ export function ClientFormsView({ submissions, onSubmissionsChange }: Props) {
         onRestore={handleRestore}
         onDeletePermanently={handleDeletePermanently}
       />
+
+      {pending && (
+        <FormLeadConfirmDialog
+          action={pending.type}
+          sub={pending.sub}
+          busy={busyId === pending.sub.id}
+          onConfirm={pending.type === 'archive' ? confirmArchive : confirmDelete}
+          onCancel={() => setPending(null)}
+        />
+      )}
+
+      {toast && (
+        <ActionToast
+          message={toast.message}
+          variant={toast.variant}
+          onUndo={toast.onUndo}
+          onDismiss={() => setToast(null)}
+        />
+      )}
     </div>
   )
 }
