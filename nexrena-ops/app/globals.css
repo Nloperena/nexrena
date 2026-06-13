@@ -214,6 +214,23 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   line-height: 1.65;
   color: #e2e8f0;
   -webkit-text-size-adjust: 100%;
+  --portal-sidebar-width: 0px;
+}
+
+@media (min-width: 1024px) {
+  .client-portal {
+    --portal-sidebar-width: 240px;
+  }
+}
+
+/** Main-column immersive layer — never covers the labeled sidebar or mobile tab bar */
+.portal-immersive-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: var(--portal-sidebar-width);
+  z-index: 45;
 }
 
 .client-portal h1,

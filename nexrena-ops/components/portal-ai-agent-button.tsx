@@ -21,7 +21,7 @@ export function PortalAiAgentButton({ onNavigate, clientName }: Props) {
         onClick={() => setOpen(true)}
         aria-label="Open AI assistant"
         aria-expanded={open}
-        className={`portal-ai-fab group fixed z-[45] right-4 md:right-6 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] md:bottom-6 flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-gold/45 bg-[#141820]/95 text-gold-light shadow-[0_8px_32px_rgba(0,0,0,0.45)] backdrop-blur-md transition-all duration-300 hover:border-gold hover:bg-gold/15 hover:shadow-[0_8px_32px_rgba(201,169,110,0.25)] hover:scale-105 active:scale-95 ${portalFocusRing}`}
+        className={`portal-ai-fab group fixed z-[45] right-4 lg:right-6 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] lg:bottom-6 flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-gold/45 bg-[#141820]/95 text-gold-light shadow-[0_8px_32px_rgba(0,0,0,0.45)] backdrop-blur-md transition-all duration-300 hover:border-gold hover:bg-gold/15 hover:shadow-[0_8px_32px_rgba(201,169,110,0.25)] hover:scale-105 active:scale-95 ${portalFocusRing}`}
       >
         <PortalAiRobotIcon className="w-8 h-8 transition-transform duration-300 group-hover:scale-110" />
         <span className="absolute -top-1 -right-1 flex h-3 w-3">

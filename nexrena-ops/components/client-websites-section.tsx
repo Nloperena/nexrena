@@ -10,7 +10,7 @@ import {
   resourceEmbedUrl,
 } from '@/lib/client-resource-utils'
 import { Btn } from '@/components/ui'
-import { portalSectionHintClass, portalMutedClass } from '@/lib/portal-a11y'
+import { portalFocusRing, portalSectionHintClass, portalMutedClass } from '@/lib/portal-a11y'
 
 const cardBody = 'px-5 py-5 bg-slate-900/80'
 
@@ -169,13 +169,6 @@ export function ClientWebsitesSection({ resources }: Props) {
     return () => window.removeEventListener('keydown', onKey)
   }, [expandedId])
 
-  useEffect(() => {
-    document.body.style.overflow = expandedId ? 'hidden' : ''
-    return () => {
-      document.body.style.overflow = ''
-    }
-  }, [expandedId])
-
   if (resources.length === 0) {
     return (
       <p className={portalMutedClass}>
@@ -242,15 +235,19 @@ export function ClientWebsitesSection({ resources }: Props) {
 
       {expanded && (
         <div
-          className="fixed inset-0 md:left-[4.5rem] z-[70] flex flex-col bg-[#111418]"
+          className="portal-immersive-overlay flex flex-col bg-[#111418]"
           role="dialog"
           aria-modal="true"
           aria-label={`Expanded preview ${expanded.title}`}
         >
           <div className="flex flex-wrap items-center gap-3 border-b border-slate-800/60 bg-[#111418]/95 backdrop-blur-md px-4 py-3 shrink-0">
-            <Btn type="button" size="sm" variant="ghost" onClick={() => setExpandedId(null)}>
-              ← Close
-            </Btn>
+            <button
+              type="button"
+              onClick={() => setExpandedId(null)}
+              className={`inline-flex items-center gap-2 rounded-xl border-2 border-slate-500 bg-slate-800/80 px-4 py-2.5 text-base font-medium text-white hover:border-gold/60 hover:bg-slate-700/80 ${portalFocusRing}`}
+            >
+              ← Close preview
+            </button>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-white truncate">{expanded.title}</p>
               <p className="text-xs text-slate-500 truncate">

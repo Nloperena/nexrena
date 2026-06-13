@@ -1,6 +1,10 @@
 'use client'
 
-import { portalFocusRing } from '@/lib/portal-a11y'
+import {
+  portalFocusRing,
+  portalNavItemClass,
+  portalNavLabelClass,
+} from '@/lib/portal-a11y'
 import { CLIENT_NAV_ICON } from '@/components/client-nav-icons'
 
 export type ClientPortalView =
@@ -39,6 +43,7 @@ type NavButtonProps = {
   messageUnread?: number
   formsNewCount?: number
   onClick: () => void
+  variant?: 'sidebar' | 'mobile' | 'icon'
   iconOnly?: boolean
   showTooltip?: boolean
 }
@@ -49,6 +54,7 @@ export function ClientNavButton({
   messageUnread = 0,
   formsNewCount = 0,
   onClick,
+  variant,
   iconOnly = false,
   showTooltip = false,
 }: NavButtonProps) {
@@ -56,8 +62,40 @@ export function ClientNavButton({
   const badgeCount =
     item.badge === 'messages' ? messageUnread : item.badge === 'forms' ? formsNewCount : 0
   const showBadge = item.badge && badgeCount > 0
+  const resolvedVariant = variant ?? (iconOnly ? 'icon' : 'mobile')
 
-  if (iconOnly) {
+  if (resolvedVariant === 'sidebar') {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        aria-current={active ? 'page' : undefined}
+        className={`${portalNavItemClass} ${portalFocusRing} ${
+          active
+            ? 'bg-slate-800/70 text-gold-light'
+            : 'text-slate-300 hover:text-white hover:bg-slate-800/40'
+        }`}
+      >
+        {active && (
+          <span
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-7 bg-gold rounded-full shadow-[0_0_8px_rgba(201,169,110,0.35)]"
+            aria-hidden
+          />
+        )}
+        <Icon className={`w-5 h-5 shrink-0 ${active ? 'text-gold-light' : 'text-slate-400'}`} />
+        <span className={`${portalNavLabelClass} flex-1 truncate text-base font-normal`}>
+          {item.label}
+        </span>
+        {showBadge && (
+          <span className="min-w-[1.5rem] h-6 px-2 rounded-full bg-gold text-obsidian text-xs font-bold flex items-center justify-center tabular-nums shrink-0">
+            {badgeCount > 99 ? '99+' : badgeCount}
+          </span>
+        )}
+      </button>
+    )
+  }
+
+  if (resolvedVariant === 'icon') {
     return (
       <button
         type="button"
