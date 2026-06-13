@@ -20,15 +20,12 @@ import { computePortalStats } from '@/lib/portal-dashboard-utils'
 import { buildPortalActivity } from '@/lib/activity-utils'
 import { formatDate } from '@/lib/store'
 import { InvoicePrint } from '@/components/invoice-print'
-import { ClientDashboardHero } from '@/components/client-dashboard-hero'
-import { ClientDashboardStats } from '@/components/client-dashboard-stats'
+import { ClientWorkspaceHome } from '@/components/client-workspace-home'
 import { ServiceRequestForm } from '@/components/service-request-form'
 import { ClientBillingSection } from '@/components/client-billing-section'
 import { PortalSubscriptionsSection } from '@/components/portal-subscriptions-section'
 import { ClientWorkStatusSection } from '@/components/client-work-status-section'
 import { ClientRequestModal } from '@/components/client-request-modal'
-import { ClientActionCards } from '@/components/client-action-cards'
-import { ClientActivityFeed } from '@/components/client-activity-feed'
 import { UploadFilesModal } from '@/components/upload-files-modal'
 import { ClientFilesView } from '@/components/client-files-view'
 import { ClientMessagesThreadView } from '@/components/client-messages-thread-view'
@@ -252,21 +249,15 @@ export function ClientDashboard({ onSignOut }: Props) {
     switch (activeView) {
       case 'home':
         return (
-          <div className="space-y-6 md:space-y-8">
-            <ClientDashboardHero
-              account={account}
-              stats={stats}
-              messageUnread={messageUnread}
-              onStartRequest={() => setRequestOpen(true)}
-            />
-            <ClientDashboardStats stats={stats} />
-            <ClientActionCards
-              onMessage={() => setActiveView('messages')}
-              onStartRequest={() => setRequestOpen(true)}
-              onViewBilling={() => setActiveView('billing')}
-            />
-            <ClientActivityFeed items={activity} />
-          </div>
+          <ClientWorkspaceHome
+            account={account}
+            stats={stats}
+            messageUnread={messageUnread}
+            formsNewCount={formsNewCount}
+            activity={activity}
+            onNavigate={setActiveView}
+            onStartRequest={() => setRequestOpen(true)}
+          />
         )
 
       case 'billing':

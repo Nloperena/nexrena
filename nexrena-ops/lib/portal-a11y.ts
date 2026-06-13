@@ -1,7 +1,7 @@
 /** Shared typography, contrast, and touch targets for the client portal (older-user friendly). */
 
-export const PORTAL_SIDEBAR_WIDTH = 'w-[280px]'
-export const PORTAL_MAIN_OFFSET = 'md:ml-[280px]'
+export const PORTAL_SIDEBAR_WIDTH = 'w-[4.5rem]'
+export const PORTAL_MAIN_OFFSET = 'md:ml-[4.5rem]'
 
 /** Page / section headings */
 export const portalSectionTitleClass =
