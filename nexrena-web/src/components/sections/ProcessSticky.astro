@@ -1,8 +1,8 @@
 ---
 /*
   Process — Horizontal Scroll via GSAP
-  Intro: full-bleed video fading through cream.
-  Steps: full-bleed media behind gradient frost that bleeds left→transparent.
+  Intro: cream gradient panel.
+  Steps: lightweight portal SVGs behind gradient frost; animations pause off-screen.
 */
 import Eyebrow from '../ui/Eyebrow.astro';
 import { processDiscoverySvg, processStrategySvg, processExecutionSvg, processDeliverySvg } from '../../lib/processSvgs';
@@ -219,15 +219,15 @@ const steps = [
 
       if (visual) {
         gsap.fromTo(visual,
-          { scale: 1.08, xPercent: 4 },
+          { opacity: 0.45 },
           {
-            xPercent: -4,
+            opacity: 0.65,
             ease: 'none',
             scrollTrigger: {
               trigger: panel,
               containerAnimation: horizontalTween,
-              start: 'left right',
-              end: 'right left',
+              start: 'left 80%',
+              end: 'right 20%',
               scrub: true,
             },
           }
@@ -238,33 +238,41 @@ const steps = [
 
   document.addEventListener('astro:page-load', initHorizontalScroll);
 
-  // Play videos only when the process section enters the viewport
+  function setProcessVisualMotion(root: Element, active: boolean) {
+    root.querySelectorAll<SVGSVGElement>('.process-visual svg.process-svg').forEach((svg) => {
+      if (active) svg.unpauseAnimations();
+      else svg.pauseAnimations();
+    });
+
+    root.querySelectorAll<HTMLVideoElement>('video.process-bg-video').forEach((video) => {
+      if (active) video.play().catch(() => {});
+      else video.pause();
+    });
+  }
+
+  // Pause SVG / video loops until the process section is in view
   document.addEventListener('astro:page-load', () => {
-    const wrapper = document.getElementById('process-wrapper') ?? document.querySelector('.process-mobile');
-    if (!wrapper) return;
+    const sections = document.querySelectorAll('#process-wrapper, .process-mobile');
+    if (!sections.length) return;
 
-    const videoObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        const videos = entry.target.querySelectorAll<HTMLVideoElement>('video.process-bg-video');
-        videos.forEach(v => {
-          if (entry.isIntersecting) {
-            v.play().catch(() => {});
-          } else {
-            v.pause();
-          }
-        });
-      });
-    }, { threshold: 0.1 });
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Observe both desktop and mobile sections
-    document.querySelectorAll('#process-wrapper, .process-mobile').forEach(el => videoObserver.observe(el));
+    sections.forEach((section) => {
+      section.querySelectorAll<SVGSVGElement>('.process-visual svg.process-svg').forEach((svg) => svg.pauseAnimations());
+    });
+
+    if (reducedMotion) return;
+
+    const mediaObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => setProcessVisualMotion(entry.target, entry.isIntersecting));
+    }, { threshold: 0.12, rootMargin: '80px 0px' });
+
+    sections.forEach((section) => mediaObserver.observe(section));
   });
 </script>
 
 <style>
   .process-frost {
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
     background: linear-gradient(
       to right,
       rgba(245, 240, 232, 0.97) 0%,

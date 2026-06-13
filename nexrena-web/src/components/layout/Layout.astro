@@ -173,7 +173,64 @@ const imageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, site).t
         });
       });
 
-      // ── Non-critical UI: cursor and scroll bar deferred to idle ──
+      function initCustomCursor() {
+        if (!window.matchMedia('(pointer: fine)').matches) return;
+
+        const cursor = document.getElementById('custom-cursor');
+        if (!cursor) return;
+
+        cursor.style.display = 'block';
+        document.documentElement.classList.add('custom-cursor-active');
+
+        let x = 0;
+        let y = 0;
+        let visible = false;
+
+        const paintCursor = () => {
+          cursor!.style.setProperty('--cursor-x', `${x}px`);
+          cursor!.style.setProperty('--cursor-y', `${y}px`);
+          if (!visible) {
+            cursor!.style.opacity = '1';
+            visible = true;
+          }
+        };
+
+        document.addEventListener('pointermove', (e) => {
+          x = e.clientX;
+          y = e.clientY;
+          paintCursor();
+        }, { passive: true });
+
+        document.addEventListener('mousedown', () => cursor.classList.add('click'));
+        document.addEventListener('mouseup', () => cursor.classList.remove('click'));
+
+        document.addEventListener('mouseover', (e) => {
+          const target = e.target as HTMLElement;
+          if (target.closest('.work-card, .work-row')) {
+            cursor.classList.add('cursor-view');
+          } else if (target.closest('a, button, input, textarea, select, .magnetic-btn')) {
+            cursor.classList.add('hover');
+          }
+        });
+        document.addEventListener('mouseout', (e) => {
+          const target = e.target as HTMLElement;
+          if (target.closest('.work-card, .work-row')) {
+            cursor.classList.remove('cursor-view');
+          } else if (target.closest('a, button, input, textarea, select, .magnetic-btn')) {
+            cursor.classList.remove('hover');
+          }
+        });
+
+        window.addEventListener('resize', () => {
+          const fine = window.matchMedia('(pointer: fine)').matches;
+          cursor.style.display = fine ? 'block' : 'none';
+          document.documentElement.classList.toggle('custom-cursor-active', fine);
+        });
+      }
+
+      document.addEventListener('astro:page-load', initCustomCursor);
+
+      // ── Non-critical UI: scroll bar and analytics deferred to idle ──
       const idle = (cb: () => void) =>
         'requestIdleCallback' in window
           ? (window as any).requestIdleCallback(cb, { timeout: 300 })
@@ -210,56 +267,6 @@ const imageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, site).t
           bar.classList.toggle('visible', top > window.innerHeight * 0.05);
         }
         window.addEventListener('scroll', handleScrollProgress, { passive: true });
-
-        // Custom Cursor — only on pointer-fine (non-touch) devices
-        if (!window.matchMedia('(pointer: fine)').matches) return;
-
-        const cursor = document.getElementById('custom-cursor');
-        if (!cursor) return;
-
-        cursor.style.display = 'block';
-        document.documentElement.classList.add('custom-cursor-active');
-
-        let rafPending = false;
-        let pendingX = 0, pendingY = 0;
-
-        document.addEventListener('pointermove', (e) => {
-          pendingX = e.clientX;
-          pendingY = e.clientY;
-          if (rafPending) return;
-          rafPending = true;
-          requestAnimationFrame(() => {
-            cursor!.style.setProperty('--cursor-x', `${pendingX}px`);
-            cursor!.style.setProperty('--cursor-y', `${pendingY}px`);
-            rafPending = false;
-          });
-        }, { passive: true });
-
-        document.addEventListener('mousedown', () => cursor.classList.add('click'));
-        document.addEventListener('mouseup', () => cursor.classList.remove('click'));
-
-        document.addEventListener('mouseover', (e) => {
-          const target = e.target as HTMLElement;
-          if (target.closest('.work-card, .work-row')) {
-            cursor.classList.add('cursor-view');
-          } else if (target.closest('a, button, input, textarea, select, .magnetic-btn')) {
-            cursor.classList.add('hover');
-          }
-        });
-        document.addEventListener('mouseout', (e) => {
-          const target = e.target as HTMLElement;
-          if (target.closest('.work-card, .work-row')) {
-            cursor.classList.remove('cursor-view');
-          } else if (target.closest('a, button, input, textarea, select, .magnetic-btn')) {
-            cursor.classList.remove('hover');
-          }
-        });
-
-        window.addEventListener('resize', () => {
-          const fine = window.matchMedia('(pointer: fine)').matches;
-          cursor.style.display = fine ? 'block' : 'none';
-          document.documentElement.classList.toggle('custom-cursor-active', fine);
-        });
       });
     </script>
   </body>
