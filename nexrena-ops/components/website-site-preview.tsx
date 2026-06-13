@@ -8,6 +8,7 @@ import {
   resourceDisplayDomain,
   resourceEmbedUrl,
 } from '@/lib/client-resource-utils'
+import { WebsitePreviewFrame } from '@/components/website-preview-frame'
 import { Btn } from '@/components/ui'
 import { portalFocusRing, portalMutedClass } from '@/lib/portal-a11y'
 
@@ -60,23 +61,31 @@ function LiveSitePreview({
   if (expanded) {
     const heightClass = 'h-full min-h-0'
     return (
-      <div className="flex items-center justify-center bg-slate-950/80 flex-1 min-h-0 p-4 md:p-6">
+      <div className="flex items-center justify-center bg-slate-950/80 flex-1 min-h-0 p-4 md:p-8">
         <div
           className={
             viewport === 'mobile'
               ? `w-full max-w-[390px] ${heightClass} rounded-[1.75rem] border-[8px] border-slate-800 bg-slate-900 shadow-xl overflow-hidden ring-1 ring-white/5`
-              : `w-full max-w-6xl aspect-video ${heightClass} rounded-xl border border-slate-700/60 overflow-hidden bg-white shadow-inner`
+              : `w-full max-w-none ${heightClass} rounded-xl border border-slate-700/60 overflow-hidden bg-slate-900 shadow-2xl ring-1 ring-white/5`
           }
         >
-          <iframe
-            key={`${resource.id}-${viewport}-expanded`}
-            src={embedUrl}
-            title={`Live preview of ${resource.title}`}
-            className="w-full h-full border-0 bg-white"
-            loading="lazy"
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
+          {viewport === 'mobile' ? (
+            <iframe
+              key={`${resource.id}-mobile-expanded`}
+              src={embedUrl}
+              title={`Live preview of ${resource.title}`}
+              className="w-full h-full border-0 bg-white"
+              loading="lazy"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          ) : (
+            <WebsitePreviewFrame
+              src={embedUrl}
+              title={`Live preview of ${resource.title}`}
+              iframeKey={`${resource.id}-desktop-expanded`}
+            />
+          )}
         </div>
       </div>
     )
@@ -97,27 +106,24 @@ function LiveSitePreview({
           />
         </div>
       ) : (
-        <div className="mx-auto w-full max-w-4xl">
+        <div className="w-full">
           <div className="relative rounded-xl border border-slate-700/60 bg-slate-900 shadow-2xl overflow-hidden ring-1 ring-white/5">
-            <div className="h-7 bg-slate-800/90 border-b border-slate-700/60 flex items-center gap-1.5 px-3">
-              <span className="w-2.5 h-2.5 rounded-full bg-slate-600" aria-hidden />
-              <span className="w-2.5 h-2.5 rounded-full bg-slate-600" aria-hidden />
-              <span className="w-2.5 h-2.5 rounded-full bg-slate-600" aria-hidden />
-              <span className="ml-2 text-[10px] text-slate-500 truncate">
+            <div className="h-8 bg-slate-800/90 border-b border-slate-700/60 flex items-center gap-1.5 px-4">
+              <span className="w-3 h-3 rounded-full bg-slate-600" aria-hidden />
+              <span className="w-3 h-3 rounded-full bg-slate-600" aria-hidden />
+              <span className="w-3 h-3 rounded-full bg-slate-600" aria-hidden />
+              <span className="ml-2 text-[11px] text-slate-500 truncate">
                 {resourceDisplayDomain(resource.url)}
               </span>
+              <span className="ml-auto text-[10px] uppercase tracking-wider text-slate-600">
+                XL · 1920×1080
+              </span>
             </div>
-            <div className="aspect-video bg-white">
-              <iframe
-                key={`${resource.id}-desktop`}
-                src={embedUrl}
-                title={`Desktop preview of ${resource.title}`}
-                className="w-full h-full border-0 bg-white"
-                loading="lazy"
-                sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            </div>
+            <WebsitePreviewFrame
+              src={embedUrl}
+              title={`Desktop preview of ${resource.title}`}
+              iframeKey={`${resource.id}-desktop`}
+            />
           </div>
         </div>
       )}
@@ -176,7 +182,7 @@ export function WebsiteSitePreviewCard({
           </Btn>
         </div>
         <p className="mt-3 text-[11px] text-slate-600">
-          16:9 desktop view · if blank, the site may block embedding — open in a new tab
+          XL desktop monitor (1920×1080) · if blank, the site may block embedding — open in a new tab
         </p>
       </div>
     </li>

@@ -148,12 +148,13 @@ const copy = waasPageCopy;
       ))}
     </div>
 
-    {isFull && (
-      <div class="mb-20 border-t border-[var(--slate-800)] pt-16 reveal">
+    <div class={`${isFull ? 'mb-20 border-t border-[var(--slate-800)] pt-16' : 'mb-16'} reveal`}>
         <p class="font-mono text-[10px] text-[var(--gold)] tracking-[0.2em] uppercase mb-4">Add-ons & upgrades</p>
-        <h2 class="font-display text-[clamp(28px,4vw,40px)] text-[var(--warm-white)] mb-3">Build on your plan</h2>
+        <h2 class={`font-display text-[var(--warm-white)] mb-3 ${isFull ? 'text-[clamp(28px,4vw,40px)]' : 'text-2xl md:text-3xl'}`}>
+          {isFull ? 'Build on your plan' : 'Upgrade your website'}
+        </h2>
         <p class="font-body text-sm text-[var(--slate-400)] mb-8 max-w-2xl">
-          Plans are your monthly foundation. Everything else — pages, SEO, forms, content, and integrations — is a fixed upgrade or scoped project with clear boundaries.
+          Plans are your monthly foundation. Everything else — pages, SEO, forms, content, automations, and integrations — is a fixed upgrade or scoped project with clear boundaries.
         </p>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {serviceMenuCategories.filter((c) => c.id !== 'website-plan').map((cat) => (
@@ -169,7 +170,6 @@ const copy = waasPageCopy;
         </div>
         <p class="mt-8 font-body text-sm text-[var(--slate-500)] max-w-3xl leading-relaxed">{universalScopeLanguage}</p>
       </div>
-    )}
 
     {isFull && (
       <div class="mb-20 reveal">

@@ -79,5 +79,7 @@ export const PUBLIC_CATEGORY_SUMMARY = [
   { id: 'local-seo' as const, label: 'SEO Upgrades', summary: 'Local pages, Google Business cleanup, metadata, and SEO content.' },
   { id: 'trust-design' as const, label: 'Trust Upgrades', summary: 'Reviews, galleries, FAQs, pricing sections, and before/after proof.' },
   { id: 'copywriting' as const, label: 'Content Upgrades', summary: 'Copywriting, blog posts, rewrites, and website content.' },
+  { id: 'automation' as const, label: 'Automation', summary: 'Notifications, CRM connections, and workflow setup.' },
+  { id: 'branding' as const, label: 'Branding', summary: 'Logo, colors, fonts, and social profile graphics.' },
   { id: 'advanced' as const, label: 'Scoped Projects', summary: 'Ecommerce, portals, dashboards, custom apps, and integrations.' },
 ]

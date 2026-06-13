@@ -207,6 +207,8 @@ export const serviceMenuCategories = [
   { id: 'local-seo', label: 'SEO Upgrades', summary: 'Local pages, Google Business cleanup, metadata, and SEO content.' },
   { id: 'trust-design', label: 'Trust Upgrades', summary: 'Reviews, galleries, FAQs, pricing sections, and before/after proof.' },
   { id: 'copywriting', label: 'Content Upgrades', summary: 'Copywriting, blog posts, rewrites, and website content.' },
+  { id: 'automation', label: 'Automation', summary: 'Notifications, CRM connections, and workflow setup.' },
+  { id: 'branding', label: 'Branding', summary: 'Logo, colors, fonts, and social profile graphics.' },
   { id: 'advanced', label: 'Scoped Projects', summary: 'Ecommerce, portals, dashboards, custom apps, and integrations.' },
 ] as const;
 

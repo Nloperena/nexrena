@@ -123,8 +123,8 @@ export function ClientWebsitesSection({ resources }: Props) {
       <div className="space-y-10 pt-2">
         <div className="space-y-4">
           <p className={portalSectionHintClass}>
-            Your live sites appear below in desktop monitor view. Switch between sites, expand for
-            full-screen preview, or browse and upload site media.
+            Your live sites appear below in XL desktop monitor view (1920×1080). Switch between sites,
+            expand for full-screen preview, or browse and upload site media.
           </p>
           {embeddable.length > 0 && (
             <SiteSelector
@@ -142,7 +142,7 @@ export function ClientWebsitesSection({ resources }: Props) {
                 ? `${embeddable.length} websites`
                 : 'Website preview'}
             </h3>
-            <ul className="flex flex-col gap-8 max-w-4xl">
+            <ul className="flex flex-col gap-10 w-full max-w-none">
               {visibleEmbeddable.map((resource) => (
                 <WebsiteSitePreviewCard
                   key={resource.id}

@@ -95,6 +95,17 @@ export function ClientShopView({ stripeEnabled, highlightSku, initialCategory, p
 
   if (loading) return <p className={portalMutedClass}>Loading service menu…</p>
 
+  if (!loading && products.length === 0 && !error) {
+    return (
+      <div className="space-y-4">
+        <h2 className={portalSectionTitleClass}>Services</h2>
+        <p className={`${portalMutedClass} text-base`}>
+          The service menu is temporarily unavailable. Please refresh or contact Nexrena if this persists.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-8">
       <div>
@@ -114,7 +125,21 @@ export function ClientShopView({ stripeEnabled, highlightSku, initialCategory, p
           Checkout was cancelled. You can try again anytime.
         </p>
       )}
-      {error && <p className="text-base text-red-300" role="alert">{error}</p>}
+      {error && (
+        <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-base text-red-200" role="alert">
+          {error}
+          {error === 'Request failed' && (
+            <span className="block mt-1 text-sm text-red-300/80">
+              The service catalog could not be loaded. Try refreshing — if the problem continues, our team may need to update the API.
+            </span>
+          )}
+        </p>
+      )}
+      {!stripeEnabled && products.some((p) => p.checkoutEnabled) && (
+        <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+          Online checkout is not configured yet. You can still request quotes for scoped services — contact Nexrena to order plans and upgrades.
+        </p>
+      )}
 
       <div className="flex flex-wrap gap-2">
         <CategoryChip active={activeCategory === 'all'} onClick={() => setActiveCategory('all')}>
