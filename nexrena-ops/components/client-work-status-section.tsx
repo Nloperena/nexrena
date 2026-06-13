@@ -12,6 +12,7 @@ function requestDisplay(description: string, projectType: string): { label: stri
 }
 
 const card = portalCardClass
+const requestRowClass = `${card} hover:bg-slate-800/50 transition-colors`
 
 type Props = {
   activeProjects: PortalProject[]
@@ -77,7 +78,7 @@ export function ClientWorkStatusSection({
       return (
         <div className={`${card} space-y-2`}>
           <p className={portalMutedClass}>No requests yet.</p>
-          <p className={portalSectionHintClass}>Use the request form above — we will track status here.</p>
+          <p className={portalSectionHintClass}>Click + New Request to get started — we will track status here.</p>
         </div>
       )
     }
@@ -87,7 +88,7 @@ export function ClientWorkStatusSection({
           const chip = requestStatusChip(r.status)
           const { label, body } = requestDisplay(r.description, r.projectType)
           return (
-            <li key={r.id} className={card}>
+            <li key={r.id} className={requestRowClass}>
               <div className="flex flex-wrap justify-between gap-2">
                 <p className="font-serif text-xl text-white">{label}</p>
                 {chip && <StatusChip variant={chip} />}
@@ -109,7 +110,7 @@ export function ClientWorkStatusSection({
     return (
       <div className={`${card} space-y-2`}>
         <p className={portalMutedClass}>No active projects or requests yet.</p>
-        <p className={portalSectionHintClass}>Send a request above to get started.</p>
+        <p className={portalSectionHintClass}>Click + New Request to get started.</p>
       </div>
     )
   }
@@ -141,7 +142,7 @@ export function ClientWorkStatusSection({
             const chip = requestStatusChip(r.status)
             const { label, body } = requestDisplay(r.description, r.projectType)
             return (
-              <li key={r.id} className={card}>
+              <li key={r.id} className={requestRowClass}>
                 <div className="flex flex-wrap justify-between gap-2">
                   <p className="font-serif text-lg text-white">{label}</p>
                   {chip && <StatusChip variant={chip} />}

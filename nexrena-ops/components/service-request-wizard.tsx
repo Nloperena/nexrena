@@ -22,9 +22,11 @@ const STEP_LABELS: Record<Step, string> = {
 type Props = {
   onCreated: (request: PortalServiceRequest) => void
   onSuccess?: () => void
+  /** Strip outer card chrome when rendered inside a sheet or modal */
+  embedded?: boolean
 }
 
-export function ServiceRequestWizard({ onCreated, onSuccess }: Props) {
+export function ServiceRequestWizard({ onCreated, onSuccess, embedded = false }: Props) {
   const [step, setStep] = useState<Step>('service')
   const [choice, setChoice] = useState<RequestTypeOption | null>(null)
   const [description, setDescription] = useState('')
@@ -74,9 +76,11 @@ export function ServiceRequestWizard({ onCreated, onSuccess }: Props) {
     }
   }
 
+  const shell = embedded ? 'flex flex-col' : `${teamSurfaceCard} overflow-hidden`
+
   if (done) {
     return (
-      <div className={`${teamSurfaceCard} p-8 text-center space-y-4`}>
+      <div className={`${embedded ? 'py-6' : teamSurfaceCard} p-8 text-center space-y-4`}>
         <p className="text-4xl" aria-hidden>✓</p>
         <h3 className="font-serif text-2xl text-white">Request sent</h3>
         <p className={portalSectionHintClass}>
@@ -100,7 +104,7 @@ export function ServiceRequestWizard({ onCreated, onSuccess }: Props) {
   }
 
   return (
-    <div className={`${teamSurfaceCard} overflow-hidden`}>
+    <div className={shell}>
       {/* Progress */}
       <div className="px-5 pt-5 pb-3 border-b border-slate-700/30 bg-[#181d26]">
         <div className="flex items-center justify-between text-sm text-slate-400 mb-2">

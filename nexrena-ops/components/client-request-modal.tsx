@@ -1,7 +1,6 @@
 'use client'
 
-import { Modal } from '@/components/ui'
-import { ServiceRequestForm } from '@/components/service-request-form'
+import { RequestsSheetWizard } from '@/components/requests-sheet-wizard'
 import type { PortalServiceRequest } from '@/lib/portal-types'
 
 type Props = {
@@ -10,20 +9,13 @@ type Props = {
   onCreated: (request: PortalServiceRequest) => void
 }
 
+/** Opens the service request wizard in a right-side sheet (home quick action + legacy name). */
 export function ClientRequestModal({ open, onClose, onCreated }: Props) {
-  if (!open) return null
-
   return (
-    <Modal title="Start a request" onClose={onClose} wide>
-      <ServiceRequestForm
-        variant="modal"
-        onCreated={(row) => {
-          onCreated(row)
-        }}
-        onSuccess={() => {
-          setTimeout(onClose, 900)
-        }}
-      />
-    </Modal>
+    <RequestsSheetWizard
+      open={open}
+      onClose={onClose}
+      onCreated={onCreated}
+    />
   )
 }

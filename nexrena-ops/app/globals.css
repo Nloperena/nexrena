@@ -111,6 +111,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   to   { opacity: 1; transform: translateX(0); }
 }
 
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(100%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
   100% { background-position: 200% 0; }
@@ -139,6 +144,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .animate-slide-left {
   animation: slideInLeft 0.4s ease-out both;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out both;
 }
 
 /* Stagger children — apply to parent */

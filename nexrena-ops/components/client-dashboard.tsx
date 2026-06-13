@@ -19,13 +19,11 @@ import {
 } from '@/lib/portal-client'
 import { computePortalStats } from '@/lib/portal-dashboard-utils'
 import { buildPortalActivity } from '@/lib/activity-utils'
-import { formatDate } from '@/lib/store'
 import { InvoicePrint } from '@/components/invoice-print'
 import { ClientWorkspaceHome } from '@/components/client-workspace-home'
-import { ServiceRequestForm } from '@/components/service-request-form'
+import { ClientRequestsView } from '@/components/client-requests-view'
 import { ClientBillingSection } from '@/components/client-billing-section'
 import { PortalSubscriptionsSection } from '@/components/portal-subscriptions-section'
-import { ClientWorkStatusSection } from '@/components/client-work-status-section'
 import { ClientRequestModal } from '@/components/client-request-modal'
 import { UploadFilesModal } from '@/components/upload-files-modal'
 import { ClientFilesView } from '@/components/client-files-view'
@@ -39,10 +37,8 @@ import type { ClientPortalView } from '@/components/client-nav'
 import { ClientShopView } from '@/components/client-shop-view'
 import { readPortalViewFromUrl, readPortalShopParams, writePortalViewToUrl } from '@/lib/portal-view-url'
 import type { PortalResource } from '@/lib/client-resource-utils'
-import { StatusChip, proposalStatusChip } from '@/components/status-chip'
 import type { Invoice, InvoiceStatus } from '@/lib/types'
 import { Btn } from '@/components/ui'
-import { portalSectionTitleClass } from '@/lib/portal-a11y'
 
 type Props = { onSignOut: () => void }
 
@@ -405,64 +401,14 @@ export function ClientDashboard({ onSignOut }: Props) {
 
       case 'requests':
         return (
-          <div className="space-y-6 md:space-y-8">
-            <ServiceRequestForm
-              variant="inline"
-              onCreated={(row) => setServiceRequests((prev) => [row, ...prev])}
-            />
-            <div className="space-y-3">
-              <h3 className={portalSectionTitleClass}>Active projects</h3>
-              <ClientWorkStatusSection
-                activeProjects={activeProjects}
-                serviceRequests={serviceRequests}
-                invoices={invoices}
-                variant="projects"
-              />
-            </div>
-            <div className="space-y-3">
-              <h3 className={portalSectionTitleClass}>Recent requests</h3>
-              <ClientWorkStatusSection
-                activeProjects={activeProjects}
-                serviceRequests={serviceRequests}
-                invoices={invoices}
-                variant="requests"
-              />
-            </div>
-            {proposals.length > 0 && (
-              <div className="space-y-3">
-                <h3 className={portalSectionTitleClass}>Estimates & approvals</h3>
-                <ul className="space-y-3">
-                  {proposals.map((p) => {
-                    const chip = proposalStatusChip(p.status, p.validUntil)
-                    return (
-                      <li key={p.id} className={card}>
-                        <div className="flex flex-wrap justify-between gap-3">
-                          <div>
-                            <div className="flex flex-wrap items-center gap-2">
-                              <p className="font-serif text-lg text-white">{p.title}</p>
-                              {chip && <StatusChip variant={chip} />}
-                            </div>
-                            <p className="text-sm text-slate-400 mt-1">
-                              Valid until {formatDate(p.validUntil)}
-                            </p>
-                          </div>
-                          {p.status === 'sent' && new Date(p.validUntil) >= new Date() && (
-                            <Btn
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => setActiveView('messages')}
-                            >
-                              Approve via message
-                            </Btn>
-                          )}
-                        </div>
-                      </li>
-                    )
-                  })}
-                </ul>
-              </div>
-            )}
-          </div>
+          <ClientRequestsView
+            proposals={proposals}
+            activeProjects={activeProjects}
+            serviceRequests={serviceRequests}
+            invoices={invoices}
+            onRequestCreated={(row) => setServiceRequests((prev) => [row, ...prev])}
+            onNavigateToMessages={() => setActiveView('messages')}
+          />
         )
 
       case 'settings':
