@@ -19,6 +19,7 @@ import {
 } from '@/lib/portal-a11y'
 import { NexrenaLogo } from '@/components/nexrena-logo'
 import { PortalAiAgentButton } from '@/components/portal-ai-agent-button'
+import { ClientViewHero } from '@/components/client-view-hero'
 
 type Props = {
   activeView: ClientPortalView
@@ -50,6 +51,7 @@ export function ClientPortalShell({
   const isMessenger = activeView === 'messages'
   const isHome = activeView === 'home'
   const isSettings = activeView === 'settings'
+  const showViewHero = !isMessenger && !isHome
 
   return (
     <div className="client-portal min-h-screen bg-[#111418]">
@@ -99,7 +101,7 @@ export function ClientPortalShell({
         >
           <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-slate-800/40 bg-[#111418]/92 backdrop-blur-md px-4 py-3 lg:px-8 lg:py-4">
             <div className="min-w-0 flex-1">
-              {!isHome && (
+              {!isHome && !showViewHero && (
                 <h1 className="font-serif text-xl sm:text-2xl text-white truncate">{viewTitle}</h1>
               )}
               {isHome && account && (
@@ -139,6 +141,9 @@ export function ClientPortalShell({
                 : 'px-4 lg:px-8 py-5 lg:pb-8 max-w-6xl'
             }`}
           >
+            {showViewHero && (
+              <ClientViewHero view={activeView} title={viewTitle} className="mb-5 md:mb-6" />
+            )}
             {children}
           </main>
         </div>

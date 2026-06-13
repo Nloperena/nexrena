@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 400" style="width: 100%; height: auto;">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="65%">
+      <stop offset="0%" stop-color="#1a1e28" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#0c0f12" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="mainLine" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3a2a10"/>
+      <stop offset="50%" stop-color="#b89354"/>
+      <stop offset="100%" stop-color="#f5d796"/>
+    </linearGradient>
+    <linearGradient id="topFade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0c0f12" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#0c0f12" stop-opacity="0"/>
+    </linearGradient>
+    <path id="cfgTrack" d="M 340,320 C 280,280 220,260 180,220 C 140,180 200,140 260,120 C 320,100 400,110 460,140 C 520,170 560,210 580,260 C 600,310 520,340 440,330 C 380,322 360,330 340,320 Z" fill="none"/>
+    <style>.node-glow{filter:drop-shadow(0 0 4px rgba(240,208,128,.5))}.head-glow{filter:drop-shadow(0 0 5px #fff)}</style>
+  </defs>
+  <rect width="680" height="400" fill="url(#bgGlow)"/>
+  <g opacity="0.15" fill="none" stroke="#7a5c2d" stroke-width="1">
+    <circle cx="340" cy="200" r="70"/>
+    <circle cx="340" cy="200" r="45" stroke-dasharray="6 8"/>
+    <path d="M340,130 V170 M340,230 V270 M270,200 H310 M370,200 H410 M295,155 L320,180 M360,220 L385,245 M295,245 L320,220 M360,180 L385,155"/>
+  </g>
+  <use href="#cfgTrack" stroke="#f5d796" stroke-width="10" opacity="0.06" stroke-linecap="round"/>
+  <use href="#cfgTrack" stroke="#3a2a10" stroke-width="2" stroke-linecap="round"/>
+  <use href="#cfgTrack" stroke="url(#mainLine)" stroke-width="2.5" stroke-linecap="round"/>
+  <g>
+    <circle cx="0" cy="0" r="3.5" fill="#fff" class="head-glow"><animateMotion dur="6s" repeatCount="indefinite"><mpath href="#cfgTrack"/></animateMotion></circle>
+    <circle cx="0" cy="0" r="2" fill="#f5d796" opacity="0.5"><animateMotion dur="6s" begin="-0.4s" repeatCount="indefinite"><mpath href="#cfgTrack"/></animateMotion></circle>
+  </g>
+  <g transform="translate(340,200)">
+    <circle cx="0" cy="0" r="36" fill="none" stroke="#b89354"><animate attributeName="r" values="24;44" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;0" dur="2s" repeatCount="indefinite"/></circle>
+    <circle cx="0" cy="0" r="18" fill="#0c0f12" stroke="#f0d080" stroke-width="2"/>
+    <circle cx="0" cy="0" r="5" fill="#f0d080" class="node-glow"/>
+  </g>
+  <g transform="translate(220,160)"><circle cx="0" cy="0" r="10" fill="none" stroke="#b89354"><animate attributeName="r" values="6;16" dur="2s" begin="0.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;0" dur="2s" begin="0.5s" repeatCount="indefinite"/></circle><circle cx="0" cy="0" r="5" fill="#0c0f12" stroke="#c9a050" stroke-width="1.2"/><circle cx="0" cy="0" r="1.4" fill="#f0d080" class="node-glow"/></g>
+  <g transform="translate(460,240)"><circle cx="0" cy="0" r="10" fill="none" stroke="#b89354"><animate attributeName="r" values="6;16" dur="2s" begin="1s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;0" dur="2s" begin="1s" repeatCount="indefinite"/></circle><circle cx="0" cy="0" r="5" fill="#0c0f12" stroke="#c9a050" stroke-width="1.2"/><circle cx="0" cy="0" r="1.4" fill="#f0d080" class="node-glow"/></g>
+  <rect width="680" height="40" fill="url(#topFade)"/>
+</svg>

@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 400" style="width: 100%; height: auto;">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#1e1205" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#050507" stop-opacity="0"/>
+    </radialGradient>
+    
+    <linearGradient id="edgeFade" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#b89354" stop-opacity="0"/>
+      <stop offset="20%" stop-color="#b89354" stop-opacity="0.3"/>
+      <stop offset="80%" stop-color="#b89354" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#b89354" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="topFade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#050507" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#050507" stop-opacity="0"/>
+    </linearGradient>
+
+    <style>
+      .node-glow { filter: drop-shadow(0 0 4px rgba(240, 208, 128, 0.5)); }
+      .line-glow { filter: drop-shadow(0 0 5px #ffffff); }
+    </style>
+  </defs>
+
+  <!-- Background base -->
+  <rect width="680" height="400" fill="url(#bgGlow)" />
+
+  <!-- Animated structural grid/frames -->
+  <g transform="translate(140, 80)">
+    <!-- Base structural frame -->
+    <rect x="0" y="0" width="400" height="240" fill="none" stroke="url(#edgeFade)" stroke-width="1.5" rx="8" />
+    <path d="M 0,60 H 400 M 120,60 V 240 M 260,60 V 240" stroke="#7a5c2d" stroke-width="1" stroke-dasharray="4 6" opacity="0.3" />
+    
+    <!-- Moving highlighted sections -->
+    <!-- Top banner -->
+    <rect x="20" y="15" width="200" height="30" fill="#b89354" opacity="0.05" rx="4" stroke="#7a5c2d" stroke-width="1">
+      <animate attributeName="opacity" values="0.05; 0.2; 0.05" dur="4s" begin="0s" repeatCount="indefinite" />
+    </rect>
+    <rect x="240" y="20" width="140" height="20" fill="#f5d796" opacity="0.05" rx="10" />
+    
+    <!-- Left column block -->
+    <rect x="20" y="80" width="80" height="140" fill="#b89354" opacity="0.05" rx="4" stroke="#7a5c2d" stroke-width="1">
+      <animate attributeName="opacity" values="0.05; 0.15; 0.05" dur="4s" begin="1s" repeatCount="indefinite" />
+    </rect>
+    
+    <!-- Center main block -->
+    <rect x="140" y="80" width="100" height="80" fill="#b89354" opacity="0.05" rx="4" stroke="#7a5c2d" stroke-width="1">
+      <animate attributeName="opacity" values="0.05; 0.25; 0.05" dur="4s" begin="2s" repeatCount="indefinite" />
+    </rect>
+    <rect x="140" y="180" width="100" height="40" fill="#b89354" opacity="0.05" rx="4" stroke="#7a5c2d" stroke-width="1" />
+
+    <!-- Right column blocks -->
+    <rect x="280" y="80" width="100" height="60" fill="#b89354" opacity="0.05" rx="4" stroke="#7a5c2d" stroke-width="1" />
+    <rect x="280" y="160" width="100" height="60" fill="#b89354" opacity="0.05" rx="4" stroke="#7a5c2d" stroke-width="1">
+      <animate attributeName="opacity" values="0.05; 0.2; 0.05" dur="4s" begin="3s" repeatCount="indefinite" />
+    </rect>
+
+    <!-- Glowing interface nodes representing 'upgrades' -->
+    <g transform="translate(240, 120)">
+      <circle cx="0" cy="0" r="14" fill="none" stroke="#b89354">
+        <animate attributeName="r" values="8; 24" dur="2s" begin="0.5s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.8; 0" dur="2s" begin="0.5s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="0" cy="0" r="7" fill="#050507" stroke="#c9a050" stroke-width="1.5" />
+      <circle cx="0" cy="0" r="2.5" fill="#f0d080" class="node-glow" />
+    </g>
+
+    <g transform="translate(120, 60)">
+      <circle cx="0" cy="0" r="10" fill="none" stroke="#b89354">
+        <animate attributeName="r" values="5; 15" dur="2s" begin="1.5s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.8; 0" dur="2s" begin="1.5s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="0" cy="0" r="5" fill="#050507" stroke="#c9a050" stroke-width="1.2" />
+      <circle cx="0" cy="0" r="1.5" fill="#f0d080" class="node-glow" />
+    </g>
+
+    <g transform="translate(280, 190)">
+      <circle cx="0" cy="0" r="12" fill="none" stroke="#b89354">
+        <animate attributeName="r" values="6; 18" dur="2s" begin="2.5s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.8; 0" dur="2s" begin="2.5s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="0" cy="0" r="6" fill="#050507" stroke="#c9a050" stroke-width="1.5" />
+      <circle cx="0" cy="0" r="2" fill="#f0d080" class="node-glow" />
+    </g>
+  </g>
+
+  <!-- Animated data streams connecting elements -->
+  <g>
+    <!-- Stream 1 -->
+    <path id="stream1" d="M 60,200 H 140 V 140 H 260" fill="none" stroke="#3a2a10" stroke-width="2" stroke-dasharray="2 4" />
+    <path d="M 60,200 H 140 V 140 H 260" fill="none" stroke="#f5d796" stroke-width="2" stroke-dasharray="10 200" class="line-glow">
+      <animate attributeName="stroke-dashoffset" values="210; -210" dur="3s" repeatCount="indefinite" />
+    </path>
+
+    <!-- Stream 2 -->
+    <path id="stream2" d="M 380,140 V 60 H 540" fill="none" stroke="#3a2a10" stroke-width="2" stroke-dasharray="2 4" />
+    <path d="M 380,140 V 60 H 540" fill="none" stroke="#f5d796" stroke-width="2" stroke-dasharray="10 200" class="line-glow">
+      <animate attributeName="stroke-dashoffset" values="210; -210" dur="4s" begin="1s" repeatCount="indefinite" />
+    </path>
+
+    <!-- Stream 3 -->
+    <path id="stream3" d="M 620,270 H 420 V 180" fill="none" stroke="#3a2a10" stroke-width="2" stroke-dasharray="2 4" />
+    <path d="M 620,270 H 420 V 180" fill="none" stroke="#f5d796" stroke-width="2" stroke-dasharray="10 200" class="line-glow">
+      <animate attributeName="stroke-dashoffset" values="210; -210" dur="3.5s" begin="0.5s" repeatCount="indefinite" />
+    </path>
+  </g>
+
+  <rect width="680" height="40" fill="url(#topFade)" />
+</svg>

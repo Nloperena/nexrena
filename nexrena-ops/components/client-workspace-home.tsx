@@ -10,6 +10,7 @@ import { CLIENT_NAV_ITEMS } from '@/components/client-nav'
 import { ClientActivityFeed } from '@/components/client-activity-feed'
 import { formatCurrency, formatDate } from '@/lib/store'
 import { NexrenaLogo } from '@/components/nexrena-logo'
+import { PORTAL_HERO_IMAGES } from '@/lib/portal-imagery'
 
 function timeGreeting(): string {
   const hour = new Date().getHours()
@@ -66,6 +67,14 @@ export function ClientWorkspaceHome({
   return (
     <div className="space-y-6 md:space-y-8">
       <section className="relative overflow-hidden rounded-2xl border border-slate-700/50 bg-[#0e1218] p-6 md:p-8">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={PORTAL_HERO_IMAGES.home}
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right opacity-40"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0e1218] via-[#0e1218]/85 to-[#0e1218]/40" aria-hidden />
         <PortalAmbientOrbs />
         <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-gold/80 via-gold/40 to-transparent" aria-hidden />
         <div className="relative flex flex-col md:flex-row md:items-end md:justify-between gap-6">

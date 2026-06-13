@@ -20,7 +20,7 @@ export const SHOP_CATEGORY_VISUALS: Record<ServiceCategory, ShopCategoryVisual> 
   },
   'page-upgrade': {
     photo: 'websites',
-    svgSrc: PORTAL_IMAGES.projectFurniture,
+    svgSrc: PORTAL_IMAGES.shopPageUpgrade,
     aisleLabel: 'Pages & layout',
     aisleNumber: 2,
   },

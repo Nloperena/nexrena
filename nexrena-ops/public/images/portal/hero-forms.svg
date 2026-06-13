@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 400" style="width: 100%; height: auto;">
+  <defs>
+    <radialGradient id="bgGlow" cx="40%" cy="50%" r="65%">
+      <stop offset="0%" stop-color="#1a2030" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#0c0f12" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="mainLine" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3a2a10"/>
+      <stop offset="50%" stop-color="#b89354"/>
+      <stop offset="100%" stop-color="#f5d796"/>
+    </linearGradient>
+    <linearGradient id="topFade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0c0f12" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#0c0f12" stop-opacity="0"/>
+    </linearGradient>
+    <path id="formTrack" d="M 80,270 C 150,230 210,250 290,210 C 370,170 430,200 500,165 C 560,135 610,150 650,110" fill="none"/>
+    <style>.node-glow{filter:drop-shadow(0 0 4px rgba(240,208,128,.5))}.head-glow{filter:drop-shadow(0 0 5px #fff)}</style>
+  </defs>
+  <rect width="680" height="400" fill="url(#bgGlow)"/>
+  <g opacity="0.2" fill="none" stroke="#7a5c2d" stroke-width="1">
+    <rect x="140" y="95" width="220" height="170" rx="8"/>
+    <rect x="165" y="125" width="170" height="18" rx="4" opacity="0.7"/>
+    <rect x="165" y="155" width="170" height="18" rx="4" opacity="0.7"/>
+    <rect x="165" y="185" width="120" height="18" rx="4" opacity="0.7"/>
+    <rect x="165" y="220" width="80" height="22" rx="4" fill="#b89354" opacity="0.08" stroke="#b89354"/>
+    <rect x="400" y="110" width="180" height="140" rx="8"/>
+    <rect x="425" y="135" width="130" height="14" rx="3" opacity="0.7"/>
+    <rect x="425" y="160" width="130" height="14" rx="3" opacity="0.7"/>
+    <rect x="425" y="185" width="90" height="14" rx="3" opacity="0.7"/>
+  </g>
+  <use href="#formTrack" stroke="#f5d796" stroke-width="10" opacity="0.06" stroke-linecap="round"/>
+  <use href="#formTrack" stroke="#3a2a10" stroke-width="2" stroke-linecap="round"/>
+  <use href="#formTrack" stroke="url(#mainLine)" stroke-width="2.5" stroke-linecap="round"/>
+  <g>
+    <circle cx="0" cy="0" r="3.5" fill="#fff" class="head-glow"><animateMotion dur="4.3s" repeatCount="indefinite"><mpath href="#formTrack"/></animateMotion></circle>
+    <circle cx="0" cy="0" r="2" fill="#f5d796" opacity="0.5"><animateMotion dur="4.3s" begin="-0.3s" repeatCount="indefinite"><mpath href="#formTrack"/></animateMotion></circle>
+  </g>
+  <g transform="translate(200,240)"><circle cx="0" cy="0" r="12" fill="none" stroke="#b89354"><animate attributeName="r" values="8;20" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;0" dur="2s" repeatCount="indefinite"/></circle><circle cx="0" cy="0" r="7" fill="#0c0f12" stroke="#c9a050" stroke-width="1.5"/><circle cx="0" cy="0" r="1.8" fill="#f0d080" class="node-glow"/></g>
+  <g transform="translate(350,205)"><circle cx="0" cy="0" r="15" fill="none" stroke="#b89354"><animate attributeName="r" values="10;23" dur="2s" begin="0.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;0" dur="2s" begin="0.5s" repeatCount="indefinite"/></circle><circle cx="0" cy="0" r="8" fill="#0c0f12" stroke="#c9a050" stroke-width="1.5"/><circle cx="0" cy="0" r="2.2" fill="#f0d080" class="node-glow"/></g>
+  <g transform="translate(520,170)"><circle cx="0" cy="0" r="18" fill="none" stroke="#b89354"><animate attributeName="r" values="12;28" dur="2s" begin="1s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;0" dur="2s" begin="1s" repeatCount="indefinite"/></circle><circle cx="0" cy="0" r="10" fill="#0c0f12" stroke="#f0d080" stroke-width="2"/><circle cx="0" cy="0" r="2.8" fill="#f0d080"/></g>
+  <rect width="680" height="40" fill="url(#topFade)"/>
+</svg>

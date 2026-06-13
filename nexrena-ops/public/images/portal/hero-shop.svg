@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 400" style="width: 100%; height: auto;">
+  <defs>
+    <radialGradient id="bgGlow" cx="45%" cy="55%" r="65%">
+      <stop offset="0%" stop-color="#1e1205" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#0c0f12" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="mainLine" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3a2a10"/>
+      <stop offset="40%" stop-color="#b89354"/>
+      <stop offset="70%" stop-color="#f5d796"/>
+      <stop offset="100%" stop-color="#7a5c2d"/>
+    </linearGradient>
+    <linearGradient id="topFade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0c0f12" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#0c0f12" stop-opacity="0"/>
+    </linearGradient>
+    <path id="aisleTrack" d="M 60,280 C 120,260 180,220 260,210 C 340,200 420,160 520,150 C 580,145 620,120 640,95" fill="none"/>
+    <style>.node-glow{filter:drop-shadow(0 0 4px rgba(240,208,128,.5))}.head-glow{filter:drop-shadow(0 0 5px #fff)}</style>
+  </defs>
+  <rect width="680" height="400" fill="url(#bgGlow)"/>
+  <g opacity="0.15">
+    <path d="M80,120 H600 M80,180 H600 M80,240 H600" stroke="#5a461e" stroke-width="0.5"/>
+    <rect x="100" y="100" width="80" height="120" fill="none" stroke="#7a5c2d" stroke-width="1" rx="4"/>
+    <rect x="220" y="90" width="100" height="130" fill="none" stroke="#7a5c2d" stroke-width="1" rx="4"/>
+    <rect x="360" y="105" width="90" height="115" fill="none" stroke="#7a5c2d" stroke-width="1" rx="4"/>
+    <rect x="490" y="95" width="110" height="125" fill="none" stroke="#7a5c2d" stroke-width="1" rx="4"/>
+  </g>
+  <use href="#aisleTrack" stroke="#f5d796" stroke-width="12" opacity="0.06" stroke-linecap="round"/>
+  <use href="#aisleTrack" stroke="#3a2a10" stroke-width="2" stroke-linecap="round"/>
+  <use href="#aisleTrack" stroke="url(#mainLine)" stroke-width="2.5" stroke-linecap="round"/>
+  <g>
+    <circle cx="0" cy="0" r="3.5" fill="#fff" class="head-glow"><animateMotion dur="5s" repeatCount="indefinite"><mpath href="#aisleTrack"/></animateMotion></circle>
+    <circle cx="0" cy="0" r="2" fill="#f5d796" opacity="0.5"><animateMotion dur="5s" begin="-0.3s" repeatCount="indefinite"><mpath href="#aisleTrack"/></animateMotion></circle>
+  </g>
+  <g transform="translate(140,210)"><circle cx="0" cy="0" r="14" fill="none" stroke="#b89354"><animate attributeName="r" values="10;22" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;0" dur="2s" repeatCount="indefinite"/></circle><circle cx="0" cy="0" r="8" fill="#0c0f12" stroke="#c9a050" stroke-width="1.5"/><circle cx="0" cy="0" r="2" fill="#f0d080" class="node-glow"/></g>
+  <g transform="translate(300,200)"><circle cx="0" cy="0" r="18" fill="none" stroke="#b89354"><animate attributeName="r" values="12;26" dur="2s" begin="0.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;0" dur="2s" begin="0.5s" repeatCount="indefinite"/></circle><circle cx="0" cy="0" r="10" fill="#0c0f12" stroke="#c9a050" stroke-width="1.5"/><circle cx="0" cy="0" r="2.5" fill="#f0d080" class="node-glow"/></g>
+  <g transform="translate(480,165)"><circle cx="0" cy="0" r="16" fill="none" stroke="#b89354"><animate attributeName="r" values="11;24" dur="2s" begin="1s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;0" dur="2s" begin="1s" repeatCount="indefinite"/></circle><circle cx="0" cy="0" r="9" fill="#0c0f12" stroke="#c9a050" stroke-width="1.5"/><circle cx="0" cy="0" r="2.2" fill="#f0d080" class="node-glow"/></g>
+  <g transform="translate(620,100)"><circle cx="0" cy="0" r="28" fill="none" stroke="#b89354"><animate attributeName="r" values="20;40" dur="2s" begin="0.2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;0" dur="2s" begin="0.2s" repeatCount="indefinite"/></circle><circle cx="0" cy="0" r="12" fill="#0c0f12" stroke="#f0d080" stroke-width="2"/><circle cx="0" cy="0" r="3.2" fill="#f0d080"/></g>
+  <rect width="680" height="40" fill="url(#topFade)"/>
+</svg>
