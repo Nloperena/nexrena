@@ -14,8 +14,6 @@ import {
 
   effectiveInvoiceStatus,
 
-  getOldestUnpaidInvoice,
-
   invoicePhaseLabel,
 
   sortInvoicesNewestFirst,
@@ -47,6 +45,8 @@ type Props = {
   paymentError?: string | null
 
   onPay: (id: string) => void
+
+  onPayBalance?: () => void
 
   onView: (id: string) => void
 
@@ -234,6 +234,8 @@ export function ClientBillingSection({
 
   onPay,
 
+  onPayBalance,
+
   onView,
 
   onMessageNico,
@@ -252,23 +254,11 @@ export function ClientBillingSection({
 
   const balance = computeOutstandingBalance(invoices)
 
-  const oldestUnpaid = getOldestUnpaidInvoice(invoices)
-
   const showBillingHelp = (!stripeEnabled && outstanding > 0) || Boolean(paymentError)
 
   const [paidOpen, setPaidOpen] = useState(false)
 
-
-
-  const payBalance = () => {
-
-    if (!oldestUnpaid || !stripeEnabled) return
-
-    onPay(oldestUnpaid.id)
-
-  }
-
-
+  const payingBalance = payingId === 'balance'
 
   if (mode === 'history') {
 
@@ -410,11 +400,11 @@ export function ClientBillingSection({
 
 
 
-        {balance > 0 && (
+        {balance > 0 && onPayBalance && (
 
-          <Button size="lg" disabled={!stripeEnabled || payingId !== null} onClick={payBalance}>
+          <Button size="lg" disabled={!stripeEnabled || payingId !== null} onClick={onPayBalance}>
 
-            {payingId ? 'Starting checkout…' : 'Pay balance'}
+            {payingBalance ? 'Starting checkout…' : `Pay full balance (${formatCurrency(balance)})`}
 
           </Button>
 

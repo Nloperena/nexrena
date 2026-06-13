@@ -71,49 +71,29 @@ export function ClientPortalShell({
       </aside>
 
       <div className={`flex-1 ${PORTAL_MAIN_OFFSET} flex flex-col min-h-screen ${isMessenger ? 'min-h-0' : ''}`}>
-        {!isMessenger ? (
-          <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-slate-800/40 bg-[#111418]/92 backdrop-blur-md px-4 py-3 md:px-8 md:py-4">
-            <div className="min-w-0 flex-1">
-              {!isHome && (
-                <h1 className="font-serif text-xl sm:text-2xl text-white truncate">{viewTitle}</h1>
-              )}
-              {isHome && account && (
-                <p className="text-sm text-slate-500 md:hidden truncate">Welcome, {account.name.split(/\s+/)[0]}</p>
-              )}
-            </div>
-            {account && (
-              <UserMenu
-                name={account.name}
-                subtitle={account.company ?? account.email}
-                onOpenSettings={() => onNavigate('settings')}
-                onSignOut={onSignOut}
-              />
+        <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-slate-800/40 bg-[#111418]/92 backdrop-blur-md px-4 py-3 md:px-8 md:py-4">
+          <div className="min-w-0 flex-1">
+            {!isHome && (
+              <h1 className="font-serif text-xl sm:text-2xl text-white truncate">{viewTitle}</h1>
             )}
-          </header>
-        ) : (
-          <header className="md:hidden sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-slate-800/40 bg-[#111418]/92 backdrop-blur-md px-4 py-2">
-            <button
-              type="button"
-              onClick={() => onNavigate('home')}
-              className={`text-sm text-slate-400 hover:text-white ${portalFocusRing}`}
-            >
-              ← Home
-            </button>
-            {account && (
-              <UserMenu
-                name={account.name}
-                subtitle={account.company ?? account.email}
-                onOpenSettings={() => onNavigate('settings')}
-                onSignOut={onSignOut}
-              />
+            {isHome && account && (
+              <p className="text-sm text-slate-500 md:hidden truncate">Welcome, {account.name.split(/\s+/)[0]}</p>
             )}
-          </header>
-        )}
+          </div>
+          {account && (
+            <UserMenu
+              name={account.name}
+              subtitle={account.company ?? account.email}
+              onOpenSettings={() => onNavigate('settings')}
+              onSignOut={onSignOut}
+            />
+          )}
+        </header>
 
         <main
           className={`flex-1 w-full mx-auto overflow-x-hidden ${
             isMessenger
-              ? 'flex flex-col min-h-0 max-w-none px-0 py-0 pb-0'
+              ? 'flex flex-col flex-1 min-h-0 px-0 py-0 pb-[5.5rem] md:pb-4 max-w-none'
               : 'px-4 md:px-8 py-5 pb-[5.5rem] md:pb-8 max-w-6xl'
           }`}
         >
@@ -122,22 +102,20 @@ export function ClientPortalShell({
       </div>
 
       {/* Mobile: scrollable icon bar — no drawer */}
-      {!isMessenger && (
-        <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-slate-800/60 bg-[#0c0f12]/98 backdrop-blur-xl pb-[max(0.25rem,env(safe-area-inset-bottom))]">
-          <div className="flex items-stretch overflow-x-auto overscroll-x-contain px-2 py-2 gap-0.5 scrollbar-none">
-            {navItems.map((item) => (
-              <ClientNavButton
-                key={item.id}
-                item={item}
-                active={activeView === item.id}
-                messageUnread={messageUnread}
-                formsNewCount={formsNewCount}
-                onClick={() => onNavigate(item.id)}
-              />
-            ))}
-          </div>
-        </nav>
-      )}
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-slate-800/60 bg-[#0c0f12]/98 backdrop-blur-xl pb-[max(0.25rem,env(safe-area-inset-bottom))]">
+        <div className="flex items-stretch overflow-x-auto overscroll-x-contain px-2 py-2 gap-0.5 scrollbar-none">
+          {navItems.map((item) => (
+            <ClientNavButton
+              key={item.id}
+              item={item}
+              active={activeView === item.id}
+              messageUnread={messageUnread}
+              formsNewCount={formsNewCount}
+              onClick={() => onNavigate(item.id)}
+            />
+          ))}
+        </div>
+      </nav>
 
       <PortalAiAgentButton onNavigate={onNavigate} clientName={account?.name} />
     </div>

@@ -408,15 +408,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .client-portal .team-messenger {
-  height: calc(100dvh - 2.75rem);
-  max-height: calc(100dvh - 2.75rem);
-}
-
-@media (min-width: 768px) {
-  .client-portal .team-messenger {
-    height: calc(100vh - 12rem);
-    max-height: none;
-  }
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  max-height: none;
 }
 
 /* CRM pipeline — horizontal board scroll without fighting page scroll */

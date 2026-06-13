@@ -2,6 +2,7 @@ import type { ClientPortalView } from '@/components/client-nav'
 
 const VALID_VIEWS = new Set<ClientPortalView>([
   'home',
+  'shop',
   'billing',
   'messages',
   'schedule',
@@ -30,5 +31,15 @@ export function writePortalViewToUrl(view: ClientPortalView) {
   const next = `${url.pathname}${url.search}${url.hash}`
   if (`${window.location.pathname}${window.location.search}${window.location.hash}` !== next) {
     window.history.replaceState(null, '', next)
+  }
+}
+
+export function readPortalShopParams(): { sku: string | null; purchased: boolean | null } {
+  if (typeof window === 'undefined') return { sku: null, purchased: null }
+  const params = new URLSearchParams(window.location.search)
+  const purchased = params.get('purchased')
+  return {
+    sku: params.get('sku'),
+    purchased: purchased === '1' ? true : purchased === '0' ? false : null,
   }
 }

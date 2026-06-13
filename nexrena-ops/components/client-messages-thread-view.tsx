@@ -202,7 +202,7 @@ export function ClientMessagesThreadView({ variant = 'embedded', onUnreadChange 
   return (
     <div
       className={`team-messenger flex w-full overflow-hidden bg-[#111418] ${
-        isFull ? 'flex-1 min-h-0 h-full' : 'min-h-[420px] rounded-xl border border-slate-800/60'
+        isFull ? 'flex-1 min-h-0' : 'min-h-[420px] rounded-xl border border-slate-800/60'
       }`}
     >
       <aside

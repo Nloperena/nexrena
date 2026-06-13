@@ -16,16 +16,21 @@ export function clearPortalToken() {
   localStorage.removeItem(SESSION_KEY)
 }
 
-async function portalFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
+async function portalFetch<T>(path: string, init: RequestInit = {}, attempt = 0): Promise<T> {
   const token = getPortalToken()
   const headers = new Headers(init.headers)
   headers.set('Content-Type', 'application/json')
   if (token) headers.set('Authorization', `Bearer ${token}`)
 
+  const method = (init.method ?? 'GET').toUpperCase()
   const res = await fetch(`${API_BASE}${path}`, { ...init, headers })
   const data = await res.json().catch(() => ({}))
 
   if (!res.ok) {
+    if (method === 'GET' && attempt < 2 && (res.status >= 500 || res.status === 429)) {
+      await new Promise((r) => setTimeout(r, 800 * (attempt + 1)))
+      return portalFetch<T>(path, init, attempt + 1)
+    }
     throw new Error(typeof data.error === 'string' ? data.error : 'Request failed')
   }
   return data as T
@@ -197,6 +202,25 @@ export function createPortalCheckout(invoiceId: string) {
     method: 'POST',
     body: JSON.stringify({ invoiceId }),
   })
+}
+
+export function createPortalBalanceCheckout() {
+  return portalFetch<{ url: string | null; sessionId: string; invoiceIds: string[] }>(
+    '/api/portal/billing/checkout/balance',
+    { method: 'POST', body: JSON.stringify({}) },
+  )
+}
+
+export function fetchPortalProducts(category?: 'website' | 'seo' | 'extension') {
+  const qs = category ? `?category=${encodeURIComponent(category)}` : ''
+  return portalFetch<import('./product-catalog').PortalProduct[]>(`/api/portal/products${qs}`)
+}
+
+export function createPortalProductCheckout(sku: string) {
+  return portalFetch<{ url: string | null; sessionId: string; sku: string }>(
+    '/api/portal/products/checkout',
+    { method: 'POST', body: JSON.stringify({ sku }) },
+  )
 }
 
 export async function sendPortalMessage(payload: {

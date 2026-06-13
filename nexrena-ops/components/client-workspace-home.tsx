@@ -97,6 +97,13 @@ export function ClientWorkspaceHome({
             </button>
             <button
               type="button"
+              onClick={() => onNavigate('shop')}
+              className="h-12 px-5 rounded-xl border border-slate-600/50 bg-slate-800/40 text-white font-medium text-sm hover:bg-slate-800 transition-colors"
+            >
+              Browse shop
+            </button>
+            <button
+              type="button"
               onClick={onStartRequest}
               className="h-12 px-5 rounded-xl bg-gold text-obsidian font-medium text-sm hover:bg-gold-light transition-colors"
             >

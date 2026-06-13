@@ -14,6 +14,7 @@ import {
   fetchPortalResources,
   fetchPortalFormSubmissions,
   createPortalCheckout,
+  createPortalBalanceCheckout,
   logoutPortal,
 } from '@/lib/portal-client'
 import { computePortalStats } from '@/lib/portal-dashboard-utils'
@@ -35,7 +36,8 @@ import { ClientSettingsView } from '@/components/client-settings-view'
 import { ClientScheduleView } from '@/components/client-schedule-view'
 import { ClientPortalShell } from '@/components/client-portal-shell'
 import type { ClientPortalView } from '@/components/client-nav'
-import { readPortalViewFromUrl, writePortalViewToUrl } from '@/lib/portal-view-url'
+import { ClientShopView } from '@/components/client-shop-view'
+import { readPortalViewFromUrl, readPortalShopParams, writePortalViewToUrl } from '@/lib/portal-view-url'
 import type { PortalResource } from '@/lib/client-resource-utils'
 import { StatusChip, proposalStatusChip } from '@/components/status-chip'
 import type { Invoice, InvoiceStatus } from '@/lib/types'
@@ -91,38 +93,83 @@ export function ClientDashboard({ onSignOut }: Props) {
   const [paymentError, setPaymentError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [loadWarning, setLoadWarning] = useState<string | null>(null)
   const [requestOpen, setRequestOpen] = useState(false)
   const [uploadOpen, setUploadOpen] = useState(false)
   const [viewInvoice, setViewInvoice] = useState<PortalInvoice | null>(null)
   const [viewLoading, setViewLoading] = useState(false)
+  const [shopParams, setShopParams] = useState({ sku: null as string | null, purchased: null as boolean | null })
 
   const load = useCallback(async () => {
     setLoading(true)
     setError(null)
+    setLoadWarning(null)
     try {
-      const [me, projectRows, invoiceRows, proposalRows, requestRows, resourceRows, formRows, billing, messages] = await Promise.all([
-        fetchPortalMe(),
+      let me: PortalAccount
+      try {
+        me = await fetchPortalMe()
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Could not load your portal.')
+        return
+      }
+
+      setAccount(me)
+
+      const [
+        projectsResult,
+        invoicesResult,
+        proposalsResult,
+        requestsResult,
+        resourcesResult,
+        formsResult,
+        billingResult,
+        messagesResult,
+      ] = await Promise.allSettled([
         fetchPortalProjects(),
         fetchPortalInvoices(),
         fetchPortalProposals(),
         fetchPortalServiceRequests(),
         fetchPortalResources(),
-        fetchPortalFormSubmissions().catch(() => []),
+        fetchPortalFormSubmissions(),
         fetchPortalBillingStatus(),
-        fetchPortalMessageThreads().catch(() => ({ threads: [], unreadCount: 0 })),
+        fetchPortalMessageThreads(),
       ])
-      setAccount(me)
-      setProjects(projectRows)
-      setInvoices(invoiceRows)
-      setProposals(proposalRows)
-      setServiceRequests(requestRows)
-      setResources(resourceRows)
-      setFormSubmissions(formRows)
-      setStripeEnabled(billing.stripeEnabled)
-      setMessageThreads(messages.threads)
-      setMessageUnread(messages.unreadCount)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not load your portal.')
+
+      const failed: string[] = []
+
+      if (projectsResult.status === 'fulfilled') setProjects(projectsResult.value)
+      else { setProjects([]); failed.push('projects') }
+
+      if (invoicesResult.status === 'fulfilled') setInvoices(invoicesResult.value)
+      else { setInvoices([]); failed.push('billing') }
+
+      if (proposalsResult.status === 'fulfilled') setProposals(proposalsResult.value)
+      else { setProposals([]); failed.push('proposals') }
+
+      if (requestsResult.status === 'fulfilled') setServiceRequests(requestsResult.value)
+      else { setServiceRequests([]); failed.push('requests') }
+
+      if (resourcesResult.status === 'fulfilled') setResources(resourcesResult.value)
+      else { setResources([]); failed.push('websites') }
+
+      if (formsResult.status === 'fulfilled') setFormSubmissions(formsResult.value)
+      else { setFormSubmissions([]); failed.push('forms') }
+
+      if (billingResult.status === 'fulfilled') setStripeEnabled(billingResult.value.stripeEnabled)
+      else { setStripeEnabled(false); failed.push('payment settings') }
+
+      if (messagesResult.status === 'fulfilled') {
+        setMessageThreads(messagesResult.value.threads)
+        setMessageUnread(messagesResult.value.unreadCount)
+      } else {
+        setMessageThreads([])
+        setMessageUnread(0)
+        failed.push('messages')
+      }
+
+      if (failed.length > 0) {
+        setLoadWarning(`Some sections couldn't load (${failed.join(', ')}). Try refreshing.`)
+      }
     } finally {
       setLoading(false)
     }
@@ -132,9 +179,13 @@ export function ClientDashboard({ onSignOut }: Props) {
 
   useEffect(() => {
     setActiveViewState(readPortalViewFromUrl())
+    setShopParams(readPortalShopParams())
     setViewReady(true)
 
-    const onPopState = () => setActiveViewState(readPortalViewFromUrl())
+    const onPopState = () => {
+      setActiveViewState(readPortalViewFromUrl())
+      setShopParams(readPortalShopParams())
+    }
     window.addEventListener('popstate', onPopState)
     return () => window.removeEventListener('popstate', onPopState)
   }, [])
@@ -205,6 +256,27 @@ export function ClientDashboard({ onSignOut }: Props) {
     }
   }
 
+  const payBalance = async () => {
+    setPayingId('balance')
+    setError(null)
+    setPaymentError(null)
+    try {
+      const { url } = await createPortalBalanceCheckout()
+      if (url) window.location.href = url
+      else {
+        const message = 'Could not start checkout.'
+        setError(message)
+        setPaymentError(message)
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Payment unavailable.'
+      setError(message)
+      setPaymentError(message)
+    } finally {
+      setPayingId(null)
+    }
+  }
+
   if (viewInvoice) {
     return (
       <div className="min-h-screen bg-[#111418] px-4 md:px-8 py-6">
@@ -260,6 +332,15 @@ export function ClientDashboard({ onSignOut }: Props) {
           />
         )
 
+      case 'shop':
+        return (
+          <ClientShopView
+            stripeEnabled={stripeEnabled}
+            highlightSku={shopParams.sku}
+            purchased={shopParams.purchased}
+          />
+        )
+
       case 'billing':
         return (
           <div className="space-y-6 md:space-y-8">
@@ -270,6 +351,7 @@ export function ClientDashboard({ onSignOut }: Props) {
               viewLoading={viewLoading}
               paymentError={paymentError}
               onPay={payInvoice}
+              onPayBalance={payBalance}
               onView={openInvoice}
               onMessageNico={() => setActiveView('messages')}
               mode="summary"
@@ -287,6 +369,7 @@ export function ClientDashboard({ onSignOut }: Props) {
               payingId={payingId}
               viewLoading={viewLoading}
               onPay={payInvoice}
+              onPayBalance={payBalance}
               onView={openInvoice}
               mode="history"
             />
@@ -400,6 +483,7 @@ export function ClientDashboard({ onSignOut }: Props) {
       account={account}
       onSignOut={handleSignOut}
     >
+      {loadWarning && <p className="text-base text-amber-300/90 mb-4">{loadWarning}</p>}
       {error && <p className="text-lg text-red-300 mb-4">{error}</p>}
       {renderView()}
 

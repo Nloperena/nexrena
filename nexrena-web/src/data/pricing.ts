@@ -202,6 +202,102 @@ export const projectBuildTiers = [
   },
 ] as const;
 
+/** Self-serve outright website purchase — buy in client portal Shop */
+export const websiteBuyTiers = [
+  {
+    sku: 'website-buy-starter',
+    name: 'Starter',
+    priceLabel: '$1,999',
+    tagline: 'Own a professional 5-page business website.',
+    recommended: false,
+    features: [
+      'Up to 5 custom pages',
+      'Mobile-first design',
+      'Contact & lead forms',
+      'Basic SEO setup',
+      'Launch support',
+    ],
+  },
+  {
+    sku: 'website-buy-growth',
+    name: 'Growth',
+    priceLabel: '$3,499',
+    tagline: 'Conversion-focused site built to generate leads.',
+    recommended: true,
+    features: [
+      'Up to 10 custom pages',
+      'Stronger homepage sections',
+      'Service & location pages',
+      'Analytics setup',
+      'Priority launch timeline',
+    ],
+  },
+  {
+    sku: 'website-buy-pro',
+    name: 'Pro',
+    priceLabel: '$5,999',
+    tagline: 'Full build with blog foundation and advanced SEO structure.',
+    recommended: false,
+    features: [
+      'Up to 15 custom pages',
+      'Blog or resource hub setup',
+      'Advanced SEO foundation',
+      'Conversion optimization pass',
+      'Dedicated project manager',
+    ],
+  },
+] as const;
+
+/** Monthly SEO content bundles — subscribe in client portal Shop */
+export const seoContentBundles = [
+  {
+    sku: 'seo-bundle-starter',
+    name: 'Starter',
+    priceLabel: '$499/mo',
+    tagline: '2 SEO blog posts per month to build visibility.',
+    recommended: false,
+    features: ['2 SEO blog posts / month', 'Keyword research', 'On-page optimization', 'Monthly snapshot'],
+  },
+  {
+    sku: 'seo-bundle-growth',
+    name: 'Growth',
+    priceLabel: '$899/mo',
+    tagline: 'More content plus ongoing on-page improvements.',
+    recommended: true,
+    features: ['4 SEO blog posts / month', 'On-page SEO updates', 'Internal linking', 'Monthly reporting call'],
+  },
+  {
+    sku: 'seo-bundle-authority',
+    name: 'Authority',
+    priceLabel: '$1,499/mo',
+    tagline: 'High-volume content for competitive markets.',
+    recommended: false,
+    features: ['8 SEO blog posts / month', 'Content strategy', 'Topic clusters', 'Priority support'],
+  },
+] as const;
+
+/** Renewable add-ons — billed monthly in client portal Shop */
+export const extensionAddOns = [
+  {
+    sku: 'ext-pages-pack-3',
+    name: 'Extra pages — 3 pack',
+    priceLabel: '$49/mo',
+    description: 'Up to 3 additional pages each billing cycle.',
+  },
+  {
+    sku: 'ext-pages-pack-5',
+    name: 'Extra pages — 5 pack',
+    priceLabel: '$79/mo',
+    description: 'Up to 5 additional pages each billing cycle.',
+  },
+  {
+    sku: 'ext-content-boost',
+    name: 'Content Boost',
+    priceLabel: '$199/mo',
+    description: '2 extra blog posts per month on top of your SEO plan.',
+  },
+] as const;
+
 export const pricingTransparency = {
   headline: 'Simple monthly website care plans.',
   subhead:

@@ -16,6 +16,7 @@ import portalFormSubmissionRoutes from './portal-form-submissions'
 import portalWebsiteMediaRoutes from './portal-website-media'
 import portalOAuthRoutes from './portal-oauth'
 import portalAiRoutes from './portal-ai'
+import portalProductRoutes from './portal-products'
 
 const router = Router()
 
@@ -27,6 +28,7 @@ router.use('/form-submissions', portalFormSubmissionRoutes)
 router.use('/assets', portalAssetRoutes)
 router.use('/folders', portalFolderRoutes)
 router.use('/billing', portalBillingRoutes)
+router.use('/products', portalProductRoutes)
 router.use('/messages', portalMessageRoutes)
 router.use('/resources', portalResourceRoutes)
 router.use('/website-media', portalWebsiteMediaRoutes)

@@ -5,9 +5,12 @@ import {
   waasPageCopy,
   waasPricingFaq,
   pricingTransparency,
+  websiteBuyTiers,
+  seoContentBundles,
+  extensionAddOns,
 } from '../../data/pricing';
 import { projectIntakeCta } from '../../data/cta';
-import { portalCopy, clientPortalUrl } from '../../data/portal';
+import { portalCopy, clientPortalUrl, clientPortalShopUrl } from '../../data/portal';
 
 interface Props {
   showCta?: boolean;
@@ -148,6 +151,79 @@ const copy = waasPageCopy;
         </article>
       ))}
     </div>
+
+    {isFull && (
+      <div class="mb-20 border-t border-[var(--slate-800)] pt-16 reveal">
+        <p class="font-mono text-[10px] text-[var(--gold)] tracking-[0.2em] uppercase mb-4">Buy outright</p>
+        <h2 class="font-display text-[clamp(28px,4vw,40px)] text-[var(--warm-white)] mb-3">Own your website — one payment</h2>
+        <p class="font-body text-sm text-[var(--slate-400)] mb-8 max-w-2xl">Prefer to buy instead of subscribe? Purchase a fixed-scope website in the client portal and checkout online.</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          {websiteBuyTiers.map((tier) => (
+            <article class={`relative flex flex-col border p-6 md:p-8 ${tier.recommended ? 'border-[var(--gold)] bg-[var(--slate-900)]/80' : 'border-[var(--slate-800)] bg-[var(--slate-900)]/40'}`}>
+              {tier.recommended && (
+                <span class="absolute -top-3 left-6 bg-[var(--gold)] px-3 py-1 font-mono text-[9px] uppercase tracking-widest text-[var(--obsidian)]">Popular</span>
+              )}
+              <h3 class="font-display text-2xl text-[var(--warm-white)]">{tier.name}</h3>
+              <p class="mt-2 font-body text-sm text-[var(--slate-400)]">{tier.tagline}</p>
+              <p class="mt-6 font-display text-4xl text-[var(--warm-white)]">{tier.priceLabel}</p>
+              <ul class="mt-6 flex flex-col gap-2 flex-1 border-t border-[var(--slate-800)] pt-6">
+                {tier.features.map((f) => (
+                  <li class="flex gap-2 font-body text-sm text-[var(--slate-300)]">
+                    <span class="text-[var(--gold)] shrink-0">✓</span>{f}
+                  </li>
+                ))}
+              </ul>
+              <a href={clientPortalShopUrl(tier.sku)} class="mt-8 inline-flex h-12 w-full items-center justify-center font-mono text-[11px] uppercase tracking-widest bg-[var(--gold)] text-[var(--obsidian)] hover:bg-[var(--gold-light)] transition-colors">
+                Buy now
+              </a>
+            </article>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {isFull && (
+      <div class="mb-20 border-t border-[var(--slate-800)] pt-16 reveal">
+        <p class="font-mono text-[10px] text-[var(--gold)] tracking-[0.2em] uppercase mb-4">SEO content</p>
+        <h2 class="font-display text-[clamp(28px,4vw,40px)] text-[var(--warm-white)] mb-3">Monthly content bundles</h2>
+        <p class="font-body text-sm text-[var(--slate-400)] mb-8 max-w-2xl">Blog posts, on-page SEO, and reporting — billed monthly. Subscribe in the client portal.</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {seoContentBundles.map((tier) => (
+            <article class={`flex flex-col border p-6 ${tier.recommended ? 'border-[var(--gold)]/60 bg-[var(--slate-900)]/60' : 'border-[var(--slate-800)] bg-[var(--slate-900)]/30'}`}>
+              <h3 class="font-display text-xl text-[var(--warm-white)]">{tier.name}</h3>
+              <p class="mt-2 font-body text-sm text-[var(--slate-400)]">{tier.tagline}</p>
+              <p class="mt-4 font-display text-3xl text-[var(--warm-white)]">{tier.priceLabel}</p>
+              <ul class="mt-4 space-y-2 flex-1">
+                {tier.features.map((f) => (
+                  <li class="font-body text-sm text-[var(--slate-300)] flex gap-2"><span class="text-[var(--gold)]">✓</span>{f}</li>
+                ))}
+              </ul>
+              <a href={clientPortalShopUrl(tier.sku)} class="mt-6 inline-flex h-11 items-center justify-center font-mono text-[10px] uppercase tracking-widest border border-[var(--slate-600)] text-[var(--warm-white)] hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors">
+                Subscribe
+              </a>
+            </article>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {isFull && (
+      <div class="mb-20 border-t border-[var(--slate-800)] pt-16 reveal">
+        <p class="font-mono text-[10px] text-[var(--gold)] tracking-[0.2em] uppercase mb-4">Extensions</p>
+        <h2 class="font-display text-[clamp(28px,4vw,40px)] text-[var(--warm-white)] mb-3">Renewable add-ons</h2>
+        <p class="font-body text-sm text-[var(--slate-400)] mb-8 max-w-2xl">Stack extra pages or content on your plan — renews monthly, cancel anytime after 3 months.</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {extensionAddOns.map((ext) => (
+            <article class="border border-[var(--slate-800)] bg-[var(--slate-900)]/30 p-5 flex flex-col">
+              <h3 class="font-display text-lg text-[var(--warm-white)]">{ext.name}</h3>
+              <p class="mt-2 font-body text-sm text-[var(--slate-400)] flex-1">{ext.description}</p>
+              <p class="mt-4 font-mono text-sm text-[var(--gold)]">{ext.priceLabel}</p>
+              <a href={clientPortalShopUrl(ext.sku)} class="mt-4 font-mono text-[10px] uppercase tracking-widest text-[var(--gold)] hover:text-[var(--gold-light)]">Add in portal →</a>
+            </article>
+          ))}
+        </div>
+      </div>
+    )}
 
     {isFull && (
       <div class="mb-20 reveal">

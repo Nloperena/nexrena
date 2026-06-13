@@ -39,11 +39,21 @@ export function IconSettings({ className = 'w-5 h-5' }: IconProps) {
   )
 }
 
+export function IconShop({ className = 'w-5 h-5' }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M6 6h15l-1.5 9h-12L6 6Z" />
+      <path d="M6 6 5 3H2M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM18 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" />
+    </svg>
+  )
+}
+
 export const CLIENT_NAV_ICON: Record<
   ClientPortalView,
   ComponentType<{ className?: string }>
 > = {
   home: IconHome,
+  shop: IconShop,
   messages: IconMessage,
   schedule: IconCalendar,
   billing: IconInvoice,

@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { prisma } from '../lib/prisma'
 import { requirePortalAuth } from '../middleware/portal-auth'
-import { cancelStripeSubscription, createInvoiceCheckoutSession } from '../lib/stripe-billing'
+import { cancelStripeSubscription, createBalanceCheckoutSession, createInvoiceCheckoutSession } from '../lib/stripe-billing'
 import { createSubscriptionCheckoutSession } from '../lib/stripe-subscription'
 import { getStripe, isStripeConfigured, portalReturnUrl } from '../lib/stripe'
 import { portalInvoiceWhere } from '../lib/invoice-utils'
@@ -110,6 +110,31 @@ router.post('/checkout', requirePortalAuth, async (req, res) => {
     res.json(session)
   } catch (err) {
     res.status(400).json({ error: err instanceof Error ? err.message : 'Checkout failed' })
+  }
+})
+
+/** POST /api/portal/billing/checkout/balance — pay all unpaid invoices in one Stripe Checkout */
+router.post('/checkout/balance', requirePortalAuth, async (req, res) => {
+  const { contactId, email } = req.portalUser!
+
+  if (!isStripeConfigured()) {
+    res.status(503).json({
+      error: 'Online payment is coming soon. Contact Nexrena to pay your balance in the meantime.',
+      stripeEnabled: false,
+    })
+    return
+  }
+
+  try {
+    const session = await createBalanceCheckoutSession({
+      contactId,
+      email,
+      successUrl: `${portalReturnUrl('/?tab=sign-in')}&paid=1`,
+      cancelUrl: `${portalReturnUrl('/?tab=sign-in')}&paid=0`,
+    })
+    res.json(session)
+  } catch (err) {
+    res.status(400).json({ error: err instanceof Error ? err.message : 'Balance checkout failed' })
   }
 })
 

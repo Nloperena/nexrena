@@ -5,6 +5,7 @@ import { CLIENT_NAV_ICON } from '@/components/client-nav-icons'
 
 export type ClientPortalView =
   | 'home'
+  | 'shop'
   | 'billing'
   | 'messages'
   | 'schedule'
@@ -22,6 +23,7 @@ export type NavItem = {
 
 export const CLIENT_NAV_ITEMS: NavItem[] = [
   { id: 'home', label: 'Home' },
+  { id: 'shop', label: 'Shop' },
   { id: 'messages', label: 'Messages', badge: 'messages' },
   { id: 'schedule', label: 'Schedule' },
   { id: 'billing', label: 'Billing' },

@@ -41,6 +41,11 @@ export type PortalProposal = {
 
 export const clientPortalUrl = 'https://nexrena-ops.vercel.app';
 
+export function clientPortalShopUrl(sku?: string) {
+  const base = `${clientPortalUrl}?tab=sign-in&view=shop`;
+  return sku ? `${base}&sku=${encodeURIComponent(sku)}` : base;
+}
+
 export const portalCopy = {
   navLabel: 'Portal',
   eyebrow: 'Client portal',
