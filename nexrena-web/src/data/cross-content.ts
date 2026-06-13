@@ -35,7 +35,7 @@ export const crossContent: Record<string, CrossContent> = {
   },
   'web-design/ecommerce': {
     headline: 'Headless storefronts built for speed and conversion.',
-    intro: 'E-commerce success depends on sub-second loads, seamless checkout, and category pages that rank. We build headless storefronts that decouple your frontend from backend limitations.',
+    intro: 'E-commerce success depends on sub-second loads, checkout that works on mobile without friction, and category pages that rank. We build headless storefronts that decouple your frontend from backend limitations.',
     challenges: [
       'Monolithic platforms that slow down during traffic spikes and seasonal campaigns',
       'High bounce rates on product detail and category pages due to slow load times',
@@ -45,7 +45,7 @@ export const crossContent: Record<string, CrossContent> = {
     approach: [
       'Migrate to a headless architecture (React + Shopify, or custom) for sub-second page transitions',
       'Rebuild category and PDP templates with conversion-first UX and lazy-loaded media',
-      'Streamline checkout with express options, guest checkout, and clear trust signals',
+      'Simplify checkout with express options, guest checkout, and clear trust signals',
       'Implement A/B testing infrastructure to continuously optimize conversion rates',
     ],
     outcomes: [
@@ -139,7 +139,7 @@ export const crossContent: Record<string, CrossContent> = {
     ],
   },
   'full-service/manufacturing': {
-    headline: 'One partner for your entire digital growth engine.',
+    headline: 'One partner for web, search, and conversion — so nothing falls through the cracks.',
     intro: 'Manufacturers need web, search, and conversion to work as one system — not three disconnected vendors. We run the full stack so your team can focus on operations.',
     challenges: [
       'Fragmented vendors for web, SEO, and content creating misaligned priorities',

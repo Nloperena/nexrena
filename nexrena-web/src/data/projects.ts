@@ -137,13 +137,13 @@ export const projects: Project[] = [
     stack: ['Shopify', 'React', 'Global CDN'],
     tagline: 'Industrial B2B brand expanded to global DTC',
     url: 'https://shop.vitofryfilter.com',
-    testimonial: "Nexrena didn't just build us a website — they built us a lead generation machine.",
+    testimonial: 'We needed a site that could sell internationally and actually convert. Nexrena rebuilt the buyer experience — and the numbers followed.',
     challenge:
       'Global demand existed, but the legacy storefront lacked trust architecture and market-specific context needed to convert international buyers.',
     solution:
       'We rebuilt information hierarchy around commercial buyer intent, improved international experience, and implemented conversion tooling that quantified product value.',
     outcome:
-      'VITO unlocked stronger international conversion and larger average order values by aligning content with buyer decision drivers.',
+      'International conversion and average order value improved once content matched how buyers actually evaluate the product.',
     proofPoints: [
       { metric: '+38% conversion lift', context: 'Across prioritized regional storefront paths' },
       { metric: '+22% average order value', context: 'Driven by bundle logic and clearer value messaging' },

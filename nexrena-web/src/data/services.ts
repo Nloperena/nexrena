@@ -77,7 +77,7 @@ export const services: Service[] = [
     },
     heroSubtitle: 'Production-grade B2B sites built by one senior operator. Measurable, maintainable, and designed to outlast launch.',
     problem: {
-      statement: 'Your website looks like a brochure, but you need a machine.',
+      statement: 'Your site looks fine online, but it is not pulling its weight on leads.',
       agitation: 'Most redesigns ship visuals, not systems. Teams cannot measure what is working, cannot update confidently, and cannot hand off content without developer bottlenecks.',
       statusQuoTitle: 'Common failure modes',
       shiftTitle: 'How this is different',
@@ -140,7 +140,7 @@ export const services: Service[] = [
       label: 'Start a search audit',
       helper: 'If there is a fit, I will map your 90-day growth plan before you publish another page.'
     },
-    heroSubtitle: 'Capture high-intent traffic without renting it. We build SEO systems that turn your website into a compounding asset.',
+    heroSubtitle: 'Rank for the searches your buyers actually use — and keep showing up as those terms build over time.',
     problem: {
       statement: 'You are invisible when it matters most.',
       agitation: 'Most SEO work fails because recommendations and implementation are split across teams. Audits get delivered, engineering deprioritizes fixes, and search performance stalls.',
@@ -204,7 +204,7 @@ export const services: Service[] = [
       label: 'Talk full-service partnership',
       helper: 'If there is a fit, I will map scope, sequencing, and expected outcomes before any retainer conversation.'
     },
-    heroSubtitle: 'Eliminate vendor bloat. We fuse strategy, design, engineering, and acquisition into a single, accountable growth engine.',
+    heroSubtitle: 'Too many vendors, too many handoffs. One team runs strategy, design, build, and search — and owns the outcome.',
     problem: {
       statement: 'Fragmented teams lead to fragmented results.',
       agitation: 'Agency-of-four setups create coordination overhead that quietly burns budget. Strategy, design, engineering, and SEO move at different speeds, and execution quality degrades at each handoff.',

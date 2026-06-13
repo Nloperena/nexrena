@@ -33,7 +33,7 @@ export const waasPageCopy = {
   },
   positioning: {
     eyebrow: 'Website + care',
-    headline: 'Not just a website. A managed online presence.',
+    headline: 'Your site should stay maintained, updated, and working for customers — not collect dust after launch.',
     body:
       'Your website should not be a one-time project that gets abandoned after launch. Nexrena gives you a professionally built site with hosting, updates, support, SEO basics, performance monitoring, and ongoing improvements included — so you focus on running your business while we keep your site working, improving, and ready for customers.',
   },
@@ -63,7 +63,7 @@ export const waasPageCopy = {
     headline: 'Built for local and small businesses that need more than a template',
     items: [
       { title: 'Local service businesses', detail: 'Contractors, clinics, salons, and shops that need a clean, credible web presence.' },
-      { title: 'Growing teams', detail: 'Businesses ready to turn their website into a steady source of leads — not just a brochure.' },
+      { title: 'Growing teams', detail: 'Teams tired of a site that looks fine but rarely brings in qualified inquiries.' },
       { title: 'Owners who hate tech', detail: 'No time for hosting dashboards, plugin updates, or chasing freelancers for small fixes.' },
     ],
   },
