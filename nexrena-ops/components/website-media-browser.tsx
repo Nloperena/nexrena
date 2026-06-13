@@ -5,6 +5,8 @@ import {
   fetchOpsWebsiteMedia,
   fetchPortalWebsiteMedia,
 } from '@/lib/portal-client'
+import { Btn } from '@/components/ui'
+import { WebsiteMediaUploadModal } from '@/components/website-media-upload-modal'
 import {
   portalCaptionClass,
   portalCardClass,
@@ -12,12 +14,14 @@ import {
   portalSectionHintClass,
   portalSectionTitleClass,
 } from '@/lib/portal-a11y'
+import { displayWebsiteFolderName } from '@/lib/website-media-labels'
 import type { WebsiteMediaCatalog, WebsiteMediaFolder, WebsiteMediaItem } from '@/lib/website-media-types'
 
 type Props = {
   variant?: 'portal' | 'ops'
   contactId?: string
   showTitle?: boolean
+  embedded?: boolean
 }
 
 function MediaFolderSidebar({
@@ -38,7 +42,7 @@ function MediaFolderSidebar({
       map.set(key, list)
     }
     for (const list of Array.from(map.values())) {
-      list.sort((a, b) => a.name.localeCompare(b.name))
+      list.sort((a, b) => displayWebsiteFolderName(a.name).localeCompare(displayWebsiteFolderName(b.name)))
     }
     return map
   }, [folders])
@@ -57,7 +61,7 @@ function MediaFolderSidebar({
           style={{ paddingLeft: `${8 + depth * 12}px`, paddingRight: '8px' }}
           onClick={() => onSelect(folder.id)}
         >
-          📁 {folder.name}
+          📁 {displayWebsiteFolderName(folder.name)}
           <span className="text-slate-500 ml-1">({folder.itemCount})</span>
         </button>
         {renderTree(folder.id, depth + 1)}
@@ -111,7 +115,7 @@ function MediaBreadcrumb({
         <span key={folder.id} className="flex items-center gap-1">
           <span>/</span>
           <button type="button" className="hover:text-gold" onClick={() => onSelect(folder.id)}>
-            {folder.name}
+            {displayWebsiteFolderName(folder.name)}
           </button>
         </span>
       ))}
@@ -167,11 +171,13 @@ export function WebsiteMediaBrowser({
   variant = 'portal',
   contactId,
   showTitle = true,
+  embedded = false,
 }: Props) {
   const [catalog, setCatalog] = useState<WebsiteMediaCatalog | null>(null)
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [uploadOpen, setUploadOpen] = useState(false)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -217,6 +223,13 @@ export function WebsiteMediaBrowser({
     return catalog.items.filter((item) => childFolderIds.has(item.folderId))
   }, [catalog, currentFolderId])
 
+  const currentFolder = useMemo(
+    () => catalog?.folders.find((f) => f.id === currentFolderId) ?? null,
+    [catalog, currentFolderId],
+  )
+
+  const canUpload = variant === 'portal' && catalog?.uploadEnabled && currentFolderId !== null
+
   if (variant === 'ops' && !contactId) {
     return (
       <p className={portalMutedClass}>
@@ -235,10 +248,10 @@ export function WebsiteMediaBrowser({
 
   if (!catalog?.items.length) {
     return (
-      <div className={portalCardClass}>
+      <div className={embedded ? 'space-y-4' : portalCardClass}>
         {showTitle && (
           <>
-            <h2 className={portalSectionTitleClass}>Your website media</h2>
+            <h2 className={portalSectionTitleClass}>Site media library</h2>
             <p className={`${portalSectionHintClass} mb-4`}>
               Photos, logos, and videos from your live website appear here automatically.
             </p>
@@ -249,11 +262,13 @@ export function WebsiteMediaBrowser({
     )
   }
 
+  const wrapperClass = embedded ? 'space-y-4' : `${portalCardClass} space-y-4`
+
   return (
-    <div className={`${portalCardClass} space-y-4`}>
+    <div className={wrapperClass}>
       {showTitle && (
         <div>
-          <h2 className={portalSectionTitleClass}>Your website media</h2>
+          <h2 className={portalSectionTitleClass}>Site media library</h2>
           <p className={portalSectionHintClass}>
             Photos, logos, and videos from{' '}
             {catalog.label ? (
@@ -289,14 +304,39 @@ export function WebsiteMediaBrowser({
           onSelect={setCurrentFolderId}
         />
         <div className="min-w-0 flex-1 space-y-3">
-          <MediaBreadcrumb
-            folders={catalog.folders}
-            currentFolderId={currentFolderId}
-            onSelect={setCurrentFolderId}
-          />
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <MediaBreadcrumb
+              folders={catalog.folders}
+              currentFolderId={currentFolderId}
+              onSelect={setCurrentFolderId}
+            />
+            {canUpload && currentFolder && (
+              <Btn size="sm" onClick={() => setUploadOpen(true)}>
+                Upload to {displayWebsiteFolderName(currentFolder.name)}
+              </Btn>
+            )}
+          </div>
+          {!currentFolderId && catalog.uploadEnabled && (
+            <p className={`${portalCaptionClass} text-slate-500`}>
+              Select a folder to upload new photos or videos into your site.
+            </p>
+          )}
           <MediaGrid items={visibleItems} />
         </div>
       </div>
+
+      {uploadOpen && currentFolder && (
+        <WebsiteMediaUploadModal
+          open={uploadOpen}
+          folderId={currentFolder.id}
+          folderName={displayWebsiteFolderName(currentFolder.name)}
+          onClose={() => setUploadOpen(false)}
+          onUploaded={(next) => {
+            setCatalog(next)
+            setUploadOpen(false)
+          }}
+        />
+      )}
     </div>
   )
 }

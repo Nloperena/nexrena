@@ -22,4 +22,5 @@ export type WebsiteMediaCatalog = {
   folders: WebsiteMediaFolder[]
   items: WebsiteMediaItem[]
   indexedAt: string
+  uploadEnabled?: boolean
 }

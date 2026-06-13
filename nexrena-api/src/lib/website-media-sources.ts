@@ -84,7 +84,7 @@ export const CATEGORY_NAMES = [
   'About',
   'Partners',
   'Videos',
-  'Other',
+  'Team',
 ] as const
 
 export type CategoryName = (typeof CATEGORY_NAMES)[number]
@@ -191,15 +191,23 @@ export function classifyMediaPath(
     return { category: 'Partners' }
   }
 
+  if (
+    normalized.includes('/team/') ||
+    normalized.includes('/leadership/') ||
+    normalized.includes('/staff/')
+  ) {
+    return { category: 'Team' }
+  }
+
   if (normalized.includes('/blog/') || normalized.includes('/wp-content/')) {
-    return { category: 'Other' }
+    return { category: 'Team' }
   }
 
   if (normalized.includes('/services/')) {
     return { category: 'Hero & graphics' }
   }
 
-  return { category: 'Other' }
+  return { category: 'Team' }
 }
 
 export function categoryFolderId(category: CategoryName): string {

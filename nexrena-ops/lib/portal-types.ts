@@ -142,6 +142,8 @@ export type PortalSubscription = {
   autopay: boolean
 }
 
+export type PortalFormSubmissionStatus = 'new' | 'read' | 'archived'
+
 export type PortalFormSubmission = {
   id: string
   siteKey: string
@@ -150,7 +152,7 @@ export type PortalFormSubmission = {
   submitterEmail: string
   fields: Record<string, unknown>
   pageUrl?: string | null
-  status: string
+  status: PortalFormSubmissionStatus
   createdAt: string
 }
 

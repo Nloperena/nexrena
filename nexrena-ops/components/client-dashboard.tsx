@@ -401,7 +401,7 @@ export function ClientDashboard({ onSignOut }: Props) {
         )
 
       case 'forms':
-        return <ClientFormsView submissions={formSubmissions} />
+        return <ClientFormsView submissions={formSubmissions} onSubmissionsChange={setFormSubmissions} />
 
       case 'requests':
         return (

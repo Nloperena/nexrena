@@ -204,7 +204,7 @@ function buildCatalog(
     'About',
     'Partners',
     'Videos',
-    'Other',
+    'Team',
   ] as CategoryName[]) {
     ensureFolder(categoryFolderId(category), category, null)
   }

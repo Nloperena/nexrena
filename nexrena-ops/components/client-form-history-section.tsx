@@ -3,14 +3,13 @@
 import { useState } from 'react'
 import { formatDate } from '@/lib/store'
 import type { PortalFormSubmission } from '@/lib/portal-types'
+import { portalCardClass, portalFocusRing, portalSectionHintClass, portalSectionTitleClass } from '@/lib/portal-a11y'
 
 const SITE_LABELS: Record<string, string> = {
   ttag: 'Two Azalea Group',
   fpusa: 'Furniture Packages USA',
   nicoloperena: 'NicoLoperena.com',
 }
-
-import { portalCardClass, portalFocusRing, portalSectionHintClass, portalSectionTitleClass } from '@/lib/portal-a11y'
 
 const card = portalCardClass
 
@@ -29,24 +28,50 @@ function formatFieldValue(value: unknown): string {
   return JSON.stringify(value, null, 2)
 }
 
-type Props = {
-  submissions: PortalFormSubmission[]
+function actionBtnClass(variant: 'default' | 'danger' = 'default') {
+  const base = `min-h-[44px] rounded-xl px-3 py-2 text-base transition-colors ${portalFocusRing} disabled:opacity-50`
+  return variant === 'danger'
+    ? `${base} text-red-400 hover:bg-red-500/10`
+    : `${base} text-slate-300 hover:text-gold hover:bg-gold/10`
 }
 
-export function ClientFormHistorySection({ submissions }: Props) {
+type Props = {
+  submissions: PortalFormSubmission[]
+  view: 'active' | 'archived'
+  busyId: string | null
+  onMarkRead: (sub: PortalFormSubmission) => void
+  onArchive: (sub: PortalFormSubmission) => void
+  onRestore: (sub: PortalFormSubmission) => void
+  onDeletePermanently: (sub: PortalFormSubmission) => void
+}
+
+export function ClientFormHistorySection({
+  submissions,
+  view,
+  busyId,
+  onMarkRead,
+  onArchive,
+  onRestore,
+  onDeletePermanently,
+}: Props) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const newCount = submissions.filter((s) => s.status === 'new').length
+  const isArchive = view === 'archived'
 
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-end justify-between gap-3 pt-2">
         <div>
-          <h3 className={portalSectionTitleClass}>Website form leads</h3>
+          <h3 className={portalSectionTitleClass}>
+            {isArchive ? 'Archived leads' : 'Website form leads'}
+          </h3>
           <p className={`${portalSectionHintClass} mt-2`}>
-            Messages from people who filled out your website contact form.
+            {isArchive
+              ? 'Archived leads stay here until you restore or delete them permanently.'
+              : 'Messages from people who filled out your website contact form.'}
           </p>
         </div>
-        {submissions.length > 0 && (
+        {!isArchive && submissions.length > 0 && (
           <p className="text-base text-slate-400 tabular-nums">
             {submissions.length} total
             {newCount > 0 && (
@@ -59,8 +84,9 @@ export function ClientFormHistorySection({ submissions }: Props) {
       {submissions.length === 0 ? (
         <div className={card}>
           <p className="text-base text-slate-300 leading-relaxed">
-            No submissions yet. When someone fills out your website form, you will see their
-            message here.
+            {isArchive
+              ? 'No archived leads. When you move a lead to archive, it will appear here.'
+              : 'No submissions yet. When someone fills out your website form, you will see their message here.'}
           </p>
         </div>
       ) : (
@@ -73,16 +99,22 @@ export function ClientFormHistorySection({ submissions }: Props) {
             const extraFields = Object.entries(fields).filter(
               ([key]) => !['message', 'topic', 'name', 'email'].includes(key),
             )
+            const busy = busyId === sub.id
 
             return (
-              <li key={sub.id} className={card}>
+              <li key={sub.id} className={`${card} ${isArchive ? 'opacity-80' : ''}`}>
                 <div className="flex flex-wrap justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="font-serif text-xl text-white">{sub.submitterName}</p>
-                      {sub.status === 'new' && (
+                      {sub.status === 'new' && !isArchive && (
                         <span className="text-sm font-medium text-gold bg-gold/10 px-3 py-1 rounded-lg">
                           New
+                        </span>
+                      )}
+                      {isArchive && (
+                        <span className="text-sm font-medium text-slate-500 bg-slate-800/60 px-3 py-1 rounded-lg">
+                          Archived
                         </span>
                       )}
                     </div>
@@ -124,15 +156,58 @@ export function ClientFormHistorySection({ submissions }: Props) {
                   <p className="mt-3 text-base text-slate-500 truncate">From: {sub.pageUrl}</p>
                 )}
 
-                {(message.length > 180 || extraFields.length > 0 || sub.pageUrl) && (
-                  <button
-                    type="button"
-                    onClick={() => setExpandedId(isExpanded ? null : sub.id)}
-                    className={`mt-4 text-base text-slate-300 hover:text-gold transition-colors min-h-[44px] ${portalFocusRing}`}
-                  >
-                    {isExpanded ? 'Show less' : 'View details'}
-                  </button>
-                )}
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {(message.length > 180 || extraFields.length > 0 || sub.pageUrl) && (
+                    <button
+                      type="button"
+                      onClick={() => setExpandedId(isExpanded ? null : sub.id)}
+                      className={actionBtnClass()}
+                      disabled={busy}
+                    >
+                      {isExpanded ? 'Show less' : 'View details'}
+                    </button>
+                  )}
+                  {!isArchive && sub.status !== 'archived' && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => onMarkRead(sub)}
+                        className={actionBtnClass()}
+                        disabled={busy}
+                      >
+                        {sub.status === 'new' ? 'Mark read' : 'Mark new'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onArchive(sub)}
+                        className={actionBtnClass()}
+                        disabled={busy}
+                      >
+                        Move to archive
+                      </button>
+                    </>
+                  )}
+                  {isArchive && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => onRestore(sub)}
+                        className={actionBtnClass()}
+                        disabled={busy}
+                      >
+                        Restore
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onDeletePermanently(sub)}
+                        className={actionBtnClass('danger')}
+                        disabled={busy}
+                      >
+                        Delete permanently
+                      </button>
+                    </>
+                  )}
+                </div>
               </li>
             )
           })}

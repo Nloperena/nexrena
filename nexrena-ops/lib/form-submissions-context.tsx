@@ -29,6 +29,7 @@ type FormSubmissionsContextValue = {
   refresh: () => Promise<void>
   updateStatus: (id: string, status: FormSubmissionStatus) => Promise<void>
   archive: (id: string) => Promise<void>
+  restore: (id: string) => Promise<void>
   remove: (id: string) => Promise<void>
   newCount: number
 }
@@ -202,9 +203,19 @@ export function FormSubmissionsProvider({
     [refresh],
   )
 
-  const archive = useCallback(async (id: string) => {
-    await updateStatus(id, 'archived')
-  }, [updateStatus])
+  const archive = useCallback(
+    async (id: string) => {
+      await updateStatus(id, 'archived')
+    },
+    [updateStatus],
+  )
+
+  const restore = useCallback(
+    async (id: string) => {
+      await updateStatus(id, 'read')
+    },
+    [updateStatus],
+  )
 
   const remove = useCallback(
     async (id: string) => {
@@ -224,7 +235,7 @@ export function FormSubmissionsProvider({
 
   return (
     <FormSubmissionsContext.Provider
-      value={{ submissions, loading, refresh, updateStatus, archive, remove, newCount }}
+      value={{ submissions, loading, refresh, updateStatus, archive, restore, remove, newCount }}
     >
       {children}
       {toastSub && (

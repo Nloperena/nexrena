@@ -186,8 +186,17 @@ router.patch('/submissions/:id', requireAuth, async (req, res) => {
   res.json(serialize(row))
 })
 
-/** DELETE /api/forms/submissions/:id */
+/** DELETE /api/forms/submissions/:id — permanent delete (archived only) */
 router.delete('/submissions/:id', requireAuth, async (req, res) => {
+  const existing = await prisma.formSubmission.findUnique({ where: { id: req.params.id } })
+  if (!existing) {
+    res.status(404).json({ error: 'Form submission not found' })
+    return
+  }
+  if (existing.status !== 'archived') {
+    res.status(400).json({ error: 'Move to archive before deleting permanently' })
+    return
+  }
   await prisma.formSubmission.delete({ where: { id: req.params.id } })
   res.json({ ok: true })
 })

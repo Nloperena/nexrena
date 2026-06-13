@@ -283,12 +283,56 @@ export function fetchPortalResources() {
   return portalFetch<import('./client-resource-utils').PortalResource[]>('/api/portal/resources')
 }
 
-export function fetchPortalFormSubmissions() {
-  return portalFetch<import('./portal-types').PortalFormSubmission[]>('/api/portal/form-submissions')
+export function fetchPortalFormSubmissions(view: 'all' | 'active' | 'archived' = 'all') {
+  const qs = view === 'all' ? '' : `?view=${view}`
+  return portalFetch<import('./portal-types').PortalFormSubmission[]>(
+    `/api/portal/form-submissions${qs}`,
+  )
+}
+
+export function updatePortalFormSubmission(
+  id: string,
+  payload: { status: import('./portal-types').PortalFormSubmissionStatus },
+) {
+  return portalFetch<import('./portal-types').PortalFormSubmission>(
+    `/api/portal/form-submissions/${id}`,
+    { method: 'PATCH', body: JSON.stringify(payload) },
+  )
+}
+
+export function deletePortalFormSubmission(id: string) {
+  return portalFetch<{ ok: boolean }>(`/api/portal/form-submissions/${id}`, {
+    method: 'DELETE',
+  })
 }
 
 export function fetchPortalWebsiteMedia() {
   return portalFetch<import('./website-media-types').WebsiteMediaCatalog>('/api/portal/website-media')
+}
+
+export async function uploadPortalWebsiteMedia(file: File, folderId: string) {
+  const token = getPortalToken()
+  const form = new FormData()
+  form.append('file', file)
+  form.append('folderId', folderId)
+
+  const headers = new Headers()
+  if (token) headers.set('Authorization', `Bearer ${token}`)
+
+  const res = await fetch(`${API_BASE}/api/portal/website-media`, {
+    method: 'POST',
+    headers,
+    body: form,
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    throw new Error(typeof data.error === 'string' ? data.error : 'Upload failed')
+  }
+  return data as {
+    publicPath: string
+    repoPath: string
+    catalog: import('./website-media-types').WebsiteMediaCatalog
+  }
 }
 
 const OPS_API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa9f.herokuapp.com'
