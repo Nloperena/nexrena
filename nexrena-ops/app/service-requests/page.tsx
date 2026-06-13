@@ -155,7 +155,7 @@ export default function ServiceRequestsPage() {
         source: payload.source,
         internalNotes: payload.internalNotes,
       })
-    } else if (modal !== 'add') {
+    } else if (modal) {
       await edit({ ...payload, id: modal.id })
     }
     setModal(null)

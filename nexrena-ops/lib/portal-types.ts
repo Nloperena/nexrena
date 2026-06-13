@@ -5,6 +5,7 @@ export type PortalAccount = {
   company: string | null
   contactId: string
   createdAt?: string
+  waasOnboardingCompletedAt?: string | null
 }
 
 export type PortalProject = {
@@ -151,4 +152,21 @@ export type PortalFormSubmission = {
   pageUrl?: string | null
   status: string
   createdAt: string
+}
+
+export type PortalAiChatMessage = {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+export type PortalAiAction = {
+  type: 'navigate' | 'create_service_request'
+  label: string
+  view?: string
+}
+
+export type PortalAiChatResponse = {
+  message: string
+  actions: PortalAiAction[]
+  configured: boolean
 }

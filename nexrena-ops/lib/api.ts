@@ -1,7 +1,7 @@
-const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+const BASE = (process.env.NEXT_PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa9f.herokuapp.com').replace(/\/$/, '')
 const KEY  = process.env.NEXT_PUBLIC_API_KEY || ''
 
-async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
+async function request<T>(method: string, path: string, body?: unknown, attempt = 0): Promise<T> {
   const res = await fetch(`${BASE}/api${path}`, {
     method,
     headers: {
@@ -11,6 +11,10 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
     body: body ? JSON.stringify(body) : undefined,
   })
   if (!res.ok) {
+    if (method === 'GET' && attempt < 2 && (res.status >= 500 || res.status === 429)) {
+      await new Promise((r) => setTimeout(r, 800 * (attempt + 1)))
+      return request<T>(method, path, body, attempt + 1)
+    }
     const err = await res.json().catch(() => ({ error: res.statusText }))
     throw new Error(err.error || `API ${method} ${path} failed: ${res.status}`)
   }

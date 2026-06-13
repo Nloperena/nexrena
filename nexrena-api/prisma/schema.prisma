@@ -83,6 +83,7 @@ model PortalAccount {
   name           String
   company        String?
   contactId      String   @unique @map("contact_id")
+  waasOnboardingCompletedAt DateTime? @map("waas_onboarding_completed_at")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
@@ -115,6 +116,7 @@ model PortalFolder {
   contactId String   @map("contact_id")
   name      String
   parentId  String?  @map("parent_id")
+  deletedAt DateTime? @map("deleted_at")
   createdAt DateTime @default(now()) @map("created_at")
 
   parent   PortalFolder?  @relation("FolderTree", fields: [parentId], references: [id], onDelete: Cascade)
@@ -137,6 +139,7 @@ model PortalAsset {
   pathname         String
   category         String?
   note             String?
+  deletedAt        DateTime? @map("deleted_at")
   createdAt        DateTime @default(now()) @map("created_at")
 
   serviceRequest ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: SetNull)
@@ -283,6 +286,10 @@ model Subscription {
   stripeSubscriptionId     String? @map("stripe_subscription_id")
   stripeSubscriptionItemId String? @map("stripe_subscription_item_id")
   stripePriceId            String? @map("stripe_price_id")
+  cancelAtPeriodEnd        Boolean @default(false) @map("cancel_at_period_end")
+  cancelRequestedAt        String? @map("cancel_requested_at")
+  offboardingChoice        String? @map("offboarding_choice")
+  rawFilesPurchasedAt      String? @map("raw_files_purchased_at")
   createdAt       String  @map("created_at")
 
   @@map("subscriptions")

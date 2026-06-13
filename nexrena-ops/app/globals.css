@@ -826,3 +826,51 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     transition: none;
   }
 }
+
+.portal-ai-robot .portal-ai-antenna {
+  transform-origin: 24px 8px;
+  animation: portalAiAntenna 3s ease-in-out infinite;
+}
+
+.portal-ai-robot .portal-ai-antenna-tip {
+  animation: portalAiPulse 2s ease-in-out infinite;
+}
+
+.portal-ai-robot .portal-ai-eye-left,
+.portal-ai-robot .portal-ai-eye-right {
+  animation: portalAiBlink 4s ease-in-out infinite;
+}
+
+.portal-ai-robot .portal-ai-core {
+  animation: portalAiCore 2.5s ease-in-out infinite;
+}
+
+@keyframes portalAiAntenna {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
+}
+
+@keyframes portalAiBlink {
+  0%, 45%, 55%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
+
+@keyframes portalAiCore {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+
+@keyframes portalAiPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-ai-robot .portal-ai-antenna,
+  .portal-ai-robot .portal-ai-antenna-tip,
+  .portal-ai-robot .portal-ai-eye-left,
+  .portal-ai-robot .portal-ai-eye-right,
+  .portal-ai-robot .portal-ai-core {
+    animation: none;
+  }
+}

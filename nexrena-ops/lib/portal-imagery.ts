@@ -1,4 +1,4 @@
-/** Decorative imagery for the client portal — modern app surfaces, not business data. */
+/** Decorative imagery for the client portal — local gradients and SVGs only. */
 
 export const PORTAL_IMAGES = {
   networkBg: '/images/portal/work-heading-network-bg.svg',
@@ -8,16 +8,20 @@ export const PORTAL_IMAGES = {
   projectForza: '/images/portal/project-forzabuilt.svg',
 } as const
 
-/** Curated Unsplash photos — clean workspace / product aesthetic */
-export const PORTAL_PHOTOS = {
-  hero: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1400&q=80',
-  messages: 'https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=800&q=80',
-  request: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80',
-  billing: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80',
-  schedule: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=80',
-  websites: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=1200&q=80',
-  files: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',
-  auth: 'https://images.unsplash.com/photo-1497215728101-856f4fd903c8?auto=format&fit=crop&w=1200&q=80',
+export const PORTAL_GRADIENTS = {
+  hero: 'linear-gradient(145deg, #0c0f12 0%, #151b24 40%, #1a2230 70%, #0e1218 100%)',
+  messages: 'linear-gradient(145deg, #0d1016 0%, #152030 55%, #101820 100%)',
+  request: 'linear-gradient(145deg, #0e1118 0%, #1a2030 50%, #121820 100%)',
+  billing: 'linear-gradient(145deg, #0c0f12 0%, #1a1e28 45%, #141820 100%)',
+  schedule: 'linear-gradient(145deg, #0d1016 0%, #182028 55%, #0f141c 100%)',
+  websites: 'linear-gradient(145deg, #0e1118 0%, #1c2430 50%, #111820 100%)',
+  files: 'linear-gradient(145deg, #0c0f14 0%, #181e28 50%, #101620 100%)',
+  auth: 'linear-gradient(160deg, #0a0d10 0%, #141820 35%, #1a2230 65%, #0c1016 100%)',
 } as const
 
-export type PortalPhotoKey = keyof typeof PORTAL_PHOTOS
+export const PORTAL_GRADIENT_SVGS: Partial<Record<keyof typeof PORTAL_GRADIENTS, string>> = {
+  auth: PORTAL_IMAGES.infrastructure,
+  hero: PORTAL_IMAGES.networkBg,
+}
+
+export type PortalPhotoKey = keyof typeof PORTAL_GRADIENTS

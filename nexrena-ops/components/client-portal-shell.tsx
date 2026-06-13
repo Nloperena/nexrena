@@ -15,6 +15,7 @@ import { PORTAL_MAIN_OFFSET, PORTAL_SIDEBAR_WIDTH, portalFocusRing, PORTAL_MOBIL
 import { PortalMediaPanel } from '@/components/portal-media-panel'
 import type { PortalPhotoKey } from '@/lib/portal-imagery'
 import { NexrenaLogo } from '@/components/nexrena-logo'
+import { PortalAiAgentButton } from '@/components/portal-ai-agent-button'
 
 type Props = {
   activeView: ClientPortalView
@@ -237,6 +238,11 @@ export function ClientPortalShell({
           </div>
         </div>
       )}
+
+      <PortalAiAgentButton
+        onNavigate={navigate}
+        clientName={account?.name}
+      />
     </div>
   )
 }

@@ -281,3 +281,10 @@ export async function fetchOpsWebsiteMedia(contactId: string) {
 export function logoutPortal() {
   clearPortalToken()
 }
+
+export function sendPortalAiChat(messages: import('./portal-types').PortalAiChatMessage[]) {
+  return portalFetch<import('./portal-types').PortalAiChatResponse>('/api/portal/ai/chat', {
+    method: 'POST',
+    body: JSON.stringify({ messages }),
+  })
+}

@@ -15,10 +15,12 @@ import portalResourceRoutes from './portal-resources'
 import portalFormSubmissionRoutes from './portal-form-submissions'
 import portalWebsiteMediaRoutes from './portal-website-media'
 import portalOAuthRoutes from './portal-oauth'
+import portalAiRoutes from './portal-ai'
 
 const router = Router()
 
 router.use('/oauth', portalOAuthRoutes)
+router.use('/ai', portalAiRoutes)
 
 router.use('/service-requests', portalServiceRequestRoutes)
 router.use('/form-submissions', portalFormSubmissionRoutes)

@@ -12,6 +12,7 @@ import { TeamSettingsModal } from '@/components/team-settings-modal'
 import { getTeamPageContext } from '@/lib/team-page-titles'
 import { TEAM_MAIN_OFFSET, TEAM_MOBILE_BOTTOM_PAD } from '@/lib/team-a11y'
 import { FormSubmissionsProvider } from '@/lib/form-submissions-context'
+import { ApiConnectionBanner } from '@/components/api-connection-banner'
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const { role, signOut, teamDisplayName, setTeamDisplayName } = useAuth()
@@ -101,6 +102,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                     : 'max-w-7xl px-4 py-5 md:px-8 md:py-8'
               }`}
             >
+              {!isMessenger && !isDashboard && <ApiConnectionBanner />}
               {children}
             </div>
           </main>

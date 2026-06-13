@@ -1,14 +1,13 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { PORTAL_PHOTOS, type PortalPhotoKey } from '@/lib/portal-imagery'
+import { PORTAL_GRADIENTS, PORTAL_GRADIENT_SVGS, type PortalPhotoKey } from '@/lib/portal-imagery'
 
 type Props = {
   photo?: PortalPhotoKey
   imageUrl?: string
   svgSrc?: string
   alt?: string
-  /** Dark gradient strength over the image (0–100) */
   overlay?: number
   className?: string
   children?: ReactNode
@@ -41,26 +40,21 @@ export function PortalMediaPanel({
   rounded = '2xl',
   aspect = 'auto',
 }: Props) {
-  const src = imageUrl ?? (photo ? PORTAL_PHOTOS[photo] : undefined)
+  const gradient = photo ? PORTAL_GRADIENTS[photo] : undefined
+  const mappedSvg = photo ? PORTAL_GRADIENT_SVGS[photo] : undefined
+  const svg = svgSrc ?? mappedSvg
 
   return (
     <div
       className={`relative overflow-hidden ${ROUNDED[rounded]} ${ASPECT[aspect]} ${className}`}
+      style={gradient ? { backgroundImage: gradient } : imageUrl ? { backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
+      role={alt ? 'img' : undefined}
+      aria-label={alt || undefined}
     >
-      {src && (
+      {svg && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={src}
-          alt={alt}
-          className="absolute inset-0 h-full w-full object-cover"
-          loading="lazy"
-          decoding="async"
-        />
-      )}
-      {svgSrc && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={svgSrc}
+          src={svg}
           alt=""
           aria-hidden
           className="absolute inset-0 h-full w-full object-cover opacity-90"
@@ -72,7 +66,7 @@ export function PortalMediaPanel({
         aria-hidden
       />
       <div className="absolute inset-0 bg-gradient-to-br from-gold/[0.08] via-transparent to-sky-500/[0.04]" aria-hidden />
-      {children && <div className="relative z-10">{children}</div>}
+      {children && <div className="relative z-10 h-full">{children}</div>}
     </div>
   )
 }
@@ -87,7 +81,6 @@ type CardProps = {
   className?: string
 }
 
-/** Image-forward action tile — modern app card pattern */
 export function PortalImageActionCard({
   photo,
   title,
