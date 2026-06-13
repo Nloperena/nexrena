@@ -62,4 +62,9 @@ module.exports = {
     },
   },
   plugins: [],
+  safelist: [
+    'lg:grid',
+    'lg:grid-cols-[240px_minmax(0,1fr)]',
+    'w-[240px]',
+  ],
 }

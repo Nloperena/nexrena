@@ -53,9 +53,9 @@ export function ClientPortalShell({
 
   return (
     <div className="client-portal min-h-screen bg-[#111418]">
-      <div className="lg:grid lg:grid-cols-[240px_minmax(0,1fr)]">
+      <div className="portal-layout-grid lg:grid lg:grid-cols-[240px_minmax(0,1fr)]">
         <aside
-          className={`hidden lg:flex sticky top-0 h-screen w-[240px] flex-col ${PORTAL_NAV_Z} border-r border-slate-700/50 bg-[#141820] shrink-0`}
+          className={`portal-sidebar sticky top-0 h-screen flex-col ${PORTAL_NAV_Z} border-r border-slate-700/50 bg-[#141820]`}
         >
           <div className="pointer-events-none absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-gold/[0.04] to-transparent" />
 

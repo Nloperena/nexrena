@@ -223,6 +223,32 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 }
 
+/* Salesforce-style shell — CSS grid so layout survives Tailwind purge */
+.portal-layout-grid {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .portal-layout-grid {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+  }
+}
+
+.portal-sidebar {
+  display: none;
+  width: 240px;
+  max-width: 240px;
+  min-width: 240px;
+  flex-shrink: 0;
+}
+
+@media (min-width: 1024px) {
+  .portal-sidebar {
+    display: flex;
+  }
+}
+
 /** Main-column immersive layer — never covers the labeled sidebar or mobile tab bar */
 .portal-immersive-overlay {
   position: fixed;
