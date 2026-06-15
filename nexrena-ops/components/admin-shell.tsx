@@ -115,7 +115,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                     : 'max-w-7xl px-4 py-5 md:px-8 md:py-8'
               }`}
             >
-              {!isMessenger && !isDashboard && <ApiConnectionBanner />}
+              {!isMessenger && <ApiConnectionBanner />}
               {children}
             </div>
           </main>

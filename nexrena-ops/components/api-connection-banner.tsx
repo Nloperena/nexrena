@@ -2,46 +2,40 @@
 import { useState, useEffect } from 'react'
 import { api } from '@/lib/api'
 
-type Status = 'ok' | 'no-url' | 'unreachable' | 'unauthorized' | null
+type Status = 'ok' | 'unreachable' | 'unauthorized' | 'misconfigured' | null
 
 export function ApiConnectionBanner() {
   const [status, setStatus] = useState<Status>(null)
 
   useEffect(() => {
-    const base = process.env.NEXT_PUBLIC_API_URL || ''
-    if (!base) {
-      setStatus('no-url')
-      return
-    }
-    // Health is public; then try a protected route to check key
-    fetch(`${base.replace(/\/$/, '')}/api/health`)
-      .then((res) => {
-        if (!res.ok) {
-          setStatus('unreachable')
-          return
-        }
-        return api.get('/contacts').then(() => setStatus('ok'))
-      })
+    api.get('/contacts')
+      .then(() => setStatus('ok'))
       .catch((err) => {
         const msg = err?.message ?? ''
-        setStatus(msg.includes('401') || msg.includes('Unauthorized') ? 'unauthorized' : 'unreachable')
+        if (msg.includes('503') || msg.includes('API_KEY is not configured')) {
+          setStatus('misconfigured')
+          return
+        }
+        setStatus(
+          msg.includes('401') || msg.includes('Unauthorized') ? 'unauthorized' : 'unreachable',
+        )
       })
   }, [])
 
   if (status === null || status === 'ok') return null
 
   const config = {
-    'no-url': {
-      title: 'API URL not set',
-      text: 'Set NEXT_PUBLIC_API_URL in .env.local (local) or in your hosting env (e.g. https://nexrena-api-5dc54effaa9f.herokuapp.com).',
+    misconfigured: {
+      title: 'API key not configured on server',
+      text: 'Set API_KEY (or NEXT_PUBLIC_API_KEY) in Vercel env for nexrena-ops, then redeploy. It must match Heroku API_KEY.',
     },
     unreachable: {
       title: 'Cannot reach API',
-      text: 'Check NEXT_PUBLIC_API_URL and CORS: add your Ops URL to CORS_ORIGINS on Heroku (e.g. https://nexrena-ops.vercel.app).',
+      text: 'Check NEXT_PUBLIC_API_URL on Vercel and that the Heroku API is running.',
     },
     unauthorized: {
       title: 'Invalid API key',
-      text: 'Set NEXT_PUBLIC_API_KEY to match the API_KEY config var on your Heroku app.',
+      text: 'API_KEY on Vercel must match API_KEY on the Heroku nexrena-api app.',
     },
   }[status]
 

@@ -4,8 +4,6 @@ import { useEffect, useRef } from 'react'
 import { getPortalToken } from '@/lib/portal-client'
 import { parseMessageStreamEvent, type MessageStreamEvent } from '@/lib/message-realtime-utils'
 
-const OPS_API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
-const OPS_API_KEY = process.env.NEXT_PUBLIC_API_KEY || ''
 const PORTAL_API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa9f.herokuapp.com'
 
 function connectStream(url: string, onEvent: (event: MessageStreamEvent) => void) {
@@ -28,11 +26,10 @@ export function useOpsMessageStream(
   handlerRef.current = onEvent
 
   useEffect(() => {
-    if (!OPS_API_KEY) return undefined
-
-    const params = new URLSearchParams({ token: OPS_API_KEY })
+    const params = new URLSearchParams()
     if (contactFilter) params.set('contactId', contactFilter)
-    const url = `${OPS_API_BASE}/api/messages/stream?${params}`
+    const qs = params.toString()
+    const url = `/api/ops/messages/stream${qs ? `?${qs}` : ''}`
 
     return connectStream(url, (event) => handlerRef.current(event))
   }, [contactFilter])

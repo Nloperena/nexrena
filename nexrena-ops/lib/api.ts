@@ -1,12 +1,11 @@
-const BASE = (process.env.NEXT_PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa9f.herokuapp.com').replace(/\/$/, '')
-const KEY  = process.env.NEXT_PUBLIC_API_KEY || ''
+/** Browser calls go through the Next.js proxy so the API key stays server-side. */
+const BASE = '/api/ops'
 
 async function request<T>(method: string, path: string, body?: unknown, attempt = 0): Promise<T> {
-  const res = await fetch(`${BASE}/api${path}`, {
+  const res = await fetch(`${BASE}${path}`, {
     method,
     headers: {
       'Content-Type': 'application/json',
-      ...(KEY ? { Authorization: `Bearer ${KEY}` } : {}),
     },
     body: body ? JSON.stringify(body) : undefined,
   })
@@ -22,11 +21,8 @@ async function request<T>(method: string, path: string, body?: unknown, attempt 
 }
 
 async function requestMultipart<T>(path: string, formData: FormData): Promise<T> {
-  const res = await fetch(`${BASE}/api${path}`, {
+  const res = await fetch(`${BASE}${path}`, {
     method: 'POST',
-    headers: {
-      ...(KEY ? { Authorization: `Bearer ${KEY}` } : {}),
-    },
     body: formData,
   })
   if (!res.ok) {

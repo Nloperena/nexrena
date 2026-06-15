@@ -4,9 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/auth-gate'
-import {
-  useFormSubmissions,
-} from '@/lib/form-submissions-context'
+import { PortalAmbientOrbs } from '@/components/client-portal-visuals'
+import { NexrenaLogo } from '@/components/nexrena-logo'
+import { useFormSubmissions } from '@/lib/form-submissions-context'
 import {
   useInvoices,
   useMessages,
@@ -15,6 +15,7 @@ import {
   formatCurrency,
   invoiceTotal,
 } from '@/lib/store'
+import { PORTAL_IMAGES } from '@/lib/portal-imagery'
 import {
   TEAM_ADMIN_NAV,
   TEAM_BILLING_NAV,
@@ -54,11 +55,6 @@ const CATEGORIES: MenuCategory[] = [
   { id: 'clients', label: 'Clients', tagline: 'Accounts', items: TEAM_CLIENTS_NAV },
   { id: 'admin', label: 'Admin', tagline: 'Intel', items: TEAM_ADMIN_NAV },
 ]
-
-function statPercent(value: number, cap: number) {
-  if (cap <= 0) return value > 0 ? 100 : 0
-  return Math.min(100, Math.round((value / cap) * 100))
-}
 
 function formatClock(date: Date) {
   return date.toLocaleDateString(undefined, {
@@ -102,20 +98,14 @@ export function PersonaDashboardMenu() {
       .filter((i) => i.status === 'sent' || i.status === 'overdue' || isOverdue(i))
       .reduce((s, i) => s + invoiceTotal(i), 0)
     const activeProjects = projects.filter((p) => !['delivered', 'on_hold'].includes(p.status)).length
-    const openProposals = proposals.filter((p) => p.status === 'sent').length
 
     return [
-      { label: 'Unread', value: unreadCount, display: String(unreadCount), cap: 10 },
-      { label: 'Forms', value: formsNewCount, display: String(formsNewCount), cap: 8 },
-      { label: 'Projects', value: activeProjects, display: String(activeProjects), cap: 12 },
-      {
-        label: 'Outstanding',
-        value: outstanding > 0 ? 1 : 0,
-        display: formatCurrency(outstanding),
-        cap: 1,
-      },
+      { label: 'Unread messages', value: String(unreadCount) },
+      { label: 'New form leads', value: String(formsNewCount) },
+      { label: 'Active projects', value: String(activeProjects) },
+      { label: 'Outstanding', value: formatCurrency(outstanding) },
     ]
-  }, [formsNewCount, invoices, projects, proposals, unreadCount])
+  }, [formsNewCount, invoices, projects, unreadCount])
 
   const feed = useMemo(() => {
     const rows: { href: string; title: string; sub: string }[] = []
@@ -136,10 +126,11 @@ export function PersonaDashboardMenu() {
       })
     }
 
-    if (openProposalsCount(proposals) > 0) {
+    const openProposals = proposals.filter((p) => p.status === 'sent').length
+    if (openProposals > 0) {
       rows.push({
         href: '/proposals',
-        title: `${openProposalsCount(proposals)} open proposal${openProposalsCount(proposals) === 1 ? '' : 's'}`,
+        title: `${openProposals} open proposal${openProposals === 1 ? '' : 's'}`,
         sub: 'Awaiting client response',
       })
     }
@@ -191,124 +182,132 @@ export function PersonaDashboardMenu() {
   }, [goToSelected, items.length])
 
   return (
-    <div className="persona-dash">
-      <div className="persona-dash__backdrop" aria-hidden />
-      <div className="persona-dash__slash hidden md:block" aria-hidden />
-
-      <div className="persona-dash__inner">
-        <header className="persona-dash__header">
-          <div>
-            <p className="persona-dash__eyebrow">Nexrena Operations</p>
-            <h1 className="persona-dash__title">Main Menu</h1>
-            <p className="persona-dash__welcome">
-              Operator: <strong>{teamDisplayName}</strong>
+    <div className="space-y-6 md:space-y-8 px-4 py-5 md:px-8 md:py-8">
+      <section className="relative overflow-hidden rounded-2xl border border-slate-700/50 bg-[#0e1218] p-6 md:p-8">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={PORTAL_IMAGES.infrastructure}
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right opacity-30"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0e1218] via-[#0e1218]/90 to-[#0e1218]/50" aria-hidden />
+        <PortalAmbientOrbs />
+        <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-gold/80 via-gold/40 to-transparent" aria-hidden />
+        <div className="relative flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+          <div className="space-y-3 min-w-0">
+            <div className="flex items-center gap-3">
+              <NexrenaLogo size="sm" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold/80">
+                Team operations
+              </span>
+            </div>
+            <h1 className="font-serif text-3xl md:text-4xl text-white tracking-tight">
+              Welcome back, {teamDisplayName}
+            </h1>
+            <p className="text-base text-slate-400">
+              {formatClock(new Date())} · pick a section below or use the sidebar
             </p>
           </div>
-          <p className="persona-dash__clock">{formatClock(new Date())}</p>
-        </header>
-
-        <div className="persona-dash__grid">
-          <aside className="persona-dash__panel hidden lg:block">
-            <p className="persona-dash__panel-head">Status</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 shrink-0 w-full md:w-auto">
             {stats.map((stat) => (
-              <div key={stat.label} className="persona-dash__stat">
-                <div className="persona-dash__stat-label">
-                  <span>{stat.label}</span>
-                  <span>{stat.display}</span>
-                </div>
-                <div className="persona-dash__stat-bar">
-                  <div
-                    className="persona-dash__stat-fill"
-                    style={{ width: `${statPercent(stat.value, stat.cap)}%` }}
-                  />
-                </div>
+              <div
+                key={stat.label}
+                className="glass-panel rounded-xl border border-slate-800/60 bg-slate-900/40 px-4 py-3 min-w-[120px]"
+              >
+                <p className="text-[10px] uppercase tracking-widest text-slate-500">{stat.label}</p>
+                <p className="mt-1 font-serif text-xl text-white tabular-nums">{stat.value}</p>
               </div>
             ))}
-          </aside>
+          </div>
+        </div>
+      </section>
 
-          <section className="persona-dash__panel p-4 md:p-5" key={flashKey}>
-            <div className="persona-dash__categories persona-dash__enter-flash">
-              {CATEGORIES.map((cat, index) => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  className={`persona-dash__cat ${index === categoryIndex ? 'persona-dash__cat--active' : ''}`}
-                  onClick={() => setCategoryIndex(index)}
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] gap-6" key={flashKey}>
+        <section className="glass-panel rounded-2xl border border-slate-800/60 p-4 md:p-6 animate-fade-in-up">
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {CATEGORIES.map((cat, index) => (
+              <button
+                key={cat.id}
+                type="button"
+                className={`shrink-0 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors ${
+                  index === categoryIndex
+                    ? 'bg-gold/15 text-gold border border-gold/35'
+                    : 'border border-slate-700/50 text-slate-400 hover:text-white hover:border-slate-600'
+                }`}
+                onClick={() => setCategoryIndex(index)}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+
+          <p className="mt-4 text-xs uppercase tracking-[0.18em] text-slate-500">
+            {category.tagline} · {items.length} destinations
+          </p>
+
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+            {items.map((item, index) => {
+              const badge = badgeFor(item)
+              const selected = index === itemIndex
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`group relative flex items-center gap-3 rounded-xl border px-4 py-3.5 transition-all ${
+                    selected
+                      ? 'border-gold/40 bg-gold/10 shadow-[0_0_20px_-4px_rgba(201,169,110,0.15)]'
+                      : 'border-slate-800/80 bg-slate-900/40 hover:border-gold/25 hover:bg-slate-900/70'
+                  }`}
+                  onMouseEnter={() => setItemIndex(index)}
+                  onFocus={() => setItemIndex(index)}
                 >
-                  <span>{cat.label}</span>
-                </button>
+                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-800/80 text-gold-light text-lg group-hover:bg-gold/10 transition-colors">
+                    {item.icon}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-medium text-white">{item.label}</span>
+                    <span className="block truncate text-xs text-slate-500">
+                      {FLAVOR[item.href] ?? 'Open section'}
+                    </span>
+                  </span>
+                  {badge > 0 && (
+                    <span className="min-w-[1.5rem] h-6 px-1.5 rounded-full bg-gold text-obsidian text-xs font-bold flex items-center justify-center">
+                      {badge > 99 ? '99+' : badge}
+                    </span>
+                  )}
+                </Link>
+              )
+            })}
+          </div>
+
+          <p className="mt-4 text-xs text-slate-600 hidden sm:block">
+            ← → category · ↑ ↓ select · Enter confirm
+          </p>
+        </section>
+
+        <aside className="glass-panel rounded-2xl border border-slate-800/60 p-4 md:p-5">
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500 mb-4">
+            Recent activity
+          </p>
+          {feed.length === 0 ? (
+            <p className="text-sm text-slate-500 py-4">All quiet for now.</p>
+          ) : (
+            <div className="space-y-1">
+              {feed.map((row) => (
+                <Link
+                  key={`${row.href}-${row.title}`}
+                  href={row.href}
+                  className="block rounded-lg px-3 py-2.5 hover:bg-slate-800/50 transition-colors"
+                >
+                  <p className="text-sm font-medium text-white truncate">{row.title}</p>
+                  <p className="text-xs text-slate-500 truncate mt-0.5">{row.sub}</p>
+                </Link>
               ))}
             </div>
-
-            <p className="mt-3 text-xs uppercase tracking-[0.2em] text-slate-500 font-persona">
-              {category.tagline} · {items.length} destinations
-            </p>
-
-            <div className="persona-dash__items">
-              {items.map((item, index) => {
-                const badge = badgeFor(item)
-                const selected = index === itemIndex
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`persona-dash__item ${selected ? 'persona-dash__item--selected' : ''}`}
-                    onMouseEnter={() => setItemIndex(index)}
-                    onFocus={() => setItemIndex(index)}
-                  >
-                    <span className="persona-dash__item-icon" aria-hidden>
-                      {item.icon}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="persona-dash__item-label block truncate">{item.label}</span>
-                      <span className="persona-dash__item-sub block truncate">
-                        {FLAVOR[item.href] ?? 'Open section'}
-                      </span>
-                    </span>
-                    {badge > 0 && (
-                      <span className="persona-dash__badge">{badge > 99 ? '99+' : badge}</span>
-                    )}
-                  </Link>
-                )
-              })}
-            </div>
-
-            <p className="persona-dash__hint hidden sm:block">
-              ← → category · ↑ ↓ select · Enter confirm
-            </p>
-          </section>
-
-          <aside className="persona-dash__panel hidden lg:block">
-            <p className="persona-dash__panel-head">Activity</p>
-            {feed.length === 0 ? (
-              <p className="px-4 py-6 text-sm text-slate-500">All quiet for now.</p>
-            ) : (
-              feed.map((row) => (
-                <Link key={`${row.href}-${row.title}`} href={row.href} className="persona-dash__feed-item">
-                  <p className="persona-dash__feed-title">{row.title}</p>
-                  <p className="persona-dash__feed-sub">{row.sub}</p>
-                </Link>
-              ))
-            )}
-          </aside>
-        </div>
-
-        <div className="persona-dash__panel lg:hidden">
-          <p className="persona-dash__panel-head">Quick status</p>
-          <div className="grid grid-cols-2 gap-3 p-3">
-            {stats.slice(0, 4).map((stat) => (
-              <div key={stat.label} className="rounded-lg border border-slate-700/50 bg-slate-900/40 px-3 py-2">
-                <p className="text-[10px] uppercase tracking-wider text-slate-500">{stat.label}</p>
-                <p className="font-persona text-lg text-white">{stat.display}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+          )}
+        </aside>
       </div>
     </div>
   )
-}
-
-function openProposalsCount(proposals: { status: string }[]) {
-  return proposals.filter((p) => p.status === 'sent').length
 }
