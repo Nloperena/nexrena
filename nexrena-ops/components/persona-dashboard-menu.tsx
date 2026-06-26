@@ -38,7 +38,7 @@ const FLAVOR: Record<string, string> = {
   '/proposals': 'Quotes awaiting reply',
   '/leads': 'Pipeline opportunities',
   '/form-submissions': 'Website intake forms',
-  '/ai-chats': 'Sales assistant transcripts',
+  '/ai-chats': 'All site inboxes',
   '/invoices': 'Billing & payments',
   '/subscriptions': 'Recurring revenue',
   '/expenses': 'Costs & receipts',

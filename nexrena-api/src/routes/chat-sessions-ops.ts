@@ -1,17 +1,88 @@
 import { Router } from 'express'
 import { prisma } from '../lib/prisma'
 import { requireAuth } from '../middleware/auth'
+import { getSiteConfig, SITES } from '../lib/sites'
 
 const router = Router()
 
-function visitorLabel(sessionId: string, qualification: unknown): string {
+const PORTFOLIO_SITE_KEYS = new Set(['nexrena', 'nicoloperena'])
+
+type InboxKind = 'ai' | 'form' | 'lead'
+type InboxCategory = 'ai' | 'client' | 'portfolio'
+
+function siteLabel(siteKey: string): string {
+  return getSiteConfig(siteKey)?.label ?? siteKey
+}
+
+function inboxCategory(kind: InboxKind, siteKey?: string): InboxCategory {
+  if (kind === 'ai') return 'ai'
+  if (siteKey && PORTFOLIO_SITE_KEYS.has(siteKey)) return 'portfolio'
+  return 'client'
+}
+
+function visitorLabelFromQualification(sessionId: string, qualification: unknown): string {
   const q = qualification as Record<string, string> | null
   if (q?.company) return q.company
   if (q?.name) return q.name
   return `Visitor ${sessionId.slice(-6)}`
 }
 
-function serializeSummary(session: {
+function parseInboxId(raw: string): { kind: InboxKind; id: string } | null {
+  const prefixed = raw.match(/^(ai|form|lead):(.+)$/)
+  if (prefixed) return { kind: prefixed[1] as InboxKind, id: prefixed[2] }
+  return { kind: 'ai', id: raw }
+}
+
+function formMessageBody(fields: Record<string, unknown>, submitterName: string, submitterEmail: string): string {
+  const lines = [`From: ${submitterName}`, `Email: ${submitterEmail}`]
+  for (const [key, value] of Object.entries(fields)) {
+    if (key === 'message' || value == null || value === '') continue
+    const label = key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+    lines.push(`${label}: ${String(value)}`)
+  }
+  const message = typeof fields.message === 'string' ? fields.message : ''
+  if (message) lines.push('', message)
+  return lines.join('\n')
+}
+
+function leadMessageBody(lead: {
+  name: string
+  email: string
+  company: string | null
+  budget: string | null
+  projectType: string | null
+  message: string
+  source: string
+}): string {
+  const lines = [`From: ${lead.name}`, `Email: ${lead.email}`]
+  if (lead.company) lines.push(`Company: ${lead.company}`)
+  if (lead.projectType) lines.push(`Project: ${lead.projectType}`)
+  if (lead.budget) lines.push(`Budget: ${lead.budget}`)
+  lines.push(`Source: ${lead.source}`, '', lead.message)
+  return lines.join('\n')
+}
+
+type InboxSummary = {
+  id: string
+  kind: InboxKind
+  category: InboxCategory
+  siteKey?: string
+  siteLabel: string
+  visitorLabel: string
+  visitorEmail?: string
+  subject?: string
+  createdAt: string
+  updatedAt: string
+  turnCount: number
+  lastPreview?: string | null
+  unread: boolean
+  leadScore?: number
+  lastIntent?: string | null
+  qualification?: Record<string, unknown>
+  status?: string
+}
+
+function serializeAiSummary(session: {
   sessionId: string
   createdAt: Date
   updatedAt: Date
@@ -19,89 +90,236 @@ function serializeSummary(session: {
   leadScore: number
   qualification: unknown
   _count: { turns: number }
-  turns: Array<{ content: string; role: string; intent: string | null }>
-}) {
+  turns: Array<{ content: string; intent: string | null }>
+}): InboxSummary {
   const lastTurn = session.turns[0]
   return {
-    sessionId: session.sessionId,
+    id: `ai:${session.sessionId}`,
+    kind: 'ai',
+    category: 'ai',
+    siteKey: 'nexrena',
+    siteLabel: 'Nexrena AI',
+    visitorLabel: visitorLabelFromQualification(session.sessionId, session.qualification),
+    subject: session.pageUrl ? `Chat on ${session.pageUrl}` : 'AI sales chat',
     createdAt: session.createdAt.toISOString(),
     updatedAt: session.updatedAt.toISOString(),
-    pageUrl: session.pageUrl,
-    leadScore: session.leadScore,
-    qualification: session.qualification ?? {},
     turnCount: session._count.turns,
     lastPreview: lastTurn?.content?.slice(0, 160) ?? null,
-    lastRole: lastTurn?.role ?? null,
+    unread: false,
+    leadScore: session.leadScore,
     lastIntent: lastTurn?.intent ?? null,
-    visitorLabel: visitorLabel(session.sessionId, session.qualification),
+    qualification: (session.qualification as Record<string, unknown>) ?? {},
   }
 }
 
-/** GET /api/chat-sessions — list website AI chat sessions for ops */
-router.get('/', requireAuth, async (req, res) => {
-  const limit = Math.min(Math.max(Number(req.query.limit) || 80, 1), 200)
-  const offset = Math.max(Number(req.query.offset) || 0, 0)
+function serializeFormSummary(row: {
+  id: string
+  siteKey: string
+  formName: string
+  submitterName: string
+  submitterEmail: string
+  fields: unknown
+  pageUrl: string | null
+  status: string
+  createdAt: Date
+}): InboxSummary {
+  const fields = (row.fields ?? {}) as Record<string, unknown>
+  const message = typeof fields.message === 'string' ? fields.message : ''
+  return {
+    id: `form:${row.id}`,
+    kind: 'form',
+    category: inboxCategory('form', row.siteKey),
+    siteKey: row.siteKey,
+    siteLabel: siteLabel(row.siteKey),
+    visitorLabel: row.submitterName,
+    visitorEmail: row.submitterEmail,
+    subject: `${row.formName} form · ${siteLabel(row.siteKey)}`,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.createdAt.toISOString(),
+    turnCount: 1,
+    lastPreview: message.slice(0, 160) || null,
+    unread: row.status === 'new',
+    status: row.status,
+  }
+}
 
-  const sessions = await prisma.chatSession.findMany({
-    orderBy: { updatedAt: 'desc' },
-    take: limit,
-    skip: offset,
-    include: {
-      _count: { select: { turns: true } },
-      turns: {
-        orderBy: { createdAt: 'desc' },
-        take: 1,
-        select: { content: true, role: true, intent: true },
+function serializeLeadSummary(row: {
+  id: string
+  name: string
+  email: string
+  company: string | null
+  message: string
+  source: string
+  status: string
+  createdAt: Date
+}): InboxSummary {
+  return {
+    id: `lead:${row.id}`,
+    kind: 'lead',
+    category: 'portfolio',
+    siteKey: 'nexrena',
+    siteLabel: 'Nexrena',
+    visitorLabel: row.company || row.name,
+    visitorEmail: row.email,
+    subject: row.source === 'chat-assistant' ? 'Chat lead · Nexrena' : 'Contact form · Nexrena',
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.createdAt.toISOString(),
+    turnCount: 1,
+    lastPreview: row.message.slice(0, 160) || null,
+    unread: row.status === 'new' || !row.status,
+    status: row.status,
+  }
+}
+
+/** GET /api/chat-sessions — unified site inbox for ops */
+router.get('/', requireAuth, async (req, res) => {
+  const limit = Math.min(Math.max(Number(req.query.limit) || 120, 1), 250)
+  const category =
+    typeof req.query.category === 'string' && ['ai', 'client', 'portfolio'].includes(req.query.category)
+      ? (req.query.category as InboxCategory)
+      : undefined
+
+  const perSource = Math.ceil(limit / 3) + 20
+
+  const [aiSessions, forms, leads] = await Promise.all([
+    prisma.chatSession.findMany({
+      orderBy: { updatedAt: 'desc' },
+      take: perSource,
+      include: {
+        _count: { select: { turns: true } },
+        turns: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+          select: { content: true, intent: true },
+        },
       },
-    },
-  })
+    }),
+    prisma.formSubmission.findMany({
+      where: { status: { not: 'archived' } },
+      orderBy: { createdAt: 'desc' },
+      take: perSource,
+    }),
+    prisma.lead.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: perSource,
+    }),
+  ])
+
+  let items: InboxSummary[] = [
+    ...aiSessions.map(serializeAiSummary),
+    ...forms.map(serializeFormSummary),
+    ...leads.map(serializeLeadSummary),
+  ]
+
+  if (category) items = items.filter((item) => item.category === category)
+
+  items.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+  items = items.slice(0, limit)
+
+  const siteOptions = Object.entries(SITES).map(([key, site]) => ({
+    siteKey: key,
+    label: site.label,
+    category: inboxCategory('form', key),
+  }))
 
   res.json({
-    sessions: sessions.map(serializeSummary),
+    sessions: items,
     limit,
-    offset,
+    siteOptions,
+    counts: {
+      ai: aiSessions.length,
+      clientForms: forms.filter((f) => inboxCategory('form', f.siteKey) === 'client').length,
+      portfolio: leads.length + forms.filter((f) => inboxCategory('form', f.siteKey) === 'portfolio').length,
+    },
   })
 })
 
-/** GET /api/chat-sessions/:sessionId — full transcript */
-router.get('/:sessionId', requireAuth, async (req, res) => {
-  const session = await prisma.chatSession.findUnique({
-    where: { sessionId: req.params.sessionId },
-    include: {
-      _count: { select: { turns: true } },
-      turns: {
-        orderBy: { createdAt: 'asc' },
-        select: {
-          id: true,
-          role: true,
-          content: true,
-          intent: true,
-          grounded: true,
-          flagged: true,
-          actions: true,
-          createdAt: true,
-        },
-      },
-    },
-  })
-
-  if (!session) {
-    res.status(404).json({ error: 'Chat session not found' })
+/** GET /api/chat-sessions/:inboxId — transcript (ai, form, or lead) */
+router.get('/:inboxId', requireAuth, async (req, res) => {
+  const parsed = parseInboxId(req.params.inboxId)
+  if (!parsed) {
+    res.status(400).json({ error: 'Invalid inbox id' })
     return
   }
 
+  if (parsed.kind === 'ai') {
+    const session = await prisma.chatSession.findUnique({
+      where: { sessionId: parsed.id },
+      include: {
+        _count: { select: { turns: true } },
+        turns: {
+          orderBy: { createdAt: 'asc' },
+          select: {
+            id: true,
+            role: true,
+            content: true,
+            intent: true,
+            grounded: true,
+            flagged: true,
+            actions: true,
+            createdAt: true,
+          },
+        },
+      },
+    })
+    if (!session) {
+      res.status(404).json({ error: 'Chat session not found' })
+      return
+    }
+    res.json({
+      ...serializeAiSummary(session),
+      turns: session.turns.map((turn) => ({
+        id: turn.id,
+        role: turn.role,
+        content: turn.content,
+        intent: turn.intent,
+        grounded: turn.grounded,
+        flagged: turn.flagged,
+        actions: turn.actions,
+        createdAt: turn.createdAt.toISOString(),
+      })),
+    })
+    return
+  }
+
+  if (parsed.kind === 'form') {
+    const row = await prisma.formSubmission.findUnique({ where: { id: parsed.id } })
+    if (!row) {
+      res.status(404).json({ error: 'Form submission not found' })
+      return
+    }
+    const fields = (row.fields ?? {}) as Record<string, unknown>
+    const content = formMessageBody(fields, row.submitterName, row.submitterEmail)
+    res.json({
+      ...serializeFormSummary(row),
+      pageUrl: row.pageUrl,
+      turns: [
+        {
+          id: row.id,
+          role: 'user',
+          content,
+          createdAt: row.createdAt.toISOString(),
+        },
+      ],
+    })
+    return
+  }
+
+  const lead = await prisma.lead.findUnique({ where: { id: parsed.id } })
+  if (!lead) {
+    res.status(404).json({ error: 'Lead not found' })
+    return
+  }
   res.json({
-    ...serializeSummary(session),
-    turns: session.turns.map((turn) => ({
-      id: turn.id,
-      role: turn.role,
-      content: turn.content,
-      intent: turn.intent,
-      grounded: turn.grounded,
-      flagged: turn.flagged,
-      actions: turn.actions,
-      createdAt: turn.createdAt.toISOString(),
-    })),
+    ...serializeLeadSummary(lead),
+    turns: [
+      {
+        id: lead.id,
+        role: 'user',
+        content: leadMessageBody(lead),
+        createdAt: lead.createdAt.toISOString(),
+      },
+    ],
   })
 })
 
