@@ -23,6 +23,7 @@ import messageRoutes from './routes/messages'
 import resourceRoutes from './routes/resources'
 import stripeWebhookRoutes from './routes/stripe-webhook'
 import formRoutes from './routes/forms'
+import publicChatRoutes from './routes/public-chat'
 import portalFormSubmissionRoutes from './routes/portal-form-submissions'
 import portalWebsiteMediaOpsRoutes from './routes/portal-website-media-ops'
 import { handleOpsMessageStream, handlePortalMessageStream } from './lib/message-stream'
@@ -76,6 +77,7 @@ app.use(express.json({ limit: '1mb' }))
 // ── Rate limit on public lead endpoint ───────────────────────────────────
 const leadLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, message: { error: 'Too many submissions, try again later.' } })
 const portalAuthLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 30, message: { error: 'Too many attempts, try again later.' } })
+const chatLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 12, message: { error: 'Too many chat messages, try again later.' } })
 const graphqlLimiter = rateLimit({ windowMs: 60 * 1000, max: 60, message: { error: 'Too many GraphQL requests, try again later.' } })
 
 // ── Routes ───────────────────────────────────────────────────────────────
@@ -93,6 +95,7 @@ app.all(
 
 app.use('/api/leads', leadLimiter, leadRoutes)           // POST is public, GET is auth-guarded inside
 app.use('/api/forms', leadLimiter, formRoutes)           // POST /submit public; GET/PATCH auth inside
+app.use('/api/chat', chatLimiter, publicChatRoutes)      // Public website chatbot (Gemini)
 app.use('/api/portal', portalAuthLimiter, portalRoutes) // register/login public; rest portal-auth inside
 app.use('/api/service-requests', requireAuth, serviceRequestRoutes)
 app.use('/api/portal-assets', requireAuth, portalAssetsOpsRoutes)

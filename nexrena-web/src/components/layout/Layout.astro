@@ -12,6 +12,7 @@ import Schema from '../seo/Schema.astro';
 import Analytics from '@vercel/analytics/astro';
 import Loader from '../ui/Loader.astro';
 import { GrowthPlanPortal } from '../GrowthPlanPortal';
+import { SiteChatWidget } from '../SiteChatWidget';
 
 interface Props {
   title?: string;
@@ -90,6 +91,7 @@ const imageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, site).t
     </div>
     <Footer />
     <GrowthPlanPortal client:only="react" />
+    <SiteChatWidget client:only="react" />
 
     <script>
       import { bindGrowthPlanPortalTriggers } from '@/lib/growth-plan-portal';
