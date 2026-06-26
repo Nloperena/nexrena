@@ -13,6 +13,7 @@
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
+    "test:sales-assistant": "tsx src/lib/sales-assistant/tests/generate-questions.ts && tsx src/lib/sales-assistant/tests/run-tests.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

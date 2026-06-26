@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { generatePublicChatReply } from '../lib/public-chat'
+import { generateSalesAssistantReply } from '../lib/sales-assistant'
 import { BOT_REPLY, checkChatSpam, isLikelyBot } from '../lib/chat-spam-guard'
 
 const router = Router()
@@ -13,7 +13,7 @@ function clientIp(req: { ip?: string; headers: Record<string, string | string[] 
 /** POST /api/chat */
 router.post('/', async (req, res) => {
   const body = req.body as Record<string, unknown>
-  const { messages } = body
+  const { messages, sessionId, pageUrl } = body
 
   if (!messages) {
     res.status(400).json({ error: 'messages array is required' })
@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
   }
 
   if (isLikelyBot(body)) {
-    res.json({ message: BOT_REPLY, configured: true })
+    res.json({ message: BOT_REPLY, configured: true, sessionId: sessionId ?? null, actions: [] })
     return
   }
 
@@ -32,7 +32,14 @@ router.post('/', async (req, res) => {
   }
 
   try {
-    const result = await generatePublicChatReply(messages)
+    const result = await generateSalesAssistantReply(
+      {
+        messages,
+        sessionId: typeof sessionId === 'string' ? sessionId : undefined,
+        pageUrl: typeof pageUrl === 'string' ? pageUrl : undefined,
+      },
+      { ip: clientIp(req) },
+    )
     res.json(result)
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Chat request failed'

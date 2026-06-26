@@ -310,3 +310,48 @@ model Expense {
 
   @@map("expenses")
 }
+
+// ── Public sales assistant analytics ─────────────────────────────────────
+model ChatSession {
+  id            String   @id @default(cuid())
+  sessionId     String   @unique @map("session_id")
+  ipHash        String?  @map("ip_hash")
+  pageUrl       String?  @map("page_url")
+  leadScore     Int      @default(0) @map("lead_score")
+  qualification Json     @default("{}")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  turns         ChatTurn[]
+
+  @@map("chat_sessions")
+}
+
+model ChatTurn {
+  id        String      @id @default(cuid())
+  sessionId String      @map("session_id")
+  session   ChatSession @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+  role      String
+  content   String
+  intent    String?
+  retrieved Json        @default("[]")
+  actions   Json        @default("[]")
+  flagged   Boolean     @default(false)
+  grounded  Boolean     @default(false)
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  @@index([sessionId])
+  @@index([intent])
+  @@map("chat_turns")
+}
+
+model ChatKnowledgeGap {
+  id        String   @id @default(cuid())
+  sessionId String?  @map("session_id")
+  question  String
+  intent    String?
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([resolved])
+  @@map("chat_knowledge_gaps")
+}

@@ -1,0 +1,1286 @@
+{
+  "version": 1,
+  "count": 256,
+  "questions": [
+    {
+      "id": "q-001",
+      "category": "pricing",
+      "question": "How much does a website cost?"
+    },
+    {
+      "id": "q-002",
+      "category": "pricing",
+      "question": "What are your monthly website plans?"
+    },
+    {
+      "id": "q-003",
+      "category": "pricing",
+      "question": "Is $249 per month realistic for a local business?"
+    },
+    {
+      "id": "q-004",
+      "category": "pricing",
+      "question": "Do you have anything under $200 a month?"
+    },
+    {
+      "id": "q-005",
+      "category": "pricing",
+      "question": "What does the $399 Lead Engine plan include?"
+    },
+    {
+      "id": "q-006",
+      "category": "pricing",
+      "question": "Is there a setup fee for WaaS?"
+    },
+    {
+      "id": "q-007",
+      "category": "pricing",
+      "question": "Why is there a 12-month minimum?"
+    },
+    {
+      "id": "q-008",
+      "category": "pricing",
+      "question": "Can I pay yearly instead of monthly?"
+    },
+    {
+      "id": "q-009",
+      "category": "pricing",
+      "question": "How much for a 10-page B2B site?"
+    },
+    {
+      "id": "q-010",
+      "category": "pricing",
+      "question": "What does a $30k project typically include?"
+    },
+    {
+      "id": "q-011",
+      "category": "pricing",
+      "question": "Do you offer payment plans on custom builds?"
+    },
+    {
+      "id": "q-012",
+      "category": "pricing",
+      "question": "What is included in the Growth plan at $249?"
+    },
+    {
+      "id": "q-013",
+      "category": "pricing",
+      "question": "How do project builds compare to WaaS pricing?"
+    },
+    {
+      "id": "q-014",
+      "category": "pricing",
+      "question": "We have a budget of around 15k — what can we get?"
+    },
+    {
+      "id": "q-015",
+      "category": "pricing",
+      "question": "Our budget is 50k+ — is that enterprise territory?"
+    },
+    {
+      "id": "q-016",
+      "category": "pricing",
+      "question": "Are hosting and maintenance included in the monthly price?"
+    },
+    {
+      "id": "q-017",
+      "category": "pricing",
+      "question": "What counts as a monthly edit?"
+    },
+    {
+      "id": "q-018",
+      "category": "pricing",
+      "question": "If I cancel after 12 months what happens?"
+    },
+    {
+      "id": "q-019",
+      "category": "pricing",
+      "question": "Can we buy the source files if we leave?"
+    },
+    {
+      "id": "q-020",
+      "category": "pricing",
+      "question": "Do you publish prices or is everything custom quote?"
+    },
+    {
+      "id": "q-021",
+      "category": "pricing",
+      "question": "How much would SEO cost per month?"
+    },
+    {
+      "id": "q-022",
+      "category": "pricing",
+      "question": "Is full-service growth on a retainer?"
+    },
+    {
+      "id": "q-023",
+      "category": "pricing",
+      "question": "What is the cheapest way to work with Nexrena?"
+    },
+    {
+      "id": "q-024",
+      "category": "pricing",
+      "question": "We are a startup — can we afford you?"
+    },
+    {
+      "id": "q-025",
+      "category": "pricing",
+      "question": "Compare your pricing to hiring a freelancer"
+    },
+    {
+      "id": "q-026",
+      "category": "seo",
+      "question": "What does your SEO service include?"
+    },
+    {
+      "id": "q-027",
+      "category": "seo",
+      "question": "How long until SEO results show up?"
+    },
+    {
+      "id": "q-028",
+      "category": "seo",
+      "question": "Can you fix technical SEO on our existing site?"
+    },
+    {
+      "id": "q-029",
+      "category": "seo",
+      "question": "Do you guarantee first page rankings?"
+    },
+    {
+      "id": "q-030",
+      "category": "seo",
+      "question": "We lost rankings after a redesign — can you help?"
+    },
+    {
+      "id": "q-031",
+      "category": "seo",
+      "question": "Do you do keyword research?"
+    },
+    {
+      "id": "q-032",
+      "category": "seo",
+      "question": "Will you write blog content for SEO?"
+    },
+    {
+      "id": "q-033",
+      "category": "seo",
+      "question": "How is Nexrena SEO different from an audit PDF?"
+    },
+    {
+      "id": "q-034",
+      "category": "seo",
+      "question": "Do you handle redirects during migration?"
+    },
+    {
+      "id": "q-035",
+      "category": "seo",
+      "question": "Can you improve Core Web Vitals?"
+    },
+    {
+      "id": "q-036",
+      "category": "seo",
+      "question": "Do you set up Google Search Console?"
+    },
+    {
+      "id": "q-037",
+      "category": "seo",
+      "question": "What SEO work did you do for Forzabuilt?"
+    },
+    {
+      "id": "q-038",
+      "category": "seo",
+      "question": "We need local SEO for Florida — do you do that?"
+    },
+    {
+      "id": "q-039",
+      "category": "seo",
+      "question": "How do you measure SEO success?"
+    },
+    {
+      "id": "q-040",
+      "category": "seo",
+      "question": "Do you do link building?"
+    },
+    {
+      "id": "q-041",
+      "category": "seo",
+      "question": "Can SEO be added to a WaaS plan?"
+    },
+    {
+      "id": "q-042",
+      "category": "seo",
+      "question": "We rank for brand terms only — can you fix that?"
+    },
+    {
+      "id": "q-043",
+      "category": "seo",
+      "question": "Technical SEO vs content — which do you prioritize?"
+    },
+    {
+      "id": "q-044",
+      "category": "seo",
+      "question": "Do you support international SEO and hreflang?"
+    },
+    {
+      "id": "q-045",
+      "category": "seo",
+      "question": "How often do you report on SEO progress?"
+    },
+    {
+      "id": "q-046",
+      "category": "redesigns",
+      "question": "We need a full website redesign — where do we start?"
+    },
+    {
+      "id": "q-047",
+      "category": "redesigns",
+      "question": "How long does a B2B redesign take?"
+    },
+    {
+      "id": "q-048",
+      "category": "redesigns",
+      "question": "Can you redesign without losing our Google rankings?"
+    },
+    {
+      "id": "q-049",
+      "category": "redesigns",
+      "question": "We are on WordPress and want something faster"
+    },
+    {
+      "id": "q-050",
+      "category": "redesigns",
+      "question": "Our site looks outdated — what is the process?"
+    },
+    {
+      "id": "q-051",
+      "category": "redesigns",
+      "question": "Do you migrate content from our old site?"
+    },
+    {
+      "id": "q-052",
+      "category": "redesigns",
+      "question": "We need a rebrand and new site together"
+    },
+    {
+      "id": "q-053",
+      "category": "redesigns",
+      "question": "Can you rebuild our homepage first then expand?"
+    },
+    {
+      "id": "q-054",
+      "category": "redesigns",
+      "question": "What happens in discovery for a redesign?"
+    },
+    {
+      "id": "q-055",
+      "category": "redesigns",
+      "question": "We have 200+ product pages — can you handle that?"
+    },
+    {
+      "id": "q-056",
+      "category": "redesigns",
+      "question": "How do you approach information architecture?"
+    },
+    {
+      "id": "q-057",
+      "category": "redesigns",
+      "question": "Do you use Astro or Next.js for rebuilds?"
+    },
+    {
+      "id": "q-058",
+      "category": "redesigns",
+      "question": "Can you embed our existing Shopify store?"
+    },
+    {
+      "id": "q-059",
+      "category": "redesigns",
+      "question": "We need a headless CMS — do you support Sanity?"
+    },
+    {
+      "id": "q-060",
+      "category": "redesigns",
+      "question": "What does handoff look like after launch?"
+    },
+    {
+      "id": "q-061",
+      "category": "redesigns",
+      "question": "Do you train our team on the new CMS?"
+    },
+    {
+      "id": "q-062",
+      "category": "redesigns",
+      "question": "Our agency left us with a mess — can you take over?"
+    },
+    {
+      "id": "q-063",
+      "category": "redesigns",
+      "question": "We need better conversion paths on our site"
+    },
+    {
+      "id": "q-064",
+      "category": "redesigns",
+      "question": "Can you audit our current site before quoting?"
+    },
+    {
+      "id": "q-065",
+      "category": "redesigns",
+      "question": "Timeline for an 8-week redesign — realistic?"
+    },
+    {
+      "id": "q-066",
+      "category": "maintenance",
+      "question": "Do you offer website maintenance after launch?"
+    },
+    {
+      "id": "q-067",
+      "category": "maintenance",
+      "question": "What is included in ongoing support?"
+    },
+    {
+      "id": "q-068",
+      "category": "maintenance",
+      "question": "How many hours of edits come with Growth plan?"
+    },
+    {
+      "id": "q-069",
+      "category": "maintenance",
+      "question": "Can you update our site monthly?"
+    },
+    {
+      "id": "q-070",
+      "category": "maintenance",
+      "question": "Who handles plugin and security updates?"
+    },
+    {
+      "id": "q-071",
+      "category": "maintenance",
+      "question": "We need someone to manage our WordPress updates"
+    },
+    {
+      "id": "q-072",
+      "category": "maintenance",
+      "question": "Is maintenance included in WaaS?"
+    },
+    {
+      "id": "q-073",
+      "category": "maintenance",
+      "question": "What if we need a new page mid-contract?"
+    },
+    {
+      "id": "q-074",
+      "category": "maintenance",
+      "question": "Do you monitor site speed ongoing?"
+    },
+    {
+      "id": "q-075",
+      "category": "maintenance",
+      "question": "Can we move from a project to a care plan?"
+    },
+    {
+      "id": "q-076",
+      "category": "maintenance",
+      "question": "What is Website as a Service exactly?"
+    },
+    {
+      "id": "q-077",
+      "category": "maintenance",
+      "question": "We want launch and forget — is that WaaS?"
+    },
+    {
+      "id": "q-078",
+      "category": "maintenance",
+      "question": "How fast do you respond to support requests?"
+    },
+    {
+      "id": "q-079",
+      "category": "maintenance",
+      "question": "Do Lead Engine clients get priority support?"
+    },
+    {
+      "id": "q-080",
+      "category": "maintenance",
+      "question": "What happens if our site goes down?"
+    },
+    {
+      "id": "q-081",
+      "category": "objections",
+      "question": "You seem expensive compared to Fiverr"
+    },
+    {
+      "id": "q-082",
+      "category": "objections",
+      "question": "We got burned by an agency before"
+    },
+    {
+      "id": "q-083",
+      "category": "objections",
+      "question": "Why should I trust a solo operator?"
+    },
+    {
+      "id": "q-084",
+      "category": "objections",
+      "question": "Can you prove ROI on website investment?"
+    },
+    {
+      "id": "q-085",
+      "category": "objections",
+      "question": "We need this live in 2 weeks — can you do it?"
+    },
+    {
+      "id": "q-086",
+      "category": "objections",
+      "question": "Our CEO wants cheapest option"
+    },
+    {
+      "id": "q-087",
+      "category": "objections",
+      "question": "We already have an in-house developer"
+    },
+    {
+      "id": "q-088",
+      "category": "objections",
+      "question": "Why not just use Wix?"
+    },
+    {
+      "id": "q-089",
+      "category": "objections",
+      "question": "We are not sure we need a new site yet"
+    },
+    {
+      "id": "q-090",
+      "category": "objections",
+      "question": "How do I know SEO will actually work?"
+    },
+    {
+      "id": "q-091",
+      "category": "objections",
+      "question": "What if Nexrena is not the right fit?"
+    },
+    {
+      "id": "q-092",
+      "category": "objections",
+      "question": "Do you lock us into proprietary tech?"
+    },
+    {
+      "id": "q-093",
+      "category": "objections",
+      "question": "We had a bad experience with SEO vendors"
+    },
+    {
+      "id": "q-094",
+      "category": "objections",
+      "question": "Is a 12-month contract too long for us?"
+    },
+    {
+      "id": "q-095",
+      "category": "objections",
+      "question": "Can you beat this quote from another agency?"
+    },
+    {
+      "id": "q-096",
+      "category": "comparisons",
+      "question": "Nexrena vs a traditional agency"
+    },
+    {
+      "id": "q-097",
+      "category": "comparisons",
+      "question": "How are you different from Webflow experts?"
+    },
+    {
+      "id": "q-098",
+      "category": "comparisons",
+      "question": "WaaS vs hiring a full-time web person"
+    },
+    {
+      "id": "q-099",
+      "category": "comparisons",
+      "question": "Compare Launch vs Growth plan"
+    },
+    {
+      "id": "q-100",
+      "category": "comparisons",
+      "question": "Shopify theme vs custom build — your take?"
+    },
+    {
+      "id": "q-101",
+      "category": "comparisons",
+      "question": "WordPress vs Astro for our manufacturing site"
+    },
+    {
+      "id": "q-102",
+      "category": "comparisons",
+      "question": "Do you compete with Squarespace?"
+    },
+    {
+      "id": "q-103",
+      "category": "comparisons",
+      "question": "Why pick Nexrena over a local web shop?"
+    },
+    {
+      "id": "q-104",
+      "category": "comparisons",
+      "question": "Full-service vs web design only — which fits us?"
+    },
+    {
+      "id": "q-105",
+      "category": "comparisons",
+      "question": "Retainer vs one-time project — pros and cons?"
+    },
+    {
+      "id": "q-106",
+      "category": "hosting",
+      "question": "Do you include hosting?"
+    },
+    {
+      "id": "q-107",
+      "category": "hosting",
+      "question": "Where are sites hosted — Vercel?"
+    },
+    {
+      "id": "q-108",
+      "category": "hosting",
+      "question": "Do we own our domain?"
+    },
+    {
+      "id": "q-109",
+      "category": "hosting",
+      "question": "Is SSL included?"
+    },
+    {
+      "id": "q-110",
+      "category": "hosting",
+      "question": "Can you migrate our DNS?"
+    },
+    {
+      "id": "q-111",
+      "category": "hosting",
+      "question": "What about email hosting?"
+    },
+    {
+      "id": "q-112",
+      "category": "hosting",
+      "question": "Do WaaS plans include security monitoring?"
+    },
+    {
+      "id": "q-113",
+      "category": "hosting",
+      "question": "Can we use our own hosting provider?"
+    },
+    {
+      "id": "q-114",
+      "category": "hosting",
+      "question": "What uptime do you target?"
+    },
+    {
+      "id": "q-115",
+      "category": "hosting",
+      "question": "How do you handle backups?"
+    },
+    {
+      "id": "q-116",
+      "category": "wordpress",
+      "question": "Can you work with our WordPress site?"
+    },
+    {
+      "id": "q-117",
+      "category": "wordpress",
+      "question": "Do you migrate off WordPress?"
+    },
+    {
+      "id": "q-118",
+      "category": "wordpress",
+      "question": "We use Elementor — can you improve it?"
+    },
+    {
+      "id": "q-119",
+      "category": "wordpress",
+      "question": "WordPress is slow — can you fix performance?"
+    },
+    {
+      "id": "q-120",
+      "category": "wordpress",
+      "question": "Will you maintain our WordPress plugins?"
+    },
+    {
+      "id": "q-121",
+      "category": "wordpress",
+      "question": "Can you preserve URLs when leaving WordPress?"
+    },
+    {
+      "id": "q-122",
+      "category": "wordpress",
+      "question": "Is WordPress still a good choice for B2B?"
+    },
+    {
+      "id": "q-123",
+      "category": "wordpress",
+      "question": "We need WooCommerce help"
+    },
+    {
+      "id": "q-124",
+      "category": "wordpress",
+      "question": "Our WordPress site was hacked — can you help?"
+    },
+    {
+      "id": "q-125",
+      "category": "wordpress",
+      "question": "Migrate WordPress to headless — do you do that?"
+    },
+    {
+      "id": "q-126",
+      "category": "shopify",
+      "question": "Do you build Shopify stores?"
+    },
+    {
+      "id": "q-127",
+      "category": "shopify",
+      "question": "Can you customize our Shopify theme?"
+    },
+    {
+      "id": "q-128",
+      "category": "shopify",
+      "question": "We need headless Shopify — experience?"
+    },
+    {
+      "id": "q-129",
+      "category": "shopify",
+      "question": "Shopify vs custom e-commerce for our brand?"
+    },
+    {
+      "id": "q-130",
+      "category": "shopify",
+      "question": "Tell me about the VITO Fryfilter Shopify work"
+    },
+    {
+      "id": "q-131",
+      "category": "shopify",
+      "question": "Can you improve Shopify conversion rate?"
+    },
+    {
+      "id": "q-132",
+      "category": "shopify",
+      "question": "Do you integrate Stripe outside Shopify?"
+    },
+    {
+      "id": "q-133",
+      "category": "shopify",
+      "question": "International Shopify setup — can you help?"
+    },
+    {
+      "id": "q-134",
+      "category": "shopify",
+      "question": "Shopify SEO improvements"
+    },
+    {
+      "id": "q-135",
+      "category": "shopify",
+      "question": "We outgrew our Shopify theme"
+    },
+    {
+      "id": "q-136",
+      "category": "timelines",
+      "question": "How fast can you launch a new site?"
+    },
+    {
+      "id": "q-137",
+      "category": "timelines",
+      "question": "What is a realistic timeline for SEO?"
+    },
+    {
+      "id": "q-138",
+      "category": "timelines",
+      "question": "We need something before trade show season"
+    },
+    {
+      "id": "q-139",
+      "category": "timelines",
+      "question": "Can WaaS launch faster than a custom build?"
+    },
+    {
+      "id": "q-140",
+      "category": "timelines",
+      "question": "How long is discovery?"
+    },
+    {
+      "id": "q-141",
+      "category": "timelines",
+      "question": "When can we book a kickoff?"
+    },
+    {
+      "id": "q-142",
+      "category": "timelines",
+      "question": "6 weeks for a 5-page site — doable?"
+    },
+    {
+      "id": "q-143",
+      "category": "timelines",
+      "question": "Enterprise timeline for portal build?"
+    },
+    {
+      "id": "q-144",
+      "category": "timelines",
+      "question": "What delays projects most often?"
+    },
+    {
+      "id": "q-145",
+      "category": "timelines",
+      "question": "Can you start next month?"
+    },
+    {
+      "id": "q-146",
+      "category": "ai",
+      "question": "Do you use AI in your builds?"
+    },
+    {
+      "id": "q-147",
+      "category": "ai",
+      "question": "Can you add an AI chatbot to our site?"
+    },
+    {
+      "id": "q-148",
+      "category": "ai",
+      "question": "Is this chat powered by AI?"
+    },
+    {
+      "id": "q-149",
+      "category": "ai",
+      "question": "Do you offer AI automation for leads?"
+    },
+    {
+      "id": "q-150",
+      "category": "ai",
+      "question": "Can AI help with content creation?"
+    },
+    {
+      "id": "q-151",
+      "category": "ai",
+      "question": "What AI tools does Nexrena use internally?"
+    },
+    {
+      "id": "q-152",
+      "category": "branding",
+      "question": "Do you do logo design?"
+    },
+    {
+      "id": "q-153",
+      "category": "branding",
+      "question": "We need a full rebrand with the website"
+    },
+    {
+      "id": "q-154",
+      "category": "branding",
+      "question": "Is branding included in WaaS?"
+    },
+    {
+      "id": "q-155",
+      "category": "branding",
+      "question": "Can you refresh our visual identity?"
+    },
+    {
+      "id": "q-156",
+      "category": "branding",
+      "question": "Brand guidelines with the new site?"
+    },
+    {
+      "id": "q-157",
+      "category": "branding",
+      "question": "Do you only do web or branding too?"
+    },
+    {
+      "id": "q-158",
+      "category": "local_seo",
+      "question": "We are a local HVAC company — can you help?"
+    },
+    {
+      "id": "q-159",
+      "category": "local_seo",
+      "question": "Do you do local SEO for contractors?"
+    },
+    {
+      "id": "q-160",
+      "category": "local_seo",
+      "question": "We need to rank in Orlando and Kissimmee"
+    },
+    {
+      "id": "q-161",
+      "category": "local_seo",
+      "question": "Local landing pages for multiple cities?"
+    },
+    {
+      "id": "q-162",
+      "category": "local_seo",
+      "question": "How do you help service area businesses?"
+    },
+    {
+      "id": "q-163",
+      "category": "local_seo",
+      "question": "Local SEO for a dental clinic"
+    },
+    {
+      "id": "q-164",
+      "category": "local_seo",
+      "question": "We get calls from Google Maps — can you improve that?"
+    },
+    {
+      "id": "q-165",
+      "category": "local_seo",
+      "question": "Multi-location local SEO strategy"
+    },
+    {
+      "id": "q-166",
+      "category": "local_seo",
+      "question": "Do you create city-specific service pages?"
+    },
+    {
+      "id": "q-167",
+      "category": "local_seo",
+      "question": "Local SEO vs national SEO — what fits us?"
+    },
+    {
+      "id": "q-168",
+      "category": "gbp",
+      "question": "Can you optimize our Google Business Profile?"
+    },
+    {
+      "id": "q-169",
+      "category": "gbp",
+      "question": "Google Maps listing help?"
+    },
+    {
+      "id": "q-170",
+      "category": "gbp",
+      "question": "Is GBP setup included in Growth plan?"
+    },
+    {
+      "id": "q-171",
+      "category": "gbp",
+      "question": "Our Google Business listing is wrong"
+    },
+    {
+      "id": "q-172",
+      "category": "gbp",
+      "question": "Do you manage reviews on Google?"
+    },
+    {
+      "id": "q-173",
+      "category": "gbp",
+      "question": "Google Business Profile vs website SEO"
+    },
+    {
+      "id": "q-174",
+      "category": "analytics",
+      "question": "Do you set up Google Analytics?"
+    },
+    {
+      "id": "q-175",
+      "category": "analytics",
+      "question": "Can you help us track form submissions?"
+    },
+    {
+      "id": "q-176",
+      "category": "analytics",
+      "question": "GA4 setup included?"
+    },
+    {
+      "id": "q-177",
+      "category": "analytics",
+      "question": "How do you measure website ROI?"
+    },
+    {
+      "id": "q-178",
+      "category": "analytics",
+      "question": "Conversion tracking for our ads"
+    },
+    {
+      "id": "q-179",
+      "category": "analytics",
+      "question": "Dashboard for marketing metrics?"
+    },
+    {
+      "id": "q-180",
+      "category": "analytics",
+      "question": "Do you use Search Console reporting?"
+    },
+    {
+      "id": "q-181",
+      "category": "analytics",
+      "question": "Can you fix our broken analytics?"
+    },
+    {
+      "id": "q-182",
+      "category": "conversions",
+      "question": "Our site gets traffic but no leads"
+    },
+    {
+      "id": "q-183",
+      "category": "conversions",
+      "question": "How do you improve conversion rate?"
+    },
+    {
+      "id": "q-184",
+      "category": "conversions",
+      "question": "We need more qualified MQLs from the website"
+    },
+    {
+      "id": "q-185",
+      "category": "conversions",
+      "question": "Can you redesign our contact funnel?"
+    },
+    {
+      "id": "q-186",
+      "category": "conversions",
+      "question": "Landing page for a specific campaign?"
+    },
+    {
+      "id": "q-187",
+      "category": "conversions",
+      "question": "Quote form optimization"
+    },
+    {
+      "id": "q-188",
+      "category": "conversions",
+      "question": "What did Forzabuilt achieve for leads?"
+    },
+    {
+      "id": "q-189",
+      "category": "conversions",
+      "question": "B2B lead capture best practices?"
+    },
+    {
+      "id": "q-190",
+      "category": "conversions",
+      "question": "How many leads should we expect?"
+    },
+    {
+      "id": "q-191",
+      "category": "conversions",
+      "question": "CTA and form strategy for manufacturers"
+    },
+    {
+      "id": "q-192",
+      "category": "general",
+      "question": "What does Nexrena do?"
+    },
+    {
+      "id": "q-193",
+      "category": "general",
+      "question": "Who is Nexrena for?"
+    },
+    {
+      "id": "q-194",
+      "category": "general",
+      "question": "Tell me about your company"
+    },
+    {
+      "id": "q-195",
+      "category": "general",
+      "question": "Where are you located?"
+    },
+    {
+      "id": "q-196",
+      "category": "general",
+      "question": "Who runs Nexrena?"
+    },
+    {
+      "id": "q-197",
+      "category": "general",
+      "question": "Do you work with manufacturers?"
+    },
+    {
+      "id": "q-198",
+      "category": "general",
+      "question": "Can you share client testimonials?"
+    },
+    {
+      "id": "q-199",
+      "category": "general",
+      "question": "Show me case studies"
+    },
+    {
+      "id": "q-200",
+      "category": "general",
+      "question": "How do I get started?"
+    },
+    {
+      "id": "q-201",
+      "category": "general",
+      "question": "Can I schedule a discovery call?"
+    },
+    {
+      "id": "q-202",
+      "category": "general",
+      "question": "What industries do you specialize in?"
+    },
+    {
+      "id": "q-203",
+      "category": "general",
+      "question": "Are you taking new clients?"
+    },
+    {
+      "id": "q-204",
+      "category": "general",
+      "question": "What is full-service digital growth?"
+    },
+    {
+      "id": "q-205",
+      "category": "general",
+      "question": "Do you work with ecommerce brands?"
+    },
+    {
+      "id": "q-206",
+      "category": "general",
+      "question": "Professional services website experience?"
+    },
+    {
+      "id": "q-207",
+      "category": "general",
+      "question": "How do I contact Nico?"
+    },
+    {
+      "id": "q-208",
+      "category": "general",
+      "question": "What is your discovery process?"
+    },
+    {
+      "id": "q-209",
+      "category": "general",
+      "question": "Client portal login?"
+    },
+    {
+      "id": "q-210",
+      "category": "general",
+      "question": "I am an existing client — billing question"
+    },
+    {
+      "id": "q-211",
+      "category": "general",
+      "question": "What tech stack do you prefer?"
+    },
+    {
+      "id": "q-212",
+      "category": "pricing",
+      "question": "What would we pay for website redesign?"
+    },
+    {
+      "id": "q-213",
+      "category": "pricing",
+      "question": "Ballpark cost for website redesign?"
+    },
+    {
+      "id": "q-214",
+      "category": "pricing",
+      "question": "Is website redesign in our budget at $20k?"
+    },
+    {
+      "id": "q-215",
+      "category": "pricing",
+      "question": "What would we pay for local SEO?"
+    },
+    {
+      "id": "q-216",
+      "category": "pricing",
+      "question": "Ballpark cost for local SEO?"
+    },
+    {
+      "id": "q-217",
+      "category": "pricing",
+      "question": "Is local SEO in our budget at $20k?"
+    },
+    {
+      "id": "q-218",
+      "category": "pricing",
+      "question": "What would we pay for monthly website plan?"
+    },
+    {
+      "id": "q-219",
+      "category": "pricing",
+      "question": "Ballpark cost for monthly website plan?"
+    },
+    {
+      "id": "q-220",
+      "category": "pricing",
+      "question": "Is monthly website plan in our budget at $20k?"
+    },
+    {
+      "id": "q-221",
+      "category": "pricing",
+      "question": "What would we pay for manufacturing site?"
+    },
+    {
+      "id": "q-222",
+      "category": "pricing",
+      "question": "Ballpark cost for manufacturing site?"
+    },
+    {
+      "id": "q-223",
+      "category": "pricing",
+      "question": "Is manufacturing site in our budget at $20k?"
+    },
+    {
+      "id": "q-224",
+      "category": "pricing",
+      "question": "What would we pay for lead generation?"
+    },
+    {
+      "id": "q-225",
+      "category": "pricing",
+      "question": "Ballpark cost for lead generation?"
+    },
+    {
+      "id": "q-226",
+      "category": "pricing",
+      "question": "Is lead generation in our budget at $20k?"
+    },
+    {
+      "id": "q-227",
+      "category": "seo",
+      "question": "Help with website redesign"
+    },
+    {
+      "id": "q-228",
+      "category": "seo",
+      "question": "Need advice on website redesign"
+    },
+    {
+      "id": "q-229",
+      "category": "seo",
+      "question": "Our issue: website redesign"
+    },
+    {
+      "id": "q-230",
+      "category": "seo",
+      "question": "Help with local SEO"
+    },
+    {
+      "id": "q-231",
+      "category": "seo",
+      "question": "Need advice on local SEO"
+    },
+    {
+      "id": "q-232",
+      "category": "seo",
+      "question": "Our issue: local SEO"
+    },
+    {
+      "id": "q-233",
+      "category": "seo",
+      "question": "Help with monthly website plan"
+    },
+    {
+      "id": "q-234",
+      "category": "seo",
+      "question": "Need advice on monthly website plan"
+    },
+    {
+      "id": "q-235",
+      "category": "seo",
+      "question": "Our issue: monthly website plan"
+    },
+    {
+      "id": "q-236",
+      "category": "seo",
+      "question": "Help with manufacturing site"
+    },
+    {
+      "id": "q-237",
+      "category": "seo",
+      "question": "Need advice on manufacturing site"
+    },
+    {
+      "id": "q-238",
+      "category": "seo",
+      "question": "Our issue: manufacturing site"
+    },
+    {
+      "id": "q-239",
+      "category": "seo",
+      "question": "Help with lead generation"
+    },
+    {
+      "id": "q-240",
+      "category": "seo",
+      "question": "Need advice on lead generation"
+    },
+    {
+      "id": "q-241",
+      "category": "seo",
+      "question": "Our issue: lead generation"
+    },
+    {
+      "id": "q-242",
+      "category": "general",
+      "question": "Quick question about website redesign"
+    },
+    {
+      "id": "q-243",
+      "category": "general",
+      "question": "Curious about website redesign"
+    },
+    {
+      "id": "q-244",
+      "category": "general",
+      "question": "Tell me more about website redesign"
+    },
+    {
+      "id": "q-245",
+      "category": "general",
+      "question": "Quick question about local SEO"
+    },
+    {
+      "id": "q-246",
+      "category": "general",
+      "question": "Curious about local SEO"
+    },
+    {
+      "id": "q-247",
+      "category": "general",
+      "question": "Tell me more about local SEO"
+    },
+    {
+      "id": "q-248",
+      "category": "general",
+      "question": "Quick question about monthly website plan"
+    },
+    {
+      "id": "q-249",
+      "category": "general",
+      "question": "Curious about monthly website plan"
+    },
+    {
+      "id": "q-250",
+      "category": "general",
+      "question": "Tell me more about monthly website plan"
+    },
+    {
+      "id": "q-251",
+      "category": "general",
+      "question": "Quick question about manufacturing site"
+    },
+    {
+      "id": "q-252",
+      "category": "general",
+      "question": "Curious about manufacturing site"
+    },
+    {
+      "id": "q-253",
+      "category": "general",
+      "question": "Tell me more about manufacturing site"
+    },
+    {
+      "id": "q-254",
+      "category": "general",
+      "question": "Quick question about lead generation"
+    },
+    {
+      "id": "q-255",
+      "category": "general",
+      "question": "Curious about lead generation"
+    },
+    {
+      "id": "q-256",
+      "category": "general",
+      "question": "Tell me more about lead generation"
+    }
+  ]
+}
