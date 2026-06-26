@@ -66,14 +66,46 @@ export type QualificationField =
 export type QualificationProfile = Partial<Record<QualificationField, string>>
 
 export type ChatAction = {
-  type: 'link' | 'schedule' | 'contact'
+  type: 'link' | 'schedule' | 'contact' | 'intake'
   label: string
   href: string
+}
+
+export type LeadIntakeField = 'name' | 'email' | 'company'
+
+export type LeadIntakeState = {
+  name?: string
+  email?: string
+  company?: string
+  stage: 'none' | 'collecting' | 'ready' | 'submitted'
+  leadId?: string
+}
+
+export type ChatIntakeView = {
+  stage: 'none' | 'collecting' | 'ready' | 'submitted'
+  showForm: boolean
+  missingFields: LeadIntakeField[]
+  submitted: boolean
+  leadId?: string
+  prefilled: {
+    name?: string
+    email?: string
+    company?: string
+    message?: string
+  }
+}
+
+export type IntakeSubmitPayload = {
+  name: string
+  email: string
+  company?: string
+  message?: string
 }
 
 export type SessionState = {
   sessionId: string
   qualification: QualificationProfile
+  leadIntake: LeadIntakeState
   intentsSeen: ChatIntent[]
   turnCount: number
   lastIntent?: ChatIntent
@@ -84,6 +116,7 @@ export type SalesAssistantInput = {
   messages: unknown
   sessionId?: string
   pageUrl?: string
+  intakeSubmit?: IntakeSubmitPayload
 }
 
 export type SalesAssistantResult = {
@@ -96,6 +129,7 @@ export type SalesAssistantResult = {
   qualification: QualificationProfile
   leadScore: number
   grounded: boolean
+  intake: ChatIntakeView
 }
 
 export const MESSAGE_MAX = 500

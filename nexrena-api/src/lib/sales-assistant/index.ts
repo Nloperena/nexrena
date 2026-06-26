@@ -6,7 +6,8 @@ import { generateGroundedReply } from './grounded-fallback'
 import { applyGuardrails, isGenericFallback } from './guardrails'
 import { callGemini, isLlmConfigured } from './gemini'
 import { classifyIntent } from './intent'
-import { getOrCreateSession, touchSession } from './memory'
+import { getOrCreateSession, saveSession, touchSession } from './memory'
+import { appendIntakeGuidance, buildIntakeView, processLeadIntake } from './intake-flow'
 import { buildSystemPrompt } from './prompts/system'
 import {
   computeLeadScore,
@@ -15,7 +16,7 @@ import {
 } from './qualification'
 import { formatRecommendationsBlock, recommendServices } from './recommendations'
 import { formatRetrievalForLog, retrieveKnowledge } from './retrieval'
-import type { PublicChatMessage, SalesAssistantInput, SalesAssistantResult } from './types'
+import type { IntakeSubmitPayload, PublicChatMessage, SalesAssistantInput, SalesAssistantResult } from './types'
 
 export * from './types'
 export { isLlmConfigured as isPublicChatConfigured }
@@ -35,8 +36,14 @@ function sanitizeMessages(raw: unknown): PublicChatMessage[] {
     .slice(-12)
 }
 
-export function validatePublicChatInput(rawMessages: unknown): PublicChatMessage[] {
+export function validatePublicChatInput(
+  rawMessages: unknown,
+  intakeSubmit?: IntakeSubmitPayload,
+): PublicChatMessage[] {
   const messages = sanitizeMessages(rawMessages)
+  if (messages.length === 0 && intakeSubmit) {
+    return [{ role: 'user', content: 'Submitting my contact details through chat.' }]
+  }
   const lastUser = [...messages].reverse().find((m) => m.role === 'user')
   if (!lastUser) throw new Error('messages must include at least one user message')
   return messages
@@ -68,7 +75,7 @@ export async function generateSalesAssistantReply(
   input: SalesAssistantInput,
   meta?: { ip?: string },
 ): Promise<SalesAssistantResult> {
-  const messages = validatePublicChatInput(input.messages)
+  const messages = validatePublicChatInput(input.messages, input.intakeSubmit)
   const lastUser = messages.filter((m) => m.role === 'user').at(-1)!
   const sessionId = input.sessionId?.trim() || createSessionId()
   const session = getOrCreateSession(sessionId)
@@ -80,6 +87,48 @@ export async function generateSalesAssistantReply(
   const qualification = updateQualificationFromConversation(messages)
   session.qualification = qualification
   const leadScore = computeLeadScore(qualification, intent)
+
+  const intakeResult = await processLeadIntake({
+    intake: session.leadIntake,
+    qualification,
+    messages,
+    sessionId,
+    pageUrl: input.pageUrl,
+    intakeSubmit: input.intakeSubmit,
+    intent,
+    leadScore,
+  })
+  session.leadIntake = intakeResult.intake
+  saveSession(session)
+
+  const intakeView = buildIntakeView(session.leadIntake, qualification, messages)
+
+  if (intakeResult.submittedMessage) {
+    const actions = buildActions(intent, qualification, leadScore, session.leadIntake)
+    void logChatTurn({
+      sessionId,
+      ip: meta?.ip,
+      pageUrl: input.pageUrl,
+      role: 'assistant',
+      content: intakeResult.submittedMessage,
+      intent,
+      actions,
+      leadScore,
+      qualification,
+    })
+    return {
+      message: intakeResult.submittedMessage,
+      configured: isLlmConfigured(),
+      sessionId,
+      intent,
+      actions,
+      suggestedReplies: ['Book a free call', 'Compare plans', 'Tell me about Growth plan'],
+      qualification,
+      leadScore,
+      grounded: false,
+      intake: intakeView,
+    }
+  }
 
   const retrieval = retrieveKnowledge(lastUser.content, intent, 5)
   const recs = recommendServices(qualification, intent)
@@ -105,13 +154,14 @@ export async function generateSalesAssistantReply(
 
   const guarded = applyGuardrails(message, true)
   message = formatAssistantMessage(guarded.text, intent)
+  message = appendIntakeGuidance(message, session.leadIntake)
 
   if (retrieval.topScore < 3 && !grounded) {
     void logKnowledgeGap(sessionId, lastUser.content, intent)
   }
 
-  const actions = buildActions(intent, qualification, leadScore)
-  const suggestions = suggestedReplies(intent, qualification)
+  const actions = buildActions(intent, qualification, leadScore, session.leadIntake)
+  const suggestions = suggestedReplies(intent, qualification, session.leadIntake)
 
   void logChatTurn({
     sessionId,
@@ -149,6 +199,7 @@ export async function generateSalesAssistantReply(
     qualification,
     leadScore,
     grounded,
+    intake: intakeView,
   }
 }
 

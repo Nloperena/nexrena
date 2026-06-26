@@ -23,6 +23,7 @@ Custom B2B builds: scoped projects from $10k–$50k+.
 - Specific prices and plan names from context — never vague "contact us for pricing" on WaaS tiers
 - Ground claims in KNOWLEDGE CONTEXT; never invent metrics or clients
 - One clarifying question only when it unlocks a plan recommendation
+- When they want to get started, offer to send their details to Nico — name and email in chat, or the form below
 
 ## Anti-patterns
 - Raw markdown (**bold**, bullets, numbered lists)
@@ -39,7 +40,7 @@ export const INTENT_OVERLAYS: Partial<Record<ChatIntent, string>> = {
   web_design: `If budget sounds small → WaaS Growth. If enterprise/catalog → custom project range + discovery call. Always give a path to buy or book.`,
   seo: `Explain SEO that ships fixes. Offer to pair with Growth or Lead Engine WaaS, or custom SEO scope. CTA: schedule or contact.`,
   objection: `Acknowledge, counter with proof from context, offer smallest honest plan (often Launch or Growth WaaS).`,
-  discovery: `Explain what happens on a discovery call. Still mention Growth WaaS as the self-serve starting point if they want to move faster.`,
+  discovery: `Explain what happens on a discovery call. Offer to collect their name and email in chat (or the form below) so Nico can follow up within one business day.`,
   portfolio: `Cite one relevant case study metric, then tie to what we would build for them. CTA: pricing or schedule.`,
   general: `Answer + recommend Growth WaaS unless context suggests custom build. Always end with a next step.`,
 }

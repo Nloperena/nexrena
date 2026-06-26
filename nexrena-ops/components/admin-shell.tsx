@@ -24,6 +24,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   const page = getTeamPageContext(pathname)
   const isMessenger = pathname === '/messages'
+  const isAiChats = pathname === '/ai-chats'
+  const isFullHeightChat = isMessenger || isAiChats
   const isDashboard = pathname === '/'
 
   return (
@@ -34,7 +36,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
         <div className="flex min-h-screen w-full min-w-0 flex-col">
           {/* Mobile: full chrome hidden in thread; minimal bar on Messages list */}
-          {isMessenger ? (
+          {isFullHeightChat ? (
           <header className="sticky top-0 z-40 border-b border-slate-700/40 bg-[#111418]/95 backdrop-blur-md lg:hidden">
             <div className="flex items-center justify-between gap-3 px-4 py-2">
               <Link href="/" className="min-w-0 text-sm text-slate-400 hover:text-white">
@@ -103,19 +105,19 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
           <main
             className={`flex-1 w-full min-w-0 max-w-full ${TEAM_MOBILE_BOTTOM_PAD} ${
-              isMessenger ? 'flex flex-col min-h-0 overflow-hidden pb-0 lg:pb-0' : ''
+              isFullHeightChat ? 'flex flex-col min-h-0 overflow-hidden pb-0 lg:pb-0' : ''
             }`}
           >
             <div
               className={`mx-auto w-full ${
-                isMessenger
+                isFullHeightChat
                   ? 'flex flex-col flex-1 min-h-0 max-w-7xl px-0 py-0 lg:px-8 lg:py-8'
                   : isDashboard
                     ? 'max-w-none px-0 py-0'
                     : 'max-w-7xl px-4 py-5 md:px-8 md:py-8'
               }`}
             >
-              {!isMessenger && <ApiConnectionBanner />}
+              {!isFullHeightChat && <ApiConnectionBanner />}
               {children}
             </div>
           </main>

@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { ChatIntakeForm } from '@/components/ChatIntakeForm';
 import {
+  getChatSessionId,
   sendChatMessage,
   type ChatAction,
+  type ChatIntakeState,
   type ChatMessage,
 } from '@/lib/chat-api';
 import { ChatMessageBody } from '@/lib/format-chat-message';
@@ -25,6 +28,10 @@ function newId() {
   return `chat-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+function isIntakeTrigger(text: string): boolean {
+  return /get started|send my (details|info|contact)|ready to start|submit/i.test(text);
+}
+
 export function SiteChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatEntry[]>([]);
@@ -33,8 +40,10 @@ export function SiteChatWidget() {
   const [error, setError] = useState<string | null>(null);
   const [hp, setHp] = useState('');
   const [starters, setStarters] = useState(STARTER_PROMPTS);
+  const [intake, setIntake] = useState<ChatIntakeState | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const intakeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (open && messages.length === 0) {
@@ -51,7 +60,40 @@ export function SiteChatWidget() {
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages, sending]);
+  }, [messages, sending, intake?.showForm]);
+
+  const applyChatResult = useCallback(
+    (result: {
+      message: string;
+      actions?: ChatAction[];
+      suggestedReplies?: string[];
+      intake?: ChatIntakeState;
+    }) => {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: newId(),
+          role: 'assistant',
+          content: result.message,
+          actions: result.actions,
+          suggestedReplies: result.suggestedReplies,
+        },
+      ]);
+      if (result.intake) {
+        setIntake(result.intake);
+      }
+      if (result.suggestedReplies?.length) {
+        setStarters(result.suggestedReplies);
+      }
+    },
+    [],
+  );
+
+  const scrollToIntake = useCallback(() => {
+    window.setTimeout(() => {
+      intakeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+  }, []);
 
   const submitText = useCallback(
     async (text: string) => {
@@ -73,18 +115,9 @@ export function SiteChatWidget() {
 
       try {
         const result = await sendChatMessage(apiMessages, { honeypot: hp });
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: newId(),
-            role: 'assistant',
-            content: result.message,
-            actions: result.actions,
-            suggestedReplies: result.suggestedReplies,
-          },
-        ]);
-        if (result.suggestedReplies?.length) {
-          setStarters(result.suggestedReplies);
+        applyChatResult(result);
+        if (result.intake?.showForm || isIntakeTrigger(trimmed)) {
+          scrollToIntake();
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Could not reach the assistant.');
@@ -92,7 +125,34 @@ export function SiteChatWidget() {
         setSending(false);
       }
     },
-    [hp, messages, sending],
+    [applyChatResult, hp, messages, scrollToIntake, sending],
+  );
+
+  const onIntakeAction = useCallback(
+    (label: string) => {
+      if (intake?.showForm) {
+        scrollToIntake();
+        return;
+      }
+      void submitText(label === 'Get started' ? 'I am ready to get started' : 'Send my details to Nexrena');
+    },
+    [intake?.showForm, scrollToIntake, submitText],
+  );
+
+  const onIntakeSuccess = useCallback(
+    (message: string) => {
+      setError(null);
+      setIntake((prev) =>
+        prev
+          ? { ...prev, stage: 'submitted', showForm: false, submitted: true }
+          : { stage: 'submitted', showForm: false, missingFields: [], submitted: true, prefilled: {} },
+      );
+      applyChatResult({
+        message,
+        suggestedReplies: ['Book a free call', 'Compare plans', 'Tell me about Growth plan'],
+      });
+    },
+    [applyChatResult],
   );
 
   const send = useCallback(() => void submitText(input), [input, submitText]);
@@ -102,6 +162,30 @@ export function SiteChatWidget() {
       e.preventDefault();
       void send();
     }
+  };
+
+  const renderAction = (action: ChatAction, primary: boolean) => {
+    if (action.type === 'intake') {
+      return (
+        <button
+          key={action.href + action.label}
+          type="button"
+          className={`site-chat-action-btn${primary ? ' site-chat-action-primary' : ''}`}
+          onClick={() => onIntakeAction(action.label)}
+        >
+          {action.label}
+        </button>
+      );
+    }
+    return (
+      <a
+        key={action.href + action.label}
+        href={action.href}
+        className={`site-chat-action-btn${primary ? ' site-chat-action-primary' : ''}`}
+      >
+        {action.label}
+      </a>
+    );
   };
 
   return (
@@ -180,20 +264,26 @@ export function SiteChatWidget() {
                     )}
                     {msg.actions && msg.actions.length > 0 && (
                       <div className="site-chat-actions">
-                        {msg.actions.map((action, i) => (
-                          <a
-                            key={action.href + action.label}
-                            href={action.href}
-                            className={`site-chat-action-btn${i === 0 ? ' site-chat-action-primary' : ''}`}
-                          >
-                            {action.label}
-                          </a>
-                        ))}
+                        {msg.actions.map((action, i) => renderAction(action, i === 0))}
                       </div>
                     )}
                   </div>
                 </div>
               ))}
+
+              {intake?.showForm && !intake.submitted && (
+                <div ref={intakeRef} className="site-chat-row">
+                  <div className="site-chat-bubble site-chat-bubble-assistant site-chat-intake-wrap">
+                    <ChatIntakeForm
+                      sessionId={getChatSessionId()}
+                      prefill={intake.prefilled}
+                      onSuccess={onIntakeSuccess}
+                      onError={setError}
+                    />
+                  </div>
+                </div>
+              )}
+
               {starters.length > 0 && !sending && messages.length <= 3 && (
                 <div className="site-chat-starters">
                   {starters.map((prompt) => (

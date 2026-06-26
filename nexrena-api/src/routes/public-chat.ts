@@ -13,9 +13,9 @@ function clientIp(req: { ip?: string; headers: Record<string, string | string[] 
 /** POST /api/chat */
 router.post('/', async (req, res) => {
   const body = req.body as Record<string, unknown>
-  const { messages, sessionId, pageUrl } = body
+  const { messages, sessionId, pageUrl, intakeSubmit } = body
 
-  if (!messages) {
+  if (!messages && !intakeSubmit) {
     res.status(400).json({ error: 'messages array is required' })
     return
   }
@@ -34,9 +34,21 @@ router.post('/', async (req, res) => {
   try {
     const result = await generateSalesAssistantReply(
       {
-        messages,
+        messages: messages ?? [],
         sessionId: typeof sessionId === 'string' ? sessionId : undefined,
         pageUrl: typeof pageUrl === 'string' ? pageUrl : undefined,
+        intakeSubmit:
+          intakeSubmit &&
+          typeof intakeSubmit === 'object' &&
+          typeof (intakeSubmit as { name?: string }).name === 'string' &&
+          typeof (intakeSubmit as { email?: string }).email === 'string'
+            ? (intakeSubmit as {
+                name: string
+                email: string
+                company?: string
+                message?: string
+              })
+            : undefined,
       },
       { ip: clientIp(req) },
     )

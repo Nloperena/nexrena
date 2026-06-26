@@ -1,4 +1,4 @@
-import type { ChatAction, ChatIntent, QualificationProfile } from './types'
+import type { ChatAction, ChatIntent, LeadIntakeState, QualificationProfile } from './types'
 import { recommendServices } from './recommendations'
 
 const SALES_INTENTS: ChatIntent[] = [
@@ -11,12 +11,14 @@ const SALES_INTENTS: ChatIntent[] = [
   'web_design',
   'seo',
   'conversions',
+  'discovery',
 ]
 
 export function buildActions(
   intent: ChatIntent,
   profile: QualificationProfile,
   leadScore: number,
+  intake?: LeadIntakeState,
 ): ChatAction[] {
   if (intent === 'existing_customer') {
     return [{ type: 'link', label: 'Client portal', href: '/portal/' }]
@@ -24,10 +26,17 @@ export function buildActions(
 
   const actions: ChatAction[] = []
   const isSales = SALES_INTENTS.includes(intent)
+  const intakeActive = intake && intake.stage !== 'submitted' && intake.stage !== 'none'
+
+  if (intakeActive) {
+    actions.push({ type: 'intake', label: 'Send my details', href: '#chat-intake' })
+  }
 
   if (isSales || intent === 'pricing' || intent === 'waas') {
     actions.push({ type: 'link', label: 'Compare plans', href: '/pricing/' })
-    actions.push({ type: 'contact', label: 'Get started', href: '/contact/' })
+    if (!intakeActive) {
+      actions.push({ type: 'intake', label: 'Get started', href: '#chat-intake' })
+    }
   }
 
   if (intent === 'discovery' || leadScore >= 35 || isSales) {
@@ -38,13 +47,9 @@ export function buildActions(
     actions.unshift({ type: 'link', label: 'See results', href: '/work/' })
   }
 
-  if (intent === 'services_overview' && actions.length < 3) {
-    actions.push({ type: 'link', label: 'Our services', href: '/services/' })
-  }
-
   const recs = recommendServices(profile, intent)
   const rec = recs[0]
-  if (rec && actions.length < 3 && !actions.some((a) => a.href === rec.href)) {
+  if (rec && actions.length < 4 && !actions.some((a) => a.href === rec.href)) {
     actions.push({
       type: 'link',
       label: rec.href === '/pricing/' ? 'View pricing' : 'Learn more',
@@ -62,26 +67,27 @@ export function buildActions(
     .slice(0, 3)
 }
 
-export function suggestedReplies(intent: ChatIntent, profile: QualificationProfile): string[] {
+export function suggestedReplies(
+  intent: ChatIntent,
+  profile: QualificationProfile,
+  intake?: LeadIntakeState,
+): string[] {
+  if (intake?.stage === 'collecting') {
+    return ['I am ready to get started', 'Use the form below', 'Book a call instead']
+  }
+  if (intake?.stage === 'ready') {
+    return ['Send it', 'Book a free call', 'Compare plans']
+  }
+
   const byIntent: Partial<Record<ChatIntent, string[]>> = {
-    greeting: [
-      'I need a new website',
-      'What does the $249 plan include?',
-      'We need more leads',
-    ],
-    pricing: [
-      'Why is Growth recommended?',
-      'Compare all three plans',
-      'I am ready to get started',
-    ],
-    waas: ['Tell me about the Growth plan', 'Is there a setup fee?', 'Get started today'],
-    local_business: ['We are a local service business', 'Compare monthly plans', 'Book a call'],
-    web_design: ['How long does a build take?', 'We need a redesign', 'What would you recommend?'],
-    seo: ['What does SEO include?', 'Can SEO be added to a plan?', 'Schedule a call'],
+    greeting: ['I need a new website', 'What does the $249 plan include?', 'Get started'],
+    pricing: ['Why is Growth recommended?', 'Compare all three plans', 'Send my details to Nexrena'],
+    waas: ['Tell me about the Growth plan', 'Get started today', 'Send my info'],
+    discovery: ['Send my contact info', 'Book a discovery call', 'Compare WaaS plans'],
     general: [
       profile.goals ? 'What plan fits us best?' : 'We need more leads from our site',
-      'Compare WaaS plans',
-      'I want to get started',
+      'Get started',
+      'Send my details',
     ],
   }
 

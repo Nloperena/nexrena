@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { prisma } from '../lib/prisma'
 import { requireAuth } from '../middleware/auth'
-import { notifyNewLead } from '../lib/notify'
+import { createLead } from '../lib/create-lead'
 
 const router = Router()
 
@@ -12,20 +12,15 @@ router.post('/', async (req, res) => {
     res.status(400).json({ error: 'name, email, and message are required' })
     return
   }
-  const lead = await prisma.lead.create({
-    data: {
-      name,
-      email,
-      message,
-      company: company || null,
-      budget: budget || null,
-      projectType: projectType || null,
-      source: typeof source === 'string' && source.trim() ? source.trim() : 'website',
-      status: 'new',
-    },
+  const lead = await createLead({
+    name,
+    email,
+    message,
+    company,
+    budget,
+    projectType,
+    source,
   })
-
-  notifyNewLead({ name, email, message, company, budget, projectType }).catch(() => {})
 
   res.status(201).json(lead)
 })
