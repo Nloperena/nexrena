@@ -34,7 +34,7 @@ export const TEAM_WORK_NAV: TeamNavItem[] = [
 
   { href: '/form-submissions', label: 'Form leads', icon: '▣', badge: 'forms' },
 
-  { href: '/ai-chats', label: 'Site messages', icon: '◐' },
+  { href: '/ai-chats', label: 'AI chats', icon: '◐' },
 
 ]
 

@@ -7,7 +7,7 @@ const ROUTES: Record<string, PageContext> = {
   '/proposals': { title: 'Proposals', subtitle: 'Quotes and project scopes' },
   '/leads': { title: 'Leads', subtitle: 'Pipeline and new opportunities' },
   '/form-submissions': { title: 'Form leads', subtitle: 'Website contact and intake forms' },
-  '/ai-chats': { title: 'Site messages', subtitle: 'AI chats, client forms, and portfolio leads' },
+  '/ai-chats': { title: 'AI chats', subtitle: 'Live AI conversations by managed website' },
   '/messages': { title: 'Messages', subtitle: 'Client conversations' },
   '/client-files': { title: 'Business assets', subtitle: 'Shared files and deliverables' },
   '/client-resources': { title: 'Client websites', subtitle: 'Hosted sites and resources' },

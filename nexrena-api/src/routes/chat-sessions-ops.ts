@@ -175,18 +175,26 @@ function serializeLeadSummary(row: {
   }
 }
 
-/** GET /api/chat-sessions — unified site inbox for ops */
+/** GET /api/chat-sessions — unified site inbox for ops (use kind=ai&siteKey= for AI-only per site) */
 router.get('/', requireAuth, async (req, res) => {
   const limit = Math.min(Math.max(Number(req.query.limit) || 120, 1), 250)
   const category =
     typeof req.query.category === 'string' && ['ai', 'client', 'portfolio'].includes(req.query.category)
       ? (req.query.category as InboxCategory)
       : undefined
+  const kindFilter = req.query.kind === 'ai' ? 'ai' : undefined
+  const siteKeyFilter =
+    typeof req.query.siteKey === 'string' && req.query.siteKey.trim()
+      ? req.query.siteKey.trim()
+      : undefined
 
-  const perSource = Math.ceil(limit / 3) + 20
+  const perSource = kindFilter === 'ai' ? limit : Math.ceil(limit / 3) + 20
 
-  const [aiSessions, forms, leads] = await Promise.all([
+  const aiWhere = siteKeyFilter ? { siteKey: siteKeyFilter } : undefined
+
+  const [aiSessions, forms, leads, siteStatsRows] = await Promise.all([
     prisma.chatSession.findMany({
+      where: aiWhere,
       orderBy: { updatedAt: 'desc' },
       take: perSource,
       include: {
@@ -198,47 +206,79 @@ router.get('/', requireAuth, async (req, res) => {
         },
       },
     }),
-    prisma.formSubmission.findMany({
-      where: { status: { not: 'archived' } },
-      orderBy: { createdAt: 'desc' },
-      take: perSource,
-    }),
-    prisma.lead.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: perSource,
+    kindFilter === 'ai'
+      ? Promise.resolve([])
+      : prisma.formSubmission.findMany({
+          where: { status: { not: 'archived' } },
+          orderBy: { createdAt: 'desc' },
+          take: perSource,
+        }),
+    kindFilter === 'ai'
+      ? Promise.resolve([])
+      : prisma.lead.findMany({
+          orderBy: { createdAt: 'desc' },
+          take: perSource,
+        }),
+    prisma.chatSession.groupBy({
+      by: ['siteKey'],
+      _count: { sessionId: true },
+      _max: { updatedAt: true },
     }),
   ])
 
-  let items: InboxSummary[] = [
-    ...aiSessions.map(serializeAiSummary),
-    ...forms.map(serializeFormSummary),
-    ...leads.map(serializeLeadSummary),
-  ]
+  let items: InboxSummary[] =
+    kindFilter === 'ai'
+      ? aiSessions.map(serializeAiSummary)
+      : [
+          ...aiSessions.map(serializeAiSummary),
+          ...forms.map(serializeFormSummary),
+          ...leads.map(serializeLeadSummary),
+        ]
 
   if (category) items = items.filter((item) => item.category === category)
+  if (siteKeyFilter && kindFilter !== 'ai') {
+    items = items.filter((item) => item.siteKey === siteKeyFilter)
+  }
 
   items.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
   items = items.slice(0, limit)
 
-  const siteOptions = Object.entries(SITES).map(([key, site]) => ({
-    siteKey: key,
-    label: site.label,
-    category: site.managedCategory === 'agency' ? 'ai' : site.managedCategory,
-    chatEnabled: site.chat.enabled,
-  }))
+  const statsByKey = new Map(
+    siteStatsRows.map((row) => [
+      row.siteKey || 'nexrena',
+      { count: row._count.sessionId, lastAt: row._max.updatedAt },
+    ]),
+  )
+
+  const siteOptions = Object.entries(SITES)
+    .filter(([, site]) => site.chat.enabled)
+    .map(([key, site]) => ({
+      siteKey: key,
+      label: site.label,
+      category: site.managedCategory === 'agency' ? 'ai' : site.managedCategory,
+      chatEnabled: site.chat.enabled,
+      chatCount: statsByKey.get(key)?.count ?? 0,
+      lastActivityAt: statsByKey.get(key)?.lastAt?.toISOString() ?? null,
+    }))
+    .sort((a, b) => {
+      const aTime = a.lastActivityAt ? new Date(a.lastActivityAt).getTime() : 0
+      const bTime = b.lastActivityAt ? new Date(b.lastActivityAt).getTime() : 0
+      return bTime - aTime
+    })
 
   res.json({
     sessions: items,
     limit,
     siteOptions,
     counts: {
-      ai: aiSessions.length,
+      ai: siteStatsRows.reduce((sum, row) => sum + row._count.sessionId, 0),
       clientForms: forms.filter((f) => formInboxCategory(f.siteKey) === 'client').length,
       portfolio:
         leads.length +
         forms.filter((f) => formInboxCategory(f.siteKey) === 'portfolio').length +
         aiSessions.filter((s) => inboxCategoryForSite(s.siteKey || 'nexrena') === 'portfolio').length,
     },
+    refreshedAt: new Date().toISOString(),
   })
 })
 
