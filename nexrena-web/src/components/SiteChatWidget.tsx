@@ -4,14 +4,15 @@ import {
   type ChatAction,
   type ChatMessage,
 } from '@/lib/chat-api';
+import { ChatMessageBody } from '@/lib/format-chat-message';
 
 const WELCOME =
-  "Hi — I'm Nexrena's digital consultant. I can help you figure out fit, services, pricing, and next steps. What are you working on?";
+  'Hi — I can help you pick the right Nexrena plan. Monthly website care starts at $149/mo, and most businesses choose Growth at $249/mo.\n\nWhat are you looking for — a new site, more leads, or SEO?';
 
 const STARTER_PROMPTS = [
-  'What does Nexrena do?',
-  'How much does a website cost?',
-  'Can you share case study results?',
+  'Compare your monthly plans',
+  'Why is Growth $249/mo recommended?',
+  'I am ready to get started',
 ];
 
 type ChatEntry = ChatMessage & {
@@ -153,7 +154,7 @@ export function SiteChatWidget() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="site-chat-title">Nexrena Consultant</p>
-                <p className="site-chat-subtitle">Web, SEO & growth advisory</p>
+                <p className="site-chat-subtitle">Find your plan · from $149/mo</p>
               </div>
               <button
                 type="button"
@@ -172,14 +173,18 @@ export function SiteChatWidget() {
                   className={`site-chat-row ${msg.role === 'user' ? 'site-chat-row-user' : ''}`}
                 >
                   <div className={`site-chat-bubble site-chat-bubble-${msg.role}`}>
-                    <p>{msg.content}</p>
+                    {msg.role === 'assistant' ? (
+                      <ChatMessageBody content={msg.content} />
+                    ) : (
+                      <p>{msg.content}</p>
+                    )}
                     {msg.actions && msg.actions.length > 0 && (
                       <div className="site-chat-actions">
-                        {msg.actions.map((action) => (
+                        {msg.actions.map((action, i) => (
                           <a
                             key={action.href + action.label}
                             href={action.href}
-                            className="site-chat-action-btn"
+                            className={`site-chat-action-btn${i === 0 ? ' site-chat-action-primary' : ''}`}
                           >
                             {action.label}
                           </a>
@@ -189,7 +194,7 @@ export function SiteChatWidget() {
                   </div>
                 </div>
               ))}
-              {starters.length > 0 && !sending && messages.length <= 2 && (
+              {starters.length > 0 && !sending && messages.length <= 3 && (
                 <div className="site-chat-starters">
                   {starters.map((prompt) => (
                     <button

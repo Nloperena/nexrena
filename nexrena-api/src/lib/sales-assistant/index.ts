@@ -1,6 +1,7 @@
 import { randomBytes } from 'crypto'
 import { buildActions, suggestedReplies } from './actions'
 import { logChatTurn, logKnowledgeGap } from './analytics'
+import { formatAssistantMessage } from './format-response'
 import { generateGroundedReply } from './grounded-fallback'
 import { applyGuardrails, isGenericFallback } from './guardrails'
 import { callGemini, isLlmConfigured } from './gemini'
@@ -103,7 +104,7 @@ export async function generateSalesAssistantReply(
   }
 
   const guarded = applyGuardrails(message, true)
-  message = guarded.text
+  message = formatAssistantMessage(guarded.text, intent)
 
   if (retrieval.topScore < 3 && !grounded) {
     void logKnowledgeGap(sessionId, lastUser.content, intent)

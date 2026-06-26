@@ -7,7 +7,7 @@ export async function callGemini(
   const apiKey = process.env.GEMINI_API_KEY?.trim()
   if (!apiKey) return null
 
-  const model = process.env.GEMINI_MODEL?.trim() || 'gemini-2.0-flash'
+  const model = process.env.GEMINI_MODEL?.trim() || 'gemini-2.5-flash'
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`
 
   const contents = messages.map((m) => ({
@@ -22,8 +22,8 @@ export async function callGemini(
       systemInstruction: { parts: [{ text: systemPrompt }] },
       contents,
       generationConfig: {
-        temperature: 0.45,
-        maxOutputTokens: 550,
+        temperature: 0.35,
+        maxOutputTokens: 320,
       },
     }),
   })

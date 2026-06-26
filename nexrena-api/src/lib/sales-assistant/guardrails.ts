@@ -40,7 +40,17 @@ export function applyGuardrails(text: string, grounded: boolean): { text: string
   }
 
   out = out.replace(/\n{3,}/g, '\n\n').trim()
+  out = stripMarkdown(out)
   return { text: out, flagged }
+}
+
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/__(.+?)__/g, '$1')
+    .replace(/\*(.+?)\*/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/^\s*[-*•]\s+/gm, '')
 }
 
 export function isGenericFallback(text: string): boolean {
