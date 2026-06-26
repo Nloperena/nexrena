@@ -400,8 +400,16 @@ export function SiteChatWidget({ siteKey = 'nexrena' }: Props) {
                 </button>
               </div>
               <p className="site-chat-disclaimer">
-                AI can make mistakes. Verify on <a href="/contact/">contact</a> or{' '}
-                <a href="/schedule/">schedule a call</a>.
+                AI can make mistakes. Verify on{' '}
+                <a href={config?.links?.contact ?? '/contact/'}>contact</a>
+                {config?.links?.schedule ? (
+                  <>
+                    {' '}
+                    or <a href={config.links.schedule}>schedule a call</a>.
+                  </>
+                ) : (
+                  '.'
+                )}
               </p>
             </footer>
           </section>
