@@ -18,6 +18,9 @@ const STARTER_PROMPTS = [
   'I am ready to get started',
 ];
 
+const DISMISS_KEY = 'nexrena_chat_dismissed';
+const AUTO_OPEN_MS = 1200;
+
 type ChatEntry = ChatMessage & {
   id: string;
   actions?: ChatAction[];
@@ -30,6 +33,35 @@ function newId() {
 
 function isIntakeTrigger(text: string): boolean {
   return /get started|send my (details|info|contact)|ready to start|submit/i.test(text);
+}
+
+function SendIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden className="site-chat-send-icon">
+      <path
+        d="M12 19V5M5 12l7-7 7 7"
+        stroke="currentColor"
+        strokeWidth="2.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function AssistantAvatar() {
+  return (
+    <div className="site-chat-avatar site-chat-avatar-ai" aria-hidden>
+      <svg viewBox="0 0 24 24" fill="none">
+        <path
+          d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2Z"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
+  );
 }
 
 export function SiteChatWidget() {
@@ -45,6 +77,25 @@ export function SiteChatWidget() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const intakeRef = useRef<HTMLDivElement>(null);
 
+  const dismissChat = useCallback(() => {
+    setOpen(false);
+    try {
+      sessionStorage.setItem(DISMISS_KEY, '1');
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem(DISMISS_KEY)) return;
+    } catch {
+      /* ignore */
+    }
+    const t = window.setTimeout(() => setOpen(true), AUTO_OPEN_MS);
+    return () => window.clearTimeout(t);
+  }, []);
+
   useEffect(() => {
     if (open && messages.length === 0) {
       setMessages([{ id: newId(), role: 'assistant', content: WELCOME }]);
@@ -53,7 +104,7 @@ export function SiteChatWidget() {
 
   useEffect(() => {
     if (open) {
-      const t = window.setTimeout(() => inputRef.current?.focus(), 200);
+      const t = window.setTimeout(() => inputRef.current?.focus(), 250);
       return () => window.clearTimeout(t);
     }
   }, [open]);
@@ -79,12 +130,8 @@ export function SiteChatWidget() {
           suggestedReplies: result.suggestedReplies,
         },
       ]);
-      if (result.intake) {
-        setIntake(result.intake);
-      }
-      if (result.suggestedReplies?.length) {
-        setStarters(result.suggestedReplies);
-      }
+      if (result.intake) setIntake(result.intake);
+      if (result.suggestedReplies?.length) setStarters(result.suggestedReplies);
     },
     [],
   );
@@ -116,9 +163,7 @@ export function SiteChatWidget() {
       try {
         const result = await sendChatMessage(apiMessages, { honeypot: hp });
         applyChatResult(result);
-        if (result.intake?.showForm || isIntakeTrigger(trimmed)) {
-          scrollToIntake();
-        }
+        if (result.intake?.showForm || isIntakeTrigger(trimmed)) scrollToIntake();
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Could not reach the assistant.');
       } finally {
@@ -193,7 +238,7 @@ export function SiteChatWidget() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="Open Nexrena consultant chat"
+        aria-label="Open Nexrena AI chat"
         aria-expanded={open}
         className="site-chat-fab"
         hidden={open}
@@ -205,75 +250,63 @@ export function SiteChatWidget() {
             strokeWidth="1.5"
             strokeLinejoin="round"
           />
-          <circle cx="8.5" cy="11" r="1" fill="currentColor" />
-          <circle cx="12" cy="11" r="1" fill="currentColor" />
-          <circle cx="15.5" cy="11" r="1" fill="currentColor" />
         </svg>
+        <span className="site-chat-fab-label">Ask AI</span>
       </button>
 
       {open && (
         <div className="site-chat-root" role="presentation">
-          <button
-            type="button"
-            className="site-chat-backdrop"
-            aria-label="Close chat"
-            onClick={() => setOpen(false)}
-          />
+          <button type="button" className="site-chat-backdrop" aria-label="Close chat" onClick={dismissChat} />
 
           <section
             className="site-chat-panel"
             role="dialog"
             aria-modal="true"
-            aria-label="Nexrena digital consultant"
+            aria-label="Nexrena AI assistant"
           >
             <header className="site-chat-header">
-              <div className="site-chat-header-icon" aria-hidden>
-                <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-                  <path
-                    d="M12 3C7.03 3 3 6.58 3 11c0 2.12.9 4.05 2.36 5.5L4 21l4.74-1.18A9.7 9.7 0 0 0 12 19c4.97 0 9-3.58 9-8s-4.03-8-9-8Z"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                  />
+              <div className="site-chat-header-brand">
+                <AssistantAvatar />
+                <div className="min-w-0">
+                  <p className="site-chat-title">Nexrena AI</p>
+                  <p className="site-chat-subtitle">Sales consultant · plans from $149/mo</p>
+                </div>
+              </div>
+              <button type="button" onClick={dismissChat} aria-label="Close chat" className="site-chat-close">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden width="20" height="20">
+                  <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="site-chat-title">Nexrena Consultant</p>
-                <p className="site-chat-subtitle">Find your plan · from $149/mo</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Close chat"
-                className="site-chat-close"
-              >
-                −
               </button>
             </header>
 
             <div ref={listRef} className="site-chat-messages">
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`site-chat-row ${msg.role === 'user' ? 'site-chat-row-user' : ''}`}
-                >
-                  <div className={`site-chat-bubble site-chat-bubble-${msg.role}`}>
-                    {msg.role === 'assistant' ? (
-                      <ChatMessageBody content={msg.content} />
-                    ) : (
-                      <p>{msg.content}</p>
-                    )}
-                    {msg.actions && msg.actions.length > 0 && (
-                      <div className="site-chat-actions">
-                        {msg.actions.map((action, i) => renderAction(action, i === 0))}
+              {messages.map((msg) =>
+                msg.role === 'assistant' ? (
+                  <article key={msg.id} className="site-chat-msg site-chat-msg-assistant">
+                    <AssistantAvatar />
+                    <div className="site-chat-msg-content">
+                      <p className="site-chat-msg-label">Nexrena AI</p>
+                      <div className="site-chat-msg-text">
+                        <ChatMessageBody content={msg.content} />
                       </div>
-                    )}
-                  </div>
-                </div>
-              ))}
+                      {msg.actions && msg.actions.length > 0 && (
+                        <div className="site-chat-actions">{msg.actions.map((a, i) => renderAction(a, i === 0))}</div>
+                      )}
+                    </div>
+                  </article>
+                ) : (
+                  <article key={msg.id} className="site-chat-msg site-chat-msg-user">
+                    <div className="site-chat-msg-content">
+                      <p className="site-chat-msg-text">{msg.content}</p>
+                    </div>
+                  </article>
+                ),
+              )}
 
               {intake?.showForm && !intake.submitted && (
-                <div ref={intakeRef} className="site-chat-row">
-                  <div className="site-chat-bubble site-chat-bubble-assistant site-chat-intake-wrap">
+                <article ref={intakeRef} className="site-chat-msg site-chat-msg-assistant">
+                  <AssistantAvatar />
+                  <div className="site-chat-msg-content site-chat-intake-wrap">
                     <ChatIntakeForm
                       sessionId={getChatSessionId()}
                       prefill={intake.prefilled}
@@ -281,7 +314,7 @@ export function SiteChatWidget() {
                       onError={setError}
                     />
                   </div>
-                </div>
+                </article>
               )}
 
               {starters.length > 0 && !sending && messages.length <= 3 && (
@@ -298,16 +331,18 @@ export function SiteChatWidget() {
                   ))}
                 </div>
               )}
+
               {sending && (
-                <div className="site-chat-row">
-                  <div className="site-chat-bubble site-chat-bubble-assistant">
-                    <span className="site-chat-typing" aria-label="Consultant is typing">
+                <article className="site-chat-msg site-chat-msg-assistant">
+                  <AssistantAvatar />
+                  <div className="site-chat-msg-content">
+                    <span className="site-chat-typing" aria-label="Assistant is typing">
                       <span />
                       <span />
                       <span />
                     </span>
                   </div>
-                </div>
+                </article>
               )}
             </div>
 
@@ -328,31 +363,31 @@ export function SiteChatWidget() {
                 aria-hidden
                 className="site-chat-hp"
               />
-              <div className="site-chat-input-row">
+              <div className="site-chat-composer">
                 <textarea
                   ref={inputRef}
                   value={input}
                   onChange={(e) => setInput(e.target.value.slice(0, 500))}
                   onKeyDown={onKeyDown}
                   rows={1}
-                  placeholder="Ask about fit, pricing, SEO, timelines…"
+                  placeholder="Message Nexrena AI…"
                   disabled={sending}
                   maxLength={500}
-                  aria-label="Message to consultant"
-                  className="site-chat-input"
+                  aria-label="Message to assistant"
+                  className="site-chat-composer-input"
                 />
                 <button
                   type="button"
                   onClick={() => void send()}
                   disabled={sending || !input.trim()}
-                  className="site-chat-send"
+                  className="site-chat-composer-send"
+                  aria-label="Send message"
                 >
-                  Send
+                  <SendIcon />
                 </button>
               </div>
               <p className="site-chat-disclaimer">
-                AI consultant — verify details on{' '}
-                <a href="/contact/">contact</a> or{' '}
+                AI can make mistakes. Verify on <a href="/contact/">contact</a> or{' '}
                 <a href="/schedule/">schedule a call</a>.
               </p>
             </footer>
