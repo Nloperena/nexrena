@@ -1,3 +1,5 @@
+export type ChatKnowledgeProfile = 'nexrena' | 'fpusa' | 'nicoloperena' | 'ttag'
+
 export type PublicChatRole = 'user' | 'assistant'
 
 export type PublicChatMessage = {
@@ -116,13 +118,22 @@ export type SalesAssistantInput = {
   messages: unknown
   sessionId?: string
   pageUrl?: string
+  siteKey?: string
   intakeSubmit?: IntakeSubmitPayload
+}
+
+export type SiteChatRuntime = {
+  siteKey: string
+  siteLabel: string
+  contactId: string
+  chat: import('../sites').SiteChatConfig
 }
 
 export type SalesAssistantResult = {
   message: string
   configured: boolean
   sessionId: string
+  siteKey: string
   intent: ChatIntent
   actions: ChatAction[]
   suggestedReplies: string[]

@@ -4,16 +4,18 @@ import type {
   LeadIntakeState,
   PublicChatMessage,
   QualificationProfile,
+  SiteChatRuntime,
 } from './types'
+import type { SiteConfig } from '../sites'
 import {
   intakePromptForMissing,
   mergeIntakeFromMessages,
   mergeIntakeSubmit,
   missingIntakeFields,
   shouldStartIntake,
-  submitChatLead,
   wantsImmediateSubmit,
 } from './lead-intake'
+import { submitChatIntake } from './chat-intake-router'
 
 export function buildIntakeView(
   intake: LeadIntakeState,
@@ -45,6 +47,8 @@ export function buildIntakeView(
 }
 
 export async function processLeadIntake(params: {
+  site: SiteChatRuntime
+  siteConfig: SiteConfig
   intake: LeadIntakeState
   qualification: QualificationProfile
   messages: PublicChatMessage[]
@@ -55,6 +59,7 @@ export async function processLeadIntake(params: {
   leadScore: number
 }): Promise<{ intake: LeadIntakeState; submittedMessage?: string }> {
   let intake = { ...params.intake }
+  const { chat, siteKey } = params.site
 
   if (params.intakeSubmit) {
     intake = mergeIntakeSubmit(intake, params.intakeSubmit)
@@ -73,7 +78,9 @@ export async function processLeadIntake(params: {
     (intake.stage === 'ready' && (wantsImmediateSubmit(lastUser) || params.intakeSubmit))
 
   if (shouldSubmit && intake.stage !== 'submitted' && intake.name && intake.email) {
-    const lead = await submitChatLead({
+    const result = await submitChatIntake({
+      siteKey,
+      site: params.siteConfig,
       intake,
       qualification: params.qualification,
       messages: params.messages,
@@ -81,19 +88,19 @@ export async function processLeadIntake(params: {
       sessionId: params.sessionId,
       customMessage: params.intakeSubmit?.message,
     })
-    intake = { ...intake, stage: 'submitted', leadId: lead.id }
+    intake = { ...intake, stage: 'submitted', leadId: result.id }
     return {
       intake,
-      submittedMessage: `Done — I sent your details to Nico at Nexrena. You'll hear back within one business day at ${intake.email}. Want to book a call now, or keep exploring plans?`,
+      submittedMessage: chat.intakeSuccessMessage.replace('{email}', intake.email ?? ''),
     }
   }
 
   return { intake }
 }
 
-export function appendIntakeGuidance(message: string, intake: LeadIntakeState): string {
+export function appendIntakeGuidance(message: string, intake: LeadIntakeState, contactLabel: string): string {
   if (intake.stage === 'submitted') return message
-  const prompt = intakePromptForMissing(intake)
+  const prompt = intakePromptForMissing(intake, contactLabel)
   if (!prompt) {
     if (intake.stage === 'ready') {
       return `${message}\n\nI have your contact info ready to send. Say "send it" or tap Submit below.`

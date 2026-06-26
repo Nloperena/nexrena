@@ -8,7 +8,7 @@ import { callGemini, isLlmConfigured } from './gemini'
 import { classifyIntent } from './intent'
 import { getOrCreateSession, saveSession, touchSession } from './memory'
 import { appendIntakeGuidance, buildIntakeView, processLeadIntake } from './intake-flow'
-import { buildSystemPrompt } from './prompts/system'
+import { buildSystemPrompt } from './prompts/site-prompts'
 import {
   computeLeadScore,
   qualificationSummary,
@@ -16,7 +16,14 @@ import {
 } from './qualification'
 import { formatRecommendationsBlock, recommendServices } from './recommendations'
 import { formatRetrievalForLog, retrieveKnowledge } from './retrieval'
-import type { IntakeSubmitPayload, PublicChatMessage, SalesAssistantInput, SalesAssistantResult } from './types'
+import type {
+  IntakeSubmitPayload,
+  PublicChatMessage,
+  SalesAssistantInput,
+  SalesAssistantResult,
+  SiteChatRuntime,
+} from './types'
+import type { SiteConfig } from '../sites'
 
 export * from './types'
 export { isLlmConfigured as isPublicChatConfigured }
@@ -58,8 +65,9 @@ function buildAugmentedSystemPrompt(
   contextBlock: string,
   qualificationBlock: string,
   recommendationsBlock: string,
+  site: SiteChatRuntime,
 ): string {
-  return `${buildSystemPrompt(intent)}
+  return `${buildSystemPrompt(intent, site.chat.knowledgeProfile, site.chat)}
 
 ## KNOWLEDGE CONTEXT (only source of truth for facts)
 ${contextBlock}
@@ -73,8 +81,12 @@ ${recommendationsBlock}`
 
 export async function generateSalesAssistantReply(
   input: SalesAssistantInput,
-  meta?: { ip?: string },
+  meta?: { ip?: string; site: SiteChatRuntime; siteConfig: SiteConfig },
 ): Promise<SalesAssistantResult> {
+  if (!meta?.site || !meta?.siteConfig) throw new Error('site context is required')
+
+  const site = meta.site
+  const siteConfig = meta.siteConfig
   const messages = validatePublicChatInput(input.messages, input.intakeSubmit)
   const lastUser = messages.filter((m) => m.role === 'user').at(-1)!
   const sessionId = input.sessionId?.trim() || createSessionId()
@@ -89,6 +101,8 @@ export async function generateSalesAssistantReply(
   const leadScore = computeLeadScore(qualification, intent)
 
   const intakeResult = await processLeadIntake({
+    site,
+    siteConfig,
     intake: session.leadIntake,
     qualification,
     messages,
@@ -104,9 +118,10 @@ export async function generateSalesAssistantReply(
   const intakeView = buildIntakeView(session.leadIntake, qualification, messages)
 
   if (intakeResult.submittedMessage) {
-    const actions = buildActions(intent, qualification, leadScore, session.leadIntake)
+    const actions = buildActions(intent, qualification, leadScore, session.leadIntake, site.chat, site.siteKey)
     void logChatTurn({
       sessionId,
+      siteKey: site.siteKey,
       ip: meta?.ip,
       pageUrl: input.pageUrl,
       role: 'assistant',
@@ -120,9 +135,10 @@ export async function generateSalesAssistantReply(
       message: intakeResult.submittedMessage,
       configured: isLlmConfigured(),
       sessionId,
+      siteKey: site.siteKey,
       intent,
       actions,
-      suggestedReplies: ['Book a free call', 'Compare plans', 'Tell me about Growth plan'],
+      suggestedReplies: suggestedReplies(intent, qualification, session.leadIntake, site.siteKey),
       qualification,
       leadScore,
       grounded: false,
@@ -130,13 +146,14 @@ export async function generateSalesAssistantReply(
     }
   }
 
-  const retrieval = retrieveKnowledge(lastUser.content, intent, 5)
-  const recs = recommendServices(qualification, intent)
+  const retrieval = retrieveKnowledge(lastUser.content, intent, 5, site.chat.knowledgeProfile)
+  const recs = site.siteKey === 'nexrena' ? recommendServices(qualification, intent) : []
   const systemPrompt = buildAugmentedSystemPrompt(
     intent,
     retrieval.contextBlock,
     qualificationSummary(qualification),
     formatRecommendationsBlock(recs) || '(none yet)',
+    site,
   )
 
   const configured = isLlmConfigured()
@@ -154,17 +171,18 @@ export async function generateSalesAssistantReply(
 
   const guarded = applyGuardrails(message, true)
   message = formatAssistantMessage(guarded.text, intent)
-  message = appendIntakeGuidance(message, session.leadIntake)
+  message = appendIntakeGuidance(message, session.leadIntake, site.chat.contactLabel)
 
   if (retrieval.topScore < 3 && !grounded) {
     void logKnowledgeGap(sessionId, lastUser.content, intent)
   }
 
-  const actions = buildActions(intent, qualification, leadScore, session.leadIntake)
-  const suggestions = suggestedReplies(intent, qualification, session.leadIntake)
+  const actions = buildActions(intent, qualification, leadScore, session.leadIntake, site.chat, site.siteKey)
+  const suggestions = suggestedReplies(intent, qualification, session.leadIntake, site.siteKey)
 
   void logChatTurn({
     sessionId,
+    siteKey: site.siteKey,
     ip: meta?.ip,
     pageUrl: input.pageUrl,
     role: 'user',
@@ -177,6 +195,7 @@ export async function generateSalesAssistantReply(
 
   void logChatTurn({
     sessionId,
+    siteKey: site.siteKey,
     ip: meta?.ip,
     pageUrl: input.pageUrl,
     role: 'assistant',
@@ -193,6 +212,7 @@ export async function generateSalesAssistantReply(
     message,
     configured,
     sessionId,
+    siteKey: site.siteKey,
     intent,
     actions,
     suggestedReplies: suggestions,
@@ -203,13 +223,25 @@ export async function generateSalesAssistantReply(
   }
 }
 
-/** Back-compat wrapper */
+/** Back-compat wrapper — defaults to nexrena site context */
 export async function generatePublicChatReply(
   rawMessages: unknown,
-  meta?: { ip?: string; sessionId?: string; pageUrl?: string },
+  meta?: { ip?: string; sessionId?: string; pageUrl?: string; siteKey?: string },
 ): Promise<SalesAssistantResult> {
+  const { getSiteConfig } = await import('../sites')
+  const siteKey = meta?.siteKey?.trim() || 'nexrena'
+  const siteConfig = getSiteConfig(siteKey) ?? getSiteConfig('nexrena')!
   return generateSalesAssistantReply(
-    { messages: rawMessages, sessionId: meta?.sessionId, pageUrl: meta?.pageUrl },
-    { ip: meta?.ip },
+    { messages: rawMessages, sessionId: meta?.sessionId, pageUrl: meta?.pageUrl, siteKey },
+    {
+      ip: meta?.ip,
+      site: {
+        siteKey,
+        siteLabel: siteConfig.label,
+        contactId: siteConfig.contactId,
+        chat: siteConfig.chat,
+      },
+      siteConfig,
+    },
   )
 }

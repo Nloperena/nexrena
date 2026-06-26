@@ -1,11 +1,10 @@
 import { Router } from 'express'
 import { prisma } from '../lib/prisma'
 import { requireAuth } from '../middleware/auth'
-import { getSiteConfig, SITES } from '../lib/sites'
+import { getSiteConfig, inboxCategoryForSite, SITES } from '../lib/sites'
+import { listManagedSitesForOps } from '../lib/site-chat'
 
 const router = Router()
-
-const PORTFOLIO_SITE_KEYS = new Set(['nexrena', 'nicoloperena'])
 
 type InboxKind = 'ai' | 'form' | 'lead'
 type InboxCategory = 'ai' | 'client' | 'portfolio'
@@ -14,9 +13,11 @@ function siteLabel(siteKey: string): string {
   return getSiteConfig(siteKey)?.label ?? siteKey
 }
 
-function inboxCategory(kind: InboxKind, siteKey?: string): InboxCategory {
-  if (kind === 'ai') return 'ai'
-  if (siteKey && PORTFOLIO_SITE_KEYS.has(siteKey)) return 'portfolio'
+function formInboxCategory(siteKey: string): InboxCategory {
+  const site = getSiteConfig(siteKey)
+  if (!site) return 'client'
+  if (site.managedCategory === 'agency') return 'ai'
+  if (site.managedCategory === 'portfolio') return 'portfolio'
   return 'client'
 }
 
@@ -84,6 +85,7 @@ type InboxSummary = {
 
 function serializeAiSummary(session: {
   sessionId: string
+  siteKey: string
   createdAt: Date
   updatedAt: Date
   pageUrl: string | null
@@ -93,14 +95,16 @@ function serializeAiSummary(session: {
   turns: Array<{ content: string; intent: string | null }>
 }): InboxSummary {
   const lastTurn = session.turns[0]
+  const sk = session.siteKey || 'nexrena'
+  const site = getSiteConfig(sk)
   return {
     id: `ai:${session.sessionId}`,
     kind: 'ai',
-    category: 'ai',
-    siteKey: 'nexrena',
-    siteLabel: 'Nexrena AI',
+    category: inboxCategoryForSite(sk),
+    siteKey: sk,
+    siteLabel: site?.label ?? siteLabel(sk),
     visitorLabel: visitorLabelFromQualification(session.sessionId, session.qualification),
-    subject: session.pageUrl ? `Chat on ${session.pageUrl}` : 'AI sales chat',
+    subject: session.pageUrl ? `AI chat on ${session.pageUrl}` : `${siteLabel(sk)} AI chat`,
     createdAt: session.createdAt.toISOString(),
     updatedAt: session.updatedAt.toISOString(),
     turnCount: session._count.turns,
@@ -128,7 +132,7 @@ function serializeFormSummary(row: {
   return {
     id: `form:${row.id}`,
     kind: 'form',
-    category: inboxCategory('form', row.siteKey),
+    category: formInboxCategory(row.siteKey),
     siteKey: row.siteKey,
     siteLabel: siteLabel(row.siteKey),
     visitorLabel: row.submitterName,
@@ -219,7 +223,8 @@ router.get('/', requireAuth, async (req, res) => {
   const siteOptions = Object.entries(SITES).map(([key, site]) => ({
     siteKey: key,
     label: site.label,
-    category: inboxCategory('form', key),
+    category: site.managedCategory === 'agency' ? 'ai' : site.managedCategory,
+    chatEnabled: site.chat.enabled,
   }))
 
   res.json({
@@ -228,10 +233,18 @@ router.get('/', requireAuth, async (req, res) => {
     siteOptions,
     counts: {
       ai: aiSessions.length,
-      clientForms: forms.filter((f) => inboxCategory('form', f.siteKey) === 'client').length,
-      portfolio: leads.length + forms.filter((f) => inboxCategory('form', f.siteKey) === 'portfolio').length,
+      clientForms: forms.filter((f) => formInboxCategory(f.siteKey) === 'client').length,
+      portfolio:
+        leads.length +
+        forms.filter((f) => formInboxCategory(f.siteKey) === 'portfolio').length +
+        aiSessions.filter((s) => inboxCategoryForSite(s.siteKey || 'nexrena') === 'portfolio').length,
     },
   })
+})
+
+/** GET /api/chat-sessions/managed-sites — ops registry of managed properties */
+router.get('/managed-sites/list', requireAuth, (_req, res) => {
+  res.json({ sites: listManagedSitesForOps() })
 })
 
 /** GET /api/chat-sessions/:inboxId — transcript (ai, form, or lead) */

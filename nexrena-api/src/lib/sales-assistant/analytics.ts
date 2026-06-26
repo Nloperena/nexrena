@@ -9,6 +9,7 @@ function hashIp(ip: string): string {
 
 export async function logChatTurn(params: {
   sessionId: string
+  siteKey?: string
   ip?: string
   pageUrl?: string
   role: 'user' | 'assistant'
@@ -27,12 +28,14 @@ export async function logChatTurn(params: {
       where: { sessionId: params.sessionId },
       create: {
         sessionId: params.sessionId,
+        siteKey: params.siteKey ?? 'nexrena',
         ipHash,
         pageUrl: params.pageUrl?.slice(0, 500) ?? null,
         leadScore: params.leadScore ?? 0,
         qualification: params.qualification ?? {},
       },
       update: {
+        siteKey: params.siteKey ?? undefined,
         pageUrl: params.pageUrl?.slice(0, 500) ?? undefined,
         leadScore: params.leadScore ?? undefined,
         qualification: params.qualification ?? undefined,

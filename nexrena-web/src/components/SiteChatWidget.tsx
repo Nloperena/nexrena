@@ -1,25 +1,28 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChatIntakeForm } from '@/components/ChatIntakeForm';
 import {
+  fetchChatSiteConfig,
   getChatSessionId,
   sendChatMessage,
   type ChatAction,
   type ChatIntakeState,
   type ChatMessage,
+  type ChatSiteConfig,
 } from '@/lib/chat-api';
 import { ChatMessageBody } from '@/lib/format-chat-message';
 
-const WELCOME =
-  'Hi — I can help you pick the right Nexrena plan. Monthly website care starts at $149/mo, and most businesses choose Growth at $249/mo.\n\nWhat are you looking for — a new site, more leads, or SEO?';
-
-const STARTER_PROMPTS = [
+const DEFAULT_STARTERS = [
   'Compare your monthly plans',
   'Why is Growth $249/mo recommended?',
   'I am ready to get started',
 ];
 
-const DISMISS_KEY = 'nexrena_chat_dismissed';
 const AUTO_OPEN_MS = 1200;
+
+type Props = {
+  /** Registered site key — nexrena, fpusa, nicoloperena, ttag */
+  siteKey?: string;
+};
 
 type ChatEntry = ChatMessage & {
   id: string;
@@ -64,43 +67,52 @@ function AssistantAvatar() {
   );
 }
 
-export function SiteChatWidget() {
+export function SiteChatWidget({ siteKey = 'nexrena' }: Props) {
+  const dismissKey = `nexrena_chat_dismissed_${siteKey}`;
+  const [config, setConfig] = useState<ChatSiteConfig | null>(null);
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatEntry[]>([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hp, setHp] = useState('');
-  const [starters, setStarters] = useState(STARTER_PROMPTS);
+  const [starters, setStarters] = useState(DEFAULT_STARTERS);
   const [intake, setIntake] = useState<ChatIntakeState | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const intakeRef = useRef<HTMLDivElement>(null);
 
+  const welcome = config?.welcomeMessage ??
+    'Hi — how can I help you today?';
+
+  useEffect(() => {
+    void fetchChatSiteConfig(siteKey).then(setConfig);
+  }, [siteKey]);
+
   const dismissChat = useCallback(() => {
     setOpen(false);
     try {
-      sessionStorage.setItem(DISMISS_KEY, '1');
+      sessionStorage.setItem(dismissKey, '1');
     } catch {
       /* ignore */
     }
-  }, []);
+  }, [dismissKey]);
 
   useEffect(() => {
     try {
-      if (sessionStorage.getItem(DISMISS_KEY)) return;
+      if (sessionStorage.getItem(dismissKey)) return;
     } catch {
       /* ignore */
     }
     const t = window.setTimeout(() => setOpen(true), AUTO_OPEN_MS);
     return () => window.clearTimeout(t);
-  }, []);
+  }, [dismissKey]);
 
   useEffect(() => {
     if (open && messages.length === 0) {
-      setMessages([{ id: newId(), role: 'assistant', content: WELCOME }]);
+      setMessages([{ id: newId(), role: 'assistant', content: welcome }]);
     }
-  }, [open, messages.length]);
+  }, [open, messages.length, welcome]);
 
   useEffect(() => {
     if (open) {
@@ -158,10 +170,10 @@ export function SiteChatWidget() {
       const apiMessages: ChatMessage[] = history
         .filter((m) => m.id !== 'welcome-only')
         .map(({ role, content }) => ({ role, content }))
-        .filter((m) => !(m.role === 'assistant' && m.content === WELCOME && history.length <= 2));
+        .filter((m) => !(m.role === 'assistant' && m.content === welcome && history.length <= 2));
 
       try {
-        const result = await sendChatMessage(apiMessages, { honeypot: hp });
+        const result = await sendChatMessage(apiMessages, { honeypot: hp, siteKey });
         applyChatResult(result);
         if (result.intake?.showForm || isIntakeTrigger(trimmed)) scrollToIntake();
       } catch (err) {
@@ -170,7 +182,7 @@ export function SiteChatWidget() {
         setSending(false);
       }
     },
-    [applyChatResult, hp, messages, scrollToIntake, sending],
+    [applyChatResult, hp, messages, scrollToIntake, sending, siteKey, welcome],
   );
 
   const onIntakeAction = useCallback(
@@ -268,8 +280,8 @@ export function SiteChatWidget() {
               <div className="site-chat-header-brand">
                 <AssistantAvatar />
                 <div className="min-w-0">
-                  <p className="site-chat-title">Nexrena AI</p>
-                  <p className="site-chat-subtitle">Sales consultant · plans from $149/mo</p>
+                  <p className="site-chat-title">{config?.assistantName ?? 'AI Assistant'}</p>
+                  <p className="site-chat-subtitle">{config?.subtitle ?? config?.label ?? 'Website assistant'}</p>
                 </div>
               </div>
               <button type="button" onClick={dismissChat} aria-label="Close chat" className="site-chat-close">
@@ -285,7 +297,7 @@ export function SiteChatWidget() {
                   <article key={msg.id} className="site-chat-msg site-chat-msg-assistant">
                     <AssistantAvatar />
                     <div className="site-chat-msg-content">
-                      <p className="site-chat-msg-label">Nexrena AI</p>
+                      <p className="site-chat-msg-label">{config?.assistantName ?? 'Assistant'}</p>
                       <div className="site-chat-msg-text">
                         <ChatMessageBody content={msg.content} />
                       </div>
@@ -308,7 +320,8 @@ export function SiteChatWidget() {
                   <AssistantAvatar />
                   <div className="site-chat-msg-content site-chat-intake-wrap">
                     <ChatIntakeForm
-                      sessionId={getChatSessionId()}
+                      sessionId={getChatSessionId(siteKey)}
+                      siteKey={siteKey}
                       prefill={intake.prefilled}
                       onSuccess={onIntakeSuccess}
                       onError={setError}
@@ -370,7 +383,7 @@ export function SiteChatWidget() {
                   onChange={(e) => setInput(e.target.value.slice(0, 500))}
                   onKeyDown={onKeyDown}
                   rows={1}
-                  placeholder="Message Nexrena AI…"
+                  placeholder={`Message ${config?.assistantName ?? 'AI'}…`}
                   disabled={sending}
                   maxLength={500}
                   aria-label="Message to assistant"

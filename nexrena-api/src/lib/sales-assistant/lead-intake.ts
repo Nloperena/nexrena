@@ -176,13 +176,13 @@ export async function submitChatLead(params: {
   return lead
 }
 
-export function intakePromptForMissing(intake: LeadIntakeState): string | null {
+export function intakePromptForMissing(intake: LeadIntakeState, contactLabel = 'Nico'): string | null {
   const missing = missingIntakeFields(intake)
   if (!missing.length) return null
   if (missing.includes('name') && missing.includes('email')) {
-    return 'To send your details to Nico, I just need your name and email — or use the quick form below.'
+    return `To send your details to ${contactLabel}, I just need your name and email — or use the quick form below.`
   }
   if (missing.includes('name')) return 'What name should I put on the request?'
-  if (missing.includes('email')) return 'What email should Nico reply to?'
+  if (missing.includes('email')) return `What email should ${contactLabel} reply to?`
   return null
 }

@@ -315,6 +315,7 @@ model Expense {
 model ChatSession {
   id            String   @id @default(cuid())
   sessionId     String   @unique @map("session_id")
+  siteKey       String   @default("nexrena") @map("site_key")
   ipHash        String?  @map("ip_hash")
   pageUrl       String?  @map("page_url")
   leadScore     Int      @default(0) @map("lead_score")
@@ -323,6 +324,7 @@ model ChatSession {
   updatedAt     DateTime @updatedAt @map("updated_at")
   turns         ChatTurn[]
 
+  @@index([siteKey, updatedAt(sort: Desc)])
   @@map("chat_sessions")
 }
 

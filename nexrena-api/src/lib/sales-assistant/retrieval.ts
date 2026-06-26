@@ -1,6 +1,6 @@
-import { ALL_KNOWLEDGE_CHUNKS } from './knowledge'
 import { INTENT_CATEGORY_BOOST } from './intent'
-import type { ChatIntent, KnowledgeChunk } from './types'
+import type { ChatIntent, ChatKnowledgeProfile, KnowledgeChunk } from './types'
+import { knowledgeForProfile } from './knowledge/profiles'
 
 const STOP_WORDS = new Set([
   'a', 'an', 'the', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
@@ -48,9 +48,15 @@ export type RetrievalResult = {
   topScore: number
 }
 
-export function retrieveKnowledge(query: string, intent: ChatIntent, limit = 5): RetrievalResult {
+export function retrieveKnowledge(
+  query: string,
+  intent: import('./types').ChatIntent,
+  limit = 5,
+  profile: ChatKnowledgeProfile = 'nexrena',
+): RetrievalResult {
+  const pool = knowledgeForProfile(profile)
   const tokens = tokenize(query)
-  const scored = ALL_KNOWLEDGE_CHUNKS.map((chunk) => ({
+  const scored = pool.map((chunk) => ({
     chunk,
     score: scoreChunk(chunk, tokens, intent),
   }))
@@ -61,7 +67,7 @@ export function retrieveKnowledge(query: string, intent: ChatIntent, limit = 5):
   const topScore = scored[0]?.score ?? 0
 
   if (top.length === 0) {
-    const fallback = ALL_KNOWLEDGE_CHUNKS.find((c) => c.id === 'company-overview')
+    const fallback = pool.find((c) => c.id.includes('overview')) ?? pool[0]
     if (fallback) top.push(fallback)
   }
 

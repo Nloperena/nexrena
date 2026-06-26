@@ -3,12 +3,13 @@ import { submitChatIntake, type ChatIntakePrefill } from '@/lib/chat-api';
 
 type Props = {
   sessionId: string | null;
+  siteKey?: string;
   prefill?: ChatIntakePrefill;
   onSuccess: (message: string) => void;
   onError: (error: string) => void;
 };
 
-export function ChatIntakeForm({ sessionId, prefill, onSuccess, onError }: Props) {
+export function ChatIntakeForm({ sessionId, siteKey = 'nexrena', prefill, onSuccess, onError }: Props) {
   const [sending, setSending] = useState(false);
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -32,6 +33,7 @@ export function ChatIntakeForm({ sessionId, prefill, onSuccess, onError }: Props
     try {
       const result = await submitChatIntake({
         sessionId,
+        siteKey,
         name,
         email,
         company: company || undefined,
