@@ -64,6 +64,10 @@ export function formatAssistantMessage(raw: string, intent?: ChatIntent): string
     text = text ? `${text}\n\n${PLAN_PITCH}` : PLAN_PITCH
   }
 
+  if ((intent === 'pricing' || intent === 'waas') && !/recommend|most (?:businesses|popular)|start with growth|i'd suggest|best fit/i.test(text)) {
+    text = `${text}\n\nFor most businesses, I recommend the Growth plan at $249/mo — 5 pages, hosting, analytics, and 60 minutes of edits.`
+  }
+
   if (isSalesIntent && !/pricing page|get started|schedule|compare plans|which plan/i.test(text)) {
     text = `${text}\n\nCompare plans on our pricing page, or tell me your business type and I will recommend the right tier.`
   }
