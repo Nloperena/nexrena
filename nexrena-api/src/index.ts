@@ -25,6 +25,7 @@ import resourceRoutes from './routes/resources'
 import stripeWebhookRoutes from './routes/stripe-webhook'
 import formRoutes from './routes/forms'
 import publicChatRoutes from './routes/public-chat'
+import chatIngestRoutes from './routes/chat-ingest'
 import chatSessionsOpsRoutes from './routes/chat-sessions-ops'
 import portalFormSubmissionRoutes from './routes/portal-form-submissions'
 import portalWebsiteMediaOpsRoutes from './routes/portal-website-media-ops'
@@ -98,6 +99,7 @@ app.all(
 app.use('/api/leads', leadLimiter, leadRoutes)           // POST is public, GET is auth-guarded inside
 app.use('/api/forms', leadLimiter, formRoutes)           // POST /submit public; GET/PATCH auth inside
 app.use('/api/chat', chatLimiter, publicChatRoutes)      // Public website chatbot (Gemini)
+app.use('/api/chat-ingest', requireAuth, chatIngestRoutes) // Record-only ingest for external assistants (FPUSA Jax)
 app.use('/api/chat-sessions', requireAuth, chatSessionsOpsRoutes)
 app.use('/api/portal', portalAuthLimiter, portalRoutes) // register/login public; rest portal-auth inside
 app.use('/api/service-requests', requireAuth, serviceRequestRoutes)
