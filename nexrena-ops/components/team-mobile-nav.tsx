@@ -20,6 +20,7 @@ import {
   TEAM_NAV_SECTIONS,
   type TeamNavItem,
 } from '@/lib/team-nav'
+import { isCopilotEnabled } from '@/lib/copilot-config'
 
 type NavContextValue = {
   menuOpen: boolean
@@ -111,7 +112,11 @@ function TeamMobileBottomBar() {
   const { openMenu } = useTeamMobileNav()
   const moreActive = isTeamMoreRouteActive(path)
 
-  if (path === '/messages') return null
+  if (path === '/messages' || path === '/ai-chats') return null
+
+  const mobileTabs = isCopilotEnabled()
+    ? TEAM_MOBILE_TABS
+    : TEAM_MOBILE_TABS.filter((t) => t.href !== '/copilot')
 
   return (
     <nav
@@ -119,7 +124,7 @@ function TeamMobileBottomBar() {
       aria-label="Team navigation"
     >
       <div className="flex items-stretch gap-0.5 px-1.5 pt-1">
-        {TEAM_MOBILE_TABS.map((item) => (
+        {mobileTabs.map((item) => (
           <TabLink
             key={item.href}
             item={item}

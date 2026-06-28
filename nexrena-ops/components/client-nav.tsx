@@ -6,9 +6,11 @@ import {
   portalNavLabelClass,
 } from '@/lib/portal-a11y'
 import { CLIENT_NAV_ICON } from '@/components/client-nav-icons'
+import { isCopilotEnabled } from '@/lib/copilot-config'
 
 export type ClientPortalView =
   | 'home'
+  | 'copilot'
   | 'shop'
   | 'billing'
   | 'messages'
@@ -27,6 +29,7 @@ export type NavItem = {
 
 export const CLIENT_NAV_ITEMS: NavItem[] = [
   { id: 'home', label: 'Home' },
+  { id: 'copilot', label: 'Copilot' },
   { id: 'shop', label: 'Shop' },
   { id: 'messages', label: 'Messages', badge: 'messages' },
   { id: 'schedule', label: 'Schedule' },
@@ -36,6 +39,11 @@ export const CLIENT_NAV_ITEMS: NavItem[] = [
   { id: 'forms', label: 'Form leads', badge: 'forms' },
   { id: 'requests', label: 'Requests' },
 ]
+
+export function getClientNavItems(): NavItem[] {
+  if (isCopilotEnabled()) return CLIENT_NAV_ITEMS
+  return CLIENT_NAV_ITEMS.filter((item) => item.id !== 'copilot')
+}
 
 type NavButtonProps = {
   item: NavItem

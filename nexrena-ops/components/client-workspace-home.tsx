@@ -6,7 +6,7 @@ import type { PortalActivityItem } from '@/lib/activity-utils'
 import type { ClientPortalView } from '@/components/client-nav'
 import { PortalAmbientOrbs } from '@/components/client-portal-visuals'
 import { CLIENT_NAV_ICON } from '@/components/client-nav-icons'
-import { CLIENT_NAV_ITEMS } from '@/components/client-nav'
+import { getClientNavItems } from '@/components/client-nav'
 import { ClientActivityFeed } from '@/components/client-activity-feed'
 import { formatCurrency, formatDate } from '@/lib/store'
 import { NexrenaLogo } from '@/components/nexrena-logo'
@@ -55,7 +55,7 @@ export function ClientWorkspaceHome({
       : null,
   ].filter(Boolean) as Array<{ label: string; tone: 'gold' | 'sky' | 'emerald' | 'slate'; action: () => void }>
 
-  const quickNav = CLIENT_NAV_ITEMS.filter((item) => item.id !== 'settings').slice(0, 8)
+  const quickNav = getClientNavItems().filter((item) => item.id !== 'settings').slice(0, 8)
 
   const toneClass = {
     gold: 'border-gold/35 bg-gold/10 text-gold-light hover:bg-gold/15',

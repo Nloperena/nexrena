@@ -255,6 +255,7 @@ router.get('/', requireAuth, async (req, res) => {
     .map(([key, site]) => ({
       siteKey: key,
       label: site.label,
+      domain: site.origins[0]?.replace(/^https?:\/\//, '').replace(/^www\./, '') ?? null,
       category: site.managedCategory === 'agency' ? 'ai' : site.managedCategory,
       chatEnabled: site.chat.enabled,
       chatCount: statsByKey.get(key)?.count ?? 0,

@@ -30,14 +30,9 @@ function qualificationLines(qualification: Record<string, unknown>): string[] {
     .map(([key, value]) => `${labels[key] ?? key}: ${String(value).slice(0, 60)}`)
 }
 
-function siteDomain(siteKey: string): string {
-  const map: Record<string, string> = {
-    nexrena: 'nexrena.com',
-    fpusa: 'furniturepackagesusa.com',
-    nicoloperena: 'nicoloperena.com',
-    ttag: 'thetwoazaleagroup.com',
-  }
-  return map[siteKey] ?? siteKey
+function siteDomain(site: { domain?: string | null; siteKey: string }): string {
+  if (site.domain) return site.domain
+  return site.siteKey
 }
 
 function LiveBadge({ refreshing, lastRefreshedAt }: { refreshing: boolean; lastRefreshedAt: Date | null }) {
@@ -87,8 +82,16 @@ export function OpsAiChatsView() {
     refresh,
   } = useAiChatsInbox(initialSite)
 
-  const [panel, setPanel] = useState<Panel>('sites')
+  const [panel, setPanel] = useState<Panel>(initialSite ? 'list' : 'sites')
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (initialSite && activeSiteKey === initialSite) setPanel('list')
+  }, [initialSite, activeSiteKey])
+
+  useEffect(() => {
+    if (activeSiteKey && sites.length === 1) setPanel('list')
+  }, [activeSiteKey, sites.length])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -107,8 +110,18 @@ export function OpsAiChatsView() {
 
   if (loading && !activeSiteKey) {
     return (
-      <div className="flex flex-1 items-center justify-center min-h-[50dvh]">
+      <div className="flex flex-1 items-center justify-center min-h-[40dvh]">
         <p className="animate-pulse text-sm text-slate-500">Loading AI chats…</p>
+      </div>
+    )
+  }
+
+  if (!loading && sites.length === 0) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center min-h-[40dvh]">
+        <p className="text-sm text-slate-300">No managed websites with AI chat enabled.</p>
+        <p className="text-xs text-slate-500">Check API connection and site configuration.</p>
+        {error && <p className="text-sm text-red-400">{error}</p>}
       </div>
     )
   }
@@ -142,7 +155,7 @@ export function OpsAiChatsView() {
                 <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${siteRailDot(site.category)}`} aria-hidden />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-white">{site.label}</p>
-                  <p className="truncate text-[11px] text-slate-400 mt-0.5">{siteDomain(site.siteKey)}</p>
+                  <p className="truncate text-[11px] text-slate-400 mt-0.5">{siteDomain(site)}</p>
                   <div className="flex items-center gap-2 mt-2 text-[11px] text-slate-400">
                     <span className="rounded-md bg-black/25 px-1.5 py-0.5 tabular-nums">
                       {site.chatCount} chat{site.chatCount === 1 ? '' : 's'}
@@ -221,14 +234,26 @@ export function OpsAiChatsView() {
         } lg:flex min-h-0 min-w-0 flex-1 flex-col bg-[#0a0c10]`}
       >
         {!activeSummary ? (
-          <div className="hidden lg:flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
-            <p className="text-sm text-slate-400">Select a website, then pick a conversation.</p>
-            {activeSite && (
-              <p className="text-xs text-slate-500">
-                Viewing AI chats only for <span className="text-slate-300">{activeSite.label}</span>
-              </p>
-            )}
-          </div>
+          <>
+            <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center lg:hidden">
+              <p className="text-sm text-slate-400">Pick a conversation to read the transcript.</p>
+              <button
+                type="button"
+                onClick={() => setPanel('list')}
+                className="rounded-lg border border-slate-700/60 px-3 py-2 text-xs text-slate-300 hover:text-white"
+              >
+                ← Back to chats
+              </button>
+            </div>
+            <div className="hidden lg:flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
+              <p className="text-sm text-slate-400">Select a website, then pick a conversation.</p>
+              {activeSite && (
+                <p className="text-xs text-slate-500">
+                  Viewing AI chats only for <span className="text-slate-300">{activeSite.label}</span>
+                </p>
+              )}
+            </div>
+          </>
         ) : (
           <>
             <header className="flex shrink-0 items-center gap-3 border-b border-slate-800/60 px-3 py-3 bg-[#111418]">
@@ -256,7 +281,7 @@ export function OpsAiChatsView() {
               <button
                 type="button"
                 onClick={() => void refresh()}
-                className="hidden sm:inline-flex shrink-0 rounded-lg border border-slate-700/60 px-2.5 py-1.5 text-xs text-slate-300 hover:text-white hover:border-slate-600"
+                className="inline-flex shrink-0 rounded-lg border border-slate-700/60 px-2.5 py-1.5 text-xs text-slate-300 hover:text-white hover:border-slate-600"
               >
                 Refresh
               </button>

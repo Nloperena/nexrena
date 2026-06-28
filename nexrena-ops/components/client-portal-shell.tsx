@@ -7,8 +7,8 @@ import type { PortalAccount } from '@/lib/portal-types'
 import { UserMenu } from '@/components/user-menu'
 import { AccountSettingsButton } from '@/components/account-settings-button'
 import {
-  CLIENT_NAV_ITEMS,
   ClientNavButton,
+  getClientNavItems,
   type ClientPortalView,
 } from '@/components/client-nav'
 import { isCalendlyEnabled } from '@/lib/calendly'
@@ -18,7 +18,6 @@ import {
   portalFocusRing,
 } from '@/lib/portal-a11y'
 import { NexrenaLogo } from '@/components/nexrena-logo'
-import { PortalAiAgentButton } from '@/components/portal-ai-agent-button'
 import { ClientViewHero } from '@/components/client-view-hero'
 
 type Props = {
@@ -40,7 +39,7 @@ export function ClientPortalShell({
   onSignOut,
   children,
 }: Props) {
-  const navItems = CLIENT_NAV_ITEMS.filter(
+  const navItems = getClientNavItems().filter(
     (item) => item.id !== 'schedule' || isCalendlyEnabled(),
   )
 
@@ -49,9 +48,10 @@ export function ClientPortalShell({
     ?? (activeView === 'settings' ? 'Account settings' : 'Home')
 
   const isMessenger = activeView === 'messages'
+  const isCopilot = activeView === 'copilot'
   const isHome = activeView === 'home'
   const isSettings = activeView === 'settings'
-  const showViewHero = !isMessenger && !isHome
+  const showViewHero = !isMessenger && !isHome && !isCopilot
 
   return (
     <div className="client-portal min-h-screen bg-[#111418]">
@@ -136,7 +136,7 @@ export function ClientPortalShell({
 
           <main
             className={`flex-1 w-full min-w-0 mx-auto overflow-x-hidden ${PORTAL_MOBILE_BOTTOM_PAD} ${
-              isMessenger
+              isMessenger || isCopilot
                 ? 'flex flex-col flex-1 min-h-0 px-0 py-0 lg:pb-4 max-w-none'
                 : 'px-4 lg:px-8 py-5 lg:pb-8 max-w-6xl'
             }`}
@@ -166,8 +166,6 @@ export function ClientPortalShell({
           ))}
         </div>
       </nav>
-
-      <PortalAiAgentButton onNavigate={onNavigate} clientName={account?.name} />
     </div>
   )
 }

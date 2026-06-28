@@ -84,6 +84,8 @@ export const TEAM_MOBILE_TABS: TeamNavItem[] = [
 
   { href: '/messages', label: 'Messages', icon: '✉', badge: 'messages' },
 
+  { href: '/copilot', label: 'Copilot', icon: '✦' },
+
   { href: '/invoices', label: 'Billing', icon: '▤' },
 
   { href: '/projects', label: 'Work', icon: '▦' },

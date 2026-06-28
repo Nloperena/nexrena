@@ -42,6 +42,7 @@ export type InboxFilter = 'all' | InboxCategory
 export type SiteChatOption = {
   siteKey: string
   label: string
+  domain?: string | null
   category: InboxCategory
   chatEnabled: boolean
   chatCount: number

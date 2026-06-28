@@ -33,6 +33,7 @@ import { ClientFormsView } from '@/components/client-forms-view'
 import { ClientSettingsView } from '@/components/client-settings-view'
 import { ClientScheduleView } from '@/components/client-schedule-view'
 import { ClientPortalShell } from '@/components/client-portal-shell'
+import { CopilotShell } from '@/components/copilot/copilot-shell'
 import type { ClientPortalView } from '@/components/client-nav'
 import { ClientShopView } from '@/components/client-shop-view'
 import { readPortalViewFromUrl, readPortalShopParams, writePortalViewToUrl } from '@/lib/portal-view-url'
@@ -328,6 +329,9 @@ export function ClientDashboard({ onSignOut }: Props) {
           />
         )
 
+      case 'copilot':
+        return null
+
       case 'shop':
         return (
           <ClientShopView
@@ -423,6 +427,7 @@ export function ClientDashboard({ onSignOut }: Props) {
   }
 
   return (
+    <CopilotShell persona="client" clientView={activeView}>
     <ClientPortalShell
       activeView={activeView}
       onNavigate={setActiveView}
@@ -456,5 +461,6 @@ export function ClientDashboard({ onSignOut }: Props) {
         />
       )}
     </ClientPortalShell>
+    </CopilotShell>
   )
 }

@@ -14,6 +14,7 @@ import { AccountSettingsButton } from '@/components/account-settings-button'
 import { TEAM_LAYOUT_GRID, TEAM_MOBILE_BOTTOM_PAD } from '@/lib/team-a11y'
 import { FormSubmissionsProvider } from '@/lib/form-submissions-context'
 import { ApiConnectionBanner } from '@/components/api-connection-banner'
+import { CopilotShell } from '@/components/copilot/copilot-shell'
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const { role, signOut, teamDisplayName, setTeamDisplayName } = useAuth()
@@ -25,10 +26,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const page = getTeamPageContext(pathname)
   const isMessenger = pathname === '/messages'
   const isAiChats = pathname === '/ai-chats'
-  const isFullHeightChat = isMessenger || isAiChats
+  const isCopilot = pathname === '/copilot'
+  const isFullHeightChat = isMessenger || isAiChats || isCopilot
   const isDashboard = pathname === '/'
 
   return (
+    <CopilotShell persona="team">
     <FormSubmissionsProvider enabled>
       <TeamMobileNavProvider>
       <div className={`team-ops min-h-screen overflow-x-hidden bg-[#111418] ${TEAM_LAYOUT_GRID}`}>
@@ -118,6 +121,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               }`}
             >
               {!isFullHeightChat && <ApiConnectionBanner />}
+              {isAiChats && (
+                <div className="hidden lg:block mb-4 shrink-0">
+                  <ApiConnectionBanner />
+                </div>
+              )}
               {children}
             </div>
           </main>
@@ -133,5 +141,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       </div>
     </TeamMobileNavProvider>
     </FormSubmissionsProvider>
+    </CopilotShell>
   )
 }

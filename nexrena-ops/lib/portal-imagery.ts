@@ -20,6 +20,7 @@ export const PORTAL_IMAGES = {
 /** Animated hero banners keyed to client portal views. */
 export type PortalHeroView =
   | 'home'
+  | 'copilot'
   | 'shop'
   | 'billing'
   | 'messages'
@@ -32,6 +33,7 @@ export type PortalHeroView =
 
 export const PORTAL_HERO_IMAGES: Record<PortalHeroView, string> = {
   home: PORTAL_IMAGES.growthBar,
+  copilot: PORTAL_IMAGES.growthBar,
   shop: PORTAL_IMAGES.heroShop,
   messages: PORTAL_IMAGES.heroMessages,
   billing: PORTAL_IMAGES.heroBilling,

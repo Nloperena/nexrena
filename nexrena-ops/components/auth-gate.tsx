@@ -11,6 +11,7 @@ import { PwaInstallPrompt } from '@/components/pwa-install-prompt'
 import { NexrenaLogo } from '@/components/nexrena-logo'
 import { OAuthSignInButtons } from '@/components/oauth-sign-in-buttons'
 import { fetchOAuthProviders } from '@/lib/oauth'
+import { COPILOT_INTAKE_KEY } from '@/lib/copilot-types'
 import {
   getPortalToken,
   loginPortalAccount,
@@ -123,6 +124,7 @@ export function AuthGate({ children }: Props) {
   const signOut = () => {
     localStorage.removeItem(ADMIN_SESSION_KEY)
     sessionStorage.removeItem(ADMIN_SESSION_KEY)
+    sessionStorage.removeItem(COPILOT_INTAKE_KEY)
     logoutPortal()
     setRole(null)
     setError('')

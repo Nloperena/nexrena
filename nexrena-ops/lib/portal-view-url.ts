@@ -2,6 +2,7 @@ import type { ClientPortalView } from '@/components/client-nav'
 
 const VALID_VIEWS = new Set<ClientPortalView>([
   'home',
+  'copilot',
   'shop',
   'billing',
   'messages',

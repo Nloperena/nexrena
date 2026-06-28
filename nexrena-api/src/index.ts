@@ -9,6 +9,7 @@ import { requireAuth } from './middleware/auth'
 import { root as graphqlRoot, schema as graphqlSchema } from './graphql'
 
 import contactRoutes from './routes/contacts'
+import opsAiRoutes from './routes/ops-ai'
 import projectRoutes from './routes/projects'
 import invoiceRoutes from './routes/invoices'
 import leadRoutes from './routes/leads'
@@ -106,6 +107,7 @@ app.use('/api/resources', requireAuth, resourceRoutes)
 app.get('/api/messages/stream', handleOpsMessageStream)
 app.get('/api/portal/messages/stream', handlePortalMessageStream)
 app.use('/api/messages', requireAuth, messageRoutes)
+app.use('/api/ops', requireAuth, opsAiRoutes)
 app.use('/api/contacts', requireAuth, contactRoutes)
 app.use('/api/projects', requireAuth, projectRoutes)
 app.use('/api/invoices', requireAuth, invoiceRoutes)

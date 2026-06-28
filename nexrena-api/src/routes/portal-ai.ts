@@ -1,7 +1,9 @@
 import { Router } from 'express'
 import rateLimit from 'express-rate-limit'
+import type { UIMessage } from 'ai'
 import { requirePortalAuth } from '../middleware/portal-auth'
-import { generatePortalAiReply } from '../lib/portal-ai'
+import { streamCopilotToExpress } from '../lib/copilot/agent'
+import type { CopilotContext } from '../lib/copilot/types'
 
 const router = Router()
 
@@ -14,28 +16,32 @@ const aiLimiter = rateLimit({
 
 /** POST /api/portal/ai/chat */
 router.post('/chat', requirePortalAuth, aiLimiter, async (req, res) => {
-  const { messages } = req.body as { messages?: unknown }
+  const { messages, currentPath } = req.body as {
+    messages?: UIMessage[]
+    currentPath?: string
+  }
 
-  if (!messages) {
+  if (!messages || !Array.isArray(messages)) {
     res.status(400).json({ error: 'messages array is required' })
     return
   }
 
+  const user = req.portalUser!
+  const ctx: CopilotContext = {
+    userId: user.accountId,
+    persona: 'client',
+    contactId: user.contactId,
+    accountId: user.accountId,
+    currentPath: currentPath || '/',
+  }
+
   try {
-    const result = await generatePortalAiReply(req.portalUser!.accountId, messages)
-    res.json(result)
+    await streamCopilotToExpress(res, ctx, messages)
   } catch (err) {
-    const msg = err instanceof Error ? err.message : 'AI request failed'
-    if (msg === 'messages must include at least one user message') {
-      res.status(400).json({ error: msg })
-      return
+    console.error('Portal copilot chat error:', err)
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Could not generate a response. Try again shortly.' })
     }
-    if (msg === 'Account not found') {
-      res.status(404).json({ error: msg })
-      return
-    }
-    console.error('Portal AI chat error:', err)
-    res.status(500).json({ error: 'Could not generate a response. Try again shortly.' })
   }
 })
 

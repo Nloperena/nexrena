@@ -1,4 +1,5 @@
 import type { PortalAccount, PortalInvoice, PortalProject, PortalProposal } from './portal-types'
+import { COPILOT_INTAKE_KEY } from './copilot-types'
 
 const SESSION_KEY = 'nx-portal-token'
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://nexrena-api-5dc54effaa9f.herokuapp.com'
@@ -355,6 +356,9 @@ export async function fetchOpsWebsiteMedia(contactId: string) {
 
 export function logoutPortal() {
   clearPortalToken()
+  if (typeof sessionStorage !== 'undefined') {
+    sessionStorage.removeItem(COPILOT_INTAKE_KEY)
+  }
 }
 
 export function sendPortalAiChat(messages: import('./portal-types').PortalAiChatMessage[]) {

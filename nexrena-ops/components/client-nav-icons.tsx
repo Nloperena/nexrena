@@ -61,6 +61,7 @@ export const CLIENT_NAV_ICON: Record<
   ComponentType<{ className?: string }>
 > = {
   home: IconHome,
+  copilot: IconSpark,
   shop: IconShop,
   messages: IconMessage,
   schedule: IconCalendar,

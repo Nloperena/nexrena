@@ -357,3 +357,17 @@ model ChatKnowledgeGap {
   @@index([resolved])
   @@map("chat_knowledge_gaps")
 }
+
+// ── Copilot audit trail ───────────────────────────────────────────────────
+model CopilotActionLog {
+  id        String   @id @default(cuid())
+  persona   String
+  userId    String   @map("user_id")
+  toolName  String   @map("tool_name")
+  argsHash  String   @map("args_hash")
+  ok        Boolean
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([persona, createdAt(sort: Desc)])
+  @@map("copilot_action_logs")
+}

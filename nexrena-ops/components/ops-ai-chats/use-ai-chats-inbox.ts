@@ -19,11 +19,35 @@ export function useAiChatsInbox(initialSiteKey?: string | null) {
   const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(null)
   const activeSummaryRef = useRef<InboxItemSummary | null>(null)
   const activeSiteRef = useRef<string | null>(null)
+  const activeIdRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    activeIdRef.current = activeId
+  }, [activeId])
+
+  const loadDetail = useCallback(
+    async (inboxId: string, summary?: InboxItemSummary, opts?: { silent?: boolean }) => {
+      if (!opts?.silent) setDetailLoading(true)
+      try {
+        const data = await api.get<InboxItemDetail>(`/chat-sessions/${encodeURIComponent(inboxId)}`)
+        setDetail(data)
+        if (summary) activeSummaryRef.current = summary
+      } catch {
+        if (!opts?.silent) {
+          setError('Could not load conversation.')
+          setDetail(null)
+        }
+      } finally {
+        if (!opts?.silent) setDetailLoading(false)
+      }
+    },
+    [],
+  )
 
   const loadSessions = useCallback(
-    async (opts?: { silent?: boolean; siteKey?: string | null }) => {
+    async (opts?: { silent?: boolean; siteKey?: string | null; preserveActive?: boolean }) => {
       const siteKey = opts?.siteKey !== undefined ? opts.siteKey : activeSiteRef.current
-      if (!siteKey) return
+      if (!siteKey) return null
 
       if (opts?.silent) setRefreshing(true)
       else setLoading(true)
@@ -36,14 +60,19 @@ export function useAiChatsInbox(initialSiteKey?: string | null) {
         setSessions(data.sessions.filter((s) => s.kind === 'ai'))
         setLastRefreshedAt(data.refreshedAt ? new Date(data.refreshedAt) : new Date())
 
-        setActiveId((current) => {
-          if (current && data.sessions.some((s) => s.id === current)) return current
-          const first = data.sessions[0] ?? null
-          activeSummaryRef.current = first
-          return first?.id ?? null
-        })
+        if (!opts?.preserveActive) {
+          setActiveId((current) => {
+            if (current && data.sessions.some((s) => s.id === current)) return current
+            const first = data.sessions[0] ?? null
+            activeSummaryRef.current = first
+            return first?.id ?? null
+          })
+        }
+
+        return data
       } catch {
         setError('Could not load AI chats.')
+        return null
       } finally {
         setLoading(false)
         setRefreshing(false)
@@ -51,18 +80,6 @@ export function useAiChatsInbox(initialSiteKey?: string | null) {
     },
     [],
   )
-
-  const loadSitesOnly = useCallback(async () => {
-    try {
-      const data = await api.get<InboxListResponse>('/chat-sessions?kind=ai&limit=1')
-      setSites(data.siteOptions)
-      setLastRefreshedAt(data.refreshedAt ? new Date(data.refreshedAt) : new Date())
-      return data.siteOptions
-    } catch {
-      setError('Could not load sites.')
-      return []
-    }
-  }, [])
 
   const selectSite = useCallback(
     (siteKey: string) => {
@@ -76,36 +93,40 @@ export function useAiChatsInbox(initialSiteKey?: string | null) {
     [loadSessions],
   )
 
-  const loadDetail = useCallback(async (inboxId: string, summary?: InboxItemSummary) => {
-    setDetailLoading(true)
-    try {
-      const data = await api.get<InboxItemDetail>(`/chat-sessions/${encodeURIComponent(inboxId)}`)
-      setDetail(data)
-      if (summary) activeSummaryRef.current = summary
-    } catch {
-      setError('Could not load conversation.')
-      setDetail(null)
-    } finally {
-      setDetailLoading(false)
-    }
-  }, [])
-
   useEffect(() => {
     let cancelled = false
+
     void (async () => {
-      const options = await loadSitesOnly()
-      if (cancelled) return
-      const pick =
-        initialSiteKey && options.some((s) => s.siteKey === initialSiteKey)
-          ? initialSiteKey
-          : options[0]?.siteKey ?? null
-      if (pick) selectSite(pick)
-      else setLoading(false)
+      setLoading(true)
+      setError(null)
+      try {
+        const bootstrap = await api.get<InboxListResponse>('/chat-sessions?kind=ai&limit=1')
+        if (cancelled) return
+
+        setSites(bootstrap.siteOptions)
+        setLastRefreshedAt(bootstrap.refreshedAt ? new Date(bootstrap.refreshedAt) : new Date())
+
+        const pick =
+          initialSiteKey && bootstrap.siteOptions.some((s) => s.siteKey === initialSiteKey)
+            ? initialSiteKey
+            : bootstrap.siteOptions[0]?.siteKey ?? null
+
+        if (pick) {
+          activeSiteRef.current = pick
+          setActiveSiteKey(pick)
+          await loadSessions({ siteKey: pick })
+        }
+      } catch {
+        if (!cancelled) setError('Could not load AI chats.')
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
     })()
+
     return () => {
       cancelled = true
     }
-  }, [initialSiteKey, loadSitesOnly, selectSite])
+  }, [initialSiteKey, loadSessions])
 
   useEffect(() => {
     if (!activeId) {
@@ -120,17 +141,31 @@ export function useAiChatsInbox(initialSiteKey?: string | null) {
 
     const tick = () => {
       if (document.visibilityState !== 'visible') return
-      void loadSessions({ silent: true, siteKey: activeSiteKey })
+      void loadSessions({ silent: true, siteKey: activeSiteKey, preserveActive: true }).then(() => {
+        const id = activeIdRef.current
+        if (id) {
+          void loadDetail(id, activeSummaryRef.current ?? undefined, { silent: true })
+        }
+      })
     }
 
     const id = window.setInterval(tick, POLL_MS)
     return () => window.clearInterval(id)
-  }, [activeSiteKey, loadSessions])
+  }, [activeSiteKey, loadDetail, loadSessions])
 
   const openSession = (item: InboxItemSummary) => {
     activeSummaryRef.current = item
     setActiveId(item.id)
   }
+
+  const refresh = useCallback(async () => {
+    if (!activeSiteKey) return
+    await loadSessions({ silent: true, siteKey: activeSiteKey, preserveActive: true })
+    const id = activeIdRef.current
+    if (id) {
+      await loadDetail(id, activeSummaryRef.current ?? undefined, { silent: true })
+    }
+  }, [activeSiteKey, loadDetail, loadSessions])
 
   const activeSite = sites.find((s) => s.siteKey === activeSiteKey) ?? null
   const activeSummary = sessions.find((s) => s.id === activeId) ?? detail
@@ -150,6 +185,6 @@ export function useAiChatsInbox(initialSiteKey?: string | null) {
     lastRefreshedAt,
     selectSite,
     openSession,
-    refresh: () => activeSiteKey && loadSessions({ silent: true, siteKey: activeSiteKey }),
+    refresh,
   }
 }
