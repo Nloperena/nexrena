@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import type { ToolExecutionResult } from '@/lib/copilot-types'
 import { isToolPart } from '@/lib/copilot-types'
-import { useCopilot } from './copilot-provider'
+import { useCopilotChatRuntime } from './copilot-chat-runtime'
 
 type ToolPart = {
   type: string
@@ -21,7 +21,7 @@ function labelForTool(type: string, toolName?: string): string {
 }
 
 export function ToolCardRenderer({ part }: { part: ToolPart }) {
-  const { confirmAction } = useCopilot()
+  const { confirmAction } = useCopilotChatRuntime()
   const [confirming, setConfirming] = useState(false)
   const [confirmError, setConfirmError] = useState('')
 

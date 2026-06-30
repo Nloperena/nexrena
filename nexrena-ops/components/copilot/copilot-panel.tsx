@@ -1,58 +1,79 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { useCopilot } from './copilot-provider'
+import { useCopilotChatRuntime } from './copilot-chat-runtime'
+import { CopilotThreadHistory } from './copilot-thread-history'
 import { MessageToolParts } from './tool-card-renderer'
 import { messageText } from '@/lib/copilot-types'
 
 export function CopilotPanel({ className = '' }: { className?: string }) {
   const {
-    messages,
-    input,
-    handleInputChange,
-    handleSubmit,
-    status,
     persona,
-    panelCollapsed,
-    setPanelCollapsed,
+    threads,
+    threadsLoading,
+    activeThreadId,
+    historyOpen,
+    setHistoryOpen,
+    startNewChat,
+    selectThread,
+    deleteThread,
+    chatReady,
   } = useCopilot()
+  const { messages, input, handleInputChange, handleSubmit, status } = useCopilotChatRuntime()
+  const messagesRef = useRef<HTMLDivElement>(null)
 
-  if (panelCollapsed) {
-    return (
-      <aside className={`copilot-panel copilot-panel--collapsed ${className}`}>
-        <button
-          type="button"
-          onClick={() => setPanelCollapsed(false)}
-          className="copilot-panel__expand"
-          aria-label="Open copilot"
-        >
-          ✦
-        </button>
-      </aside>
-    )
-  }
+  useEffect(() => {
+    const el = messagesRef.current
+    if (el) el.scrollTop = el.scrollHeight
+  }, [messages, status])
 
   return (
     <aside className={`copilot-panel ${className}`}>
       <header className="copilot-panel__header">
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="text-xs uppercase tracking-wider text-slate-500">Copilot</p>
-          <p className="text-sm text-slate-300">
+          <p className="text-sm text-slate-300 truncate">
             {persona === 'team' ? 'Team workspace' : 'Client workspace'}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => setPanelCollapsed(true)}
-          className="text-slate-500 hover:text-slate-300 text-xs"
-          aria-label="Collapse copilot"
-        >
-          Hide
-        </button>
+        <div className="flex items-center gap-1 shrink-0">
+          <button
+            type="button"
+            onClick={() => void startNewChat()}
+            className="copilot-panel__header-btn"
+            title="New chat"
+          >
+            +
+          </button>
+          <button
+            type="button"
+            onClick={() => setHistoryOpen(!historyOpen)}
+            className={`copilot-panel__header-btn ${historyOpen ? 'is-active' : ''}`}
+            title="Chat history"
+          >
+            ☰
+          </button>
+        </div>
       </header>
 
-      <div className="copilot-panel__messages">
-        {messages.length === 0 && (
+      <CopilotThreadHistory
+        open={historyOpen}
+        onClose={() => setHistoryOpen(false)}
+        threads={threads}
+        activeThreadId={activeThreadId}
+        loading={threadsLoading}
+        onSelect={selectThread}
+        onNewChat={() => void startNewChat()}
+        onDelete={(id) => void deleteThread(id)}
+      />
+
+      <div ref={messagesRef} className="copilot-panel__messages">
+        {!chatReady && (
+          <p className="text-sm text-slate-500 px-1">Loading conversation…</p>
+        )}
+        {chatReady && messages.length === 0 && (
           <p className="text-sm text-slate-500 px-1">
             Ask for reports, triage leads, check billing, or request workspace updates.
           </p>
@@ -71,11 +92,7 @@ export function CopilotPanel({ className = '' }: { className?: string }) {
             >
               {text && (
                 <div className="copilot-message__body prose-copilot">
-                  {isUser ? (
-                    <p>{text}</p>
-                  ) : (
-                    <ReactMarkdown>{text}</ReactMarkdown>
-                  )}
+                  {isUser ? <p>{text}</p> : <ReactMarkdown>{text}</ReactMarkdown>}
                 </div>
               )}
               {!isUser && toolParts.length > 0 && (
@@ -99,6 +116,7 @@ export function CopilotPanel({ className = '' }: { className?: string }) {
           placeholder="Ask anything or request workspace updates…"
           rows={3}
           className="copilot-panel__input"
+          disabled={!chatReady}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault()
@@ -108,7 +126,7 @@ export function CopilotPanel({ className = '' }: { className?: string }) {
         />
         <button
           type="submit"
-          disabled={!input.trim() || status === 'streaming' || status === 'submitted'}
+          disabled={!input.trim() || !chatReady || status === 'streaming' || status === 'submitted'}
           className="copilot-panel__send"
         >
           Send
@@ -116,4 +134,28 @@ export function CopilotPanel({ className = '' }: { className?: string }) {
       </form>
     </aside>
   )
+}
+
+function CopilotPanelLoading({ className = '' }: { className?: string }) {
+  return (
+    <aside className={`copilot-panel ${className}`}>
+      <header className="copilot-panel__header">
+        <div className="min-w-0 flex-1">
+          <p className="text-xs uppercase tracking-wider text-slate-500">Copilot</p>
+          <p className="text-sm text-slate-300">Loading…</p>
+        </div>
+      </header>
+      <div className="copilot-panel__messages">
+        <p className="text-sm text-slate-500 px-1">Loading conversation…</p>
+      </div>
+    </aside>
+  )
+}
+
+export function CopilotPanelWhenReady(props: { className?: string }) {
+  const { chatReady, activeThreadId } = useCopilot()
+  if (!chatReady || !activeThreadId) {
+    return <CopilotPanelLoading className={props.className} />
+  }
+  return <CopilotPanel className={props.className} />
 }

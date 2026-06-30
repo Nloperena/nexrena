@@ -21,6 +21,7 @@ import {
   type TeamNavItem,
 } from '@/lib/team-nav'
 import { isCopilotEnabled } from '@/lib/copilot-config'
+import { useCopilotOptional } from '@/components/copilot/copilot-provider'
 
 type NavContextValue = {
   menuOpen: boolean
@@ -111,8 +112,9 @@ function TeamMobileBottomBar() {
   const { newCount: formsNewCount } = useFormSubmissions()
   const { openMenu } = useTeamMobileNav()
   const moreActive = isTeamMoreRouteActive(path)
+  const copilot = useCopilotOptional()
 
-  if (path === '/messages' || path === '/ai-chats') return null
+  if (path === '/messages' || path === '/ai-chats' || copilot?.viewMode === 'copilot') return null
 
   const mobileTabs = isCopilotEnabled()
     ? TEAM_MOBILE_TABS

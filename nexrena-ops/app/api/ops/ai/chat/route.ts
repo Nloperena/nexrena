@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
       messages: body.messages,
       currentPath: body.currentPath,
       id: body.id,
+      threadId: body.threadId,
       trigger: body.trigger,
       messageId: body.messageId,
     }),

@@ -1,16 +1,19 @@
 'use client'
 
 import { useCopilot } from './copilot-provider'
+import { useCopilotChatRuntimeOptional } from './copilot-chat-runtime'
 import type { CopilotPersona } from '@/lib/copilot-types'
 
 const TEAM_CHIPS = ['Unread messages', 'New leads this week', "Today's pipeline"]
 const CLIENT_CHIPS = ['Balance due', 'Create new request', 'Message Nico']
 
 export function SessionIntakeShell({ persona }: { persona: CopilotPersona }) {
-  const { showIntake, setIntakeDone, input, handleInputChange, handleSubmit, sendChip } = useCopilot()
+  const { showIntake, setIntakeDone, setViewMode } = useCopilot()
+  const runtime = useCopilotChatRuntimeOptional()
 
-  if (!showIntake) return null
+  if (!showIntake || !runtime) return null
 
+  const { input, handleInputChange, handleSubmit, sendChip } = runtime
   const chips = persona === 'team' ? TEAM_CHIPS : CLIENT_CHIPS
   const headline =
     persona === 'team'
@@ -36,14 +39,17 @@ export function SessionIntakeShell({ persona }: { persona: CopilotPersona }) {
             className="copilot-intake__textarea"
           />
           <div className="copilot-intake__actions">
-            <button type="button" onClick={setIntakeDone} className="copilot-intake__skip">
+            <button
+              type="button"
+              onClick={() => {
+                setIntakeDone()
+                setViewMode('workspace')
+              }}
+              className="copilot-intake__skip"
+            >
               Skip straight to workspace →
             </button>
-            <button
-              type="submit"
-              className="copilot-intake__execute"
-              onClick={() => setIntakeDone()}
-            >
+            <button type="submit" className="copilot-intake__execute" onClick={() => setIntakeDone()}>
               Execute
             </button>
           </div>
